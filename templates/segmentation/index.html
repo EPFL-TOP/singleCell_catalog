@@ -1,0 +1,85 @@
+{% extends "base_generic.html" %}
+{% block content %}
+  <h1>Select project </h1>
+  <script type="text/javascript">
+    function foo() {
+        // function body here
+        // for example
+        d = document.getElementById("PublicWords").value;
+        alert(d);
+    }
+    </script>
+    
+  <label for="project-select">Select a project:</label>
+  <form method="POST">
+    {% csrf_token %}
+    <select  id="select_project" name="select_project">
+        <option value="">--Choose a project--</option>
+        {% for project in select_dict.project_list %}
+            {% if selected_dict.project != project %}<option value="{{ project }}">{{ project }}</option>{% endif %}
+            {% if selected_dict.project == project %}<option selected="selected" value="{{ project }}">{{ project }}</option>{% endif %}
+        {% endfor %}
+    </select>
+
+    {% if select_dict.analysis_list  %}
+    <select id="select_analysis" name="select_analysis" class="select_analysis">
+        <option value="">--Choose an analysis--</option>
+        {% for analysis in select_dict.analysis_list %}
+            {% if selected_dict.analysis != analysis %}<option value="{{ analysis }}">{{ analysis }}</option>{% endif %}
+            {% if selected_dict.analysis == analysis %}<option selected="selected" value="{{ analysis }}">{{ analysis }}</option>{% endif %}
+        {% endfor %}
+    </select>
+    {% endif %}
+
+    {% if select_dict.file_list  %}
+    <select id="select_file" name="select_file" class="select_file">
+        <option value="">--Choose a file--</option>
+        {% for file in select_dict.file_list %}
+            {% if selected_dict.file != file %}<option value="{{ file }}">{{ file }}</option>{% endif %}
+            {% if selected_dict.file == file %}<option selected="selected" value="{{ file }}">{{ file }}</option>{% endif %}
+        {% endfor %}
+    </select>
+    {% endif %}
+
+    <br><br>
+    <input type="submit" value="Submit" name="submit_data">
+  </form>
+
+  {% csrf_token %}
+
+  <select onchange="foo()" id="PublicWords"> 
+    <option value="">All</option>
+    <option value="">Draft</option>
+    <option value="">Approved</option>
+    <option value="">Approved ZWNJ</option>
+    <option value="">Rejected</option>
+</select>  
+
+    
+  <div class="result"></div>
+  
+
+  <form method="POST">
+    {% csrf_token %}
+    <input type="submit" name="reset" value="Reset">
+  </form>
+
+  <form method="POST">
+    {% csrf_token %}
+    <input type="submit" name="build_frames" value="Build Frames">
+    <input type="submit" name="segment" value="Segment">
+    <input type="submit" name="tracking" value="Tracking">
+  </form>
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+  <h2>Dynamic content</h2>
+  <p>The library has the following record counts:</p>
+  <ul>
+    <li><strong>Books:</strong> {{ num_books }}</li>
+    <li><strong>Copies:</strong> {{ num_instances }}</li>
+    <li><strong>Copies available:</strong> {{ num_instances_available }}</li>
+    <li><strong>Authors:</strong> {{ num_authors }}</li>
+  </ul>
+{% endblock %}

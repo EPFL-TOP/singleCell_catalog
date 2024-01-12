@@ -1,0 +1,32 @@
+#https://github.com/numpy/numpy/issues/12970
+#https://github.com/conda-forge/numpy-feedstock/issues/126
+#https://towardsdatascience.com/how-to-install-miniconda-x86-64-apple-m1-side-by-side-on-mac-book-m1-a476936bfaf0
+
+name: django_seg
+
+dependencies:
+  - conda-forge::python
+  - conda-forge::numpy
+  - conda-forge::pysimplegui
+  - conda-forge::matplotlib
+  - conda-forge::scipy
+  - scikit-image
+  - conda-forge::nd2reader
+  - numba::numba
+  - conda-forge::opencv
+  - conda-forge::apoc-backend
+  - conda-forge::ocl_icd_wrapper_apple
+  - conda-forge::pims>=0.6.1
+  - pip
+  - pip:
+    - Django==4.2.7
+    - dj-database-url==2.0.0
+    - gunicorn==21.2.0
+    - psycopg2-binary==2.9.6
+    - wheel==0.38.1
+    - whitenoise==6.5.0
+    - django-extensions
+    - django-rename-app
+    - requests
+    - pyparsing 
+    - pydot
