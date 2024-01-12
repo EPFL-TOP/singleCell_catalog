@@ -20,6 +20,8 @@ from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.contrib.staticfiles.storage import staticfiles_storage
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
@@ -30,6 +32,7 @@ urlpatterns += [
 
 urlpatterns += [
     path('', RedirectView.as_view(url='segmentation/', permanent=True)),
+
 ]
 
 

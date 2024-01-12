@@ -4,7 +4,11 @@ import os
 import sys
 # caution: path[0] is reserved for script path (or '' in REPL)
 import sys
-sys.path.append('/Users/helsens/Software/github/EPFL-TOP/cellgmenter')
+if os.path.isdir('/Users/helsens/Software/github/EPFL-TOP/cellgmenter'):
+    sys.path.append('/Users/helsens/Software/github/EPFL-TOP/cellgmenter')
+if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
+    sys.path.append('/home/helsens/Software/segmentationTools/cellgmenter/main')
+    
 import reader as read
 import segmentationTools as seg
 import math
