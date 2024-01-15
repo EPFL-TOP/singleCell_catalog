@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-rivui%0@fa(act8yw4ou9jvh6qf@7qhmntaaq+squb2k(05912
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
 GRAPH_MODELS = {
   'all_applications': True,
