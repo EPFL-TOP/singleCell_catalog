@@ -81,12 +81,31 @@ WSGI_APPLICATION = 'singleCell_catalog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DATABASES = None
+import os
+import accesskeys as accessk
+
+if os.path.isdir("/Users/helsens/Software/github/EPFL-TOP/"):
+    #TEST LOCAL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+elif os.path.isdir("/home/helsens/Software/"):
+    #PROD
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': accessk.DB_name,
+            'USER': accessk.DB_user,
+            'PASSWORD': accessk.DB_password,
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+        }
+    }
+
 
 
 # Password validation
