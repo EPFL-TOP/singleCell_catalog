@@ -11,7 +11,7 @@ if os.path.isdir('/Users/helsens/Software/github/EPFL-TOP/cellgmenter'):
 if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
     sys.path.append('/home/helsens/Software/segmentationTools/cellgmenter/main')
     sys.path.append('/home/helsens/Software/UPOATES_catalog')
-    from experiment_catalog.models import experiment
+    from experiment_catalog.models import Experiment
 
     LOCAL=False
 
