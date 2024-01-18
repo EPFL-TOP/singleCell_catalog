@@ -232,7 +232,9 @@ def index(request):
     if 'build_frames' in request.POST and LOCAL:
         build_frames()
     if 'build_frames' in request.POST and LOCAL==False:
-        experiments = .objects.using('RawData').all()
+        experiments = Experiment.objects.using('RawData').all()
+        for e in experiments:
+            print(e.name)
     if 'segment' in request.POST:
         segment()
     if 'tracking' in request.POST:
