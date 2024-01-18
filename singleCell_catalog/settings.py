@@ -103,6 +103,15 @@ elif os.path.isdir("/home/helsens/Software/"):
             'PASSWORD': accessk.DB_password,
             'HOST': '127.0.0.1',
             'PORT': '3306',
+        },
+
+        'RawData': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': accessk.RD_DB_name,
+            'USER': accessk.RD_DB_user,
+            'PASSWORD': accessk._RD_DB_password,
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
         }
     }
 
