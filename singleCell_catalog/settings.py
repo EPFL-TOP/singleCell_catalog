@@ -44,7 +44,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'rawdata_catalog.apps.RawDataCatalogConfig', #This object was created for us in /rawdata_catalog/apps.py
+    'contribution_catalog.apps.ContributionCatalogConfig',
+    'experiment_catalog.apps.ExperimentCatalogConfig',
+    'project_catalog.apps.ProjectCatalogConfig',
+    'experimentalcondition_catalog.apps.ExperimentalconditionCatalogConfig',
+    'analysis_catalog.apps.AnalysisCatalogConfig',
     'segmentation.apps.SegmentationConfig', 
+
 ]
 
 MIDDLEWARE = [
