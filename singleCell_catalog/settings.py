@@ -109,7 +109,7 @@ elif os.path.isdir("/home/helsens/Software/"):
             'ENGINE': 'django.db.backends.mysql',
             'NAME': accessk.RD_DB_name,
             'USER': accessk.RD_DB_user,
-            'PASSWORD': accessk._RD_DB_password,
+            'PASSWORD': accessk.RD_DB_password,
             'HOST': '127.0.0.1',
             'PORT': '3306',
         }
