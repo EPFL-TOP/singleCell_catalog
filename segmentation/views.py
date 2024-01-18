@@ -2,13 +2,16 @@ from django.shortcuts import render
 from segmentation.models import Project, Analysis, Sample, Frame, Contour, Data, Cell
 import os
 import sys
-# caution: path[0] is reserved for script path (or '' in REPL)
-import sys
+LOCAL=True
+
+#MY macbook
 if os.path.isdir('/Users/helsens/Software/github/EPFL-TOP/cellgmenter'):
     sys.path.append('/Users/helsens/Software/github/EPFL-TOP/cellgmenter')
+#VMachine
 if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
     sys.path.append('/home/helsens/Software/segmentationTools/cellgmenter/main')
-    
+    LOCAL=False
+
 import reader as read
 import segmentationTools as seg
 import math
@@ -224,7 +227,7 @@ def index(request):
     print('The visualisation request method is:', request.method)
     print('The visualisation POST data is:     ', request.POST)
 
-    if 'build_frames' in request.POST:
+    if 'build_frames' in request.POST and LOCAL:
         build_frames()
     if 'segment' in request.POST:
         segment()
