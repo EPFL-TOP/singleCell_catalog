@@ -232,7 +232,7 @@ def index(request):
 
     if 'build_frames' in request.POST and LOCAL:
         build_frames()
-    if 'build_frames' in request.POST and LOCAL==False:
+    #if 'build_frames' in request.POST and LOCAL==False:
         #experiments = Experiment.objects.using('RawData').all()
         #for e in experiments:
         #    print(e.experiment_name)
