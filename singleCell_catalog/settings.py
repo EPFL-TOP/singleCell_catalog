@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+TEST=True
 from pathlib import Path
 import os#, sys
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -94,7 +94,7 @@ DATABASES = None
 import os
 import accesskeys as accessk
 
-if os.path.isdir("/Users/helsens/Software/github/EPFL-TOP/"):
+if os.path.isdir("/Users/helsens/Software/github/EPFL-TOP/") or TEST==True:
     #TEST LOCAL
     DATABASES = {
         'default': {
@@ -102,7 +102,7 @@ if os.path.isdir("/Users/helsens/Software/github/EPFL-TOP/"):
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-elif os.path.isdir("/home/helsens/Software/"):
+elif os.path.isdir("/home/helsens/Software/") and TEST==False:
     #PROD
     DATABASES = {
         'default': {
