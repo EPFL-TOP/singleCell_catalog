@@ -10,8 +10,8 @@ if os.path.isdir('/Users/helsens/Software/github/EPFL-TOP/cellgmenter'):
 #VMachine
 if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
     sys.path.append('/home/helsens/Software/segmentationTools/cellgmenter/main')
-    sys.path.append('/home/helsens/Software/UPOATES_catalog')
-    from experiment_catalog.models import Experiment
+    #sys.path.append('/home/helsens/Software/UPOATES_catalog')
+    #from experiment_catalog.models import Experiment
 
     LOCAL=False
 
@@ -233,9 +233,9 @@ def index(request):
     if 'build_frames' in request.POST and LOCAL:
         build_frames()
     if 'build_frames' in request.POST and LOCAL==False:
-        experiments = Experiment.objects.using('RawData').all()
-        for e in experiments:
-            print(e.experiment_name)
+        #experiments = Experiment.objects.using('RawData').all()
+        #for e in experiments:
+        #    print(e.experiment_name)
     if 'segment' in request.POST:
         segment()
     if 'tracking' in request.POST:

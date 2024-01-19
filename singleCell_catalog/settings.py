@@ -11,12 +11,12 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-import os, sys
+import os#, sys
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 #VMachine
-if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
-    sys.path.append('/home/helsens/Software/UPOATES_catalog')
+#if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
+#    sys.path.append('/home/helsens/Software/UPOATES_catalog')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -46,12 +46,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    'rawdata_catalog.apps.RawDataCatalogConfig', #This object was created for us in /rawdata_catalog/apps.py
-    'contribution_catalog.apps.ContributionCatalogConfig',
-    'experiment_catalog.apps.ExperimentCatalogConfig',
-    'project_catalog.apps.ProjectCatalogConfig',
-    'experimentalcondition_catalog.apps.ExperimentalconditionCatalogConfig',
-    'analysis_catalog.apps.AnalysisCatalogConfig',
+    #'rawdata_catalog.apps.RawDataCatalogConfig', #This object was created for us in /rawdata_catalog/apps.py
+    #'contribution_catalog.apps.ContributionCatalogConfig',
+    #'experiment_catalog.apps.ExperimentCatalogConfig',
+    #'project_catalog.apps.ProjectCatalogConfig',
+    #'experimentalcondition_catalog.apps.ExperimentalconditionCatalogConfig',
+    #'analysis_catalog.apps.AnalysisCatalogConfig',
     'segmentation.apps.SegmentationConfig', 
 
 ]
@@ -114,14 +114,14 @@ elif os.path.isdir("/home/helsens/Software/"):
             'PORT': '3306',
         },
 
-        'RawData': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': accessk.RD_DB_name,
-            'USER': accessk.RD_DB_user,
-            'PASSWORD': accessk.RD_DB_password,
-            'HOST': '127.0.0.1',
-            'PORT': '3306',
-        }
+      #  'RawData': {
+      #      'ENGINE': 'django.db.backends.mysql',
+      #      'NAME': accessk.RD_DB_name,
+      #      'USER': accessk.RD_DB_user,
+      #      'PASSWORD': accessk.RD_DB_password,
+      #      'HOST': '127.0.0.1',
+      #      'PORT': '3306',
+      #  }
     }
 
 
