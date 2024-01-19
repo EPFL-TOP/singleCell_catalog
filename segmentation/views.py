@@ -10,10 +10,15 @@ if os.path.isdir('/Users/helsens/Software/github/EPFL-TOP/cellgmenter'):
 #VMachine
 if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
     sys.path.append('/home/helsens/Software/segmentationTools/cellgmenter/main')
-    #sys.path.append('/home/helsens/Software/UPOATES_catalog')
-    #from experiment_catalog.models import Experiment
-
     LOCAL=False
+    import mysql.connector
+    import accesskeys
+
+    cnx = mysql.connector.connect(user=accesskeys.RD_DB_user, 
+                                  password=accesskeys.RD_DB_password,
+                                  host='127.0.0.1',
+                                  port=3306,
+                                  database=accesskeys.RD_DB_name)
 
 import reader as read
 import segmentationTools as seg
@@ -232,10 +237,23 @@ def index(request):
 
     if 'build_frames' in request.POST and LOCAL:
         build_frames()
-    #if 'build_frames' in request.POST and LOCAL==False:
-        #experiments = Experiment.objects.using('RawData').all()
-        #for e in experiments:
-        #    print(e.experiment_name)
+    if 'build_frames' in request.POST and LOCAL==False:
+
+        query = (
+            "select rds.* from experiment_catalog_experiment e"
+            " inner join experiment_catalog_experiment_experimental_tag ecet on e.id   = ecet.experiment_id"
+            " inner join experiment_catalog_experimentaltag tag              on tag.id = ecet.experimentaltag_id"
+            " inner join experiment_catalog_experimentaldataset dataset      on e.id   = dataset.experiment_id"
+            " inner join rawdata_catalog_rawdataset rds                      on dataset.raw_dataset_id = rds.id"
+            " where tag.name = \"PSM cell dissociation\""
+            )
+        mycursor = cnx.cursor()
+        mycursor.execute(query)
+        myresult = mycursor.fetchall()
+        for x in myresult:
+            print(x[0],x[1]+'/'+x[2])
+
+
     if 'segment' in request.POST:
         segment()
     if 'tracking' in request.POST:
