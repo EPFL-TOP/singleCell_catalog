@@ -304,13 +304,13 @@ def index(request):
         select_dict['experiment_list'].append(exp.name)
         expds_list=[]
         for expds in experimentaldataset:
-            print('    ---- experimental dataset name ',expds.name)
+            print('    ---- experimental dataset name ',expds.data_name)
             samples = Sample.objects.select_related().filter(analysis = expds)
             sample_list=[]
             for s in samples:
                 sample_list.append(s.file_name)
-            ana_list.append({'name':ana.name, 'files':sample_list})
-        tmp_proj_dict={'name':p.name, 'analyses':ana_list}
+            expds_list.append({'data_name':expds.data_name, 'data_type':expds.data_type, 'files':sample_list})
+        tmp_proj_dict={'name':exp.name, 'datasets':expds_list}
         project_dict['projects'].append(tmp_proj_dict)
 
     #dictionary to keep the selected choices, this is for the front end page
