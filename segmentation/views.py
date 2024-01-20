@@ -285,9 +285,9 @@ def index(request):
     }
 
     #build for front page
-    for p in Project.objects.all():
+    for p in Experiment.objects.all():
         print(' ---- project name ',p.name)
-        analyses = Analysis.objects.select_related().filter(project = p)
+        analyses = ExperimentalDataset.objects.select_related().filter(experiment = p)
         select_dict['project_list'].append(p.name)
         ana_list=[]
         for ana in analyses:
