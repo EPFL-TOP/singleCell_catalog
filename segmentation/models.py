@@ -20,9 +20,9 @@ class ExperimentalDataset(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name = 'Analysis'
-        verbose_name_plural = 'Analyses'
+#    class Meta:
+#        verbose_name = 'ExperimentalDataset'
+#        verbose_name_plural = 'ExperimentalDatasets'
 
 #___________________________________________________________________________________________
 class Sample(models.Model):
