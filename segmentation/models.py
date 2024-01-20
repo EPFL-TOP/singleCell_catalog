@@ -19,7 +19,7 @@ class ExperimentalDataset(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return '{0}, {1}'.format(self.data_type, self.data_name)
 
 #    class Meta:
 #        verbose_name = 'ExperimentalDataset'
