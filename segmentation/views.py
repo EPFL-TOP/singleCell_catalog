@@ -155,7 +155,7 @@ def build_frames_rds():
         if x[1] in list_experiments_uid: continue
         experiment =  Experiment(name=x[1], date=x[2], description=x[3])
         experiment.save()
-        list_experiments_uid.append(x[1]))
+        list_experiments_uid.append(x[1])
         print('adding experiment with name:  ',x[1])
 
 #___________________________________________________________________________________________
