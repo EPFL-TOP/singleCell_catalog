@@ -14,8 +14,8 @@ class Experiment(models.Model):
     
 #___________________________________________________________________________________________
 class ExperimentalDataset(models.Model):
-    data_type  = models.CharField(max_length=100, help_text='Type of data for this dataset (reflecting the the RCP storage categories)')
-    data_name  = models.CharField(max_length=100, help_text="Name of the experimental dataset folder on the RCP storage.")
+    data_type  = models.CharField(default='', max_length=100, help_text='Type of data for this dataset (reflecting the the RCP storage categories)')
+    data_name  = models.CharField(default='', max_length=100, help_text="Name of the experimental dataset folder on the RCP storage.")
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
 
     def __str__(self):
