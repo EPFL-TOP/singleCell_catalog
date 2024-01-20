@@ -158,6 +158,19 @@ def build_frames_rds():
         list_experiments_uid.append(x[1])
         print('adding experiment with name:  ',x[1])
 
+    for exp in Experiment.objects.all():
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        list_expds_uid = [os.path.join(entry.data_type, entry.data_name) for entry in experimentaldataset] 
+
+        for x in myresult:
+            if x[1]!=exp.name: 
+                continue
+            if os.path.join(x[4], x[5]) in list_expds_uid: continue
+            expds = ExperimentalDataset(data_type=x[4], data_name=x[5], experiment=exp)
+            expds.save()
+            print('    adding experimental dataset with name ',os.path.join(x[4], x[5]))
+
+
 #___________________________________________________________________________________________
 def segment():
     #All this seems to be a preprocessing of all existing files
@@ -274,8 +287,8 @@ def index(request):
 
     #dictionary to provide possible selection choices
     select_dict={
-        'project_list':[],
-        'analysis_list':[],
+        'experiment_list':[],
+        'dataset_list':[],
         'file_list':[],
     }
 
@@ -285,14 +298,14 @@ def index(request):
     }
 
     #build for front page
-    for p in Experiment.objects.all():
-        print(' ---- project name ',p.name)
-        analyses = ExperimentalDataset.objects.select_related().filter(experiment = p)
-        select_dict['project_list'].append(p.name)
-        ana_list=[]
-        for ana in analyses:
-            print('    ---- analysis name ',ana.name)
-            samples = Sample.objects.select_related().filter(analysis = ana)
+    for exp in Experiment.objects.all():
+        print(' ---- Experiment name ',exp.name)
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        select_dict['experiment_list'].append(exp.name)
+        expds_list=[]
+        for expds in experimentaldataset:
+            print('    ---- experimental dataset name ',expds.name)
+            samples = Sample.objects.select_related().filter(analysis = expds)
             sample_list=[]
             for s in samples:
                 sample_list.append(s.file_name)
