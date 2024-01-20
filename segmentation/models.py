@@ -4,16 +4,18 @@ from django.urls import reverse
 # Create your models here.
 
 #___________________________________________________________________________________________
-class Project(models.Model):
-    name  = models.CharField(max_length=200, help_text="name of the project")
+class Experiment(models.Model):
+    name         = models.CharField(max_length=200, help_text="name of the experiment.")
+    date         = models.DateField(null=True, help_text="Date of the experiment.")
+    description  = models.TextField(blank=True, max_length=2000, help_text="Description of the experiment.")
 
     def __str__(self):
-        return self.name
+        return '{0}, {1}'.format(self.name, self.date)
     
 #___________________________________________________________________________________________
-class Analysis(models.Model):
-    name    = models.CharField(default='',max_length=200, help_text="name of the analysis")
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+class ExperimentalDataset(models.Model):
+    name       = models.CharField(default='',max_length=200, help_text="name of the experimental dataset")
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -29,7 +31,7 @@ class Sample(models.Model):
         ('Medium', 'Medium'),
         ('Low',    'Low'),
     )
-    analysis               = models.ForeignKey(Analysis, default='',on_delete=models.CASCADE)
+    analysis               = models.ForeignKey(ExperimentalDataset, default='',on_delete=models.CASCADE)
     file_name              = models.CharField(max_length=500, help_text="name of the file (full path)")
     number_of_frames       = models.PositiveSmallIntegerField(default=0, help_text="Number of frames")
     number_of_channels     = models.PositiveSmallIntegerField(default=0, help_text="Number of channels")

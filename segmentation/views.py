@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from segmentation.models import Project, Analysis, Sample, Frame, Contour, Data, Cell
+from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Cell
 import os
 import sys
 LOCAL=True
@@ -129,7 +129,35 @@ def build_frames():
                                       )
                         print('            adding frame with name ',f)
                         frame.save()
-   
+
+#___________________________________________________________________________________________
+def build_frames_rds():
+    query = (
+        "select e.*, rds.data_type, rds.data_name, rds.raw_files from experiment_catalog_experiment e"
+        " inner join experiment_catalog_experiment_experimental_tag ecet on e.id   = ecet.experiment_id"
+        " inner join experiment_catalog_experimentaltag tag              on tag.id = ecet.experimentaltag_id"
+        " inner join experiment_catalog_experimentaldataset dataset      on e.id   = dataset.experiment_id"
+        " inner join rawdata_catalog_rawdataset rds                      on dataset.raw_dataset_id = rds.id"
+        " where tag.name = \"PSM cell dissociation\""
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    myresult = mycursor.fetchall()
+
+    for x in myresult:
+        print(x)
+
+    experiments = Experiment.objects.values()
+    list_experiments = [entry for entry in experiments] 
+    list_experiments_uid=[e["name"] for e in list_experiments]
+
+    for x in myresult:
+        if x[1] in list_experiments_uid: continue
+        experiment =  Experiment(name=x[1], date=x[2], description=x[3])
+        experiment.save()
+        list_experiments_uid.append(x[1]))
+        print('adding experiment with name:  ',x[1])
+
 #___________________________________________________________________________________________
 def segment():
     #All this seems to be a preprocessing of all existing files
@@ -238,22 +266,7 @@ def index(request):
     if 'build_frames' in request.POST and LOCAL:
         build_frames()
     if 'build_frames' in request.POST and LOCAL==False:
-
-        query = (
-            "select rds.* from experiment_catalog_experiment e"
-            " inner join experiment_catalog_experiment_experimental_tag ecet on e.id   = ecet.experiment_id"
-            " inner join experiment_catalog_experimentaltag tag              on tag.id = ecet.experimentaltag_id"
-            " inner join experiment_catalog_experimentaldataset dataset      on e.id   = dataset.experiment_id"
-            " inner join rawdata_catalog_rawdataset rds                      on dataset.raw_dataset_id = rds.id"
-            " where tag.name = \"PSM cell dissociation\""
-            )
-        mycursor = cnx.cursor()
-        mycursor.execute(query)
-        myresult = mycursor.fetchall()
-        for x in myresult:
-            print(x[0],x[1]+'/'+x[2])
-
-
+        build_frames_rds()
     if 'segment' in request.POST:
         segment()
     if 'tracking' in request.POST:
