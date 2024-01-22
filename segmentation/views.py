@@ -133,7 +133,7 @@ def build_frames():
 #___________________________________________________________________________________________
 def build_frames_rds():
     query = (
-        "select e.*, rds.data_type, rds.data_name, rds.raw_files from experiment_catalog_experiment e"
+        "select e.*, rds.data_type, rds.data_name, rds.number_of_raw_files, rds.raw_files from experiment_catalog_experiment e"
         " inner join experiment_catalog_experiment_experimental_tag ecet on e.id   = ecet.experiment_id"
         " inner join experiment_catalog_experimentaltag tag              on tag.id = ecet.experimentaltag_id"
         " inner join experiment_catalog_experimentaldataset dataset      on e.id   = dataset.experiment_id"
@@ -166,9 +166,24 @@ def build_frames_rds():
             if x[1]!=exp.name: 
                 continue
             if os.path.join(x[4], x[5]) in list_expds_uid: continue
-            expds = ExperimentalDataset(data_type=x[4], data_name=x[5], experiment=exp)
+            expds = ExperimentalDataset(data_type=x[4], data_name=x[5], experiment=exp, number_of_files=x[6], files=x[7])
             expds.save()
             print('    adding experimental dataset with name ',os.path.join(x[4], x[5]))
+
+
+#                            for file in ana['files']:
+#                    metadata = read.nd2reader_getSampleMetadata(file)
+#                    sample = Sample(file_name=file, 
+#                                    analysis=analysis,
+#                                    number_of_frames=metadata['number_of_frames'], 
+#                                    number_of_channels=metadata['number_of_channels'], 
+#                                    name_of_channels=metadata['name_of_channels'], 
+#                                    experiment_description=metadata['experiment_description'], 
+#                                    date=metadata['date'],
+#                                    keep_sample=True)
+#                    sample.save()
+#                    print('        adding sample with name ',file)
+
 
 
 #___________________________________________________________________________________________

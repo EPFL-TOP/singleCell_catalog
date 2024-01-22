@@ -14,9 +14,11 @@ class Experiment(models.Model):
     
 #___________________________________________________________________________________________
 class ExperimentalDataset(models.Model):
-    data_type  = models.CharField(default='', max_length=100, help_text='Type of data for this dataset (reflecting the the RCP storage categories)')
-    data_name  = models.CharField(default='', max_length=100, help_text="Name of the experimental dataset folder on the RCP storage.")
-    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
+    data_type        = models.CharField(default='', max_length=100, help_text='Type of data for this dataset (reflecting the the RCP storage categories)')
+    data_name        = models.CharField(default='', max_length=100, help_text="Name of the experimental dataset folder on the RCP storage.")
+    experiment       = models.ForeignKey(Experiment, on_delete=models.CASCADE)
+    number_of_files  = models.PositiveSmallIntegerField(default=0, help_text="Number of files")
+    files            = models.JSONField(null=True)
 
     def __str__(self):
         return '{0}, {1}'.format(self.data_type, self.data_name)
@@ -32,7 +34,7 @@ class Sample(models.Model):
         ('Medium', 'Medium'),
         ('Low',    'Low'),
     )
-    analysis               = models.ForeignKey(ExperimentalDataset, default='',on_delete=models.CASCADE)
+    experimental_dataset   = models.ForeignKey(ExperimentalDataset, default='',on_delete=models.CASCADE)
     file_name              = models.CharField(max_length=500, help_text="name of the file (full path)")
     number_of_frames       = models.PositiveSmallIntegerField(default=0, help_text="Number of frames")
     number_of_channels     = models.PositiveSmallIntegerField(default=0, help_text="Number of channels")
