@@ -176,7 +176,7 @@ def build_frames_rds():
             for f in files_json["files"]:
                 fname=os.path.join(BASEPATH, x[4], x[5], "raw_files", f["name"])
                 metadata = read.nd2reader_getSampleMetadata(fname)
-                sample = Sample(file_name=f, 
+                sample = Sample(file_name=fname, 
                                 experimental_dataset=expds,
                                 number_of_frames=metadata['number_of_frames'], 
                                 number_of_channels=metadata['number_of_channels'], 
