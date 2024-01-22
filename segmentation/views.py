@@ -171,7 +171,8 @@ def build_frames_rds():
             expds.save()
             print('    adding experimental dataset with name ',os.path.join(x[4], x[5]))
 
-            print(x[7])
+            print('==================== ',x[7])
+            print('-------------------- ',x[7]["files"])
             for f in x[7]["files"]:
                 fname=os.path.join(BASEPATH, x[4], x[5], f["name"])
                 metadata = read.nd2reader_getSampleMetadata(fname)
