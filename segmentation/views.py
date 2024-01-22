@@ -320,7 +320,7 @@ def index(request):
         expds_list=[]
         for expds in experimentaldataset:
             print('    ---- experimental dataset name ',expds.data_name)
-            samples = Sample.objects.select_related().filter(analysis = expds)
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             sample_list=[]
             for s in samples:
                 sample_list.append(s.file_name)
