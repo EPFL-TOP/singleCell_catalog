@@ -168,13 +168,12 @@ def build_frames_rds():
             if x[1]!=exp.name: 
                 continue
             if os.path.join(x[4], x[5]) in list_expds_uid: continue
-            expds = ExperimentalDataset(data_type=x[4], data_name=x[5], experiment=exp, number_of_files=x[6], files=json.loads(x[7]))
+            files_json = json.loads(x[7])
+            expds = ExperimentalDataset(data_type=x[4], data_name=x[5], experiment=exp, number_of_files=x[6], files=files_json)
             expds.save()
             print('    adding experimental dataset with name ',os.path.join(x[4], x[5]))
 
-            print('==================== ',x[7])
-            print('-------------------- ',json.loads(x[7])["files"])
-            for f in x[7]["files"]:
+            for f in files_json["files"]:
                 fname=os.path.join(BASEPATH, x[4], x[5], f["name"])
                 metadata = read.nd2reader_getSampleMetadata(fname)
                 sample = Sample(file_name=f, 
