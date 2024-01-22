@@ -3,6 +3,7 @@ from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, 
 import os
 import sys
 LOCAL=True
+BASEPATH="/mnt/nas_rcp/raw_data"
 
 #MY macbook
 if os.path.isdir('/Users/helsens/Software/github/EPFL-TOP/cellgmenter'):
@@ -170,7 +171,19 @@ def build_frames_rds():
             expds.save()
             print('    adding experimental dataset with name ',os.path.join(x[4], x[5]))
 
-
+            for f in x[7]["files"]:
+                fname=os.path.join(BASEPATH, x[4], x[5], f["name"])
+                metadata = read.nd2reader_getSampleMetadata(fname)
+                sample = Sample(file_name=file, 
+                                experimental_dataset=expds,
+                                number_of_frames=metadata['number_of_frames'], 
+                                number_of_channels=metadata['number_of_channels'], 
+                                name_of_channels=metadata['name_of_channels'], 
+                                experiment_description=metadata['experiment_description'], 
+                                date=metadata['date'],
+                                keep_sample=True)
+                sample.save()
+                print('        adding sample with name ',fname)
 #                            for file in ana['files']:
 #                    metadata = read.nd2reader_getSampleMetadata(file)
 #                    sample = Sample(file_name=file, 
