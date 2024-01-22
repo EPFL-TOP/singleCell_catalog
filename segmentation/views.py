@@ -2,6 +2,7 @@ from django.shortcuts import render
 from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Cell
 import os
 import sys
+import json
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 
@@ -167,16 +168,16 @@ def build_frames_rds():
             if x[1]!=exp.name: 
                 continue
             if os.path.join(x[4], x[5]) in list_expds_uid: continue
-            expds = ExperimentalDataset(data_type=x[4], data_name=x[5], experiment=exp, number_of_files=x[6], files=x[7])
+            expds = ExperimentalDataset(data_type=x[4], data_name=x[5], experiment=exp, number_of_files=x[6], files=json.loads(x[7]))
             expds.save()
             print('    adding experimental dataset with name ',os.path.join(x[4], x[5]))
 
             print('==================== ',x[7])
-            print('-------------------- ',x[7]["files"])
+            print('-------------------- ',json.loads(x[7])["files"])
             for f in x[7]["files"]:
                 fname=os.path.join(BASEPATH, x[4], x[5], f["name"])
                 metadata = read.nd2reader_getSampleMetadata(fname)
-                sample = Sample(file_name=file, 
+                sample = Sample(file_name=f, 
                                 experimental_dataset=expds,
                                 number_of_frames=metadata['number_of_frames'], 
                                 number_of_channels=metadata['number_of_channels'], 
