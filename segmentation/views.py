@@ -186,19 +186,21 @@ def build_frames_rds():
                                 keep_sample=True)
                 sample.save()
                 print('        adding sample with name ',fname)
-#                            for file in ana['files']:
-#                    metadata = read.nd2reader_getSampleMetadata(file)
-#                    sample = Sample(file_name=file, 
-#                                    analysis=analysis,
-#                                    number_of_frames=metadata['number_of_frames'], 
-#                                    number_of_channels=metadata['number_of_channels'], 
-#                                    name_of_channels=metadata['name_of_channels'], 
-#                                    experiment_description=metadata['experiment_description'], 
-#                                    date=metadata['date'],
-#                                    keep_sample=True)
-#                    sample.save()
-#                    print('        adding sample with name ',file)
 
+                metadataFrame = read.nd2reader_getFrameMetadata(fname)
+                for fr in range(metadata['number_of_frames']):
+                    frame = Frame(sample=sample, 
+                                  number=f, 
+                                  keep_sample=True,
+                                  time=metadataFrame['time'][f],
+                                  pos_x=metadataFrame['x_pos'][f],
+                                  pos_y=metadataFrame['y_pos'][f],
+                                  pos_z=metadataFrame['z_pos'][f],
+                                  height=metadataFrame['height'],
+                                  width=metadataFrame['width'],
+                                  )
+                    print('            adding frame with name ',fr)
+                    frame.save()
 
 
 #___________________________________________________________________________________________
