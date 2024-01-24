@@ -373,8 +373,8 @@ def index(request):
                         #select_dict['file_list'].append(os.path.split(f)[-1])
                         select_dict['file_list'].append(f)
 
-    print('project_dict     =  ', project_dict)
-    print('selected_project =  ', selected_project)
+    print('experiment_dict     =  ', experiment_dict)
+    #print('selected_project =  ', selected_project)
     print('selected_dict    =  ', selected_dict)
     print('select_dict      =  ', select_dict)
 
