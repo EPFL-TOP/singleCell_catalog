@@ -190,12 +190,12 @@ def build_frames_rds():
                 metadataFrame = read.nd2reader_getFrameMetadata(fname)
                 for fr in range(metadata['number_of_frames']):
                     frame = Frame(sample=sample, 
-                                  number=f, 
+                                  number=fr, 
                                   keep_sample=True,
-                                  time=metadataFrame['time'][f],
-                                  pos_x=metadataFrame['x_pos'][f],
-                                  pos_y=metadataFrame['y_pos'][f],
-                                  pos_z=metadataFrame['z_pos'][f],
+                                  time=metadataFrame['time'][fr],
+                                  pos_x=metadataFrame['x_pos'][fr],
+                                  pos_y=metadataFrame['y_pos'][fr],
+                                  pos_z=metadataFrame['z_pos'][fr],
                                   height=metadataFrame['height'],
                                   width=metadataFrame['width'],
                                   )
