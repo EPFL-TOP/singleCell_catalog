@@ -10,14 +10,14 @@
     }
     </script>
     
-  <label for="project-select">Select a project:</label>
+  <label for="experiment-select">Select an experiment:</label>
   <form method="POST">
     {% csrf_token %}
-    <select  id="select_project" name="select_project">
-        <option value="">--Choose a project--</option>
-        {% for project in select_dict.project_list %}
-            {% if selected_dict.project != project %}<option value="{{ project }}">{{ project }}</option>{% endif %}
-            {% if selected_dict.project == project %}<option selected="selected" value="{{ project }}">{{ project }}</option>{% endif %}
+    <select  id="select_experiment" name="select_experiment">
+        <option value="">--Choose an experiment--</option>
+        {% for experiment in select_dict.experiment_list %}
+            {% if selected_dict.experiment != experiment %}<option value="{{ experiment }}">{{ experiment }}</option>{% endif %}
+            {% if selected_dict.experiment == experiment %}<option selected="selected" value="{{ experiment }}">{{ experiment }}</option>{% endif %}
         {% endfor %}
     </select>
 

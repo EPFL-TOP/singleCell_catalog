@@ -140,7 +140,7 @@ def build_frames_rds():
         " inner join experiment_catalog_experimentaltag tag              on tag.id = ecet.experimentaltag_id"
         " inner join experiment_catalog_experimentaldataset dataset      on e.id   = dataset.experiment_id"
         " inner join rawdata_catalog_rawdataset rds                      on dataset.raw_dataset_id = rds.id"
-        " where tag.name = \"PSM cell dissociation\""
+        " where tag.name = \"SegmentMe\""
         )
     mycursor = cnx.cursor()
     mycursor.execute(query)
@@ -323,8 +323,8 @@ def index(request):
     }
 
     #dictionary that maps the database
-    project_dict={        
-        'projects':[]
+    experiment_dict={        
+        'experiments':[]
     }
 
     #build for front page
@@ -340,28 +340,28 @@ def index(request):
             for s in samples:
                 sample_list.append(s.file_name)
             expds_list.append({'data_name':expds.data_name, 'data_type':expds.data_type, 'files':sample_list})
-        tmp_proj_dict={'name':exp.name, 'datasets':expds_list}
-        project_dict['projects'].append(tmp_proj_dict)
+        tmp_exp_dict={'name':exp.name, 'datasets':expds_list}
+        experiment_dict['experiments'].append(tmp_exp_dict)
 
     #dictionary to keep the selected choices, this is for the front end page
     selected_dict={
-        'project':'',
-        'analysis':'',
+        'experiment':'',
+        'experimental_dataset':'',
         'file':''
     }
 
-    selected_project=request.POST.get('select_project')
-    selected_dict['project']=selected_project
+    selected_experiment=request.POST.get('select_experiment')
+    selected_dict['experiment']=selected_experiment
     selected_analysis=request.POST.get('select_analysis')
     selected_dict['analysis']=selected_analysis
     selected_file=request.POST.get('select_file')
     selected_dict['file']=selected_file
 
-    if selected_project!='':
-        for p in project_dict['projects']:
-            if p['name']!=selected_project:continue
-            print('project selected=',p['name'])
-            for a in p['analyses']:
+    if selected_experiment!='':
+        for e in experiment_dict['experiments']:
+            if e['name']!=selected_experiment:continue
+            print('experiment selected=',e['name'])
+            for d in e['analyses']:
                 select_dict['analysis_list'].append(a['name'])
             if selected_analysis!='':
                 for a in p['analyses']:
