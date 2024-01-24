@@ -73,19 +73,17 @@ class Frame(models.Model):
 #___________________________________________________________________________________________
 class Segmentation(models.Model):
     name                 = models.CharField(max_length=200, help_text="name of the segmentation")
-    experiment           = models.ForeignKey(Experiment, on_delete=models.CASCADE)
+    experiment           = models.ForeignKey(Experiment, default='', on_delete=models.CASCADE)
     algorithm_type       = models.CharField(max_length=200, help_text="type of algorithm used")
     algorithm_version    = models.CharField(max_length=200, help_text="version of algorithm used")
     algorithm_parameters = models.JSONField(help_text="parameters of the algorithm used")
     channel              = models.CharField(max_length=200, default='', help_text="name of the channel used for the segmentation")
-
 
 #___________________________________________________________________________________________
 class Data(models.Model):
     #Only json files because the dimension correspond to the number of channels
     all_pixels    = models.JSONField(default=dict, help_text="Variables calculated over all pixels")
     single_pixels = models.JSONField(default=dict, help_text="Pixels individual coordinates and intensities")
-
 
 
 #___________________________________________________________________________________________
@@ -96,10 +94,9 @@ class Contour(models.Model):
     pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
     pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
     segmentation         = models.ForeignKey(Segmentation, default='', on_delete=models.CASCADE)
+    frame                = models.ForeignKey(Frame, default='', on_delete=models.CASCADE)
     #cell                 = models.ForeignKey(Cell, blank=True, null=True, default='',on_delete=models.CASCADE)
     #uid_name             = models.CharField(default='', max_length=1000, help_text="unique name ID used not to create multiple times the same contour. Based on the input file name, frame number, algorithm type, version and parameters")
-    frame         = models.ForeignKey(Frame, default='', on_delete=models.CASCADE)
-
 
 
 
