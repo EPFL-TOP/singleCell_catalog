@@ -72,7 +72,7 @@ class Frame(models.Model):
 
 #___________________________________________________________________________________________
 class Segmentation(models.Model):
-    name                 = models.CharField(max_length=200, help_text="name of the segmentation")
+    name                 = models.CharField(default='', max_length=200, help_text="name of the segmentation")
     experiment           = models.ForeignKey(Experiment, default='', on_delete=models.CASCADE)
     algorithm_type       = models.CharField(max_length=200, help_text="type of algorithm used")
     algorithm_version    = models.CharField(max_length=200, help_text="version of algorithm used")
