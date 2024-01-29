@@ -95,7 +95,7 @@ class SegmentationChannel(models.Model):
     segmentation   = models.ForeignKey(Segmentation, default='', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '{0}, {1}, {2}, {3}'.format(self.channel_name, self.channel_number, self.segmentation__name, self.segmentation__algorithm_type)
+        return '{0}, {1}, {2}, {3}'.format(self.channel_name, self.channel_number, self.segmentation.name, self.segmentation.algorithm_type)
 
 #___________________________________________________________________________________________
 class Data(models.Model):
