@@ -277,7 +277,7 @@ def segment():
                 frames = Frame.objects.select_related().filter(sample = s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 for f in frames:
-                    contour_list = default_segmentation.segmentation(images[f.number-1])
+                    contour_list = default_segmentation.segmentation(images[f.number])
                     for cont in contour_list:
                         pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
                         pixels_data_contour.save()
@@ -289,9 +289,7 @@ def segment():
                                           pixels_data_contour=pixels_data_contour,
                                           pixels_data_inside=pixels_data_inside,
                                           segmentation_channel=segmentation_channel,
-                                          center=cont['center'],
-
-                                            )
+                                          center=cont['center'])
                         contour.save()
 
  
