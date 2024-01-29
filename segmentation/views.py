@@ -229,76 +229,83 @@ def build_cells():
 @profile 
 def segment():
     #loop over all experiments
-    for exp in Experiment.objects.all():
-        print(' ---- SEGMENTATION exp name ',exp.name)
-        print(' ---- SEGMENTATION channels ',exp.name_of_channels.split(','),' number ',exp.number_of_channels, ' full file name ', exp.file_name)
-        segExist=False
-        #build default segmentation class, to be replaced by calls from django app
-        default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
-        default_segmentation.channels = exp.name_of_channels.split(',')
-        default_segmentation.channel = 0
-        
-        #check existing segmentation if already registered
-        segmentations = Segmentation.objects.select_related().filter(experiment = exp)
-        for seg in segmentations:
-            if default_segmentation.get_param() == seg.algorithm_parameters and \
-                default_segmentation.get_type() == seg.algorithm_type and \
-                    default_segmentation.get_version() == seg.algorithm_version:
-                print('SEGMENTATION EXISTTTTTTTTT')
-                #check if the segmentation channel exists
-                segmentation_channels = SegmentationChannel.objects.select_related().filter(segmentation = seg)
-                for seg_ch in segmentation_channels:
-                    if seg_ch.channel_number == default_segmentation.channel and \
-                        seg_ch.channel_name == default_segmentation.channels[default_segmentation.channel]:
-                        segExist=True
-        if segExist: continue
+    @profile 
+    def segment_default_seg():
+        for exp in Experiment.objects.all():
+            print(' ---- SEGMENTATION exp name ',exp.name)
+            print(' ---- SEGMENTATION channels ',exp.name_of_channels.split(','),' number ',exp.number_of_channels, ' full file name ', exp.file_name)
+            segExist=False
+            #build default segmentation class, to be replaced by calls from django app
+            default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
+            default_segmentation.channels = exp.name_of_channels.split(',')
+            default_segmentation.channel = 0
+            
+            #check existing segmentation if already registered
+            segmentations = Segmentation.objects.select_related().filter(experiment = exp)
+            for seg in segmentations:
+                if default_segmentation.get_param() == seg.algorithm_parameters and \
+                    default_segmentation.get_type() == seg.algorithm_type and \
+                        default_segmentation.get_version() == seg.algorithm_version:
+                    print('SEGMENTATION EXISTTTTTTTTT')
+                    #check if the segmentation channel exists
+                    segmentation_channels = SegmentationChannel.objects.select_related().filter(segmentation = seg)
+                    for seg_ch in segmentation_channels:
+                        if seg_ch.channel_number == default_segmentation.channel and \
+                            seg_ch.channel_name == default_segmentation.channels[default_segmentation.channel]:
+                            segExist=True
+            if segExist: continue
 
-        print('============= default_segmentation.get_param()   = ',default_segmentation.get_param())
-        print('============= default_segmentation.get_type()    = ',default_segmentation.get_type())
-        print('============= default_segmentation.get_version() = ',default_segmentation.get_version())
-        print('============= default_segmentation.channels      = ',default_segmentation.channels)
-        print('============= default_segmentation.channel       = ',default_segmentation.channel)
+            print('============= default_segmentation.get_param()   = ',default_segmentation.get_param())
+            print('============= default_segmentation.get_type()    = ',default_segmentation.get_type())
+            print('============= default_segmentation.get_version() = ',default_segmentation.get_version())
+            print('============= default_segmentation.channels      = ',default_segmentation.channels)
+            print('============= default_segmentation.channel       = ',default_segmentation.channel)
 
-        #create segmentation and segmentation channel if it does not exist
-        segmentation = Segmentation(name="default segmentation", 
-                                    experiment=exp,
-                                    algorithm_type=default_segmentation.get_type(),
-                                    algorithm_version=default_segmentation.get_version(),
-                                    algorithm_parameters=default_segmentation.get_param())
-        segmentation.save()
-        segmentation_channel = SegmentationChannel(segmentation=segmentation,
-                                                   channel_name=exp.name_of_channels.split(',')[0],
-                                                   channel_number=0)
-        segmentation_channel.save()
+            #create segmentation and segmentation channel if it does not exist
+            segmentation = Segmentation(name="default segmentation", 
+                                        experiment=exp,
+                                        algorithm_type=default_segmentation.get_type(),
+                                        algorithm_version=default_segmentation.get_version(),
+                                        algorithm_parameters=default_segmentation.get_param())
+            segmentation.save()
+            segmentation_channel = SegmentationChannel(segmentation=segmentation,
+                                                    channel_name=exp.name_of_channels.split(',')[0],
+                                                    channel_number=0)
+            segmentation_channel.save()
 
-        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-        for expds in experimentaldataset:
-            print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
-            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-            for s in samples:
-                if 'xy05' in s.file_name or 'xy74' in s.file_name: 
-                    print('===========================================')
-                    break
-                print('         ---- SEGMENTATION sample name ',s.file_name)
-                frames = Frame.objects.select_related().filter(sample = s)
-                images, channels = read.nd2reader_getFrames(s.file_name)
-                for f in frames:
-                    contour_list = default_segmentation.segmentation(images[f.number])
-                    for cont in contour_list:
-                        pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
-                        pixels_data_contour.save()
-                        pixels_data_inside   = Data(all_pixels=cont['all_pixels_inside'],  single_pixels=cont['single_pixels_inside'])
-                        pixels_data_inside.save()
-                        print(cont['center'])
-                        center="x="+str(int(cont['center']['x']))+"y="+str(int(cont['center']['y']))+"z="+str(int(cont['center']['z']))
-                        contour = Contour(frame=f,
-                                          pixels_data_contour=pixels_data_contour,
-                                          pixels_data_inside=pixels_data_inside,
-                                          segmentation_channel=segmentation_channel,
-                                          center=cont['center'])
-                        contour.save()
+    @profile 
+    def d0_segment_default_seg():
+        for exp in Experiment.objects.all():
+            print(' ---- SEGMENTATION exp name ',exp.name)
+            experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+            for expds in experimentaldataset:
+                print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
+                samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+                for s in samples:
+                    if 'xy05' in s.file_name or 'xy74' in s.file_name: 
+                        print('===========================================')
+                        break
+                    print('         ---- SEGMENTATION sample name ',s.file_name)
+                    frames = Frame.objects.select_related().filter(sample = s)
+                    images, channels = read.nd2reader_getFrames(s.file_name)
+                    for f in frames:
+                        contour_list = default_segmentation.segmentation(images[f.number])
+                        for cont in contour_list:
+                            pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
+                            pixels_data_contour.save()
+                            pixels_data_inside   = Data(all_pixels=cont['all_pixels_inside'],  single_pixels=cont['single_pixels_inside'])
+                            pixels_data_inside.save()
+                            print(cont['center'])
+                            center="x="+str(int(cont['center']['x']))+"y="+str(int(cont['center']['y']))+"z="+str(int(cont['center']['z']))
+                            contour = Contour(frame=f,
+                                                pixels_data_contour=pixels_data_contour,
+                                                pixels_data_inside=pixels_data_inside,
+                                                segmentation_channel=segmentation_channel,
+                                                center=cont['center'])
+                            contour.save()
 
- 
+    segment_default_seg()
+    d0_segment_default_seg()
 
 
 #___________________________________________________________________________________________
