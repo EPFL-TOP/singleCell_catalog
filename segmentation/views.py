@@ -375,6 +375,9 @@ def index(request):
         'experiments':[]
     }
 
+    context = {}
+    return render(request, 'segmentation/index.html', context=context)
+
     #build for front page
     for exp in Experiment.objects.all():
         print(' ---- Experiment name ',exp.name)
