@@ -157,11 +157,28 @@ def build_frames_rds():
     for x in myresult:
         if x[1] in list_experiments_uid: continue
         unsplit_file = glob.glob(os.path.join('/mnt/nas_rcp/raw_data/microscopy/cell_culture/',x[1],'*.nd2'))
-        print('====================== unsplit_file= ',unsplit_file)
-        experiment =  Experiment(name=x[1], date=x[2], description=x[3])
+        if len(unsplit_file)!=1:
+            print('====================== ERROR, unsplit_file not 1, exit ',unsplit_file)
+            sys.exit(3)
+        metadata = read.nd2reader_getSampleMetadata(unsplit_file[0])
+        experiment =  Experiment(name=x[1], 
+                                 date=x[2], 
+                                 description=x[3],
+                                 file_name=unsplit_file[0],
+                                 number_of_frames=metadata['number_of_frames'], 
+                                 number_of_channels=metadata['number_of_channels'], 
+                                 name_of_channels=metadata['name_of_channels'], 
+                                 experiment_description=metadata['experiment_description'],
+                                 date_of_acquisition=metadata['date'],
+                                 )
         experiment.save()
         list_experiments_uid.append(x[1])
         print('adding experiment with name:  ',x[1])
+
+    def __str__(self):
+        return '{0}, {1}'.format(self.name, self.date)
+
+
 
     for exp in Experiment.objects.all():
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)

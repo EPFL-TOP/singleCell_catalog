@@ -5,16 +5,16 @@ from django.urls import reverse
 
 #___________________________________________________________________________________________
 class Experiment(models.Model):
-    name         = models.CharField(max_length=200, help_text="name of the experiment.")
-    date         = models.DateField(null=True, help_text="Date of the experiment.")
-    description  = models.TextField(blank=True, max_length=2000, help_text="Description of the experiment.")
+    name         = models.CharField(max_length=200, help_text="name of the experiment (from RawDataset database).")
+    date         = models.DateField(null=True, help_text="Date of the experiment (from RawDataset database).")
+    description  = models.TextField(blank=True, max_length=2000, help_text="Description of the experiment (from RawDataset database).")
 
     file_name              = models.CharField(default='',max_length=500, help_text="name of the full unsplitted file (full path)")
     number_of_frames       = models.PositiveSmallIntegerField(default=0, help_text="Number of frames")
     number_of_channels     = models.PositiveSmallIntegerField(default=0, help_text="Number of channels")
     experiment_description = models.CharField(max_length=500, default='', help_text="description of the experiment")
     name_of_channels       = models.CharField(max_length=500, default='', help_text="name of the channels")
-    date                   = models.DateTimeField(blank=True, null=True)
+    date_of_acquisition    = models.DateTimeField(blank=True, null=True, help_text="Date of the experiment (from nd2 metadata).")
 
     def __str__(self):
         return '{0}, {1}'.format(self.name, self.date)
