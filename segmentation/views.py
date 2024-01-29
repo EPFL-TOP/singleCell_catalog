@@ -347,6 +347,7 @@ def tracking():
 
 
 #___________________________________________________________________________________________
+@profile
 def index(request):
     """View function for home page of site."""
     print('The visualisation request method is:', request.method)

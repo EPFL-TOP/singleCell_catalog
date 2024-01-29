@@ -46,18 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    #'rawdata_catalog.apps.RawDataCatalogConfig', #This object was created for us in /rawdata_catalog/apps.py
-    #'contribution_catalog.apps.ContributionCatalogConfig',
-    #'experiment_catalog.apps.ExperimentCatalogConfig',
-    #'project_catalog.apps.ProjectCatalogConfig',
-    #'experimentalcondition_catalog.apps.ExperimentalconditionCatalogConfig',
-    #'analysis_catalog.apps.AnalysisCatalogConfig',
     'segmentation.apps.SegmentationConfig', 
-
 ]
-
-
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -118,16 +108,7 @@ elif os.path.isdir("/home/helsens/Software/") and TEST==False:
             'PASSWORD': accessk.DB_password,
             'HOST': '127.0.0.1',
             'PORT': '3306',
-        },
-
-      #  'RawData': {
-      #      'ENGINE': 'django.db.backends.mysql',
-      #      'NAME': accessk.RD_DB_name,
-      #      'USER': accessk.RD_DB_user,
-      #      'PASSWORD': accessk.RD_DB_password,
-      #      'HOST': '127.0.0.1',
-      #      'PORT': '3306',
-      #  }
+        }
     }
 
 
