@@ -238,6 +238,7 @@ def segment():
             if default_segmentation.get_param() == seg.algorithm_parameters and \
                 default_segmentation.get_type() == seg.algorithm_type and \
                     default_segmentation.get_version() == seg.algorithm_version:
+                print('SEGMENTATION EXISTTTTTTTTT')
                 #check if the segmentation channel exists
                 segmentation_channels = SegmentationChannel.objects.select_related().filter(segmentation = seg)
                 for seg_ch in segmentation_channels:
