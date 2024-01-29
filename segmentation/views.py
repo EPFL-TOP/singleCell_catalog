@@ -253,7 +253,9 @@ def segment():
                                     algorithm_version=default_segmentation.get_version(),
                                     algorithm_parameters=default_segmentation.get_param())
         segmentation.save()
-        segmentation_channel = SegmentationChannel(segmentation=segmentation)
+        segmentation_channel = SegmentationChannel(segmentation=segmentation,
+                                                   channel_name=exp.name_of_channels.split(',')[0],
+                                                   channel_number=0)
 
 
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
