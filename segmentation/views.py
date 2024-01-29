@@ -229,7 +229,7 @@ def build_cells():
 @profile 
 def segment():
     #loop over all experiments
-    for exp in Experiment.objects.all().iterator():
+    for exp in Experiment.objects.all():
         print(' ---- SEGMENTATION exp name ',exp.name)
         print(' ---- SEGMENTATION channels ',exp.name_of_channels.split(','),' number ',exp.number_of_channels, ' full file name ', exp.file_name)
         segExist=False
