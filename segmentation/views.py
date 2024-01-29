@@ -232,6 +232,9 @@ def segment():
         segExist=False
         #build default segmentation class, to be replaced by calls from django app
         default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
+        default_segmentation.channels = exp.name_of_channels.split(',')
+        default_segmentation.channel = exp.number_of_channels
+        
         #check existing segmentation if already registered
         segmentations = Segmentation.objects.select_related().filter(experiment = exp)
         for seg in segmentations:
