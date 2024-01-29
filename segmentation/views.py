@@ -273,7 +273,9 @@ def segment():
             print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
-                if 'xz03' in s.file_name: break
+                if 'xy03' in s.file_name: 
+                    print('===========================================')
+                    break
                 print('         ---- SEGMENTATION sample name ',s.file_name)
                 frames = Frame.objects.select_related().filter(sample = s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
