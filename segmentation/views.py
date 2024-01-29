@@ -24,7 +24,7 @@ if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
                                   database=accesskeys.RD_DB_name)
 
 import reader as read
-import segmentationTools as seg
+import segmentationTools as segtools
 import math
 
 #___________________________________________________________________________________________
@@ -228,10 +228,10 @@ def segment():
     #loop over all experiments
     for exp in Experiment.objects.all():
         print(' ---- SEGMENTATION exp name ',exp.name)
-        print(' ---- SEGMENTATION channels ',exp.name_of_channels,' number ',exp.number_of_channels, ' full file name ', exp.file_name)
+        print(' ---- SEGMENTATION channels ',exp.name_of_channels.split(','),' number ',exp.number_of_channels, ' full file name ', exp.file_name)
         segExist=False
         #build default segmentation class, to be replaced by calls from django app
-        default_segmentation = seg.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
+        default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
         #check existing segmentation if already registered
         segmentations = Segmentation.objects.select_related().filter(experiment = exp)
         for seg in segmentations:
@@ -244,7 +244,7 @@ def segment():
                     if seg_ch.channel_number == default_segmentation.channel and \
                         seg_ch.channel_name == default_segmentation.channels[default_segmentation.channel]:
                         segExist=True
-        if segExist: break
+        if segExist: continue
 
         #create segmentation and segmentation channel if it does not exist
         segmentation = Segmentation(name="default segmentation", 
