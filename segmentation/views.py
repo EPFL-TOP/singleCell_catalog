@@ -259,29 +259,30 @@ def segment():
 
 
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-        print('    ---- SEGMENTATION experimentaldataset name ',experimentaldataset.data_name, experimentaldataset.data_type)
-        samples = Sample.objects.select_related().filter(experimental_dataset = experimentaldataset)
-        for s in samples:
-            print('         ---- SEGMENTATION sample name ',s.file_name)
-            frames = Frame.objects.select_related().filter(sample = s)
-            images, channels = read.nd2reader_getFrames(s.file_name)
-            for f in frames:
-                contour_list = default_segmentation_1.segmentation(images[f.number-1])
-                for cont in contour_list:
-                    pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
-                    pixels_data_contour.save()
-                    pixels_data_inside   = Data(all_pixels=cont['all_pixels_inside'],  single_pixels=cont['single_pixels_inside'])
-                    pixels_data_inside.save()
-                    print(cont['center'])
-                    center="x="+str(int(cont['center']['x']))+"y="+str(int(cont['center']['y']))+"z="+str(int(cont['center']['z']))
-                    contour = Contour(frame=f,
-                                      pixels_data_contour=pixels_data_contour,
-                                      pixels_data_inside=pixels_data_inside,
-                                      segmentation=0 ,
-                                                                                center=cont['center'],
+        for expds in experimentaldataset:
+            print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            for s in samples:
+                print('         ---- SEGMENTATION sample name ',s.file_name)
+                frames = Frame.objects.select_related().filter(sample = s)
+                images, channels = read.nd2reader_getFrames(s.file_name)
+                for f in frames:
+                    contour_list = default_segmentation_1.segmentation(images[f.number-1])
+                    for cont in contour_list:
+                        pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
+                        pixels_data_contour.save()
+                        pixels_data_inside   = Data(all_pixels=cont['all_pixels_inside'],  single_pixels=cont['single_pixels_inside'])
+                        pixels_data_inside.save()
+                        print(cont['center'])
+                        center="x="+str(int(cont['center']['x']))+"y="+str(int(cont['center']['y']))+"z="+str(int(cont['center']['z']))
+                        contour = Contour(frame=f,
+                                        pixels_data_contour=pixels_data_contour,
+                                        pixels_data_inside=pixels_data_inside,
+                                        segmentation=0 ,
+                                                                                    center=cont['center'],
 
-                                        )
-                    contour.save()
+                                            )
+                        contour.save()
 
 
 
