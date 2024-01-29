@@ -1,8 +1,9 @@
 from django.shortcuts import render
-from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Cell
+from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellFrame
 import os
 import sys
 import json
+import glob
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 
@@ -155,6 +156,8 @@ def build_frames_rds():
 
     for x in myresult:
         if x[1] in list_experiments_uid: continue
+        unsplit_file = glob.glob(os.path.join('/mnt/nas_rcp/raw_data/microscopy/cell_culture/',x[1],'*.nd2'))
+        print('====================== unsplit_file= ',unsplit_file)
         experiment =  Experiment(name=x[1], date=x[2], description=x[3])
         experiment.save()
         list_experiments_uid.append(x[1])
@@ -178,11 +181,11 @@ def build_frames_rds():
                 metadata = read.nd2reader_getSampleMetadata(fname)
                 sample = Sample(file_name=fname, 
                                 experimental_dataset=expds,
-                                number_of_frames=metadata['number_of_frames'], 
-                                number_of_channels=metadata['number_of_channels'], 
-                                name_of_channels=metadata['name_of_channels'], 
-                                experiment_description=metadata['experiment_description'], 
-                                date=metadata['date'],
+#                                number_of_frames=metadata['number_of_frames'], 
+#                                number_of_channels=metadata['number_of_channels'], 
+#                                name_of_channels=metadata['name_of_channels'], 
+#                                experiment_description=metadata['experiment_description'], 
+#                                date=metadata['date'],
                                 keep_sample=True)
                 sample.save()
                 print('        adding sample with name ',fname)
@@ -204,8 +207,71 @@ def build_frames_rds():
 
 
 #___________________________________________________________________________________________
+def build_cells():
+    return
+
+#___________________________________________________________________________________________
 def segment():
-    #All this seems to be a preprocessing of all existing files
+    #loop over all experiments
+    for exp in Experiment.objects.all():
+        print(' ---- SEGMENTATION exp name ',exp.name)
+        print(' ---- SEGMENTATION channels ',exp.name_of_channels,' number ',exp.number_of_channels, ' full file name ', exp.file_name)
+        segExist=False
+        #build default segmentation class, to be replaced by calls from django app
+        default_segmentation = seg.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
+        #check existing segmentation if already registered
+        segmentations = Segmentation.objects.select_related().filter(experiment = exp)
+        for seg in segmentations:
+            if default_segmentation.get_param() == seg.algorithm_parameters and \
+                default_segmentation.get_type() == seg.algorithm_type and \
+                    default_segmentation.get_version() == seg.algorithm_version:
+                #check if the segmentation channel exists
+                segmentation_channels = SegmentationChannel.objects.select_related().filter(segmentation = seg)
+                for seg_ch in segmentation_channels:
+                    if seg_ch.channel_number == default_segmentation.channel and \
+                        seg_ch.channel_name == default_segmentation.channels[default_segmentation.channel]:
+                        segExist=True
+        if segExist: break
+
+        #create segmentation and segmentation channel if it does not exist
+        segmentation = Segmentation(name="default segmentation", 
+                                    experiment=exp,
+                                    algorithm_type=default_segmentation.get_type(),
+                                    algorithm_version=default_segmentation.get_version(),
+                                    algorithm_parameters=default_segmentation.get_param())
+        segmentation.save()
+        segmentation_channel = SegmentationChannel(segmentation=segmentation)
+
+
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        print('    ---- SEGMENTATION experimentaldataset name ',experimentaldataset.data_name, experimentaldataset.data_type)
+        samples = Sample.objects.select_related().filter(experimental_dataset = experimentaldataset)
+        for s in samples:
+            print('         ---- SEGMENTATION sample name ',s.file_name)
+            frames = Frame.objects.select_related().filter(sample = s)
+            images, channels = read.nd2reader_getFrames(s.file_name)
+            for f in frames:
+                contour_list = default_segmentation_1.segmentation(images[f.number-1])
+                for cont in contour_list:
+                    pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
+                    pixels_data_contour.save()
+                    pixels_data_inside   = Data(all_pixels=cont['all_pixels_inside'],  single_pixels=cont['single_pixels_inside'])
+                    pixels_data_inside.save()
+                    print(cont['center'])
+                    center="x="+str(int(cont['center']['x']))+"y="+str(int(cont['center']['y']))+"z="+str(int(cont['center']['z']))
+                    contour = Contour(frame=f,
+                                      pixels_data_contour=pixels_data_contour,
+                                      pixels_data_inside=pixels_data_inside,
+                                      segmentation=0 ,
+                                                                                center=cont['center'],
+
+                                        )
+                    contour.save()
+
+
+
+
+
     for p in Project.objects.all():
         print(' ---- project name ',p.name)
         analyses = Analysis.objects.select_related().filter(project = p)
@@ -312,6 +378,8 @@ def index(request):
         build_frames()
     if 'build_frames' in request.POST and LOCAL==False:
         build_frames_rds()
+    if 'build_cells' in request.POST:
+        build_cells()
     if 'segment' in request.POST:
         segment()
     if 'tracking' in request.POST:

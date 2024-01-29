@@ -9,6 +9,13 @@ class Experiment(models.Model):
     date         = models.DateField(null=True, help_text="Date of the experiment.")
     description  = models.TextField(blank=True, max_length=2000, help_text="Description of the experiment.")
 
+    file_name              = models.CharField(max_length=500, help_text="name of the full unsplitted file (full path)")
+    number_of_frames       = models.PositiveSmallIntegerField(default=0, help_text="Number of frames")
+    number_of_channels     = models.PositiveSmallIntegerField(default=0, help_text="Number of channels")
+    experiment_description = models.CharField(max_length=500, default='', help_text="description of the experiment")
+    name_of_channels       = models.CharField(max_length=500, default='', help_text="name of the channels")
+    date                   = models.DateTimeField(blank=True, null=True)
+
     def __str__(self):
         return '{0}, {1}'.format(self.name, self.date)
     
@@ -36,11 +43,11 @@ class Sample(models.Model):
     )
     experimental_dataset   = models.ForeignKey(ExperimentalDataset, default='',on_delete=models.CASCADE)
     file_name              = models.CharField(max_length=500, help_text="name of the file (full path)")
-    number_of_frames       = models.PositiveSmallIntegerField(default=0, help_text="Number of frames")
-    number_of_channels     = models.PositiveSmallIntegerField(default=0, help_text="Number of channels")
-    experiment_description = models.CharField(max_length=500, default='', help_text="description of the experiment")
-    name_of_channels       = models.CharField(max_length=500, default='', help_text="name of the channels")
-    date                   = models.DateTimeField(blank=True, null=True)
+#    number_of_frames       = models.PositiveSmallIntegerField(default=0, help_text="Number of frames")
+#    number_of_channels     = models.PositiveSmallIntegerField(default=0, help_text="Number of channels")
+#    experiment_description = models.CharField(max_length=500, default='', help_text="description of the experiment")
+#    name_of_channels       = models.CharField(max_length=500, default='', help_text="name of the channels")
+#    date                   = models.DateTimeField(blank=True, null=True)
     #USER specific
     sample_quality     = models.CharField(max_length=200, choices=QUALITY, help_text="")
     keep_sample        = models.BooleanField(help_text="keep this sample flag")
@@ -73,11 +80,17 @@ class Frame(models.Model):
 #___________________________________________________________________________________________
 class Segmentation(models.Model):
     name                 = models.CharField(default='', max_length=200, help_text="name of the segmentation")
-    experiment           = models.ForeignKey(Experiment, default='', on_delete=models.CASCADE)
+    experiment           = models.ForeignKey(Experiment, default='', on_delete=models.SET_DEFAULT)
     algorithm_type       = models.CharField(max_length=200, help_text="type of algorithm used")
     algorithm_version    = models.CharField(max_length=200, help_text="version of algorithm used")
     algorithm_parameters = models.JSONField(help_text="parameters of the algorithm used")
-    channel              = models.CharField(max_length=200, default='', help_text="name of the channel used for the segmentation")
+
+
+#___________________________________________________________________________________________
+class SegmentationChannel(models.Model):
+    channel_name   = models.CharField(max_length=200, default='', help_text="name of the channel used for the segmentation")
+    channel_number = models.PositiveSmallIntegerField(default=-1, help_text="channel number")
+    segmentation   = models.ForeignKey(Segmentation, default='', on_delete=models.CASCADE)
 
 #___________________________________________________________________________________________
 class Data(models.Model):
@@ -93,12 +106,26 @@ class Contour(models.Model):
     center               = models.JSONField(help_text="center of the contour")
     pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
     pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
-    segmentation         = models.ForeignKey(Segmentation, default='', on_delete=models.CASCADE)
-    frame                = models.ForeignKey(Frame, default='', on_delete=models.CASCADE)
+    segmentation_channel = models.ForeignKey(SegmentationChannel, default='', on_delete=models.CASCADE)
+    frame                = models.ForeignKey(Frame, default='', on_delete=models.SET_DEFAULT)
     #cell                 = models.ForeignKey(Cell, blank=True, null=True, default='',on_delete=models.CASCADE)
     #uid_name             = models.CharField(default='', max_length=1000, help_text="unique name ID used not to create multiple times the same contour. Based on the input file name, frame number, algorithm type, version and parameters")
 
+#___________________________________________________________________________________________
+class CellID(models.Model):
+    name   = models.CharField(default='', max_length=20, help_text="cell name")
+    sample = models.ForeignKey(Sample, default='', on_delete=models.SET_DEFAULT)
 
+#___________________________________________________________________________________________
+class CellFrame(models.Model):
+    pos_x  = models.FloatField(default=-9999, help_text="cell x position")
+    pos_y  = models.FloatField(default=-9999, help_text="Camera y position in microns")
+    pos_z  = models.FloatField(default=-9999, help_text="Camera z position in microns")
+    sig_x  = models.FloatField(default=-9999, help_text="Camera x position in microns")
+    sig_y  = models.FloatField(default=-9999, help_text="Camera y position in microns")
+    sig_z  = models.FloatField(default=-9999, help_text="Camera z position in microns")
+    frame  = models.ForeignKey(Frame, default='', on_delete=models.SET_DEFAULT)
+    cell_id = models.ForeignKey(CellID, default='', on_delete=models.CASCADE)
 
 
 
