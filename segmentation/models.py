@@ -85,6 +85,8 @@ class Segmentation(models.Model):
     algorithm_version    = models.CharField(max_length=200, help_text="version of algorithm used")
     algorithm_parameters = models.JSONField(help_text="parameters of the algorithm used")
 
+    def __str__(self):
+        return '{0}, {1}, {2}, {3}'.format(self.name, self.algorithm_type, self.algorithm_version, self.algorithm_parameters)
 
 #___________________________________________________________________________________________
 class SegmentationChannel(models.Model):
