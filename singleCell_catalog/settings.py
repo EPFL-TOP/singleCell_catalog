@@ -58,7 +58,7 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += ['debug_toolbar', 'pympler']
 DEBUG_TOOLBAR_PANELS = [
-    'debug_toolbar.panels.timer.TimerDebugPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
     'pympler.panels.MemoryPanel',
     ]
 
