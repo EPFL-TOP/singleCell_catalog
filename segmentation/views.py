@@ -376,7 +376,7 @@ def index(request):
     }
 
     #build for front page
-    for exp in Experiment.objects.all():
+    for exp in Experiment.objects.all().iterator():
         print(' ---- Experiment name ',exp.name)
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         select_dict['experiment_list'].append(exp.name)
