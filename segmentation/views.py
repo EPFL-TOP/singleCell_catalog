@@ -17,8 +17,8 @@ if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
     import mysql.connector
     import accesskeys
 
-    cnx = mysql.connector.connect(user=accesskeys.RD_DB_user, 
-                                  password=accesskeys.RD_DB_password,
+    cnx = mysql.connector.connect(user=accesskeys.RD_DB_RO_user, 
+                                  password=accesskeys.RD_DB_RO_password,
                                   host='127.0.0.1',
                                   port=3306,
                                   database=accesskeys.RD_DB_name)
@@ -174,10 +174,6 @@ def build_frames_rds():
         experiment.save()
         list_experiments_uid.append(x[1])
         print('adding experiment with name:  ',x[1])
-
-    def __str__(self):
-        return '{0}, {1}'.format(self.name, self.date)
-
 
 
     for exp in Experiment.objects.all():
