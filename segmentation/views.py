@@ -288,65 +288,13 @@ def segment():
                         contour = Contour(frame=f,
                                           pixels_data_contour=pixels_data_contour,
                                           pixels_data_inside=pixels_data_inside,
-                                          segmentation=0 ,
-                                                                                    center=cont['center'],
+                                          segmentation_channel=segmentation_channel,
+                                          center=cont['center'],
 
                                             )
                         contour.save()
 
-
-
-
-
-    for p in Project.objects.all():
-        print(' ---- project name ',p.name)
-        analyses = Analysis.objects.select_related().filter(project = p)
-        for ana in analyses:
-            print('    ---- analysis name ',ana.name)
-            samples = Sample.objects.select_related().filter(analysis = ana)
-            for s in samples:
-                print('         ---- file name ',s.file_name)
-                frames = Frame.objects.select_related().filter(sample = s)
-                images, channels = read.nd2reader_getFrames(s.file_name)
-
-                default_segmentation_1 = seg.customLocalThresholding_Segmentation(segchannel=0, channels=channels, threshold=2., delta=2, npix_min=400, npix_max=4000)
-                default_segmentation_1_ID = default_segmentation_1.get_AlgoID()
-
-                existing_contours = Contour.objects.values()
-                list_contours = [entry for entry in existing_contours] 
-                list_contours_uid=[e["uid_name"] for e in list_contours]
-
-                for f in frames:
-                    print('              ---- frame number ',f.number)
-                    uid_name_segmentation_1="file={0}__frame={1}__{2}".format(s.file_name, f.number, default_segmentation_1_ID)
-                    contour_exist = False
-                    for c_uid in list_contours_uid:
-                        if uid_name_segmentation_1 in c_uid:
-                            print("contour already exist=",uid_name_segmentation_1)
-                            contour_exist=True
-                    if contour_exist: continue
-                    contour_list = default_segmentation_1.segmentation(images[f.number-1])
-                    for cont in contour_list:
-                        print('contour does not exist ',contour_exist)
-                        pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
-                        pixels_data_contour.save()
-                        pixels_data_inside   = Data(all_pixels=cont['all_pixels_inside'],  single_pixels=cont['single_pixels_inside'])
-                        pixels_data_inside.save()
-                        print(cont['center'])
-                        center="x="+str(int(cont['center']['x']))+"y="+str(int(cont['center']['y']))+"z="+str(int(cont['center']['z']))
-                        contour = Contour(algorithm_type=cont['algorithm_type'],
-                                          algorithm_version=cont['algorithm_version'],
-                                          algorithm_parameters=cont['algorithm_parameters'],
-                                          channel=channels[0],
-                                          number_of_pixels=cont['number_of_pixels'],
-                                          center=cont['center'],
-                                          frame=f,
-                                          pixels_data_contour=pixels_data_contour,
-                                          pixels_data_inside=pixels_data_inside,
-                                          uid_name=uid_name_segmentation_1+"__"+center
-                                          #"Based on the input file, frame number, algorithm type, version and parameters")
-                                          )
-                        contour.save()
+ 
 
 
 #___________________________________________________________________________________________

@@ -95,7 +95,7 @@ class SegmentationChannel(models.Model):
     segmentation   = models.ForeignKey(Segmentation, default='', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '{0}, {1}, {2}, {3}'.format(self.channel_name, self.channel_number, self.segmentation.name, self.segmentation.algorithm_type)
+        return '{0}, {1}, {2}, {3}'.format(self.channel_name, self.channel_number, self.segmentation.name, self.segmentation.algorithm_type, self.segmentation.algorithm_version, self.segmentation.algorithm_parameters)
 
 #___________________________________________________________________________________________
 class Data(models.Model):
@@ -104,10 +104,12 @@ class Data(models.Model):
     single_pixels = models.JSONField(default=dict, help_text="Pixels individual coordinates and intensities")
 
 
+
+
 #___________________________________________________________________________________________
 class Contour(models.Model):
 
-    number_of_pixels     = models.PositiveIntegerField(default=0, help_text="Number of pixels of the contour")
+    #number_of_pixels     = models.PositiveIntegerField(default=0, help_text="Number of pixels of the contour")
     center               = models.JSONField(help_text="center of the contour")
     pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
     pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
