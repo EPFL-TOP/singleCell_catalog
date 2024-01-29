@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import glob
+from memory_profile import profile
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 
@@ -134,6 +135,7 @@ def build_frames():
                         frame.save()
 
 #___________________________________________________________________________________________
+@profile 
 def build_frames_rds():
     query = (
         "select e.*, rds.data_type, rds.data_name, rds.number_of_raw_files, rds.raw_files from experiment_catalog_experiment e"
@@ -224,6 +226,7 @@ def build_cells():
     return
 
 #___________________________________________________________________________________________
+@profile 
 def segment():
     #loop over all experiments
     for exp in Experiment.objects.all():
