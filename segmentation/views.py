@@ -4,7 +4,7 @@ import os
 import sys
 import json
 import glob
-from memory_profile import profile
+from memory_profiler import profile
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 
