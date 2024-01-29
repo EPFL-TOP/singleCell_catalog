@@ -56,6 +56,12 @@ INSTALLED_APPS = [
 
 ]
 
+INSTALLED_APPS += ['debug_toolbar', 'pympler']
+DEBUG_TOOLBAR_PANELS = [
+    'debug_toolbar.panels.timer.TimerDebugPanel',
+    'pympler.panels.MemoryPanel',
+    ]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

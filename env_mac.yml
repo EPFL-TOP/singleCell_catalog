@@ -30,3 +30,5 @@ dependencies:
     - requests
     - pyparsing 
     - pydot
+    - pympler
+    - django-debug-toolbar
