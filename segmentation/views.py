@@ -233,7 +233,7 @@ def segment():
         #build default segmentation class, to be replaced by calls from django app
         default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
         default_segmentation.channels = exp.name_of_channels.split(',')
-        default_segmentation.channel = exp.number_of_channels
+        default_segmentation.channel = 0
         
         #check existing segmentation if already registered
         segmentations = Segmentation.objects.select_related().filter(experiment = exp)
@@ -266,7 +266,7 @@ def segment():
         segmentation_channel = SegmentationChannel(segmentation=segmentation,
                                                    channel_name=exp.name_of_channels.split(',')[0],
                                                    channel_number=0)
-
+        segmentation_channel.save()
 
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
@@ -286,9 +286,9 @@ def segment():
                         print(cont['center'])
                         center="x="+str(int(cont['center']['x']))+"y="+str(int(cont['center']['y']))+"z="+str(int(cont['center']['z']))
                         contour = Contour(frame=f,
-                                        pixels_data_contour=pixels_data_contour,
-                                        pixels_data_inside=pixels_data_inside,
-                                        segmentation=0 ,
+                                          pixels_data_contour=pixels_data_contour,
+                                          pixels_data_inside=pixels_data_inside,
+                                          segmentation=0 ,
                                                                                     center=cont['center'],
 
                                             )
