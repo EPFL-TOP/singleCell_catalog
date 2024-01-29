@@ -273,7 +273,7 @@ def segment():
             print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
-                if 'xy03' in s.file_name: 
+                if 'xy03' in s.file_name or 'xy75' in s.file_name: 
                     print('===========================================')
                     break
                 print('         ---- SEGMENTATION sample name ',s.file_name)
