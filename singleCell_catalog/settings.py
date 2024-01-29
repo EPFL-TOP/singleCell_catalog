@@ -69,6 +69,7 @@ MIDDLEWARE = [
 
 MIDDLEWARE+=[ 'pyinstrument.middleware.ProfilerMiddleware']
 PYINSTRUMENT_PROFILE_DIR = "/home/helsens/Software/singleCell_catalog"
+
 ROOT_URLCONF = 'singleCell_catalog.urls'
 
 TEMPLATES = [
