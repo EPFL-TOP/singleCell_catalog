@@ -246,6 +246,12 @@ def segment():
                         segExist=True
         if segExist: continue
 
+        print('============= default_segmentation.get_param()   = ',default_segmentation.get_param())
+        print('============= default_segmentation.get_type()    = ',default_segmentation.get_type())
+        print('============= default_segmentation.get_version() = ',default_segmentation.get_version())
+        print('============= default_segmentation.channels      = ',default_segmentation.channels)
+        print('============= default_segmentation.channel       = ',default_segmentation.channel)
+
         #create segmentation and segmentation channel if it does not exist
         segmentation = Segmentation(name="default segmentation", 
                                     experiment=exp,
