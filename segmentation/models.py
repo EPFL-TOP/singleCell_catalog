@@ -42,7 +42,7 @@ class Sample(models.Model):
         ('Low',    'Low'),
     )
     experimental_dataset   = models.ForeignKey(ExperimentalDataset, default='',on_delete=models.CASCADE)
-    file_name              = models.CharField(max_length=500, help_text="name of the file (full path)")
+    file_name              = models.CharField(default='', max_length=500, help_text="name of the file (full path)")
 #    number_of_frames       = models.PositiveSmallIntegerField(default=0, help_text="Number of frames")
 #    number_of_channels     = models.PositiveSmallIntegerField(default=0, help_text="Number of channels")
 #    experiment_description = models.CharField(max_length=500, default='', help_text="description of the experiment")
