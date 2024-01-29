@@ -94,6 +94,9 @@ class SegmentationChannel(models.Model):
     channel_number = models.PositiveSmallIntegerField(default=-1, help_text="channel number")
     segmentation   = models.ForeignKey(Segmentation, default='', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return '{0}, {1}, {2}, {3}'.format(self.channel_name, self.channel_number, self.segmentation__name, self.segmentation__algorithm_type)
+
 #___________________________________________________________________________________________
 class Data(models.Model):
     #Only json files because the dimension correspond to the number of channels
