@@ -290,6 +290,7 @@ def segment():
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
                 for f in frames:
+                    print( 'getting contour for frame ',f.number)
                     contour_list = default_segmentation.segmentation(images[f.number])
                     for cont in contour_list:
                         pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
@@ -304,9 +305,9 @@ def segment():
                                             segmentation_channel=segmentation_channel,
                                             center=cont['center'])
                         contour.save()
-                        pixels_data_contour.delete()
-                        pixels_data_inside.delete()
-                        contour.delete()
+                        del pixels_data_contour
+                        del pixels_data_inside
+                        del contour
                     del contour_list
                 del images
                 del frames
