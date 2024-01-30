@@ -282,7 +282,7 @@ def segment():
             print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
-                if 'xy05' in s.file_name or 'xy74' in s.file_name: 
+                if 'xy03' in s.file_name or 'xy74' in s.file_name: 
                     print('===========================================')
                     break
                 print('         ---- SEGMENTATION sample name ',s.file_name)
@@ -303,7 +303,12 @@ def segment():
                                             segmentation_channel=segmentation_channel,
                                             center=cont['center'])
                         contour.save()
-
+                        del pixels_data_contour
+                        del pixels_data_inside
+                        del contour
+                    del contour_list
+                del images
+                del frames
 
 
 
