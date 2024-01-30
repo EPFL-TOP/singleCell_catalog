@@ -253,6 +253,7 @@ def segment():
                         seg_ch.channel_name == default_segmentation.channels[default_segmentation.channel]:
                         segExist=True
         if segExist: continue
+        del segmentations
 
         print('============= default_segmentation.get_param()   = ',default_segmentation.get_param())
         print('============= default_segmentation.get_type()    = ',default_segmentation.get_type())
@@ -273,9 +274,6 @@ def segment():
         segmentation_channel.save()
 
 
-        default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
-        default_segmentation.channels = exp.name_of_channels.split(',')
-        default_segmentation.channel = 0
         print(' ---- SEGMENTATION exp name ',exp.name)
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
@@ -311,9 +309,9 @@ def segment():
                 del frames
             del samples
         del experimentaldataset
-
-
-
+        del segmentation_channel
+        del default_segmentation
+        del segmentation
 #___________________________________________________________________________________________
 def tracking():
     contours = Contour.objects.all()
