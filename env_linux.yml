@@ -32,3 +32,4 @@ dependencies:
     - pydot
     - pympler
     - django-debug-toolbar
+    - memory_profiler
