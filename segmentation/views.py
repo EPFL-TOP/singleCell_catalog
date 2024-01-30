@@ -229,11 +229,11 @@ def build_cells():
 @profile 
 def segment():
     #loop over all experiments
-    @profile 
+    #MOVE IT HERE FOR TESTS
     default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
     default_segmentation.channels = exp.name_of_channels.split(',')
     default_segmentation.channel = 0
-            
+    @profile             
     def segment_default_seg():
         for exp in Experiment.objects.all():
             print(' ---- SEGMENTATION exp name ',exp.name)
