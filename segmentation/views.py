@@ -309,6 +309,8 @@ def segment():
                     del contour_list
                 del images
                 del frames
+            del samples
+        del experimentaldataset
 
 
 
