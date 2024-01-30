@@ -229,10 +229,6 @@ def build_cells():
 @profile 
 def segment():
     #loop over all experiments
-    #MOVE IT HERE FOR TESTS
-    default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
-    default_segmentation.channels = exp.name_of_channels.split(',')
-    default_segmentation.channel = 0
     @profile             
     def segment_default_seg():
         for exp in Experiment.objects.all():
@@ -240,9 +236,9 @@ def segment():
             print(' ---- SEGMENTATION channels ',exp.name_of_channels.split(','),' number ',exp.number_of_channels, ' full file name ', exp.file_name)
             segExist=False
             #build default segmentation class, to be replaced by calls from django app
-            #default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
-            #default_segmentation.channels = exp.name_of_channels.split(',')
-            #default_segmentation.channel = 0
+            default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
+            default_segmentation.channels = exp.name_of_channels.split(',')
+            default_segmentation.channel = 0
             
             #check existing segmentation if already registered
             segmentations = Segmentation.objects.select_related().filter(experiment = exp)
@@ -280,6 +276,9 @@ def segment():
     @profile 
     def d0_segment_default_seg():
         for exp in Experiment.objects.all():
+            default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
+            default_segmentation.channels = exp.name_of_channels.split(',')
+            default_segmentation.channel = 0
             print(' ---- SEGMENTATION exp name ',exp.name)
             experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
             for expds in experimentaldataset:
