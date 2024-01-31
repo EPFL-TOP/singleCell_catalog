@@ -9,7 +9,7 @@ from django.db import reset_queries
 import gc 
 from pympler import asizeof
 from django.db import connection
-
+from django.db import reset_queries
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 
@@ -336,6 +336,7 @@ def segment():
                                             segmentation_channel=segmentation_channel,
                                             center=cont['center'])
                         contour.save()
+                        reset_queries()
                         print('size of pixels_data_contour =',asizeof.asizeof(pixels_data_contour))
                         print('size of pixels_data_inside =',asizeof.asizeof(pixels_data_inside))
                         print('size of contour =',asizeof.asizeof(contour))
