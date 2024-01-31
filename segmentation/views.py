@@ -299,6 +299,7 @@ def segment():
                     counter+=1
                     print( 'getting contour for frame ',f.number)
                     contour_list = default_segmentation.segmentation(images[f.number])
+                    print(' got ',len(contour_list),' contours')
                     for cont in contour_list:
                         pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
                         pixels_data_contour.save()
@@ -316,7 +317,7 @@ def segment():
                         del pixels_data_inside
                         del contour
                     del contour_list
-                    print(gc.collect())
+                    print('gc collect: ',gc.collect())
                 del images
                 del frames
             del samples
