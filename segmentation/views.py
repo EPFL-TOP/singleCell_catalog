@@ -301,7 +301,6 @@ def segment():
                     print('===========================================')
                     break
                 print('         ---- SEGMENTATION sample name ',s.file_name)
-                connection.queries
                 frames = Frame.objects.select_related().filter(sample = s)
                 print('size of frames =',asizeof.asizeof(frames))
 
@@ -313,6 +312,8 @@ def segment():
                 print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
                 counter=0
                 for f in frames:
+                    for query in connection.queries: # Here
+                        print('qyery    ',query)
                     if counter==10:
                         break
                     counter+=1
