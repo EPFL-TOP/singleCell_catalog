@@ -235,6 +235,8 @@ def segment():
     #loop over all experiments
 
     exp_list = Experiment.objects.all()
+    print('size of exp_list =',asizeof.asizeof(exp_list))
+
     for exp in exp_list:
         print(' ---- SEGMENTATION exp name ',exp.name)
         print(' ---- SEGMENTATION channels ',exp.name_of_channels.split(','),' number ',exp.number_of_channels, ' full file name ', exp.file_name)
@@ -244,6 +246,8 @@ def segment():
         default_segmentation.channels = exp.name_of_channels.split(',')
         default_segmentation.channel = 0
         
+        print('size of default_segmentation =',asizeof.asizeof(default_segmentation))
+
         #check existing segmentation if already registered
         segmentations = Segmentation.objects.select_related().filter(experiment = exp)
         for seg in segmentations:
@@ -258,6 +262,7 @@ def segment():
                         seg_ch.channel_name == default_segmentation.channels[default_segmentation.channel]:
                         segExist=True
         if segExist: continue
+        print('size of segmentations =',asizeof.asizeof(segmentations))
         del segmentations
 
         print('============= default_segmentation.get_param()   = ',default_segmentation.get_param())
@@ -278,20 +283,31 @@ def segment():
                                                 channel_number=0)
         segmentation_channel.save()
 
+        print('size of segmentation =',asizeof.asizeof(segmentation))
+        print('size of segmentation_channel =',asizeof.asizeof(segmentation_channel))
 
         print(' ---- SEGMENTATION exp name ',exp.name)
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        print('size of experimentaldataset =',asizeof.asizeof(experimentaldataset))
+
         for expds in experimentaldataset:
             print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            print('size of samples =',asizeof.asizeof(samples))
+
             for s in samples:
                 if 'xy05' in s.file_name or 'xy74' in s.file_name: 
                     print('===========================================')
                     break
                 print('         ---- SEGMENTATION sample name ',s.file_name)
                 frames = Frame.objects.select_related().filter(sample = s)
+                print('size of frames =',asizeof.asizeof(frames))
+
                 print('getting the images')
                 images, channels = read.nd2reader_getFrames(s.file_name)
+                print('size of images =',asizeof.asizeof(images))
+                print('size of channels =',asizeof.asizeof(channels))
+
                 print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
                 counter=0
                 for f in frames:
@@ -300,8 +316,9 @@ def segment():
                     counter+=1
                     print( 'getting contour for frame ',f.number)
                     contour_list = default_segmentation.segmentation(images[f.number])
-                    print('size of contour_list 1 =',sys.getsizeof(contour_list))
                     print('size of contour_list 2 =',asizeof.asizeof(contour_list))
+                    print('size of default_segmentation in loop =',asizeof.asizeof(default_segmentation))
+
                     print(' got ',len(contour_list),' contours')
                     for cont in contour_list:
                         pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
@@ -316,6 +333,10 @@ def segment():
                                             segmentation_channel=segmentation_channel,
                                             center=cont['center'])
                         contour.save()
+                        print('size of pixels_data_contour =',asizeof.asizeof(pixels_data_contour))
+                        print('size of pixels_data_inside =',asizeof.asizeof(pixels_data_inside))
+                        print('size of contour =',asizeof.asizeof(contour))
+
                         del pixels_data_contour
                         del pixels_data_inside
                         del contour
