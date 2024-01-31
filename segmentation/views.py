@@ -284,7 +284,7 @@ def segment():
             print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
-                if 'xy02' in s.file_name or 'xy74' in s.file_name: 
+                if 'xy05' in s.file_name or 'xy74' in s.file_name: 
                     print('===========================================')
                     break
                 print('         ---- SEGMENTATION sample name ',s.file_name)
@@ -317,15 +317,21 @@ def segment():
                         del pixels_data_inside
                         del contour
                     del contour_list
-                    print('gc collect: ',gc.collect())
+                    print('gc collect 1: ',gc.collect())
                 del images
                 del frames
             del samples
+            print('gc collect 2: ',gc.collect())
+
         del experimentaldataset
         del segmentation_channel
         del default_segmentation
         del segmentation
+        print('gc collect 3: ',gc.collect())
+
     del exp_list
+    print('gc collect: ',gc.collect())
+
 #___________________________________________________________________________________________
 def tracking():
     contours = Contour.objects.all()
