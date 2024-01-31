@@ -6,6 +6,7 @@ import json
 import glob
 from memory_profiler import profile
 from django.db import reset_queries
+import gc 
 
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
@@ -293,7 +294,7 @@ def segment():
                 print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
                 counter=0
                 for f in frames:
-                    if counter==1:
+                    if counter==10:
                         break
                     counter+=1
                     print( 'getting contour for frame ',f.number)
@@ -315,6 +316,7 @@ def segment():
                         del pixels_data_inside
                         del contour
                     del contour_list
+                    print(gc.collect())
                 del images
                 del frames
             del samples
