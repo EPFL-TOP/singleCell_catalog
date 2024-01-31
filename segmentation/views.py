@@ -299,6 +299,7 @@ def segment():
                     counter+=1
                     print( 'getting contour for frame ',f.number)
                     contour_list = default_segmentation.segmentation(images[f.number])
+                    print('size of contour_list=',sys.getsizeof(contour_list))
                     print(' got ',len(contour_list),' contours')
                     for cont in contour_list:
                         pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
