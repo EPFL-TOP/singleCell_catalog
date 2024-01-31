@@ -7,6 +7,7 @@ import glob
 from memory_profiler import profile
 from django.db import reset_queries
 import gc 
+from pympler import asizeof
 
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
@@ -299,7 +300,8 @@ def segment():
                     counter+=1
                     print( 'getting contour for frame ',f.number)
                     contour_list = default_segmentation.segmentation(images[f.number])
-                    print('size of contour_list=',sys.getsizeof(contour_list))
+                    print('size of contour_list 1 =',sys.getsizeof(contour_list))
+                    print('size of contour_list 2 =',asizeof.asizeof(contour_list))
                     print(' got ',len(contour_list),' contours')
                     for cont in contour_list:
                         pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
