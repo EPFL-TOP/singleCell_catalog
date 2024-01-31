@@ -293,7 +293,7 @@ def segment():
                 print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
                 counter=0
                 for f in frames:
-                    if counter==2:
+                    if counter==3:
                         break
                     counter+=1
                     print( 'getting contour for frame ',f.number)
