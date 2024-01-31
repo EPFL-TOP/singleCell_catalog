@@ -293,7 +293,7 @@ def segment():
                 print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
                 counter=0
                 for f in frames:
-                    if counter==3:
+                    if counter==1:
                         break
                     counter+=1
                     print( 'getting contour for frame ',f.number)
@@ -411,8 +411,10 @@ def index(request):
             for s in samples:
                 sample_list.append(s.file_name)
             expds_list.append({'data_name':expds.data_name, 'data_type':expds.data_type, 'files':sample_list})
+            del samples
         tmp_exp_dict={'name':exp.name, 'datasets':expds_list}
         experiment_dict['experiments'].append(tmp_exp_dict)
+        del experimentaldataset
 
     #dictionary to keep the selected choices, this is for the front end page
     selected_dict={
