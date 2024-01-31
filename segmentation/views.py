@@ -5,6 +5,8 @@ import sys
 import json
 import glob
 from memory_profiler import profile
+from django.db import reset_queries
+
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 
@@ -289,7 +291,11 @@ def segment():
                 print('getting the images')
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
+                counter=0
                 for f in frames:
+                    if counter==1:
+                        break
+                    counter+=1
                     print( 'getting contour for frame ',f.number)
                     contour_list = default_segmentation.segmentation(images[f.number])
                     for cont in contour_list:
@@ -316,7 +322,7 @@ def segment():
         del segmentation_channel
         del default_segmentation
         del segmentation
-    exp_list.delete()
+    del exp_list
 #___________________________________________________________________________________________
 def tracking():
     contours = Contour.objects.all()
