@@ -8,6 +8,7 @@ from memory_profiler import profile
 from django.db import reset_queries
 import gc 
 from pympler import asizeof
+from django.db import connection
 
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
@@ -300,6 +301,7 @@ def segment():
                     print('===========================================')
                     break
                 print('         ---- SEGMENTATION sample name ',s.file_name)
+                connection.queries
                 frames = Frame.objects.select_related().filter(sample = s)
                 print('size of frames =',asizeof.asizeof(frames))
 
