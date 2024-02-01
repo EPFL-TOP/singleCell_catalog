@@ -359,7 +359,7 @@ def build_cell_frames():
             print('    ---- BUILD CELL FRAMES experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
-                if 'xy02' in s.file_name or 'xy74' in s.file_name: 
+                if 'xy06' in s.file_name or 'xy74' in s.file_name: 
                     print('===========================================')
                     break
                 print('        ---- BUILD CELL FRAMES sample name ',s.file_name)
