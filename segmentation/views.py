@@ -3,6 +3,7 @@ from django.db import reset_queries
 from django.db import connection
 from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellFrame
 import os, sys, json, glob, gc
+import time
 
 from memory_profiler import profile
 from pympler import asizeof
@@ -229,6 +230,8 @@ def build_cells():
 #___________________________________________________________________________________________
 def segment():
     #loop over all experiments
+    start=time.time()
+    print('SEGMENTATION =========== START time = ',time.time()-start)
 
     exp_list = Experiment.objects.all()
     print('size of exp_list =',asizeof.asizeof(exp_list))
@@ -286,29 +289,37 @@ def segment():
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         print('size of experimentaldataset =',asizeof.asizeof(experimentaldataset))
 
+        print('SEGMENTATION =========== BEFORE LOOP time = ',time.time()-start)
+
         for expds in experimentaldataset:
             print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             print('size of samples =',asizeof.asizeof(samples))
+            print('SEGMENTATION =========== EXPDS time = ',time.time()-start)
 
             for s in samples:
+                print('SEGMENTATION =========== SAMPLE time = ',time.time()-start)
+
             #    if 'xy05' in s.file_name or 'xy74' in s.file_name: 
             #        print('===========================================')
             #        break
                 print('         ---- SEGMENTATION sample name ',s.file_name)
                 frames = Frame.objects.select_related().filter(sample = s)
-                print('size of frames =',asizeof.asizeof(frames))
 
                 print('getting the images')
                 images, channels = read.nd2reader_getFrames(s.file_name)
-                print('size of images =',asizeof.asizeof(images))
-                print('size of channels =',asizeof.asizeof(channels))
 
                 print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
                 #counter=0
+                print('SEGMENTATION =========== BEFORE FRAME LOOP time = ',time.time()-start)
+
                 for f in frames:
                     print( 'getting contour for frame ',f.number)
+                    print('SEGMENTATION =========== IN FRAME LOOP BEFORE SEG time = ',time.time()-start)
+
                     contour_list = default_segmentation.segmentation(images[f.number])
+                    print('SEGMENTATION =========== IN FRAME LOOP AFTER SEG time = ',time.time()-start)
+
                     print(' got ',len(contour_list),' contours')
                     for cont in contour_list:
                         pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
@@ -323,10 +334,12 @@ def segment():
                                             segmentation_channel=segmentation_channel,
                                             center=cont['center'])
                         contour.save()
+                        print('SEGMENTATION =========== IN FRAME LOOP CONTOUR SAVED time = ',time.time()-start)
 
                         del contour
                     del contour_list
                     print('gc collect 1: ',gc.collect())
+                    print('SEGMENTATION =========== IN FRAME LOOP END time = ',time.time()-start)
 
 
 #___________________________________________________________________________________________
