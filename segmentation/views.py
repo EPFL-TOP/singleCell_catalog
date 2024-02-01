@@ -333,6 +333,7 @@ def build_cells():
                 for f in frames:
                     cellf = CellFrame.objects.select_related().filter(frame=f)
                     cell_frame_list.append(cellf)
+                    print(cellf.sample.file_name)
                 print('number of cell frames=',len(cell_frame_list))
 
 
