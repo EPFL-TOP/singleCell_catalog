@@ -328,7 +328,7 @@ def build_cells():
             for s in samples:
 
                 frames1 = Frame.objects.select_related().filter(sample = s)
-                frames2 = Frame.objects.select_related('s')
+                frames2 = Frame.objects.select_related('sample')
                 print('frames1=',len(frames1), '  frames2=',len(frames2))
 #___________________________________________________________________________________________
 def build_cell_frames():
