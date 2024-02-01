@@ -6,6 +6,8 @@ import os, sys, json, glob, gc
 import time
 
 from memory_profiler import profile
+from sklearn.cluster import DBSCAN
+import numpy as np
 
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
@@ -327,15 +329,21 @@ def build_cells():
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
                 print('        ---- BUILD CELL sample name ',s.file_name)
-
+                cellsid = CellID.objects.select_related().filter(sample = s)
                 frames = Frame.objects.select_related().filter(sample = s)
                 cell_frame_list=[]
+                cell_frame_coord=[]
+
                 for f in frames:
                     cellframes = CellFrame.objects.select_related().filter(frame=f)
                     for cellf in cellframes:
                         cell_frame_list.append(cellf)
+                        cell_frame_coord.append([cellf.pos_x, cellf.pos_y, cellf.pos_z])
                 print('number of cell frames=',len(cell_frame_list))
 
+                X = np.array(cell_frame_coord)
+                clustering = DBSCAN(eps=3, min_samples=2).fit(X)
+                print(clustering.labels_)
 
 
 #___________________________________________________________________________________________
