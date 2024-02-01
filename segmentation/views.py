@@ -330,10 +330,10 @@ def build_cells():
                 print('        ---- BUILD CELL sample name ',s.file_name)
                 frames = Frame.objects.select_related().filter(sample = s)
                 for f in frames:
-                    print('            ---- BUILD CELL frame number ',f.number)
+                    print('            ---- BUILD CELL frame number ',f.number,' ',f.time)
                     contours = Contour.objects.select_related().filter(frame = f)
                     for cont in contours:
-                        print('                ---- BUILD CELL contour ',cont.center,'  ',cont.number_of_pixels)
+                        print('                ---- BUILD CELL contour ',cont.center)
 
 
 #___________________________________________________________________________________________
