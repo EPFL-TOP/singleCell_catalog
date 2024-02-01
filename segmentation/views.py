@@ -281,7 +281,7 @@ def segment():
 
             for s in samples:
 
-                if 'xy02' in s.file_name or 'xy74' in s.file_name: 
+                if 'xy06' in s.file_name or 'xy74' in s.file_name: 
                     print('===========================================')
                     break
                 print('         ---- SEGMENTATION sample name ',s.file_name)
