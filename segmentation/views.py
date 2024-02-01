@@ -1,15 +1,12 @@
 from django.shortcuts import render
-from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellFrame
-import os
-import sys
-import json
-import glob
-from memory_profiler import profile
 from django.db import reset_queries
-import gc 
-from pympler import asizeof
 from django.db import connection
-from django.db import reset_queries
+from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellFrame
+import os, sys, json, glob, gc
+
+from memory_profiler import profile
+from pympler import asizeof
+
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 
@@ -264,7 +261,7 @@ def segment():
                         segExist=True
         if segExist: continue
         print('size of segmentations =',asizeof.asizeof(segmentations))
-        del segmentations
+        #del segmentations
 
         print('============= default_segmentation.get_param()   = ',default_segmentation.get_param())
         print('============= default_segmentation.get_type()    = ',default_segmentation.get_type())
@@ -312,16 +309,11 @@ def segment():
                 print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
                 counter=0
                 for f in frames:
-                    for query in connection.queries: # Here
-                        print('qyery    ',query)
                     if counter==10:
                         break
                     counter+=1
                     print( 'getting contour for frame ',f.number)
                     contour_list = default_segmentation.segmentation(images[f.number])
-                    print('size of contour_list 2 =',asizeof.asizeof(contour_list))
-                    print('size of default_segmentation in loop =',asizeof.asizeof(default_segmentation))
-
                     print(' got ',len(contour_list),' contours')
                     for cont in contour_list:
                         pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
@@ -336,29 +328,29 @@ def segment():
                                             segmentation_channel=segmentation_channel,
                                             center=cont['center'])
                         contour.save()
-                        reset_queries()
-                        print('size of pixels_data_contour =',asizeof.asizeof(pixels_data_contour))
-                        print('size of pixels_data_inside =',asizeof.asizeof(pixels_data_inside))
-                        print('size of contour =',asizeof.asizeof(contour))
-
-                        del pixels_data_contour
-                        del pixels_data_inside
-                        del contour
-                    del contour_list
-                    print('gc collect 1: ',gc.collect())
-                del images
-                del frames
-            del samples
-            print('gc collect 2: ',gc.collect())
-
-        del experimentaldataset
-        del segmentation_channel
-        del default_segmentation
-        del segmentation
-        print('gc collect 3: ',gc.collect())
-
-    del exp_list
-    print('gc collect: ',gc.collect())
+#                        reset_queries()
+#                        print('size of pixels_data_contour =',asizeof.asizeof(pixels_data_contour))
+#                        print('size of pixels_data_inside =',asizeof.asizeof(pixels_data_inside))
+#                        print('size of contour =',asizeof.asizeof(contour))
+#
+#                        del pixels_data_contour
+#                        del pixels_data_inside
+#                        del contour
+#                    del contour_list
+#                    print('gc collect 1: ',gc.collect())
+#                del images
+#                del frames
+#            del samples
+#            print('gc collect 2: ',gc.collect())
+#
+#        del experimentaldataset
+#        del segmentation_channel
+#        del default_segmentation
+#        del segmentation
+#        print('gc collect 3: ',gc.collect())
+#
+#    del exp_list
+#    print('gc collect: ',gc.collect())
 
 #___________________________________________________________________________________________
 def tracking():
@@ -448,10 +440,10 @@ def index(request):
             for s in samples:
                 sample_list.append(s.file_name)
             expds_list.append({'data_name':expds.data_name, 'data_type':expds.data_type, 'files':sample_list})
-            del samples
+            #del samples
         tmp_exp_dict={'name':exp.name, 'datasets':expds_list}
         experiment_dict['experiments'].append(tmp_exp_dict)
-        del experimentaldataset
+        #del experimentaldataset
 
     #dictionary to keep the selected choices, this is for the front end page
     selected_dict={
