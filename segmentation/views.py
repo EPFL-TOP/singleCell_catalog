@@ -335,9 +335,9 @@ def segment():
 #
 #                        del pixels_data_contour
 #                        del pixels_data_inside
-#                        del contour
-#                    del contour_list
-#                    print('gc collect 1: ',gc.collect())
+                        del contour
+                    del contour_list
+                    print('gc collect 1: ',gc.collect())
 #                del images
 #                del frames
 #            del samples
