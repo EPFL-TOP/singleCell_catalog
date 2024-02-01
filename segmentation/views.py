@@ -335,6 +335,16 @@ def build_cells():
                 for f in frames:
                     print('            ---- BUILD CELL frame number ',f.number,' ',f.time)
                     contours = Contour.objects.select_related().filter(frame = f)
+                    cellframe = CellFrame.objects.select_related().filter(frame = f)
+                    if len(contours) == len(cellframe):
+                        print('cell frames already exist')
+                        continue
+                    elif len(contours) > len(cellframe):
+                        print('more contours than cell frames, investigate...')
+                        continue
+                    elif len(cellframe)!=0:
+                        print('already cell frames')
+                        continue
                     for cont in contours:
                         print('                ---- BUILD CELL contour ',cont.center)
                         cellf = CellFrame(frame=f,
