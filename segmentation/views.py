@@ -339,7 +339,7 @@ def build_cells():
                     if len(contours) == len(cellframe):
                         print('cell frames already exist')
                         continue
-                    elif len(contours) > len(cellframe):
+                    elif len(contours) > len(cellframe) and len(cellframe)!=0:
                         print('more contours than cell frames, investigate...')
                         continue
                     elif len(cellframe)!=0:
