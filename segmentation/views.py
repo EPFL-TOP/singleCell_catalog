@@ -321,7 +321,7 @@ def build_cells():
     #loop over all experiments
     exp_list = Experiment.objects.all()
     for exp in exp_list:
-        print('---- BUILD CELL experiment name ',expds.data_name, expds.data_type)
+        print('---- BUILD CELL experiment name ',exp.name)
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
             print('    ---- BUILD CELL experimentaldataset name ',expds.data_name, expds.data_type)
