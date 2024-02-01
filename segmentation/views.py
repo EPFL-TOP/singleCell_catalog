@@ -137,7 +137,6 @@ def build_frames():
                         frame.save()
 
 #___________________________________________________________________________________________
-@profile 
 def build_frames_rds():
     query = (
         "select e.*, rds.data_type, rds.data_name, rds.number_of_raw_files, rds.raw_files from experiment_catalog_experiment e"
@@ -228,7 +227,6 @@ def build_cells():
     return
 
 #___________________________________________________________________________________________
-@profile 
 def segment():
     #loop over all experiments
 
@@ -377,7 +375,6 @@ def tracking():
 
 
 #___________________________________________________________________________________________
-@profile
 def index(request):
     """View function for home page of site."""
     print('The visualisation request method is:', request.method)
