@@ -17,6 +17,9 @@ def post_delete_contour(sender,instance,*args,**kwargs):
     print("CONTOUR Profile Deleted")
     if instance.pixels_data_contour:
         instance.pixels_data_contour.delete()
+        print("pixels_data_contour Deleted")
+
     if instance.pixels_data_inside:
         instance.pixels_data_inside.delete()
+        print("pixels_data_inside Deleted")
 

@@ -125,6 +125,7 @@ class CellID(models.Model):
 
 #___________________________________________________________________________________________
 class CellFrame(models.Model):
+    time   = models.FloatField(default=-9999, help_text="time")
     pos_x  = models.FloatField(default=-9999, help_text="cell x position")
     pos_y  = models.FloatField(default=-9999, help_text="Camera y position in microns")
     pos_z  = models.FloatField(default=-9999, help_text="Camera z position in microns")

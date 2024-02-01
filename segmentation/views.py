@@ -279,9 +279,9 @@ def segment():
 
             for s in samples:
 
-            #    if 'xy05' in s.file_name or 'xy74' in s.file_name: 
-            #        print('===========================================')
-            #        break
+                if 'xy02' in s.file_name or 'xy74' in s.file_name: 
+                    print('===========================================')
+                    break
                 print('         ---- SEGMENTATION sample name ',s.file_name)
                 frames = Frame.objects.select_related().filter(sample = s)
                 print('getting the images')
@@ -335,6 +335,7 @@ def build_cells():
                     for cont in contours:
                         print('                ---- BUILD CELL contour ',cont.center)
                         cellf = CellFrame(frame=f,
+                                          time=f.time,
                                           pos_x=cont.center['x'],
                                           pos_y=cont.center['y'],
                                           pos_z=cont.center['z'],
