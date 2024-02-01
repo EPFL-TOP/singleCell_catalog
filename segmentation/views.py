@@ -294,9 +294,9 @@ def segment():
             print('size of samples =',asizeof.asizeof(samples))
 
             for s in samples:
-                if 'xy05' in s.file_name or 'xy74' in s.file_name: 
-                    print('===========================================')
-                    break
+            #    if 'xy05' in s.file_name or 'xy74' in s.file_name: 
+            #        print('===========================================')
+            #        break
                 print('         ---- SEGMENTATION sample name ',s.file_name)
                 frames = Frame.objects.select_related().filter(sample = s)
                 print('size of frames =',asizeof.asizeof(frames))
@@ -307,11 +307,11 @@ def segment():
                 print('size of channels =',asizeof.asizeof(channels))
 
                 print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
-                counter=0
+                #counter=0
                 for f in frames:
-                    if counter==10:
-                        break
-                    counter+=1
+                #    if counter==10:
+                #        break
+                #    counter+=1
                     print( 'getting contour for frame ',f.number)
                     contour_list = default_segmentation.segmentation(images[f.number])
                     print(' got ',len(contour_list),' contours')
