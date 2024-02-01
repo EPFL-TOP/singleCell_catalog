@@ -330,6 +330,9 @@ def build_cells():
             for s in samples:
                 print('        ---- BUILD CELL sample name ',s.file_name)
                 cellsid = CellID.objects.select_related().filter(sample = s)
+                #temporary, continue is already cellsid connected to sample
+                if len(cellsid)>0:
+                    continue
                 frames = Frame.objects.select_related().filter(sample = s)
                 cell_frame_list=[]
                 cell_frame_coord=[]
@@ -342,8 +345,26 @@ def build_cells():
                 print('number of cell frames=',len(cell_frame_list))
 
                 X = np.array(cell_frame_coord)
-                clustering = DBSCAN(eps=40, min_samples=10).fit(X)
+                clustering = DBSCAN(eps=25, min_samples=10).fit(X)
                 print(clustering.labels_)
+
+                #Create the cells ID according to existing clusters (one per cluster >=0)
+                #Connect the cellFrames to cellID
+                createdcells=[]
+                cellid_list=[]
+                cellid_dict={}
+                for cid in range(clustering.labels_):
+                    if clustering.labels_[cid] not in createdcells and clustering.labels_[cid]!=-1:
+                        cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]))
+                        cellid.save()
+                        createdcells.append(clustering.labels_[cid])
+                        #cellid_list.append(cellid)
+                        cellid_dict['cell{}'.format(clustering.labels_[cid])]=cellid
+                    if clustering.labels_[cid]!=-1:
+                        #cell_frame_list[cid].cell_id = cellid_list[clustering.labels_[cid]]
+                        cell_frame_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
+                        cell_frame_list[cid].save()
+
 
 
 #___________________________________________________________________________________________
