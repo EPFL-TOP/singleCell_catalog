@@ -132,7 +132,7 @@ class CellFrame(models.Model):
     sig_y  = models.FloatField(default=-9999, help_text="Camera y position in microns")
     sig_z  = models.FloatField(default=-9999, help_text="Camera z position in microns")
     frame  = models.ForeignKey(Frame, default='', on_delete=models.SET_DEFAULT)
-    cell_id = models.ForeignKey(CellID, blank=True, null='', default='', on_delete=models.CASCADE)
+    cell_id = models.ForeignKey(CellID, blank=True, null=True, default='', on_delete=models.CASCADE)
 
 
 
