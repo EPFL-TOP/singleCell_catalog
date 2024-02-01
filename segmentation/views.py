@@ -334,6 +334,14 @@ def build_cells():
                     contours = Contour.objects.select_related().filter(frame = f)
                     for cont in contours:
                         print('                ---- BUILD CELL contour ',cont.center)
+                        cellf = CellFrame(frame=f,
+                                          pos_x=cont.center['x'],
+                                          pos_y=cont.center['y'],
+                                          pos_z=cont.center['z'],
+                                          sig_x=10,
+                                          sig_y=10,
+                                          sig_z=0)
+                        cellf.save()
 
 
 #___________________________________________________________________________________________
