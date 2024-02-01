@@ -342,7 +342,7 @@ def build_cells():
                 print('number of cell frames=',len(cell_frame_list))
 
                 X = np.array(cell_frame_coord)
-                clustering = DBSCAN(eps=20, min_samples=10).fit(X)
+                clustering = DBSCAN(eps=40, min_samples=10).fit(X)
                 print(clustering.labels_)
 
 
