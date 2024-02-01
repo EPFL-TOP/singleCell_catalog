@@ -6,7 +6,6 @@ import os, sys, json, glob, gc
 import time
 
 from memory_profiler import profile
-from pympler import asizeof
 
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
@@ -223,18 +222,11 @@ def build_frames_rds():
                     frame.save()
 
 
-#___________________________________________________________________________________________
-def build_cells():
-    return
 
 #___________________________________________________________________________________________
 def segment():
     #loop over all experiments
-    start=time.time()
-    print('SEGMENTATION =========== START time = ',time.time()-start)
-
     exp_list = Experiment.objects.all()
-    print('size of exp_list =',asizeof.asizeof(exp_list))
 
     for exp in exp_list:
         print(' ---- SEGMENTATION exp name ',exp.name)
@@ -244,8 +236,6 @@ def segment():
         default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
         default_segmentation.channels = exp.name_of_channels.split(',')
         default_segmentation.channel = 0
-        
-        print('size of default_segmentation =',asizeof.asizeof(default_segmentation))
 
         #check existing segmentation if already registered
         segmentations = Segmentation.objects.select_related().filter(experiment = exp)
@@ -261,8 +251,6 @@ def segment():
                         seg_ch.channel_name == default_segmentation.channels[default_segmentation.channel]:
                         segExist=True
         if segExist: continue
-        print('size of segmentations =',asizeof.asizeof(segmentations))
-        #del segmentations
 
         print('============= default_segmentation.get_param()   = ',default_segmentation.get_param())
         print('============= default_segmentation.get_type()    = ',default_segmentation.get_type())
@@ -282,43 +270,27 @@ def segment():
                                                 channel_number=0)
         segmentation_channel.save()
 
-        print('size of segmentation =',asizeof.asizeof(segmentation))
-        print('size of segmentation_channel =',asizeof.asizeof(segmentation_channel))
-
         print(' ---- SEGMENTATION exp name ',exp.name)
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-        print('size of experimentaldataset =',asizeof.asizeof(experimentaldataset))
-
-        print('SEGMENTATION =========== BEFORE LOOP time = ',time.time()-start)
 
         for expds in experimentaldataset:
             print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-            print('size of samples =',asizeof.asizeof(samples))
-            print('SEGMENTATION =========== EXPDS time = ',time.time()-start)
 
             for s in samples:
-                print('SEGMENTATION =========== SAMPLE time = ',time.time()-start)
 
             #    if 'xy05' in s.file_name or 'xy74' in s.file_name: 
             #        print('===========================================')
             #        break
                 print('         ---- SEGMENTATION sample name ',s.file_name)
                 frames = Frame.objects.select_related().filter(sample = s)
-
                 print('getting the images')
                 images, channels = read.nd2reader_getFrames(s.file_name)
-
                 print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
-                #counter=0
-                print('SEGMENTATION =========== BEFORE FRAME LOOP time = ',time.time()-start)
 
                 for f in frames:
                     print( 'getting contour for frame ',f.number)
-                    print('SEGMENTATION =========== IN FRAME LOOP BEFORE SEG time = ',time.time()-start)
-
                     contour_list = default_segmentation.segmentation(images[f.number])
-                    print('SEGMENTATION =========== IN FRAME LOOP AFTER SEG time = ',time.time()-start)
 
                     print(' got ',len(contour_list),' contours')
                     for cont in contour_list:
@@ -327,21 +299,39 @@ def segment():
                         pixels_data_inside   = Data(all_pixels=cont['all_pixels_inside'],  single_pixels=cont['single_pixels_inside'])
                         pixels_data_inside.save()
                         print(cont['center'])
-                        center="x="+str(int(cont['center']['x']))+"y="+str(int(cont['center']['y']))+"z="+str(int(cont['center']['z']))
                         contour = Contour(frame=f,
                                             pixels_data_contour=pixels_data_contour,
                                             pixels_data_inside=pixels_data_inside,
                                             segmentation_channel=segmentation_channel,
                                             center=cont['center'])
                         contour.save()
-                        print('SEGMENTATION =========== IN FRAME LOOP CONTOUR SAVED time = ',time.time()-start)
 
                         del contour
                     del contour_list
                     #print('gc collect 1: ',gc.collect())
-                    print('SEGMENTATION =========== IN FRAME LOOP END time = ',time.time()-start)
 
                 print('gc collect 1: ',gc.collect())
+
+
+
+
+#___________________________________________________________________________________________
+def build_cells():
+    #For now build cells from contours
+    #loop over all experiments
+    exp_list = Experiment.objects.all()
+    for exp in exp_list:
+        print('---- BUILD CELL experiment name ',expds.data_name, expds.data_type)
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        for expds in experimentaldataset:
+            print('    ---- BUILD CELL experimentaldataset name ',expds.data_name, expds.data_type)
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            for s in samples:
+                print('        ---- BUILD CELL sample name ',s.file_name)
+                frames = Frame.objects.select_related().filter(sample = s)
+                for f in frames:
+                    print('            ---- BUILD CELL frame number ',f.number)
+
 
 #___________________________________________________________________________________________
 def tracking():
