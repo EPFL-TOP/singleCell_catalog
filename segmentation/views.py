@@ -309,9 +309,6 @@ def segment():
                 print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
                 #counter=0
                 for f in frames:
-                #    if counter==10:
-                #        break
-                #    counter+=1
                     print( 'getting contour for frame ',f.number)
                     contour_list = default_segmentation.segmentation(images[f.number])
                     print(' got ',len(contour_list),' contours')
@@ -328,29 +325,11 @@ def segment():
                                             segmentation_channel=segmentation_channel,
                                             center=cont['center'])
                         contour.save()
-#                        reset_queries()
-#                        print('size of pixels_data_contour =',asizeof.asizeof(pixels_data_contour))
-#                        print('size of pixels_data_inside =',asizeof.asizeof(pixels_data_inside))
-#                        print('size of contour =',asizeof.asizeof(contour))
-#
-#                        del pixels_data_contour
-#                        del pixels_data_inside
+
                         del contour
                     del contour_list
                     print('gc collect 1: ',gc.collect())
-#                del images
-#                del frames
-#            del samples
-#            print('gc collect 2: ',gc.collect())
-#
-#        del experimentaldataset
-#        del segmentation_channel
-#        del default_segmentation
-#        del segmentation
-#        print('gc collect 3: ',gc.collect())
-#
-#    del exp_list
-#    print('gc collect: ',gc.collect())
+
 
 #___________________________________________________________________________________________
 def tracking():
