@@ -326,10 +326,17 @@ def build_cells():
             print('    ---- BUILD CELLS experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
+                print('        ---- BUILD CELL sample name ',s.file_name)
 
-                frames1 = Frame.objects.select_related().filter(sample = s)
-                frames2 = Frame.objects.select_related('sample')
-                print('frames1=',len(frames1), '  frames2=',len(frames2))
+                frames = Frame.objects.select_related().filter(sample = s)
+                cell_frame_list=[]
+                for f in frames:
+                    cellf = CellFrame.objects.select_related().filter(frame=f)
+                    cell_frame_list.append(cellf)
+                print('number of cell frames')
+
+
+
 #___________________________________________________________________________________________
 def build_cell_frames():
     #For now build cells from contours
