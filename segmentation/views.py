@@ -327,6 +327,9 @@ def build_cells():
             print('    ---- BUILD CELL experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
+                if 'xy02' in s.file_name or 'xy74' in s.file_name: 
+                    print('===========================================')
+                    break
                 print('        ---- BUILD CELL sample name ',s.file_name)
                 frames = Frame.objects.select_related().filter(sample = s)
                 for f in frames:
