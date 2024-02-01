@@ -353,7 +353,7 @@ def build_cells():
                 createdcells=[]
                 cellid_list=[]
                 cellid_dict={}
-                for cid in range(clustering.labels_):
+                for cid in range(len(clustering.labels_)):
                     if clustering.labels_[cid] not in createdcells and clustering.labels_[cid]!=-1:
                         cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]))
                         cellid.save()
