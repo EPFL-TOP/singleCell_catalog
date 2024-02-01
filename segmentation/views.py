@@ -317,23 +317,38 @@ def segment():
 
 #___________________________________________________________________________________________
 def build_cells():
+    #loop over all experiments
+    exp_list = Experiment.objects.all()
+    for exp in exp_list:
+        print('---- BUILD CELLS experiment name ',exp.name)
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        for expds in experimentaldataset:
+            print('    ---- BUILD CELLS experimentaldataset name ',expds.data_name, expds.data_type)
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            for s in samples:
+
+                frames1 = Frame.objects.select_related().filter(sample = s)
+                frames2 = Frame.objects.select_related()
+                print('frames1=',len(frames1), '  frames2=',len(frames2))
+#___________________________________________________________________________________________
+def build_cell_frames():
     #For now build cells from contours
     #loop over all experiments
     exp_list = Experiment.objects.all()
     for exp in exp_list:
-        print('---- BUILD CELL experiment name ',exp.name)
+        print('---- BUILD CELL FRAMES experiment name ',exp.name)
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
-            print('    ---- BUILD CELL experimentaldataset name ',expds.data_name, expds.data_type)
+            print('    ---- BUILD CELL FRAMES experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
                 if 'xy02' in s.file_name or 'xy74' in s.file_name: 
                     print('===========================================')
                     break
-                print('        ---- BUILD CELL sample name ',s.file_name)
+                print('        ---- BUILD CELL FRAMES sample name ',s.file_name)
                 frames = Frame.objects.select_related().filter(sample = s)
                 for f in frames:
-                    print('            ---- BUILD CELL frame number ',f.number,' ',f.time)
+                    print('            ---- BUILD CELL FRAMES frame number ',f.number,' ',f.time)
                     contours = Contour.objects.select_related().filter(frame = f)
                     cellframe = CellFrame.objects.select_related().filter(frame = f)
                     if len(contours) == len(cellframe):
@@ -346,7 +361,7 @@ def build_cells():
                         print('already cell frames')
                         continue
                     for cont in contours:
-                        print('                ---- BUILD CELL contour ',cont.center)
+                        print('                ---- BUILD CELL FRAMES contour ',cont.center)
                         cellf = CellFrame(frame=f,
                                           time=f.time,
                                           pos_x=cont.center['x'],
@@ -413,6 +428,8 @@ def index(request):
         build_frames()
     if 'build_frames' in request.POST and LOCAL==False:
         build_frames_rds()
+    if 'build_cell_frames' in request.POST:
+        build_cell_frames()
     if 'build_cells' in request.POST:
         build_cells()
     if 'segment' in request.POST:
