@@ -338,9 +338,10 @@ def segment():
 
                         del contour
                     del contour_list
-                    print('gc collect 1: ',gc.collect())
+                    #print('gc collect 1: ',gc.collect())
                     print('SEGMENTATION =========== IN FRAME LOOP END time = ',time.time()-start)
 
+                print('gc collect 1: ',gc.collect())
 
 #___________________________________________________________________________________________
 def tracking():
