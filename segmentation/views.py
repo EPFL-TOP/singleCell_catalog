@@ -331,10 +331,11 @@ def build_cells():
                 frames = Frame.objects.select_related().filter(sample = s)
                 cell_frame_list=[]
                 for f in frames:
-                    cellf = CellFrame.objects.select_related().filter(frame=f)
-                    cell_frame_list.append(cellf)
-                    print(cellf.pos_x)
-                    #print(cellf.frame.sample.file_name)
+                    cellframes = CellFrame.objects.select_related().filter(frame=f)
+                    for cellf in cellframes:
+                        cell_frame_list.append(cellf)
+                        print(cellf.pos_x)
+                        print(cellf.frame.sample.file_name)
                 print('number of cell frames=',len(cell_frame_list))
 
 
