@@ -554,9 +554,13 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
 
 
-
+    channels=[]
     for cell in cell_dict: 
-
+        for ch in cell_dict[cell]:
+            if ch in channels:continue
+            if 'intensity_' not in ch: continue
+            channels.append(ch)
+        print('channels  ',channels)
         plt.plot()
 
 
