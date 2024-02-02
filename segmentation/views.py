@@ -12,6 +12,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('agg')
+import io
+import urllib, base64
 
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
@@ -555,14 +557,23 @@ def index(request):
 
 
     channels=[]
+    fig = plt.figure(figsize=(15,5))
+
     for cell in cell_dict: 
         for ch in cell_dict[cell]:
             if ch in channels:continue
             if 'intensity_' not in ch: continue
             channels.append(ch)
         print('channels  ',channels)
-        plt.plot()
+        for ch in channels:
+            fig.plot(cell_dict[cell]['time'], cell_dict[cell][ch])
 
+    fig.tight_layout()
+    fig = plt.gcf()
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+    string = base64.b64encode(buf.read())
+    uri = urllib.parse.quote(string)
 
-
-    return render(request, 'segmentation/index.html', context=context)
+    return render(request, 'segmentation/index.html', context=context, 'plot':uri)
