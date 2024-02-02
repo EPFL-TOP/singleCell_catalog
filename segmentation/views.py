@@ -507,8 +507,8 @@ def index(request):
         for e in experiment_dict['experiments']:
             if e['name']!=selected_experiment:continue
             print('experiment selected=',e['name'])
-            for d in e['analyses']:
-                select_dict['analysis_list'].append(a['name'])
+            for d in e['samples']:
+                select_dict['sample_list'].append(a['name'])
             if selected_analysis!='':
                 for a in p['analyses']:
                     if a['name']!=selected_analysis:continue
