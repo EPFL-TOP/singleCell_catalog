@@ -462,8 +462,8 @@ def index(request):
     #dictionary to provide possible selection choices
     select_dict={
         'experiment_list':[],
-        'sample_list':[],
-        'file_list':[],
+        'well_list':[],
+        'position_list':[],
     }
 
     #dictionary that maps the database
@@ -485,7 +485,7 @@ def index(request):
                 sample_list.append(s.file_name)
             expds_list.append({'data_name':expds.data_name, 'data_type':expds.data_type, 'files':sample_list})
             #del samples
-        tmp_exp_dict={'name':exp.name, 'samples':expds_list}
+        tmp_exp_dict={'name':exp.name, 'wells':expds_list}
         experiment_dict['experiments'].append(tmp_exp_dict)
         #del experimentaldataset
 
@@ -498,21 +498,21 @@ def index(request):
 
     selected_experiment=request.POST.get('select_experiment')
     selected_dict['experiment']=selected_experiment
-    selected_sample=request.POST.get('select_sample')
-    selected_dict['sample']=selected_sample
-    selected_file=request.POST.get('select_file')
-    selected_dict['file']=selected_file
+    selected_well=request.POST.get('select_well')
+    selected_dict['well']=selected_well
+    selected_position=request.POST.get('select_position')
+    selected_dict['position']=selected_position
 
     if selected_experiment!='':
         for e in experiment_dict['experiments']:
             if e['name']!=selected_experiment:continue
             print('experiment selected=',e['name'])
-            for d in e['samples']:
-                select_dict['sample_list'].append(d['data_name'])
-            if selected_sample!='':
-                for s in e['samples']:
-                    if s['data_name']!=selected_sample:continue
-                    print('sample selected=',s['data_name'])
+            for d in e['wells']:
+                select_dict['well_list'].append(d['data_name'])
+            if selected_well!='':
+                for s in e['wells']:
+                    if s['data_name']!=selected_well:continue
+                    print('well selected=',s['data_name'])
                     for f in s['files']:
                         #select_dict['file_list'].append(os.path.split(f)[-1])
                         select_dict['file_list'].append(f)

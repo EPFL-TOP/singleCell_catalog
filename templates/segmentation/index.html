@@ -21,22 +21,22 @@
         {% endfor %}
     </select>
 
-    {% if select_dict.experiment_list  %}
-    <select id="select_sample" name="select_sample" class="select_sample">
-        <option value="">--Choose a sample--</option>
-        {% for sample in select_dict.sample_list %}
-            {% if selected_dict.sample != sample %}<option value="{{ sample }}">{{ sample }}</option>{% endif %}
-            {% if selected_dict.sample == sample %}<option selected="selected" value="{{ sample }}">{{ sample }}</option>{% endif %}
+    {% if select_dict.well_list  %}
+    <select id="select_well" name="select_well" class="select_well">
+        <option value="">--Choose a well--</option>
+        {% for well in select_dict.well_list %}
+            {% if selected_dict.well != well %}<option value="{{ well }}">{{ well }}</option>{% endif %}
+            {% if selected_dict.well == well %}<option selected="selected" value="{{ well }}">{{ well }}</option>{% endif %}
         {% endfor %}
     </select>
     {% endif %}
 
-    {% if select_dict.file_list  %}
-    <select id="select_file" name="select_file" class="select_file">
-        <option value="">--Choose a file--</option>
-        {% for file in select_dict.file_list %}
-            {% if selected_dict.file != file %}<option value="{{ file }}">{{ file }}</option>{% endif %}
-            {% if selected_dict.file == file %}<option selected="selected" value="{{ file }}">{{ file }}</option>{% endif %}
+    {% if select_dict.position_list  %}
+    <select id="select_position" name="select_position" class="select_position">
+        <option value="">--Choose a position--</option>
+        {% for file in select_position.file_list %}
+            {% if selected_dict.position != file %}<option value="{{ position }}">{{ position }}</option>{% endif %}
+            {% if selected_dict.position == file %}<option selected="selected" value="{{ position }}">{{ position }}</option>{% endif %}
         {% endfor %}
     </select>
     {% endif %}
