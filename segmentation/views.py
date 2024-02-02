@@ -499,7 +499,7 @@ def index(request):
     selected_experiment=request.POST.get('select_experiment')
     selected_dict['experiment']=selected_experiment
     selected_sample=request.POST.get('select_sample')
-    selected_dict['sample']=selected_analysis
+    selected_dict['sample']=selected_sample
     selected_file=request.POST.get('select_file')
     selected_dict['file']=selected_file
 
