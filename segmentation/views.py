@@ -423,6 +423,11 @@ def intensity():
                 cellsid = CellID.objects.select_related().filter(sample = s)
                 for cid in cellsid:
                     print('            ---- INTENSITY cellid name ',cid.name)
+                    cell_frames = CellFrame.objects.select_related().filter(cell_id=cid)
+                    frames      = CellFrame.objects.select_related("frame")
+                    print(len(frames))
+
+
 
 
 #___________________________________________________________________________________________

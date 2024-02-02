@@ -162,3 +162,20 @@ class Cell(models.Model):
     status = models.OneToOneField(CellStatus, on_delete=models.CASCADE)
     #sample = models.ForeignKey(Sample, default='', on_delete=models.CASCADE)
 
+
+
+class Topping(models.Model):
+    name = models.CharField(max_length=30)
+
+
+class Pizza(models.Model):
+    name = models.CharField(max_length=50)
+    toppings = models.ManyToManyField(Topping)
+
+class Restaurant(models.Model):
+    pizzas = models.ManyToManyField(Pizza, related_name="restaurants")
+    best_pizza = models.ForeignKey(
+        Pizza, related_name="championed_by", on_delete=models.CASCADE
+    )
+
+    #bestpizz = Restaurant.objects.select_related("best_pizza").prefetch_related("best_pizza__toppings")
