@@ -178,7 +178,7 @@ def build_frames_rds():
                                  file_name=unsplit_file[0],
                                  number_of_frames=metadata['number_of_frames'], 
                                  number_of_channels=metadata['number_of_channels'], 
-                                 name_of_channels=metadata['name_of_channels'], 
+                                 name_of_channels=metadata['name_of_channels'].replace(' ',''), 
                                  experiment_description=metadata['experiment_description'],
                                  date_of_acquisition=metadata['date'],
                                  )
@@ -443,13 +443,14 @@ def intensity(experiment='', well='', position=''):
                         #NEED TO SELECT contours for a given segmentation properly
                         for cont in contours:
                             cell_dict[cid.name]['time'].append(cont.frame.time)
+                            cell_dict[cid.name]['npixels'].append(cont.pixels_data_inside.all_pixels['npixels'])
+
                             for ch in cont.pixels_data_inside.all_pixels['sum_intensity']:
                                 try:
                                     cell_dict[cid.name]['intensity_{}'.format(ch.replace(' ',''))]
                                 except KeyError:
                                     cell_dict[cid.name]['intensity_{}'.format(ch.replace(' ',''))]=[]
                                 cell_dict[cid.name]['intensity_{}'.format(ch.replace(' ',''))].append(cont.pixels_data_inside.all_pixels['sum_intensity'][ch])
-                                cell_dict[cid.name]['npixels'].append(cont.pixels_data_inside.all_pixels['npixels'])
                             #print(cont.pixels_data_inside.all_pixels)
                             #print('contour ID=',cont.id,'  center=',cont.center, ' seg channel ',cont.segmentation_channel.channel_name,', ',cont.segmentation_channel.channel_number\
                             #      ,' seg name=',cont.segmentation_channel.segmentation.name,' seg type=',cont.segmentation_channel.segmentation.algorithm_type)
