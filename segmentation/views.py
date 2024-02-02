@@ -424,7 +424,7 @@ def intensity():
                 for cid in cellsid:
                     print('            ---- INTENSITY cellid name ',cid.name)
                     cell_frames = CellFrame.objects.select_related().filter(cell_id=cid)
-                    frames      = CellFrame.objects.values_list("frame")
+                    frames      = CellFrame.objects.select_related().distinct()
                     print(len(frames))
 
 
