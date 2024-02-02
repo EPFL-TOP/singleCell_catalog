@@ -428,7 +428,7 @@ def intensity():
                     frames      = CellFrame.objects.select_related("frame").prefetch_related("frame")
                     for cf in cell_frames:
                         frame = cf.frame
-                        print(len(frame))
+                        print(frame)
                     print('n frames=',len(frames),'   n cell_frames=',len(cell_frames))
 
 
