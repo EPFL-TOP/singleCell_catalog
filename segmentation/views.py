@@ -498,8 +498,8 @@ def index(request):
 
     selected_experiment=request.POST.get('select_experiment')
     selected_dict['experiment']=selected_experiment
-    selected_analysis=request.POST.get('select_analysis')
-    selected_dict['analysis']=selected_analysis
+    selected_sample=request.POST.get('select_sample')
+    selected_dict['sample']=selected_analysis
     selected_file=request.POST.get('select_file')
     selected_dict['file']=selected_file
 
@@ -508,12 +508,12 @@ def index(request):
             if e['name']!=selected_experiment:continue
             print('experiment selected=',e['name'])
             for d in e['samples']:
-                select_dict['sample_list'].append(a['name'])
-            if selected_analysis!='':
-                for a in p['analyses']:
-                    if a['name']!=selected_analysis:continue
-                    print('analysis selected=',a['name'])
-                    for f in a['files']:
+                select_dict['sample_list'].append(e['name'])
+            if selected_sample!='':
+                for s in e['samples']:
+                    if s['data_name']!=selected_sample:continue
+                    print('sample selected=',s['data_name'])
+                    for f in s['files']:
                         #select_dict['file_list'].append(os.path.split(f)[-1])
                         select_dict['file_list'].append(f)
 
