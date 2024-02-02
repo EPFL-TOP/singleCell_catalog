@@ -422,7 +422,7 @@ def intensity():
                 print('        ---- INTENSITY sample name ',s.file_name)
                 cellsid = CellID.objects.select_related().filter(sample = s)
                 for cid in cellsid:
-                    print('    ---- INTENSITY cellid name ',cid.name)
+                    print('            ---- INTENSITY cellid name ',cid.name)
 
 
 #___________________________________________________________________________________________
