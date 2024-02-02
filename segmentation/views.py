@@ -427,8 +427,10 @@ def intensity():
                     frames      = []
                     for cf in cell_frames:
                         frame = cf.frame
-                        contour = frame.contour_set
-                        print('frame num=',frame.number, '   contour center=',contour.center)
+                        contour = frame.contour_set.all()
+                        print('frame num=',frame.number)
+                        for c in contour:
+                            print('   contour center=',c.center)
                         frames.append(frame)
 
                     print('n frames=',len(frames),'   n cell_frames=',len(cell_frames))
