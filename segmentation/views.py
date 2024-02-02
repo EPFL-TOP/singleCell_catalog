@@ -554,7 +554,7 @@ def index(request):
 
     channels=[]
     fig = plt.figure(figsize=(15,5))
-
+    print('===========================================',cell_dict)
     for cell in cell_dict: 
         for ch in cell_dict[cell]:
             if ch in channels:continue
@@ -566,7 +566,7 @@ def index(request):
             for p in range(len(cell_dict[cell][ch])):
                 normint.append(cell_dict[cell][ch][p]/cell_dict[cell]['npixels'][p])
             if '_BF' in ch:continue
-            plt.plot(cell_dict[cell]['time'], cell_dict[cell][ch])
+            plt.plot(cell_dict[cell]['time'], normint)
 
     fig.tight_layout()
     fig = plt.gcf()
