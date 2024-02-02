@@ -9,6 +9,10 @@ from memory_profiler import profile
 from sklearn.cluster import DBSCAN
 import numpy as np
 
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('agg')
+
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 
@@ -439,16 +443,17 @@ def intensity(experiment='', well='', position=''):
                             cell_dict[cid.name]['time'].append(cont.frame.time)
                             for ch in cont.pixels_data_inside.all_pixels['sum_intensity']:
                                 try:
-                                    cell_dict[cid.name]['intensity_{}'.format(ch)]
+                                    cell_dict[cid.name]['intensity_{}'.format(ch.replace(' ',''))]
                                 except KeyError:
-                                    cell_dict[cid.name]['intensity_{}'.format(ch)]=[]
-                                cell_dict[cid.name]['intensity_{}'.format(ch)].append(cont.pixels_data_inside.all_pixels['sum_intensity'][ch])
+                                    cell_dict[cid.name]['intensity_{}'.format(ch.replace(' ',''))]=[]
+                                cell_dict[cid.name]['intensity_{}'.format(ch.replace(' ',''))].append(cont.pixels_data_inside.all_pixels['sum_intensity'][ch])
                                 cell_dict[cid.name]['npixels'].append(cont.pixels_data_inside.all_pixels['npixels'])
                             #print(cont.pixels_data_inside.all_pixels)
                             #print('contour ID=',cont.id,'  center=',cont.center, ' seg channel ',cont.segmentation_channel.channel_name,', ',cont.segmentation_channel.channel_number\
                             #      ,' seg name=',cont.segmentation_channel.segmentation.name,' seg type=',cont.segmentation_channel.segmentation.algorithm_type)
                     print('   n cell_frames=',len(cell_frames))
                 print(cell_dict)
+                return cell_dict
 
 
 
@@ -457,7 +462,7 @@ def index(request):
     """View function for home page of site."""
     print('The visualisation request method is:', request.method)
     print('The visualisation POST data is:     ', request.POST)
-
+    cell_dict=None
     if 'build_frames' in request.POST and LOCAL:
         build_frames()
     if 'build_frames' in request.POST and LOCAL==False:
@@ -472,9 +477,9 @@ def index(request):
     if 'intensity' in request.POST:
         intensity()
     if 'select_experiment' in request.POST and 'select_well' in request.POST and 'select_position' in request.POST:
-        intensity(experiment=request.POST.get('select_experiment'), 
-                  well=request.POST.get('select_well'), 
-                  position=request.POST.get('select_position'))
+        cell_dict = intensity(experiment=request.POST.get('select_experiment'), 
+                              well=request.POST.get('select_well'), 
+                              position=request.POST.get('select_position'))
 
 
     #dictionary to provide possible selection choices
@@ -547,4 +552,13 @@ def index(request):
     }
 
     # Render the HTML template index.html with the data in the context variable
+
+
+
+    for cell in cell_dict: 
+
+        plt.plot()
+
+
+
     return render(request, 'segmentation/index.html', context=context)
