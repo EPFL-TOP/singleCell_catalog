@@ -413,15 +413,18 @@ def build_cell_frames():
                         cont.save()
 
 #___________________________________________________________________________________________
-def intensity():
+def intensity(experiment='', well='', position=''):
     exp_list = Experiment.objects.all()
     for exp in exp_list:
+        if experiment!='' and experiment!=exp.name: continue
         print('---- INTENSITY experiment name ',exp.name)
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
+            if well!='' and well!=expds.data_name: continue
             print('    ---- INTENSITY experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
+                if position!='' and position!=s.file_name: continue
                 print('        ---- INTENSITY sample name ',s.file_name)
                 cellsid = CellID.objects.select_related().filter(sample = s)
                 for cid in cellsid:
@@ -458,6 +461,11 @@ def index(request):
 
     if 'intensity' in request.POST:
         intensity()
+    if 'select_experiment' in request.POST and 'select_well' in request.POST and 'select_position' in request.POST:
+        intensity(experiment=request.POST.get('select_experiment'), 
+                  well=request.POST.get('select_well'), 
+                  position=request.POST.get('select_position'))
+
 
     #dictionary to provide possible selection choices
     select_dict={
