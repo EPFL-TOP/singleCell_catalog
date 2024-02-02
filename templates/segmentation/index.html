@@ -21,12 +21,12 @@
         {% endfor %}
     </select>
 
-    {% if select_dict.analysis_list  %}
-    <select id="select_analysis" name="select_analysis" class="select_analysis">
-        <option value="">--Choose an analysis--</option>
-        {% for analysis in select_dict.analysis_list %}
-            {% if selected_dict.analysis != analysis %}<option value="{{ analysis }}">{{ analysis }}</option>{% endif %}
-            {% if selected_dict.analysis == analysis %}<option selected="selected" value="{{ analysis }}">{{ analysis }}</option>{% endif %}
+    {% if select_dict.experiment_list  %}
+    <select id="select_sample" name="select_sample" class="select_sample">
+        <option value="">--Choose a sample--</option>
+        {% for sample in select_dict.sample_list %}
+            {% if selected_dict.sample != sample %}<option value="{{ sample }}">{{ sample }}</option>{% endif %}
+            {% if selected_dict.sample == sample %}<option selected="selected" value="{{ sample }}">{{ sample }}</option>{% endif %}
         {% endfor %}
     </select>
     {% endif %}
