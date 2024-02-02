@@ -112,12 +112,12 @@ class CellID(models.Model):
 #___________________________________________________________________________________________
 class CellFrame(models.Model):
     time   = models.FloatField(default=-9999, help_text="time")
-    pos_x  = models.FloatField(default=-9999, help_text="cell x position")
-    pos_y  = models.FloatField(default=-9999, help_text="Camera y position in microns")
-    pos_z  = models.FloatField(default=-9999, help_text="Camera z position in microns")
-    sig_x  = models.FloatField(default=-9999, help_text="Camera x position in microns")
-    sig_y  = models.FloatField(default=-9999, help_text="Camera y position in microns")
-    sig_z  = models.FloatField(default=-9999, help_text="Camera z position in microns")
+    pos_x  = models.FloatField(default=-9999, help_text="Cell x position in pixel")
+    pos_y  = models.FloatField(default=-9999, help_text="Cell y position in pixel")
+    pos_z  = models.FloatField(default=-9999, help_text="Cell z position in pixel")
+    sig_x  = models.FloatField(default=-9999, help_text="Cell x error in pixel")
+    sig_y  = models.FloatField(default=-9999, help_text="Cell y error in pixel")
+    sig_z  = models.FloatField(default=-9999, help_text="Cell z error in pixel")
     frame  = models.ForeignKey(Frame, default='', on_delete=models.SET_DEFAULT)
     cell_id = models.ForeignKey(CellID, null=True, default='', on_delete=models.CASCADE)
 

@@ -426,16 +426,11 @@ def intensity():
                 for cid in cellsid:
                     print('            ---- INTENSITY cellid name ',cid.name)
                     cell_frames = CellFrame.objects.select_related().filter(cell_id=cid)
-                    frames      = []
                     for cf in cell_frames:
-                        frame = cf.frame
-                        contour = frame.contour_set.all()
-                        print('frame num=',frame.number)
-                        for c in contour:
-                            print('   contour center=',c.center)
-                        frames.append(frame)
-
-                    print('n frames=',len(frames),'   n cell_frames=',len(cell_frames))
+                        contours = Contour.objects.select_related().filter(cell_frame=cf)
+                        for cont in contours:
+                            print('contour ID=',cont.id,'  center=',cont.center)
+                    print('   n cell_frames=',len(cell_frames))
 
 
 
