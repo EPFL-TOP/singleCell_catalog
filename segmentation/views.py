@@ -462,7 +462,7 @@ def index(request):
     """View function for home page of site."""
     print('The visualisation request method is:', request.method)
     print('The visualisation POST data is:     ', request.POST)
-    cell_dict=None
+    cell_dict={}
     if 'build_frames' in request.POST and LOCAL:
         build_frames()
     if 'build_frames' in request.POST and LOCAL==False:
