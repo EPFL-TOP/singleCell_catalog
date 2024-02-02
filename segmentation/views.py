@@ -428,7 +428,9 @@ def intensity():
                     cell_frames = CellFrame.objects.select_related().filter(cell_id=cid)
                     for cf in cell_frames:
                         contours = Contour.objects.select_related().filter(cell_frame=cf)
+                        #NEED TO SELECT contours for a given segmentation properly
                         for cont in contours:
+                            print(cont.pixels_data_inside.all_pixels)
                             print('contour ID=',cont.id,'  center=',cont.center, ' seg channel ',cont.segmentation_channel.channel_name,', ',cont.segmentation_channel.channel_number\
                                   ,' seg name=',cont.segmentation_channel.segmentation.name,' seg type=',cont.segmentation_channel.segmentation.algorithm_type)
                     print('   n cell_frames=',len(cell_frames))
