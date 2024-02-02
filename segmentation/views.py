@@ -496,6 +496,9 @@ def index(request):
         'file':''
     }
 
+
+    print('selected_dict before   =  ', selected_dict)
+
     selected_experiment=request.POST.get('select_experiment')
     selected_dict['experiment']=selected_experiment
     selected_well=request.POST.get('select_well')
@@ -520,7 +523,7 @@ def index(request):
     #print('experiment_dict     =  ', experiment_dict)
     #print('selected_project =  ', selected_project)
     print('selected_dict    =  ', selected_dict)
-    print('select_dict      =  ', select_dict)
+    #print('select_dict      =  ', select_dict)
 
     context = {
         #'num_samples': num_samples,
