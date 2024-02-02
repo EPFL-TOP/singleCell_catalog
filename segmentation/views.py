@@ -302,10 +302,10 @@ def segment():
                         pixels_data_inside.save()
                         print(cont['center'])
                         contour = Contour(frame=f,
-                                            pixels_data_contour=pixels_data_contour,
-                                            pixels_data_inside=pixels_data_inside,
-                                            segmentation_channel=segmentation_channel,
-                                            center=cont['center'])
+                                          pixels_data_contour=pixels_data_contour,
+                                          pixels_data_inside=pixels_data_inside,
+                                          segmentation_channel=segmentation_channel,
+                                          center=cont['center'])
                         contour.save()
 
                         del contour
@@ -408,6 +408,8 @@ def build_cell_frames():
                                           sig_y=10,
                                           sig_z=0)
                         cellf.save()
+                        cont.cell_frame = cellf
+                        cont.save()
 
 #___________________________________________________________________________________________
 def intensity():

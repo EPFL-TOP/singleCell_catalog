@@ -104,20 +104,6 @@ class Data(models.Model):
     single_pixels = models.JSONField(default=dict, help_text="Pixels individual coordinates and intensities")
 
 
-
-
-#___________________________________________________________________________________________
-class Contour(models.Model):
-
-    #number_of_pixels     = models.PositiveIntegerField(default=0, help_text="Number of pixels of the contour")
-    center               = models.JSONField(help_text="center of the contour")
-    pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
-    pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
-    segmentation_channel = models.ForeignKey(SegmentationChannel, default='', on_delete=models.CASCADE)
-    frame                = models.ForeignKey(Frame, default='', on_delete=models.SET_DEFAULT)
-    #cell                 = models.ForeignKey(Cell, blank=True, null=True, default='',on_delete=models.CASCADE)
-    #uid_name             = models.CharField(default='', max_length=1000, help_text="unique name ID used not to create multiple times the same contour. Based on the input file name, frame number, algorithm type, version and parameters")
-
 #___________________________________________________________________________________________
 class CellID(models.Model):
     name   = models.CharField(default='', max_length=20, help_text="cell name")
@@ -134,6 +120,28 @@ class CellFrame(models.Model):
     sig_z  = models.FloatField(default=-9999, help_text="Camera z position in microns")
     frame  = models.ForeignKey(Frame, default='', on_delete=models.SET_DEFAULT)
     cell_id = models.ForeignKey(CellID, null=True, default='', on_delete=models.CASCADE)
+
+
+#___________________________________________________________________________________________
+class Contour(models.Model):
+
+    #number_of_pixels     = models.PositiveIntegerField(default=0, help_text="Number of pixels of the contour")
+    center               = models.JSONField(help_text="center of the contour")
+    pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
+    pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
+    segmentation_channel = models.ForeignKey(SegmentationChannel, default='', on_delete=models.CASCADE)
+    frame                = models.ForeignKey(Frame, default='', on_delete=models.SET_DEFAULT)
+    cell_frame           = models.ForeignKey(CellFrame, default='', null=True,on_delete=models.SET_DEFAULT)
+    #cell                 = models.ForeignKey(Cell, blank=True, null=True, default='',on_delete=models.CASCADE)
+    #uid_name             = models.CharField(default='', max_length=1000, help_text="unique name ID used not to create multiple times the same contour. Based on the input file name, frame number, algorithm type, version and parameters")
+
+
+
+
+
+
+
+
 
 
 
@@ -163,19 +171,3 @@ class Cell(models.Model):
     #sample = models.ForeignKey(Sample, default='', on_delete=models.CASCADE)
 
 
-
-class Topping(models.Model):
-    name = models.CharField(max_length=30)
-
-
-class Pizza(models.Model):
-    name = models.CharField(max_length=50)
-    toppings = models.ManyToManyField(Topping)
-
-class Restaurant(models.Model):
-    pizzas = models.ManyToManyField(Pizza, related_name="restaurants")
-    best_pizza = models.ForeignKey(
-        Pizza, related_name="championed_by", on_delete=models.CASCADE
-    )
-
-    #bestpizz = Restaurant.objects.select_related("best_pizza").prefetch_related("best_pizza__toppings")
