@@ -492,12 +492,9 @@ def index(request):
     #dictionary to keep the selected choices, this is for the front end page
     selected_dict={
         'experiment':'',
-        'experimental_dataset':'',
-        'file':''
+        'well':'',
+        'position':''
     }
-
-
-    print('selected_dict before   =  ', selected_dict)
 
     selected_experiment=request.POST.get('select_experiment')
     selected_dict['experiment']=selected_experiment
