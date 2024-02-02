@@ -419,8 +419,10 @@ def intensity():
             print('    ---- INTENSITY experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
+                print('        ---- INTENSITY sample name ',s.file_name)
                 cellsid = CellID.objects.select_related().filter(sample = s)
-                print('    ---- INTENSITY cellid name ',cellsid.name)
+                for cid in cellsid:
+                    print('    ---- INTENSITY cellid name ',cid.name)
 
 
 #___________________________________________________________________________________________
