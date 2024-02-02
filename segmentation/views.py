@@ -515,9 +515,9 @@ def index(request):
                     print('well selected=',s['data_name'])
                     for f in s['files']:
                         #select_dict['file_list'].append(os.path.split(f)[-1])
-                        select_dict['position_list'].append(f.split('/')[-1])
+                        select_dict['position_list'].append(f)
 
-    print('experiment_dict     =  ', experiment_dict)
+    #print('experiment_dict     =  ', experiment_dict)
     #print('selected_project =  ', selected_project)
     print('selected_dict    =  ', selected_dict)
     print('select_dict      =  ', select_dict)
