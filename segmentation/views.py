@@ -443,7 +443,7 @@ def intensity(experiment='', well='', position=''):
                                 except KeyError:
                                     cell_dict[cid.name]['intensity_{}'.format(ch)]=[]
                                 cell_dict[cid.name]['intensity_{}'.format(ch)].append(cont.pixels_data_inside.all_pixels['sum_intensity'][ch])
-                                cell_dict[cid.name]['npixels'].append((cont.pixels_data_inside.all_pixels['npixels'])
+                                cell_dict[cid.name]['npixels'].append(cont.pixels_data_inside.all_pixels['npixels'])
                             #print(cont.pixels_data_inside.all_pixels)
                             #print('contour ID=',cont.id,'  center=',cont.center, ' seg channel ',cont.segmentation_channel.channel_name,', ',cont.segmentation_channel.channel_number\
                             #      ,' seg name=',cont.segmentation_channel.segmentation.name,' seg type=',cont.segmentation_channel.segmentation.algorithm_type)
