@@ -552,10 +552,10 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
 
 
-    channels=[]
     fig = plt.figure(figsize=(15,5))
     print('===========================================',cell_dict)
     for cell in cell_dict: 
+        channels=[]
         for ch in cell_dict[cell]:
             if ch in channels:continue
             if 'intensity_' not in ch: continue
@@ -567,7 +567,8 @@ def index(request):
                 normint.append(cell_dict[cell][ch][p]/cell_dict[cell]['npixels'][p])
             if '_BF' in ch:continue
             plt.plot(cell_dict[cell]['time'], normint)
-
+            print('channel ================== ',ch)
+            print(normint)
     fig.tight_layout()
     fig = plt.gcf()
     buf = io.BytesIO()
