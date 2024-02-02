@@ -1,5 +1,10 @@
 {% extends "base_generic.html" %}
 {% block content %}
+<style>
+  ul { margin-top: 0; }
+  ul { margin-bottom: 0; }
+</style>
+
   <h1>Select project </h1>
   <script type="text/javascript">
     function foo() {
@@ -74,7 +79,7 @@
     <input type="submit" name="build_cells" value="Build Cells">
     <input type="submit" name="intensity" value="Intensity">
   </form>
-  
+
   <br><br><br>
 
   <img src="data:image/png;base64,{{ plot }}"/>
