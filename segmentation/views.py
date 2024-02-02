@@ -562,6 +562,10 @@ def index(request):
             channels.append(ch)
         print('channels  ',channels)
         for ch in channels:
+            normint=[]
+            for p in range(len(cell_dict[cell][ch])):
+                normint.append(cell_dict[cell][ch][p]/cell_dict[cell]['npixels'][p])
+            if '_BF' in ch:continue
             plt.plot(cell_dict[cell]['time'], cell_dict[cell][ch])
 
     fig.tight_layout()
