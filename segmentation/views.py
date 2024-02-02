@@ -426,7 +426,10 @@ def intensity():
                     cell_frames = CellFrame.objects.select_related().filter(cell_id=cid)
                     frames      = []
                     for cf in cell_frames:
-                        frames.append(cf.frame)
+                        frame = cf.frame
+                        contour = frame.objects.select_related().filter(frame=frame)
+                        print('number of contours ',len(contour))
+                        frames.append(frame)
 
                     print('n frames=',len(frames),'   n cell_frames=',len(cell_frames))
 
