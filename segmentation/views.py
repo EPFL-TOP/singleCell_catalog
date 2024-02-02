@@ -428,7 +428,7 @@ def intensity():
                     for cf in cell_frames:
                         frame = cf.frame
                         contour = frame.contour_set
-                        print('number of contours ',len(contour))
+                        print('contour ',contour)
                         frames.append(frame)
 
                     print('n frames=',len(frames),'   n cell_frames=',len(cell_frames))
