@@ -390,6 +390,9 @@ def build_cell_frames():
                     cellframe = CellFrame.objects.select_related().filter(frame = f)
                     if len(contours) == len(cellframe):
                         print('cell frames already exist')
+                        #still associate cell frame to contour
+                        cont.cell_frame = cellf
+                        cont.save()
                         continue
                     elif len(contours) > len(cellframe) and len(cellframe)!=0:
                         print('more contours than cell frames, investigate...')
