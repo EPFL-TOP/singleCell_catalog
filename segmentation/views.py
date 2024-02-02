@@ -424,11 +424,10 @@ def intensity():
                 for cid in cellsid:
                     print('            ---- INTENSITY cellid name ',cid.name)
                     cell_frames = CellFrame.objects.select_related().filter(cell_id=cid)
-                    frames      = CellFrame.objects.select_related("frame").distinct()
-                    frames      = CellFrame.objects.select_related("frame").prefetch_related("frame")
+                    frames      = []
                     for cf in cell_frames:
-                        frame = cf.frame
-                        print(frame)
+                        frames.append(cf.frame)
+
                     print('n frames=',len(frames),'   n cell_frames=',len(cell_frames))
 
 
