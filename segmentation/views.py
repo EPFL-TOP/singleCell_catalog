@@ -427,18 +427,28 @@ def intensity(experiment='', well='', position=''):
                 if position!='' and position!=s.file_name: continue
                 print('        ---- INTENSITY sample name ',s.file_name)
                 cellsid = CellID.objects.select_related().filter(sample = s)
+                cell_dict={}
                 for cid in cellsid:
                     print('            ---- INTENSITY cellid name ',cid.name)
+                    cell_dict[cid.name]={'time':[],'npixels':[]}
                     cell_frames = CellFrame.objects.select_related().filter(cell_id=cid)
                     for cf in cell_frames:
                         contours = Contour.objects.select_related().filter(cell_frame=cf)
                         #NEED TO SELECT contours for a given segmentation properly
                         for cont in contours:
-                            print(cont.pixels_data_inside.all_pixels)
-                            print('contour ID=',cont.id,'  center=',cont.center, ' seg channel ',cont.segmentation_channel.channel_name,', ',cont.segmentation_channel.channel_number\
-                                  ,' seg name=',cont.segmentation_channel.segmentation.name,' seg type=',cont.segmentation_channel.segmentation.algorithm_type)
+                            cell_dict[cid.name]['time'].append(cont.frame.time)
+                            for ch in cont.pixels_data_inside.all_pixels['sum_intensity']:
+                                try:
+                                    cell_dict[cid.name]['intensity_{}'.format(ch)]
+                                except KeyError:
+                                    cell_dict[cid.name]['intensity_{}'.format(ch)]=[]
+                                cell_dict[cid.name]['intensity_{}'.format(ch)].append(cont.pixels_data_inside.all_pixels['sum_intensity'][ch])
+                                cell_dict[cid.name]['npixels'].append((cont.pixels_data_inside.all_pixels['npixels'])
+                            #print(cont.pixels_data_inside.all_pixels)
+                            #print('contour ID=',cont.id,'  center=',cont.center, ' seg channel ',cont.segmentation_channel.channel_name,', ',cont.segmentation_channel.channel_number\
+                            #      ,' seg name=',cont.segmentation_channel.segmentation.name,' seg type=',cont.segmentation_channel.segmentation.algorithm_type)
                     print('   n cell_frames=',len(cell_frames))
-
+                print(cell_dict)
 
 
 
