@@ -409,50 +409,18 @@ def build_cell_frames():
                                           sig_z=0)
                         cellf.save()
 
-
 #___________________________________________________________________________________________
-def tracking():
-    contours = Contour.objects.all()
-    print('number of contours ', len(contours))
-    samples = Sample.objects.all()
-    for s in samples:
-        print("----------------  ",s.file_name)
-        frames = Frame.objects.select_related().filter(sample = s)
-        contour_list=[]
-        for f in frames:
-            contours = Contour.objects.select_related().filter(frame = f)
-            for c in contours:
-                contour_list.append(c)
-        
-        celldict={}
-        cellindex=1
-        for cont in contour_list:
-            print('=================== contour in full contour list ',cont.uid_name)
-            cont_added=False
-            for cell in celldict:
-                cellcont=celldict[cell][-1]
-                dR=deltaR(cellcont.center, cont.center)
-                print('=================== contour in cell dict DR= ',dR,cellcont.uid_name)
-
-                if dR<20:
-                    print('------- dR ', dR)
-                    celldict[cell].append(cont)
-                    cont_added=True
-                    break
-
-            if not cont_added:
-                cellname="cell{}".format(cellindex)
-                if cellname in celldict: cellindex+=1
-                print("cont not added cellindex=",cellindex,"  cont id=",cont.id,"  cellname=","cell{}".format(cellindex),"  cont=",cont.uid_name)
-                celldict["cell{}".format(cellindex)]=[cont]
-                print("cell dict=",celldict)
-
-#        print('n contours: ',len(contour_list))
-#        for c in celldict:
-#            cell = Cell(name=c, sample=s)
-#            print('cell=',c, '  n=', len(celldict[c]))
-#            for cont in celldict[c]:
-#                print('      ',cont.uid_name)
+def intensity():
+    exp_list = Experiment.objects.all()
+    for exp in exp_list:
+        print('---- INTENSITY experiment name ',exp.name)
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        for expds in experimentaldataset:
+            print('    ---- INTENSITY experimentaldataset name ',expds.data_name, expds.data_type)
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            for s in samples:
+                cellsid = CellID.objects.select_related().filter(sample = s)
+                print('    ---- INTENSITY cellid name ',cellsid.name)
 
 
 #___________________________________________________________________________________________
@@ -471,8 +439,9 @@ def index(request):
         build_cells()
     if 'segment' in request.POST:
         segment()
-    if 'tracking' in request.POST:
-        tracking()
+
+    if 'intensity' in request.POST:
+        intensity()
 
     #dictionary to provide possible selection choices
     select_dict={
