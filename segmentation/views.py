@@ -547,11 +547,7 @@ def index(request):
     print('selected_dict    =  ', selected_dict)
     #print('select_dict      =  ', select_dict)
 
-    context = {
-        #'num_samples': num_samples,
-        'select_dict':select_dict,
-        'selected_dict':selected_dict
-    }
+ 
 
     # Render the HTML template index.html with the data in the context variable
 
@@ -576,4 +572,11 @@ def index(request):
     string = base64.b64encode(buf.read())
     uri = urllib.parse.quote(string)
 
-    return render(request, 'segmentation/index.html', context=context, 'plot':uri)
+    context = {
+        #'num_samples': num_samples,
+        'select_dict':select_dict,
+        'selected_dict':selected_dict,
+        'plot':uri
+    }
+
+    return render(request, 'segmentation/index.html', context=context)

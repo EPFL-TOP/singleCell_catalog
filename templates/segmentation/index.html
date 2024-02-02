@@ -45,6 +45,9 @@
     <input type="submit" value="Submit" name="submit_data">
   </form>
 
+  <img src="data:image/png;base64,{{ plot }}"/>
+
+
   {% csrf_token %}
 
   <select onchange="foo()" id="PublicWords"> 
