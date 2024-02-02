@@ -35,8 +35,8 @@
     <select id="select_position" name="select_position" class="select_position">
         <option value="">--Choose a position--</option>
         {% for position in select_dict.position_list %}
-            {% if selected_dict.position != file %}<option value="{{ position }}">{{ position }}</option>{% endif %}
-            {% if selected_dict.position == file %}<option selected="selected" value="{{ position }}">{{ position }}</option>{% endif %}
+            {% if selected_dict.position != position %}<option value="{{ position }}">{{ position }}</option>{% endif %}
+            {% if selected_dict.position == position %}<option selected="selected" value="{{ position }}">{{ position }}</option>{% endif %}
         {% endfor %}
     </select>
     {% endif %}
