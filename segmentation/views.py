@@ -462,7 +462,7 @@ def index(request):
     #dictionary to provide possible selection choices
     select_dict={
         'experiment_list':[],
-        'dataset_list':[],
+        'sample_list':[],
         'file_list':[],
     }
 
@@ -508,7 +508,7 @@ def index(request):
             if e['name']!=selected_experiment:continue
             print('experiment selected=',e['name'])
             for d in e['samples']:
-                select_dict['samples'].append(a['name'])
+                select_dict['sample_list'].append(a['name'])
             if selected_analysis!='':
                 for a in p['analyses']:
                     if a['name']!=selected_analysis:continue
