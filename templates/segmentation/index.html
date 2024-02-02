@@ -45,7 +45,6 @@
     <input type="submit" value="Submit" name="submit_data">
   </form>
 
-  <img src="data:image/png;base64,{{ plot }}"/>
 
 
   {% csrf_token %}
@@ -75,6 +74,10 @@
     <input type="submit" name="build_cells" value="Build Cells">
     <input type="submit" name="intensity" value="Intensity">
   </form>
+  
+  <br><br><br>
+
+  <img src="data:image/png;base64,{{ plot }}"/>
 
     <br><br><br><br><br><br><br><br><br><br><br><br><br>
     <br><br><br><br><br><br><br><br><br><br><br><br><br>

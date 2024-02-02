@@ -562,7 +562,7 @@ def index(request):
             channels.append(ch)
         print('channels  ',channels)
         for ch in channels:
-            fig.plot(cell_dict[cell]['time'], cell_dict[cell][ch])
+            plt.plot(cell_dict[cell]['time'], cell_dict[cell][ch])
 
     fig.tight_layout()
     fig = plt.gcf()
