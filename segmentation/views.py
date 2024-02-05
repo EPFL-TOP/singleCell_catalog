@@ -499,7 +499,7 @@ def index(request):
         #" inner join experiment_catalog_experimentaltag tag              on tag.id = ecet.experimentaltag_id"
         #" inner join experiment_catalog_experimentaldataset dataset      on e.id   = dataset.experiment_id"
         #" inner join rawdata_catalog_rawdataset rds                      on dataset.raw_dataset_id = rds.id"
-        " where e.name = \"{}\"".format(selected_experiment)
+        " where e.experiment_name = \"{}\"".format(selected_experiment)
         )
     mycursor = cnx.cursor()
     mycursor.execute(query)
