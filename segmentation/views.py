@@ -15,8 +15,7 @@ import matplotlib
 matplotlib.use('agg')
 import io
 import urllib, base64
-import reader as read
-import segmentationTools as segtools
+
 import math
 
 
@@ -39,7 +38,8 @@ if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
                                   port=3306,
                                   database=accesskeys.RD_DB_name)
 
-
+import reader as read
+import segmentationTools as segtools
 
 #___________________________________________________________________________________________
 def deltaR(c1, c2):
