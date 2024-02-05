@@ -466,6 +466,7 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
 
     print('===========================================',cell_dict)
+    uri=None
     if cell_dict != None:
         fig = plt.figure(figsize=(15,5))    
         for cell in cell_dict: 
