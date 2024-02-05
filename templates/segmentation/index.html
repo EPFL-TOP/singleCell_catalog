@@ -82,9 +82,14 @@
 
 <br>
 {% if experiment_dict.experiment_name %}
-<strong>Experiment name:</strong> {{experiment_dict.experiment_name}}</br>
+  <strong>Experiment name:</strong> {{experiment_dict.experiment_name}}</br>
 {% endif %}
-
+{% if experiment_dict.experiment_date %}
+  <strong>Experiment date:</strong> {{experiment_dict.experiment_date}}</br>
+{% endif %}
+{% if experiment_dict.experiment_description %}
+  <strong>Experiment description:</strong> {{experiment_dict.experiment_description}}</br>
+{% endif %}
   <br><br><br>
 
   <img src="data:image/png;base64,{{ plot }}"/>
