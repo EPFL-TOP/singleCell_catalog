@@ -91,9 +91,13 @@
   <strong>Experiment description:</strong> {{experiment_dict.experiment_description}}</br>
 {% endif %}
 
-{% for file in contribution_dict  %}
+{% if contribution_dict  %}
+  <strong>Contributor(s):</strong>
+{% endif %}
+
+{% for contrib in contribution_dict  %}
     <div style="margin-left:60px;margin-top:0px">
-        <strong>{{ forloop.counter }}{{": "}}</strong>{{file.description}} </br>
+        <strong>{{ forloop.counter }}{{": "}}</strong>{{contrib.first_name}} {{", "}} {{contrib.last_name}}  {{", "}} {{file.description}} </br>
     </div>
 {% endfor %}
 
