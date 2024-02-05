@@ -508,9 +508,9 @@ def index(request):
 
     experiment_dict={}
     if len(myresult)==1:
-        experiment_dict['experiment_name']=myresult[1]
-        experiment_dict['experiment_date']=myresult[2]
-        experiment_dict['experiment_description']=myresult[3]
+        experiment_dict['experiment_name']=myresult[0][1]
+        experiment_dict['experiment_date']=myresult[0][2]
+        experiment_dict['experiment_description']=myresult[0][3]
 
 
 
