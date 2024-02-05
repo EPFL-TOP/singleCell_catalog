@@ -465,31 +465,31 @@ def index(request):
 
     # Render the HTML template index.html with the data in the context variable
 
-
-    fig = plt.figure(figsize=(15,5))
     print('===========================================',cell_dict)
-    for cell in cell_dict: 
-        channels=[]
-        for ch in cell_dict[cell]:
-            if ch in channels:continue
-            if 'intensity_' not in ch: continue
-            channels.append(ch)
-        print('channels  ',channels)
-        for ch in channels:
-            normint=[]
-            for p in range(len(cell_dict[cell][ch])):
-                normint.append(cell_dict[cell][ch][p]/cell_dict[cell]['npixels'][p])
-            if '_BF' in ch:continue
-            plt.plot(cell_dict[cell]['time'], normint)
-            print('channel ================== ',ch)
-            print(normint)
-    fig.tight_layout()
-    fig = plt.gcf()
-    buf = io.BytesIO()
-    fig.savefig(buf, format='png')
-    buf.seek(0)
-    string = base64.b64encode(buf.read())
-    uri = urllib.parse.quote(string)
+    if cell_dict != None:
+        fig = plt.figure(figsize=(15,5))    
+        for cell in cell_dict: 
+            channels=[]
+            for ch in cell_dict[cell]:
+                if ch in channels:continue
+                if 'intensity_' not in ch: continue
+                channels.append(ch)
+            print('channels  ',channels)
+            for ch in channels:
+                normint=[]
+                for p in range(len(cell_dict[cell][ch])):
+                    normint.append(cell_dict[cell][ch][p]/cell_dict[cell]['npixels'][p])
+                if '_BF' in ch:continue
+                plt.plot(cell_dict[cell]['time'], normint)
+                print('channel ================== ',ch)
+                print(normint)
+        fig.tight_layout()
+        fig = plt.gcf()
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png')
+        buf.seek(0)
+        string = base64.b64encode(buf.read())
+        uri = urllib.parse.quote(string)
 
 
     query = (
