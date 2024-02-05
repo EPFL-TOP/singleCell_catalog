@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.db import reset_queries
 from django.db import connection
 from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellFrame
+
 import os, sys, json, glob, gc
 import time
 
@@ -14,6 +15,10 @@ import matplotlib
 matplotlib.use('agg')
 import io
 import urllib, base64
+import reader as read
+import segmentationTools as segtools
+import math
+
 
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
@@ -34,118 +39,14 @@ if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
                                   port=3306,
                                   database=accesskeys.RD_DB_name)
 
-import reader as read
-import segmentationTools as segtools
-import math
+
 
 #___________________________________________________________________________________________
 def deltaR(c1, c2):
     return math.sqrt( math.pow((c1['x'] - c2['x']),2) +  math.pow((c1['y'] - c2['y']),2) + math.pow((c1['z'] - c2['z']),2))
 
 #___________________________________________________________________________________________
-def build_frames():
-    test_arch={
-        'projects':[
-#            {
-#                'name':'testproj1',
-#                'analyses':[
-#                    {
-#                    'name':'testproj1_testana1',
-#                    'files':[
-#                        '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy01.nd2',
-#                        '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy02.nd2',
-#                        '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy03.nd2',
-#                        '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy04.nd2'
-#                        ]
-#                    },
-
-#                    {
-#                    'name':'testproj1_testana2',
-#                    'files':[
-#                        '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy05.nd2',
-#                        '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy06.nd2',
-#                        '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy07.nd2',
-#                        '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy08.nd2'
-#                        ]
-#                    }
-#                ]
-#            },
-            {
-                'name':'testproj2',
-                'analyses':[
-                    {
-                    'name':'testproj2_testana1',
-                    'files':[
-                        '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy01.nd2',
- #                       '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy02.nd2',
- #                       '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy03.nd2',
- #                       '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy04.nd2',
-                        '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy05.nd2',
- #                       '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy06.nd2',
- #                       '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy07.nd2',
- #                       '/Users/helsens/data/singleCell/wsc_epfl-wscl_060/wsc_epfl-wscl_060_xy08.nd2'
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
-
-
-    projects = Project.objects.values()
-    list_projects = [entry for entry in projects] 
-    list_projects_uid=[e["name"] for e in list_projects]
-
-    for proj in test_arch["projects"]:
-        if proj['name'] in list_projects_uid: continue
-        project =  Project(name=proj['name'])
-        project.save()
-        list_projects_uid.append(proj['name'])
-        print('adding project with name:  ',proj['name'])
-
-    for p in Project.objects.all():
-        analyses = Analysis.objects.select_related().filter(project = p)
-        list_analyses_uid = [entry.name for entry in analyses] 
-
-        for proj in test_arch["projects"]:
-            if proj['name']!=p.name: 
-                continue
-            for ana in proj['analyses']:
-                if ana['name'] in list_analyses_uid : continue
-                analysis = Analysis(name=ana['name'], project=p)
-                analysis.save()
-                print('    adding analysis with name ',ana['name'])
-
-                for file in ana['files']:
-                    metadata = read.nd2reader_getSampleMetadata(file)
-                    sample = Sample(file_name=file, 
-                                    analysis=analysis,
-                                    number_of_frames=metadata['number_of_frames'], 
-                                    number_of_channels=metadata['number_of_channels'], 
-                                    name_of_channels=metadata['name_of_channels'], 
-                                    experiment_description=metadata['experiment_description'], 
-                                    date=metadata['date'],
-                                    keep_sample=True)
-                    sample.save()
-                    print('        adding sample with name ',file)
-
-                    metadataFrame = read.nd2reader_getFrameMetadata(file)
-                    for f in range(metadata['number_of_frames']):
-                        frame = Frame(sample=sample, 
-                                      number=f, 
-                                      keep_sample=True,
-                                      time=metadataFrame['time'][f],
-                                      pos_x=metadataFrame['x_pos'][f],
-                                      pos_y=metadataFrame['y_pos'][f],
-                                      pos_z=metadataFrame['z_pos'][f],
-                                      height=metadataFrame['height'],
-                                      width=metadataFrame['width'],
-                                      )
-                        print('            adding frame with name ',f)
-                        frame.save()
-
-#___________________________________________________________________________________________
-def build_frames_rds():
+def register_rawdataset():
     query = (
         "select e.*, rds.data_type, rds.data_name, rds.number_of_raw_files, rds.raw_files from experiment_catalog_experiment e"
         " inner join experiment_catalog_experiment_experimental_tag ecet on e.id   = ecet.experiment_id"
@@ -245,6 +146,10 @@ def segment():
         default_segmentation.channels = exp.name_of_channels.split(',')
         default_segmentation.channel = 0
 
+        default_segmentation_2 = segtools.customLocalThresholding_Segmentation(threshold=2., delta=1, npix_min=400, npix_max=4000)
+        default_segmentation_2.channels = exp.name_of_channels.split(',')
+        default_segmentation_2.channel = 0
+
         #check existing segmentation if already registered
         segmentations = Segmentation.objects.select_related().filter(experiment = exp)
         for seg in segmentations:
@@ -319,8 +224,6 @@ def segment():
                     #print('gc collect 1: ',gc.collect())
 
                 print('gc collect 1: ',gc.collect())
-
-
 
 
 #___________________________________________________________________________________________
@@ -466,16 +369,21 @@ def index(request):
     print('The visualisation request method is:', request.method)
     print('The visualisation POST data is:     ', request.POST)
     cell_dict={}
-    if 'build_frames' in request.POST and LOCAL:
-        build_frames()
-    if 'build_frames' in request.POST and LOCAL==False:
-        build_frames_rds()
+
+    #THIS BUILD THE FRAMES FROM THE RAWDATASET CATALOG WITH TAG "SEGMENTME", CREATES UP TO FRAMES
+    if 'register_rawdataset' in request.POST and LOCAL==False:
+        register_rawdataset()
+
+    #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
+    if 'segment' in request.POST:
+        segment()
+
+
     if 'build_cell_frames' in request.POST:
         build_cell_frames()
     if 'build_cells' in request.POST:
         build_cells()
-    if 'segment' in request.POST:
-        segment()
+
 
     if 'intensity' in request.POST:
         intensity()
@@ -483,7 +391,6 @@ def index(request):
         cell_dict = intensity(experiment=request.POST.get('select_experiment'), 
                               well=request.POST.get('select_well'), 
                               position=request.POST.get('select_position'))
-
 
     #dictionary to provide possible selection choices
     select_dict={
@@ -519,7 +426,9 @@ def index(request):
     selected_dict={
         'experiment':'',
         'well':'',
-        'position':''
+        'position':'',
+        'segmentation':'',
+        'segmentation_channel':''
     }
 
     selected_experiment=request.POST.get('select_experiment')
@@ -528,6 +437,10 @@ def index(request):
     selected_dict['well']=selected_well
     selected_position=request.POST.get('select_position')
     selected_dict['position']=selected_position
+    selected_segmentation=request.POST.get('select_segmentation')
+    selected_dict['segmentation']=selected_segmentation
+    selected_segmentation_channel=request.POST.get('select_segmentation_channel')
+    selected_dict['segmentation_channel']=selected_segmentation_channel
 
     if selected_experiment!='':
         for e in experiment_dict['experiments']:
