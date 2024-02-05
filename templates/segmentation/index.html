@@ -81,14 +81,13 @@
   </form>
 
 <br>
-{% if experiment_dict.experiment_name %}
-  <strong>Experiment name:</strong> {{experiment_dict.experiment_name}}</br>
-{% endif %}
-{% if experiment_dict.experiment_date %}
-  <strong>Experiment date:</strong> {{experiment_dict.experiment_date}}</br>
-{% endif %}
-{% if experiment_dict.experiment_description %}
-  <strong>Experiment description:</strong> {{experiment_dict.experiment_description}}</br>
+{% if experiment_dict %}
+  <strong>Experiment details:</strong> 
+  <div style="margin-left:60px;margin-top:0px"></div>
+  <strong>Name:</strong>  {{experiment_dict.experiment_name}}</br>
+  <strong>Date:</strong> {{experiment_dict.experiment_date}}</br>
+  <strong>Description:</strong> {{experiment_dict.experiment_description}}</br>
+</div>
 {% endif %}
 
 {% if contribution_dict  %}
@@ -97,7 +96,7 @@
 
 {% for contrib in contribution_dict  %}
     <div style="margin-left:60px;margin-top:0px">
-        <strong>{{ forloop.counter }}{{": "}}</strong>{{contrib.first_name}} , {{contrib.last_name}}  , {{contrib.description}} </br>
+        <strong>{{ forloop.counter }}{{": "}}</strong>{{contrib.first_name}} {{contrib.last_name}}  : {{contrib.description}} </br>
     </div>
 {% endfor %}
 
