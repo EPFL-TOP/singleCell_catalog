@@ -494,12 +494,12 @@ def index(request):
 
 
     query = (
-        "select e.*, rds.data_type, rds.data_name, rds.number_of_raw_files, rds.raw_files from experiment_catalog_experiment e"
-        " inner join experiment_catalog_experiment_experimental_tag ecet on e.id   = ecet.experiment_id"
-        " inner join experiment_catalog_experimentaltag tag              on tag.id = ecet.experimentaltag_id"
-        " inner join experiment_catalog_experimentaldataset dataset      on e.id   = dataset.experiment_id"
-        " inner join rawdata_catalog_rawdataset rds                      on dataset.raw_dataset_id = rds.id"
-        " where tag.name = \"SegmentMe\""
+        "select e.* from experiment_catalog_experiment e"
+        #" inner join experiment_catalog_experiment_experimental_tag ecet on e.id   = ecet.experiment_id"
+        #" inner join experiment_catalog_experimentaltag tag              on tag.id = ecet.experimentaltag_id"
+        #" inner join experiment_catalog_experimentaldataset dataset      on e.id   = dataset.experiment_id"
+        #" inner join rawdata_catalog_rawdataset rds                      on dataset.raw_dataset_id = rds.id"
+        " where e.name = \"{}\"".format(selected_experiment)
         )
     mycursor = cnx.cursor()
     mycursor.execute(query)
