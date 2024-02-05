@@ -502,10 +502,15 @@ def index(request):
     mycursor.execute(query)
     myresult = mycursor.fetchall()
 
-    for x in myresult:
-        print('experiment ',x)
+    if len(myresult)>1:
+        for x in myresult:
+            print('experiment ',x)
 
-
+    experiment_dict={}
+    if len(myresult)==1:
+        experiment_dict['experiment_name']=myresult[1]
+        experiment_dict['experiment_date']=myresult[2]
+        experiment_dict['experiment_description']=myresult[3]
 
 
 
@@ -514,6 +519,7 @@ def index(request):
         #'num_samples': num_samples,
         'select_dict':select_dict,
         'selected_dict':selected_dict,
+        'experiment_dict':experiment_dict,
         'plot':uri
     }
 

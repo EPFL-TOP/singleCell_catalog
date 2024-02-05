@@ -80,6 +80,11 @@
     <input type="submit" name="intensity" value="Intensity">
   </form>
 
+<br>
+{% if experiment_dict.experiment_name %}
+<strong>Experiment name:</strong> {{experiment_dict.experiment_name}}</br>
+{% endif %}
+
   <br><br><br>
 
   <img src="data:image/png;base64,{{ plot }}"/>
