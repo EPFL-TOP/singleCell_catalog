@@ -90,6 +90,13 @@
 {% if experiment_dict.experiment_description %}
   <strong>Experiment description:</strong> {{experiment_dict.experiment_description}}</br>
 {% endif %}
+
+{% for file in contribution_dict  %}
+    <div style="margin-left:60px;margin-top:0px">
+        <strong>{{ forloop.counter }}{{": "}}</strong>{{file.description}} </br>
+    </div>
+{% endfor %}
+
   <br><br><br>
 
   <img src="data:image/png;base64,{{ plot }}"/>

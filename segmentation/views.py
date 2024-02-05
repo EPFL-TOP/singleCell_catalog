@@ -512,7 +512,24 @@ def index(request):
         experiment_dict['experiment_date']=myresult[0][2]
         experiment_dict['experiment_description']=myresult[0][3]
 
+    query = (   
+        "select contribution.description, person.first_name, person.last_name from experiment_catalog_experiment e"
+        " inner join experiment_catalog_experiment_contribution    contrib_exp         on e.id                                = contrib_exp.experiment_id"
+        " inner join contribution_catalog_contribution             contribution        on contrib_exp.contribution_id         = contribution.id"
+        " inner join contribution_catalog_contribution_contributor contrib_contributor on contrib_contributor.contribution_id = contribution.id"
+        " inner join contribution_catalog_contributor              contributor         on contrib_contributor.contributor_id  = contributor.id"
+        " left join contribution_catalog_person                   person              on person.id                      = contributor.person_id"
+        " where e.experiment_name = \"{}\"".format(selected_experiment)
+        )
 
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    myresult = mycursor.fetchall()
+
+    contribution_dict=[]
+    for x in myresult:
+        tmpdict={'description':x[0], 'first_name':x[1], 'last_name':x[2]}
+        contribution_dict.append(tmpdict)
 
 
     context = {
@@ -520,6 +537,7 @@ def index(request):
         'select_dict':select_dict,
         'selected_dict':selected_dict,
         'experiment_dict':experiment_dict,
+        'contribution_dict':contribution_dict,
         'plot':uri
     }
 
