@@ -86,7 +86,7 @@
   <div style="margin-left:60px;margin-top:0px">
   <strong>Name:</strong>  {{experiment_dict.experiment_name}}</br>
   <strong>Date:</strong> {{experiment_dict.experiment_date}}</br>
-  <strong>Description:</strong> {{experiment_dict.experiment_description}}</br>
+  {% if experiment_dict.experiment_description %}<strong>Description:</strong> {{experiment_dict.experiment_description}}</br>{% endif %}
 </div>
 {% endif %}
 
@@ -94,19 +94,25 @@
   <strong>Contributor(s):</strong>
   {% for contrib in contribution_dict  %}
       <div style="margin-left:60px;margin-top:0px">
-          <strong>{{ forloop.counter }}{{": "}}</strong>{{contrib.first_name}} {{contrib.last_name}}  : {{contrib.description}} </br>
+          <strong>{{ forloop.counter }}{{": "}}</strong>{{contrib.first_name}} {{contrib.last_name}};  {{contrib.description}} </br>
       </div>
   {% endfor %}
 {% endif %}
 
 {% if treatment_dict %}
-<strong>Treatments:</strong> 
+<strong>Treatment(s):</strong> 
 {% for treat in treatment_dict  %}
     <div style="margin-left:60px;margin-top:0px">
-        <strong>{{ Name }}{{": "}}</strong>{{treat.name}}  </br>
+      <strong>Name:</strong>{{treat.name}}  </br>
+      <strong>Type:</strong>{{treat.type}}  </br>
+      {% if treat.concentration %}<strong>Concentration:</strong>{{treat.concentration}}  </br>{% endif %}
+      {% if treat.developmental_stage %}<strong>Developmental Stage:</strong>{{treat.developmental_stage}}  </br>{% endif %}
+      {% if treat.duration %}<strong>Duration:</strong>{{treat.duration}}  </br>{% endif %}
+      {% if treat.solvent %}<strong>Solvent:</strong>{{treat.solvent}}  </br>{% endif %}
+      {% if treat.temperature %}<strong>Temperature:</strong>{{treat.temperature}}  </br>{% endif %}
+      {% if treat.description %}<strong>description:</strong>{{treat.description}}  </br>{% endif %}
+      {% if forloop.counter != treatment_dict|length %}<hr style="width: 100px;margin-left: 0;">{% endif %}
 
-        tmpdict={'name':x[0], 'type':x[1], 'concentration':x[2], 'description':x[3], 
-        'developmental_stage':x[4], 'duration':x[5], 'solvent':x[6], 'temperature':x[7]}
     </div>
 {% endfor %}
 
