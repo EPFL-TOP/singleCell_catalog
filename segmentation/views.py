@@ -190,11 +190,12 @@ def segment():
             print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
 
+            counter_samp=0
             for s in samples:
-
-                if 'xy06' in s.file_name or 'xy74' in s.file_name: 
+                if counter_samp==4: 
                     print('===========================================')
                     break
+                counter_samp+=1
                 print('         ---- SEGMENTATION sample name ',s.file_name)
                 frames = Frame.objects.select_related().filter(sample = s)
                 print('getting the images')
