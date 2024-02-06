@@ -82,13 +82,17 @@
 
 <br>
 
-<div class="side">
-{% if experiment_dict %}
+<div class="row">
+  <div class="side">
+
+    {% block sidebar %}
+    {% if experiment_dict %}
   <strong>Experiment details:</strong> 
   <div style="margin-left:60px;margin-top:0px">
   <strong>Name:</strong>  {{experiment_dict.experiment_name}}</br>
   <strong>Date:</strong> {{experiment_dict.experiment_date}}</br>
   {% if experiment_dict.experiment_description %}<strong>Description:</strong> {{experiment_dict.experiment_description}}</br>{% endif %}
+</div>
 </div>
 {% endif %}
 </div>
