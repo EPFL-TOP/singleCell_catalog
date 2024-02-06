@@ -158,14 +158,13 @@
         <strong>Mutations:</strong> 
         {% for j in i.mutations  %}
           ({{j.name}}, {{j.grade}})
-        {% endfor %}
+        {% endfor %}</br>
         <strong>Parent(s) Line:</strong> 
-        <div style="margin-left:70px;margin-top:0px">
+        <div style="margin-left:20px;margin-top:0px">
         {% for j in i.parents  %}
           <strong>{{forloop.counter}}:</strong> Mutations: {{j.mutation_grade}}, Strain: {{j.strain_name}}, 
           DoB: {{j.date_of_birth}}, Age at crossing: {{j.age_at_crossing}}, N Females: {{j.number_of_female}},
-           N Males: {{j.number_of_male}} N Unknown: {{j.number_of_unknown}}
-          ({{j.name}}, {{j.grade}})
+           N Males: {{j.number_of_male}} N Unknown: {{j.number_of_unknown}}</br>
         {% endfor %}
         </div>
 
