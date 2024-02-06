@@ -594,6 +594,64 @@ def index(request):
         tmpdict={'name':x[0], 'instrument_name':x[1], 'instrument_name':x[2], 'instrument_name':x[3]}
         instrumental_dict.append(tmpdict)
 
+    #GET THE EXPERIMENTAL DATASET DETAILS: SAMPLE
+    query = (
+        "select samp.id, samp.specie, samp.date_of_crossing, samp.developmental_stage, samp.pyrat_crossing_id from rawdata_catalog_rawdataset rds"
+        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
+        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
+        " inner join experimentalcondition_catalog_experimentalcondition_sample expcond_samp on expcond.id  = expcond_samp.experimentalcondition_id"
+        " inner join experimentalcondition_catalog_sample samp          on samp.id = expcond_samp.sample_id"
+        " where rds.data_name = \"{}\"".format(selected_well)
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    sample_res = mycursor.fetchall()
+
+    query = (
+        "select samp.id, par.age_at_crossing, par.date_of_birth, par.mutation_grade, par.number_of_female, par.number_of_male, par.number_of_unknown, par.strain_name from rawdata_catalog_rawdataset rds"
+        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
+        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
+        " inner join experimentalcondition_catalog_experimentalcondition_sample expcond_samp on expcond.id  = expcond_samp.experimentalcondition_id"
+        " inner join experimentalcondition_catalog_sample samp          on samp.id = expcond_samp.sample_id"
+        " inner join experimentalcondition_catalog_sample_parent samp_par on samp_par.sample_id = samp.id"
+        " inner join experimentalcondition_catalog_parent par on par.id = samp_par.parent_id"
+        " where rds.data_name = \"ppf001_well3\""
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    parents_res = mycursor.fetchall()   
+
+    query = (
+        "select samp.id, mutname.name, mutgrade.grade from rawdata_catalog_rawdataset rds"
+        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
+        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
+        " inner join experimentalcondition_catalog_experimentalcondition_sample expcond_samp on expcond.id  = expcond_samp.experimentalcondition_id"
+        " inner join experimentalcondition_catalog_sample samp          on samp.id = expcond_samp.sample_id"
+        " inner join experimentalcondition_catalog_sample_mutation samp_mut on samp_mut.sample_id = samp.id"
+        " inner join experimentalcondition_catalog_mutation mut on mut.id = samp_mut.mutation_id"
+        " inner join experimentalcondition_catalog_mutationname mutname on mutname.id = mut.name_id"
+        " inner join experimentalcondition_catalog_mutationgrade mutgrade on mutgrade.id = mut.grade_id"
+        " where rds.data_name = \"ppf001_well3\""
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    mutation_res = mycursor.fetchall()
+
+
+    sample_dict=[]
+    for samp in sample_res:
+        parents=[]
+        for par in parents_res:
+            if par[0]==samp[0]:
+                parents.append({'age_at_crossing':par[1], 'date_of_birth':par[2], 'mutation_grade':par[3], 'number_of_female':par[4], 
+                                'number_of_male':par[5], 'number_of_unknown':par[6], 'strain_name':par[7]})
+        mutations=[]
+        for mut in mutation_res:
+            if mut[0]==samp[0]:
+                mutations.append({'name':mut[1], 'grade':mut[2]})
+        
+        tmpdict={'specie':samp[1], 'date_of_crossing':samp[2], 'developmental_stage':samp[3], 'pyrat_crossing_id':samp[4], 'parents':parents, 'mutations':mutations}
+        sample_dict.append(tmpdict)
 
     context = {
         #'num_samples': num_samples,
@@ -604,6 +662,7 @@ def index(request):
         'treatment_dict':treatment_dict,
         'injection_dict':injection_dict,
         'instrumental_dict':instrumental_dict,
+        'sample_dict':sample_dict,
         'plot':uri
     }
 

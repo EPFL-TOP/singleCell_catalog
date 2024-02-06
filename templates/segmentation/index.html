@@ -147,6 +147,22 @@
   {% endfor %}
 {% endif %}
 
+{% if sample_dict %}
+  <strong>Sample(s):</strong> 
+  {% for i in sample_dict  %}
+      <div style="margin-left:60px;margin-top:0px">
+        <strong>Specie:</strong>{{i.specie}}  </br>
+        <strong>Date of crossing:</strong>{{i.date_of_crossing}}  </br>
+        <strong>Developmental Stage:</strong>{{i.developmental_stage}}  </br>
+        <strong>Pyrat XID:</strong>{{i.pyrat_crossing_id}}  </br>
+
+
+      </div>
+  {% endfor %}
+{% endif %}
+
+
+
   <br><br><br>
 
   <img src="data:image/png;base64,{{ plot }}"/>
