@@ -155,7 +155,7 @@
         <strong>Date of crossing:</strong>{{i.date_of_crossing}}  </br>
         <strong>Developmental Stage:</strong>{{i.developmental_stage}}  </br>
         <strong>Pyrat XID:</strong>{{i.pyrat_crossing_id}}  </br>
-        <strong>Mutations:</strong>i.mutations
+        <strong>Mutations:</strong> {{i.mutations}}
         {% for j in i.mutations  %}
           ({{j.name}}, {{j.grade}})
         {% endfor %}
