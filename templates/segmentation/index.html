@@ -138,10 +138,10 @@
   {% for i in instrumental_dict  %}
       <div style="margin-left:60px;margin-top:0px">
         <strong>Name:</strong>{{i.name}}  </br>
-        <strong>Instrument:</strong>{{i.intrument_name}}  </br>
+        <strong>Instrument:</strong>{{i.instrument_name}}  </br>
         {% if i.laser_intensity %}<strong>Laser Intensity:</strong>{{i.laser_intensity}}  </br>{% endif %}
         {% if i.laser_wavelength %}<strong>Laser WaveLength:</strong>{{i.laser_wavelength}}  </br>{% endif %}
-        {% if forloop.counter != injection_dict|length %}<hr style="width: 100px;margin-left: 0;">{% endif %}
+        {% if forloop.counter != instrumental_dict|length %}<hr style="width: 100px;margin-left: 0;">{% endif %}
 
       </div>
   {% endfor %}
