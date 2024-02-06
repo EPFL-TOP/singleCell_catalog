@@ -458,7 +458,9 @@ def index(request):
                         #select_dict['file_list'].append(os.path.split(f)[-1])
                         select_dict['position_list'].append(f)
 
+    select_dict['experiment_list']=sorted(select_dict['experiment_list'])
     select_dict['well_list']=sorted(select_dict['well_list'])
+    select_dict['position_list']=sorted(select_dict['position_list'])
     #print('experiment_dict     =  ', experiment_dict)
     #print('selected_project =  ', selected_project)
     print('selected_dict    =  ', selected_dict)
