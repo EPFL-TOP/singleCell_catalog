@@ -539,7 +539,7 @@ def index(request):
         " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
         " inner join experimentalcondition_catalog_experimentalcondition_treatment expcond_treat on expcond.id  = expcond_treat.experimentalcondition_id"
         " inner join experimentalcondition_catalog_treatment treat          on treat.id = expcond_treat.treatment_id"
-        " where rds.data_name = \"{}\"".format(selected_position)
+        " where rds.data_name = \"{}\"".format(selected_well)
         )
     mycursor = cnx.cursor()
     mycursor.execute(query)
