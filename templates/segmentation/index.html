@@ -100,24 +100,38 @@
 {% endif %}
 
 {% if treatment_dict %}
-<strong>Treatment(s):</strong> 
-{% for treat in treatment_dict  %}
-    <div style="margin-left:60px;margin-top:0px">
-      <strong>Name:</strong>{{treat.name}}  </br>
-      <strong>Type:</strong>{{treat.type}}  </br>
-      {% if treat.concentration %}<strong>Concentration:</strong>{{treat.concentration}}  </br>{% endif %}
-      {% if treat.developmental_stage %}<strong>Developmental Stage:</strong>{{treat.developmental_stage}}  </br>{% endif %}
-      {% if treat.duration %}<strong>Duration:</strong>{{treat.duration}}  </br>{% endif %}
-      {% if treat.solvent %}<strong>Solvent:</strong>{{treat.solvent}}  </br>{% endif %}
-      {% if treat.temperature %}<strong>Temperature:</strong>{{treat.temperature}}  </br>{% endif %}
-      {% if treat.description %}<strong>description:</strong>{{treat.description}}  </br>{% endif %}
-      {% if forloop.counter != treatment_dict|length %}<hr style="width: 100px;margin-left: 0;">{% endif %}
+  <strong>Treatment(s):</strong> 
+  {% for treat in treatment_dict  %}
+      <div style="margin-left:60px;margin-top:0px">
+        <strong>Name:</strong>{{treat.name}}  </br>
+        <strong>Type:</strong>{{treat.type}}  </br>
+        {% if treat.concentration %}<strong>Concentration:</strong>{{treat.concentration}}  </br>{% endif %}
+        {% if treat.developmental_stage %}<strong>Developmental Stage:</strong>{{treat.developmental_stage}}  </br>{% endif %}
+        {% if treat.duration %}<strong>Duration:</strong>{{treat.duration}}  </br>{% endif %}
+        {% if treat.solvent %}<strong>Solvent:</strong>{{treat.solvent}}  </br>{% endif %}
+        {% if treat.temperature %}<strong>Temperature:</strong>{{treat.temperature}}  </br>{% endif %}
+        {% if treat.description %}<strong>Description:</strong>{{treat.description}}  </br>{% endif %}
+        {% if forloop.counter != treatment_dict|length %}<hr style="width: 100px;margin-left: 0;">{% endif %}
 
-    </div>
-{% endfor %}
-
+      </div>
+  {% endfor %}
 {% endif %}
 
+{% if injection_dict %}
+  <strong>Injection(s):</strong> 
+  {% for injec in injection_dict  %}
+      <div style="margin-left:60px;margin-top:0px">
+        <strong>Name:</strong>{{injec.name}}  </br>
+        <strong>Type:</strong>{{injec.type}}  </br>
+        {% if injec.concentration %}<strong>Concentration:</strong>{{injec.concentration}}  </br>{% endif %}
+        {% if injec.developmental_stage %}<strong>Developmental Stage:</strong>{{injec.developmental_stage}}  </br>{% endif %}
+        {% if inject.slim_id %}<strong>Slim ID:</strong>{{injec.slim_id}}  </br>{% endif %}
+        {% if injec.description %}<strong>Description:</strong>{{injec.description}}  </br>{% endif %}
+        {% if forloop.counter != injection_dict|length %}<hr style="width: 100px;margin-left: 0;">{% endif %}
+
+      </div>
+  {% endfor %}
+{% endif %}
 
   <br><br><br>
 

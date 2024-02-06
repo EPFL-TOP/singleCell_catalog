@@ -556,7 +556,28 @@ def index(request):
                  'developmental_stage':x[4], 'duration':x[5], 'solvent':x[6], 'temperature':x[7]}
         treatment_dict.append(tmpdict)
 
-    print(treatment_dict)
+
+    #GET THE EXPERIMENTAL DATASET DETAILS: INJECTION
+    query = (
+        "select inj.name, inj.type, inj.concentration, inj.description, inj.developmental_stage, inj.slim_id from rawdata_catalog_rawdataset rds"
+        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
+        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
+        " inner join experimentalcondition_catalog_experimentalcondition_injection expcond_inj on expcond.id  = expcond_inj.experimentalcondition_id"
+        " inner join experimentalcondition_catalog_injection inj          on inj.id = expcond_inj.injection_id"
+        " where rds.data_name = \"{}\"".format(selected_well)
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    myresult = mycursor.fetchall()
+
+    injection_dict=[]
+    for x in myresult:
+        tmpdict={'name':x[0], 'type':x[1], 'concentration':x[2], 'description':x[3], 
+                 'developmental_stage':x[4], 'slim_id':x[5]}
+        injection_dict.append(tmpdict)
+
+
+
 
     context = {
         #'num_samples': num_samples,
@@ -565,6 +586,7 @@ def index(request):
         'experiment_dict':experiment_dict,
         'contribution_dict':contribution_dict,
         'treatment_dict':treatment_dict,
+        'injection_dict':injection_dict,
         'plot':uri
     }
 
