@@ -92,13 +92,26 @@
 
 {% if contribution_dict  %}
   <strong>Contributor(s):</strong>
+  {% for contrib in contribution_dict  %}
+      <div style="margin-left:60px;margin-top:0px">
+          <strong>{{ forloop.counter }}{{": "}}</strong>{{contrib.first_name}} {{contrib.last_name}}  : {{contrib.description}} </br>
+      </div>
+  {% endfor %}
 {% endif %}
 
-{% for contrib in contribution_dict  %}
+{% if treatment_dict %}
+<strong>Treatments:</strong> 
+{% for treat in treatment_dict  %}
     <div style="margin-left:60px;margin-top:0px">
-        <strong>{{ forloop.counter }}{{": "}}</strong>{{contrib.first_name}} {{contrib.last_name}}  : {{contrib.description}} </br>
+        <strong>{{ Name }}{{": "}}</strong>{{treat.name}}  </br>
+
+        tmpdict={'name':x[0], 'type':x[1], 'concentration':x[2], 'description':x[3], 
+        'developmental_stage':x[4], 'duration':x[5], 'solvent':x[6], 'temperature':x[7]}
     </div>
 {% endfor %}
+
+{% endif %}
+
 
   <br><br><br>
 

@@ -492,7 +492,7 @@ def index(request):
         string = base64.b64encode(buf.read())
         uri = urllib.parse.quote(string)
 
-
+    #GET THE EXPERIMENT DETAILS
     query = (
         "select e.* from experiment_catalog_experiment e"
         " where e.experiment_name = \"{}\"".format(selected_experiment)
@@ -512,13 +512,14 @@ def index(request):
         experiment_dict['experiment_date']=myresult[0][2]
         experiment_dict['experiment_description']=myresult[0][3]
 
+    #GET THE CONTRIBUTION TO THE EXPERIMENT 
     query = (   
         "select contribution.description, person.first_name, person.last_name from experiment_catalog_experiment e"
         " inner join experiment_catalog_experiment_contribution    contrib_exp         on e.id                                = contrib_exp.experiment_id"
         " inner join contribution_catalog_contribution             contribution        on contrib_exp.contribution_id         = contribution.id"
         " inner join contribution_catalog_contribution_contributor contrib_contributor on contrib_contributor.contribution_id = contribution.id"
         " inner join contribution_catalog_contributor              contributor         on contrib_contributor.contributor_id  = contributor.id"
-        " left join contribution_catalog_person                   person              on person.id                      = contributor.person_id"
+        " inner join contribution_catalog_person                   person              on person.id                      = contributor.person_id"
         " where e.experiment_name = \"{}\"".format(selected_experiment)
         )
 
@@ -531,6 +532,26 @@ def index(request):
         tmpdict={'description':x[0], 'first_name':x[1], 'last_name':x[2]}
         contribution_dict.append(tmpdict)
 
+    #GET THE EXPERIMENTAL DATASET DETAILS: TREATMENT
+    query = (
+        "select treat.name, treat.type, treat.concentration, treat.description, treat.developmental_stage, treat.duration, treat.solvent, treat.temperature from rawdata_catalog_rawdataset rds"
+        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
+        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
+        " inner join experimentalcondition_catalog_experimentalcondition_treatment expcond_treat on expcond.id  = expcond_treat.experimentalcondition_id"
+        " inner join experimentalcondition_catalog_treatment treat          on treat.id = expcond_treat.treatment_id"
+        " where rds.data_name = \"{}\"".format(selected_position)
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    myresult = mycursor.fetchall()
+
+    treatment_dict=[]
+    for x in myresult:
+        tmpdict={'name':x[0], 'type':x[1], 'concentration':x[2], 'description':x[3], 
+                 'developmental_stage':x[4], 'duration':x[5], 'solvent':x[6], 'temperature':x[7]}
+        treatment_dict.append(tmpdict)
+
+
 
     context = {
         #'num_samples': num_samples,
@@ -538,6 +559,7 @@ def index(request):
         'selected_dict':selected_dict,
         'experiment_dict':experiment_dict,
         'contribution_dict':contribution_dict,
+        'treatment_dict':treatment_dict,
         'plot':uri
     }
 
