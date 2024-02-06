@@ -155,7 +155,12 @@
         <strong>Date of crossing:</strong>{{i.date_of_crossing}}  </br>
         <strong>Developmental Stage:</strong>{{i.developmental_stage}}  </br>
         <strong>Pyrat XID:</strong>{{i.pyrat_crossing_id}}  </br>
+        <strong>Mutations:</strong>
+        {% for j in i.mutations  %}
+          ({{j.name}}, {{j.grade}})
+        {% endfor %}
 
+        {% if forloop.counter != sample_dict|length %}<hr style="width: 100px;margin-left: 0;">{% endif %}
 
       </div>
   {% endfor %}
