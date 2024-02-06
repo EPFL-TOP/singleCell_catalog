@@ -557,7 +557,7 @@ def index(request):
         treatment_dict.append(tmpdict)
 
 
-    #GET THE EXPERIMENTAL DATASET DETAILS: INJECTION
+    #GET THE EXPERIMENTAL DATASET DETAILS: INSTRUMENTAL CONDITIONS
     query = (
         "select inj.name, inj.type, inj.concentration, inj.description, inj.developmental_stage, inj.slim_id from rawdata_catalog_rawdataset rds"
         " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
@@ -576,7 +576,23 @@ def index(request):
                  'developmental_stage':x[4], 'slim_id':x[5]}
         injection_dict.append(tmpdict)
 
+    #GET THE EXPERIMENTAL DATASET DETAILS: INJECTION
+    query = (
+        "select inst.name, inst.instrument_name, inst.instrument_name, inst.instrument_name from rawdata_catalog_rawdataset rds"
+        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
+        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
+        " inner join experimentalcondition_catalog_experimentalcondition_instrumeceac expcond_inst on expcond.id  = expcond_inst.experimentalcondition_id"
+        " inner join experimentalcondition_catalog_instrumentalcondition inst          on inst.id = expcond_inst.instrumentalcondition_id"
+        " where rds.data_name = \"{}\"".format(selected_well)
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    myresult = mycursor.fetchall()
 
+    instrumental_dict=[]
+    for x in myresult:
+        tmpdict={'name':x[0], 'instrument_name':x[1], 'instrument_name':x[2], 'instrument_name':x[3]}
+        instrumental_dict.append(tmpdict)
 
 
     context = {
@@ -587,6 +603,7 @@ def index(request):
         'contribution_dict':contribution_dict,
         'treatment_dict':treatment_dict,
         'injection_dict':injection_dict,
+        'instrumental_dict':instrumental_dict,
         'plot':uri
     }
 
