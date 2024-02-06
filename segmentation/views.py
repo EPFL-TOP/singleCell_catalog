@@ -551,7 +551,7 @@ def index(request):
                  'developmental_stage':x[4], 'duration':x[5], 'solvent':x[6], 'temperature':x[7]}
         treatment_dict.append(tmpdict)
 
-
+    print(treatment_dict)
 
     context = {
         #'num_samples': num_samples,
