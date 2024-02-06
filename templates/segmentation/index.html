@@ -82,7 +82,7 @@
 
 <br>
 
-<div class="navbar">
+<div class="side">
 {% if experiment_dict %}
   <strong>Experiment details:</strong> 
   <div style="margin-left:60px;margin-top:0px">
@@ -91,7 +91,7 @@
   {% if experiment_dict.experiment_description %}<strong>Description:</strong> {{experiment_dict.experiment_description}}</br>{% endif %}
 </div>
 {% endif %}
-
+</div>
 {% if contribution_dict  %}
   <strong>Contributor(s):</strong>
   {% for contrib in contribution_dict  %}
@@ -176,7 +176,6 @@
   {% endfor %}
 {% endif %}
 
-</div>
 
   <br><br><br>
 
