@@ -615,7 +615,7 @@ def index(request):
         " inner join experimentalcondition_catalog_sample samp          on samp.id = expcond_samp.sample_id"
         " inner join experimentalcondition_catalog_sample_parent samp_par on samp_par.sample_id = samp.id"
         " inner join experimentalcondition_catalog_parent par on par.id = samp_par.parent_id"
-        " where rds.data_name = \"ppf001_well3\""
+        " where rds.data_name = \"{}\"".format(selected_well)
         )
     mycursor = cnx.cursor()
     mycursor.execute(query)
@@ -631,7 +631,7 @@ def index(request):
         " inner join experimentalcondition_catalog_mutation mut on mut.id = samp_mut.mutation_id"
         " inner join experimentalcondition_catalog_mutationname mutname on mutname.id = mut.name_id"
         " inner join experimentalcondition_catalog_mutationgrade mutgrade on mutgrade.id = mut.grade_id"
-        " where rds.data_name = \"ppf001_well3\""
+        " where rds.data_name = \"{}\"".format(selected_well)
         )
     mycursor = cnx.cursor()
     mycursor.execute(query)
