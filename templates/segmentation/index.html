@@ -24,7 +24,7 @@
   <label for="experiment-select">Select an experiment:</label>
   <form method="POST">
     {% csrf_token %}
-    <select  id="select_experiment" name="select_experiment" onchange="foo()>
+    <select  id="select_experiment" name="select_experiment" onchange="foo()">
         <option value="">--Choose an experiment--</option>
         {% for experiment in select_dict.experiment_list %}
             {% if selected_dict.experiment != experiment %}<option value="{{ experiment }}">{{ experiment }}</option>{% endif %}
