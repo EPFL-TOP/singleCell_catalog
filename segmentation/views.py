@@ -539,7 +539,12 @@ def build_ROIs():
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            counter_samp=0
             for s in samples:
+                if counter_samp==4: 
+                    print('===================BREAK ROIS========================')
+                    break
+                counter_samp+=1
                 rois = ROI.objects.select_related().filter(sample = s)
                 if len(rois)>0: continue
                 images, channels = read.nd2reader_getFrames(s.file_name)
