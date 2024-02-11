@@ -143,8 +143,10 @@ class ROI(models.Model):
     max_row = models.FloatField(default=-9999, help_text="max row ROI")
     max_col = models.FloatField(default=-9999, help_text="max col ROI")
     sample  = models.ForeignKey(Sample, default='',on_delete=models.CASCADE)
-
-
+    roi_number = models.PositiveSmallIntegerField(default=-1, help_text="ROI number")
+    
+    def __str__(self):
+        return '{0}, {1}'.format(self.roi_number, self.sample.file_name)
 
 
 #############################################################################################

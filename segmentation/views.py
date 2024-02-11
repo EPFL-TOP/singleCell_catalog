@@ -544,8 +544,13 @@ def build_ROIs():
                 if len(rois)>0: continue
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 ROIs=segtools.get_ROIs(images)
-                for r in ROIs:
-                    roi = ROI(min_row = r[0], min_col = r[1], max_row = r[2], max_col = r[3], sample = s)
+                for r in range(len(ROIs)):
+                    roi = ROI(min_row = ROIs[r][0], 
+                              min_col = ROIs[r][1], 
+                              max_row = ROIs[r][2], 
+                              max_col = ROIs[r][3], 
+                              sample = s, 
+                              roi_number=r)
                     roi.save()
 
 
