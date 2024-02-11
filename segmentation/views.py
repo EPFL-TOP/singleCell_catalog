@@ -729,7 +729,7 @@ def index(request):
     
 
     #create a plot
-    p = bokeh.figure(width=400, height=400)
+    p = bokeh.plotting.figure(width=400, height=400)
     p.x_range.range_padding = p.y_range.range_padding = 0
 
     color = bokeh.models.LinearColorMapper(bokeh.palettes.gray(256))
