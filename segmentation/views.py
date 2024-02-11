@@ -18,8 +18,14 @@ import urllib, base64
 
 import math
 
-from bokeh.plotting import figure
-from bokeh.embed import components
+import bokeh.charts
+import bokeh.charts.utils
+import bokeh.io
+import bokeh.models
+import bokeh.palettes
+import bokeh.plotting
+import bokeh.embed
+
 
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
@@ -726,7 +732,21 @@ def index(request):
     
 
     #create a plot
-    plot = figure(width=400)
+    p = bokeh.figure(width=400, height=400)
+    p.x_range.range_padding = p.y_range.range_padding = 0
+
+    color = bokeh.models.LinearColorMapper(bokeh.palettes.gray(256))
+    # Display the image
+    images, channels = read.nd2reader_getFrames('/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0060_well1/raw_files/wsc_epfl-wscl_060_xy01.nd2')
+    BF_images=images.transpose(1,0,2,3)
+    BF_images=BF_images[0]
+    im=BF_images[0]
+    n, m = im.shape 
+    im_bokeh = p.image(image=[im], x=0, y=0, dw=m, dh=n, color_mapper=color)
+
+
+
+
     # add a circle renderer with a size, color, and alpha
     plot.circle([1, 2, 3, 4, 5], [6, 7, 2, 4, 5], size=20, color="navy", alpha=0.5)
     script, div = components(plot)
