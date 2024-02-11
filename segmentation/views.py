@@ -18,6 +18,8 @@ import urllib, base64
 
 import math
 
+from bokeh.plotting import figure
+from bokeh.embed import components
 
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
@@ -723,6 +725,12 @@ def index(request):
         sample_dict = get_sample_details(selected_well)
     
 
+    #create a plot
+    plot = figure(plot_width=400, plot_height=400)
+ 
+    # add a circle renderer with a size, color, and alpha
+    plot.circle([1, 2, 3, 4, 5], [6, 7, 2, 4, 5], size=20, color="navy", alpha=0.5)
+    script, div = components(plot)
 
     context = {
         #'num_samples': num_samples,
@@ -734,7 +742,12 @@ def index(request):
         'injection_dict':injection_dict,
         'instrumental_dict':instrumental_dict,
         'sample_dict':sample_dict,
-        'plot':uri
+        'plot':uri, 
+        'script': script, 'div': div
     }
+
+
+
+ 
 
     return render(request, 'segmentation/index.html', context=context)
