@@ -22,6 +22,7 @@ import bokeh.models
 import bokeh.palettes
 import bokeh.plotting
 import bokeh.embed
+import bokeh.layouts
 
 
 LOCAL=True
@@ -741,12 +742,19 @@ def index(request):
     n, m = im.shape 
     im_bokeh = p.image(image=[im], x=0, y=0, dw=m, dh=n, color_mapper=color)
 
+    x = list(range(12)) 
+    y = [i**2 for i in x] 
+  
+    output_file = ('range_slider.html') 
 
-
-
+    range_slider = bokeh.models.RangeSlider(title=" Adjust X-Axis range", start=0, end=12, step=1, value=(p.x_range.start, p.x_range.end), ) 
+    range_slider.js_link("value", p.x_range, "start", attr_selector=0) 
+    range_slider.js_link("value", p.x_range, "end", attr_selector=1) 
+  
+    layout = bokeh.layouts.layout([range_slider], [p]) 
     # add a circle renderer with a size, color, and alpha
     #plot.circle([1, 2, 3, 4, 5], [6, 7, 2, 4, 5], size=20, color="navy", alpha=0.5)
-    script, div = bokeh.embed.components(p)
+    script, div = bokeh.embed.components(layout)
 
     context = {
         #'num_samples': num_samples,
