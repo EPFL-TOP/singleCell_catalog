@@ -6,23 +6,16 @@
 </style>
 
   <h1>Select project </h1>
-  <script type="text/javascript">
-    function foo() {
-        // function body here
-        // for example
-        d = document.getElementById("PublicWords").value;
-        alert(d);
-    }
-    </script>
-      {% csrf_token %}
 
-      <select onchange="foo()" id="PublicWords"> 
+  {% csrf_token %}
+
+  <select onchange="foo()" id="PublicWords"> 
         <option value="">All</option>
         <option value="">Draft</option>
         <option value="">Approved</option>
         <option value="">Approved ZWNJ</option>
         <option value="">Rejected</option>
-    </select>  
+  </select>  
     
         
       <div class="result"></div>
