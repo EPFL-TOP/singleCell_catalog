@@ -136,11 +136,18 @@ class Contour(models.Model):
     #uid_name             = models.CharField(default='', max_length=1000, help_text="unique name ID used not to create multiple times the same contour. Based on the input file name, frame number, algorithm type, version and parameters")
 
 
+#___________________________________________________________________________________________
+class ROI(models.Model):
+    min_row = models.FloatField(default=-9999, help_text="min row ROI")
+    min_col = models.FloatField(default=-9999, help_text="min col ROI")
+    max_row = models.FloatField(default=-9999, help_text="max row ROI")
+    max_col = models.FloatField(default=-9999, help_text="max col ROI")
+    sample  = models.ForeignKey(Sample, default='',on_delete=models.CASCADE)
 
 
 
 
-
+#############################################################################################
 
 
 

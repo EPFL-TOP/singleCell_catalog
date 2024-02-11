@@ -14,7 +14,20 @@
         alert(d);
     }
     </script>
+      {% csrf_token %}
+
+      <select onchange="foo()" id="PublicWords"> 
+        <option value="">All</option>
+        <option value="">Draft</option>
+        <option value="">Approved</option>
+        <option value="">Approved ZWNJ</option>
+        <option value="">Rejected</option>
+    </select>  
     
+        
+      <div class="result"></div>
+
+
   <label for="experiment-select">Select an experiment:</label>
   <form method="POST">
     {% csrf_token %}
@@ -52,19 +65,6 @@
 
 
 
-  {% csrf_token %}
-
-  <select onchange="foo()" id="PublicWords"> 
-    <option value="">All</option>
-    <option value="">Draft</option>
-    <option value="">Approved</option>
-    <option value="">Approved ZWNJ</option>
-    <option value="">Rejected</option>
-</select>  
-
-    
-  <div class="result"></div>
-  
 
   <form method="POST">
     {% csrf_token %}
@@ -73,7 +73,9 @@
 
   <form method="POST">
     {% csrf_token %}
-    <input type="submit" name="register_rawdataset" value="Register RAW datasets">
+    <input type="submit" name="register_rawdataset" value="Register RAW datasets (build frames)">
+    <input type="submit" name="build_ROIs" value="Build ROIs (sample)">
+
     <input type="submit" name="segment" value="Segment">
     <input type="submit" name="build_cell_frames" value="Build Cell Frames">
     <input type="submit" name="build_cells" value="Build Cells">

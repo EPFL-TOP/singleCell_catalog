@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.db import reset_queries
 from django.db import connection
-from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellFrame
+from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellFrame, ROI
 
 import os, sys, json, glob, gc
 import time
@@ -44,6 +44,175 @@ import segmentationTools as segtools
 #___________________________________________________________________________________________
 def deltaR(c1, c2):
     return math.sqrt( math.pow((c1['x'] - c2['x']),2) +  math.pow((c1['y'] - c2['y']),2) + math.pow((c1['z'] - c2['z']),2))
+
+#___________________________________________________________________________________________
+def get_experiement_details(selected_experiment):
+    #GET THE EXPERIMENT DETAILS
+    query = (
+        "select e.* from experiment_catalog_experiment e"
+        " where e.experiment_name = \"{}\"".format(selected_experiment)
+        )
+
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    myresult = mycursor.fetchall()
+
+    experiment_dict={}
+    if len(myresult)==1:
+        experiment_dict['experiment_name']=myresult[0][1]
+        experiment_dict['experiment_date']=myresult[0][2]
+        experiment_dict['experiment_description']=myresult[0][3]
+
+    return experiment_dict
+
+#___________________________________________________________________________________________
+def get_contribution_details(selected_experiment):
+    query = (   
+        "select contribution.description, person.first_name, person.last_name from experiment_catalog_experiment e"
+        " inner join experiment_catalog_experiment_contribution    contrib_exp         on e.id                                = contrib_exp.experiment_id"
+        " inner join contribution_catalog_contribution             contribution        on contrib_exp.contribution_id         = contribution.id"
+        " inner join contribution_catalog_contribution_contributor contrib_contributor on contrib_contributor.contribution_id = contribution.id"
+        " inner join contribution_catalog_contributor              contributor         on contrib_contributor.contributor_id  = contributor.id"
+        " inner join contribution_catalog_person                   person              on person.id                      = contributor.person_id"
+        " where e.experiment_name = \"{}\"".format(selected_experiment)
+        )
+
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    myresult = mycursor.fetchall()
+
+    contribution_dict=[]
+    for x in myresult:
+        tmpdict={'description':x[0], 'first_name':x[1], 'last_name':x[2]}
+        contribution_dict.append(tmpdict)
+
+    return contribution_dict
+
+#___________________________________________________________________________________________
+def get_treatment_details(selected_well):
+    query = (
+        "select treat.name, treat.type, treat.concentration, treat.description, treat.developmental_stage, treat.duration, treat.solvent, treat.temperature from rawdata_catalog_rawdataset rds"
+        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
+        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
+        " inner join experimentalcondition_catalog_experimentalcondition_treatment expcond_treat on expcond.id  = expcond_treat.experimentalcondition_id"
+        " inner join experimentalcondition_catalog_treatment treat          on treat.id = expcond_treat.treatment_id"
+        " where rds.data_name = \"{}\"".format(selected_well)
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    myresult = mycursor.fetchall()
+
+    treatment_dict=[]
+    for x in myresult:
+        tmpdict={'name':x[0], 'type':x[1], 'concentration':x[2], 'description':x[3], 
+                 'developmental_stage':x[4], 'duration':x[5], 'solvent':x[6], 'temperature':x[7]}
+        treatment_dict.append(tmpdict)
+    return treatment_dict
+
+#___________________________________________________________________________________________
+def get_injection_details(selected_well):
+    query = (
+        "select inj.name, inj.type, inj.concentration, inj.description, inj.developmental_stage, inj.slim_id from rawdata_catalog_rawdataset rds"
+        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
+        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
+        " inner join experimentalcondition_catalog_experimentalcondition_injection expcond_inj on expcond.id  = expcond_inj.experimentalcondition_id"
+        " inner join experimentalcondition_catalog_injection inj          on inj.id = expcond_inj.injection_id"
+        " where rds.data_name = \"{}\"".format(selected_well)
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    myresult = mycursor.fetchall()
+
+    injection_dict=[]
+    for x in myresult:
+        tmpdict={'name':x[0], 'type':x[1], 'concentration':x[2], 'description':x[3], 
+                 'developmental_stage':x[4], 'slim_id':x[5]}
+        injection_dict.append(tmpdict)
+    return injection_dict
+
+#___________________________________________________________________________________________
+def get_instrumental_details(selected_well):
+    query = (
+        "select inst.name, inst.instrument_name, inst.instrument_name, inst.instrument_name from rawdata_catalog_rawdataset rds"
+        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
+        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
+        " inner join experimentalcondition_catalog_experimentalcondition_instrumeceac expcond_inst on expcond.id  = expcond_inst.experimentalcondition_id"
+        " inner join experimentalcondition_catalog_instrumentalcondition inst          on inst.id = expcond_inst.instrumentalcondition_id"
+        " where rds.data_name = \"{}\"".format(selected_well)
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    myresult = mycursor.fetchall()
+
+    instrumental_dict=[]
+    for x in myresult:
+        tmpdict={'name':x[0], 'instrument_name':x[1], 'instrument_name':x[2], 'instrument_name':x[3]}
+        instrumental_dict.append(tmpdict)
+    return instrumental_dict
+
+#___________________________________________________________________________________________
+def get_sample_details(selected_well):
+    query = (
+        "select samp.id, samp.specie, samp.date_of_crossing, samp.developmental_stage, samp.pyrat_crossing_id from rawdata_catalog_rawdataset rds"
+        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
+        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
+        " inner join experimentalcondition_catalog_experimentalcondition_sample expcond_samp on expcond.id  = expcond_samp.experimentalcondition_id"
+        " inner join experimentalcondition_catalog_sample samp          on samp.id = expcond_samp.sample_id"
+        " where rds.data_name = \"{}\"".format(selected_well)
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    sample_res = mycursor.fetchall()
+
+    query = (
+        "select samp.id, par.age_at_crossing, par.date_of_birth, par.mutation_grade, par.number_of_female, par.number_of_male, par.number_of_unknown, par.strain_name from rawdata_catalog_rawdataset rds"
+        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
+        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
+        " inner join experimentalcondition_catalog_experimentalcondition_sample expcond_samp on expcond.id  = expcond_samp.experimentalcondition_id"
+        " inner join experimentalcondition_catalog_sample samp          on samp.id = expcond_samp.sample_id"
+        " inner join experimentalcondition_catalog_sample_parent samp_par on samp_par.sample_id = samp.id"
+        " inner join experimentalcondition_catalog_parent par on par.id = samp_par.parent_id"
+        " where rds.data_name = \"{}\"".format(selected_well)
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    parents_res = mycursor.fetchall()   
+
+    query = (
+        "select samp.id, mutname.name, mutgrade.grade from rawdata_catalog_rawdataset rds"
+        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
+        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
+        " inner join experimentalcondition_catalog_experimentalcondition_sample expcond_samp on expcond.id  = expcond_samp.experimentalcondition_id"
+        " inner join experimentalcondition_catalog_sample samp          on samp.id = expcond_samp.sample_id"
+        " inner join experimentalcondition_catalog_sample_mutation samp_mut on samp_mut.sample_id = samp.id"
+        " inner join experimentalcondition_catalog_mutation mut on mut.id = samp_mut.mutation_id"
+        " inner join experimentalcondition_catalog_mutationname mutname on mutname.id = mut.name_id"
+        " inner join experimentalcondition_catalog_mutationgrade mutgrade on mutgrade.id = mut.grade_id"
+        " where rds.data_name = \"{}\"".format(selected_well)
+        )
+    mycursor = cnx.cursor()
+    mycursor.execute(query)
+    mutation_res = mycursor.fetchall()
+
+
+    sample_dict=[]
+    for samp in sample_res:
+        parents=[]
+        for par in parents_res:
+            if par[0]==samp[0]:
+                parents.append({'age_at_crossing':par[1], 'date_of_birth':par[2], 'mutation_grade':par[3], 'number_of_female':par[4], 
+                                'number_of_male':par[5], 'number_of_unknown':par[6], 'strain_name':par[7]})
+        mutations=[]
+        for mut in mutation_res:
+            if mut[0]==samp[0]:
+                mutations.append({'name':mut[1], 'grade':mut[2]})
+        
+        tmpdict={'specie':samp[1], 'date_of_crossing':samp[2], 'developmental_stage':samp[3], 'pyrat_crossing_id':samp[4], 'parents':parents, 'mutations':mutations}
+        sample_dict.append(tmpdict)
+
+    return sample_dict
+
+
 
 #___________________________________________________________________________________________
 def register_rawdataset():
@@ -363,6 +532,22 @@ def intensity(experiment='', well='', position=''):
                 return cell_dict
 
 
+#___________________________________________________________________________________________
+def build_ROIs():
+    exp_list = Experiment.objects.all()
+    for exp in exp_list:
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        for expds in experimentaldataset:
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            for s in samples:
+                rois = ROI.objects.select_related().filter(sample = s)
+                if len(rois)>0: continue
+                images, channels = read.nd2reader_getFrames(s.file_name)
+                ROIs=segtools.get_ROIs(images)
+                for r in ROIs:
+                    roi = ROI(min_row = r[0], min_col = r[1], max_row = r[2], max_col = r[3], sample = s)
+                    roi.save()
+
 
 #___________________________________________________________________________________________
 def index(request):
@@ -371,9 +556,16 @@ def index(request):
     print('The visualisation POST data is:     ', request.POST)
     cell_dict={}
 
-    #THIS BUILD THE FRAMES FROM THE RAWDATASET CATALOG WITH TAG "SEGMENTME", CREATES UP TO FRAMES
+    #THIS BUILDS THE FRAMES FROM THE RAWDATASET CATALOG WITH TAG "SEGMENTME", CREATES UP TO FRAMES
     if 'register_rawdataset' in request.POST and LOCAL==False:
         register_rawdataset()
+
+    #THIS BUILDS THE ROIS FOR ALL THE EXISTING SAMPLES
+    if 'build_ROIs' in request.POST:
+        build_ROIs()
+
+
+
 
     #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
     if 'segment' in request.POST:
@@ -498,161 +690,29 @@ def index(request):
         string = base64.b64encode(buf.read())
         uri = urllib.parse.quote(string)
 
-    #GET THE EXPERIMENT DETAILS
-    query = (
-        "select e.* from experiment_catalog_experiment e"
-        " where e.experiment_name = \"{}\"".format(selected_experiment)
-        )
-
-    mycursor = cnx.cursor()
-    mycursor.execute(query)
-    myresult = mycursor.fetchall()
-
-    if len(myresult)>1:
-        for x in myresult:
-            print('experiment ',x)
-
     experiment_dict={}
-    if len(myresult)==1:
-        experiment_dict['experiment_name']=myresult[0][1]
-        experiment_dict['experiment_date']=myresult[0][2]
-        experiment_dict['experiment_description']=myresult[0][3]
-
-    #GET THE CONTRIBUTION TO THE EXPERIMENT 
-    query = (   
-        "select contribution.description, person.first_name, person.last_name from experiment_catalog_experiment e"
-        " inner join experiment_catalog_experiment_contribution    contrib_exp         on e.id                                = contrib_exp.experiment_id"
-        " inner join contribution_catalog_contribution             contribution        on contrib_exp.contribution_id         = contribution.id"
-        " inner join contribution_catalog_contribution_contributor contrib_contributor on contrib_contributor.contribution_id = contribution.id"
-        " inner join contribution_catalog_contributor              contributor         on contrib_contributor.contributor_id  = contributor.id"
-        " inner join contribution_catalog_person                   person              on person.id                      = contributor.person_id"
-        " where e.experiment_name = \"{}\"".format(selected_experiment)
-        )
-
-    mycursor = cnx.cursor()
-    mycursor.execute(query)
-    myresult = mycursor.fetchall()
-
     contribution_dict=[]
-    for x in myresult:
-        tmpdict={'description':x[0], 'first_name':x[1], 'last_name':x[2]}
-        contribution_dict.append(tmpdict)
-
-    #GET THE EXPERIMENTAL DATASET DETAILS: TREATMENT
-    query = (
-        "select treat.name, treat.type, treat.concentration, treat.description, treat.developmental_stage, treat.duration, treat.solvent, treat.temperature from rawdata_catalog_rawdataset rds"
-        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
-        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
-        " inner join experimentalcondition_catalog_experimentalcondition_treatment expcond_treat on expcond.id  = expcond_treat.experimentalcondition_id"
-        " inner join experimentalcondition_catalog_treatment treat          on treat.id = expcond_treat.treatment_id"
-        " where rds.data_name = \"{}\"".format(selected_well)
-        )
-    mycursor = cnx.cursor()
-    mycursor.execute(query)
-    myresult = mycursor.fetchall()
+    if selected_experiment!='':
+        #GET THE LIST OF EXPERIMENTS
+        experiment_dict=get_experiement_details(selected_experiment)
+        #GET THE CONTRIBUTION TO THE EXPERIMENT 
+        contribution_dict=get_contribution_details(selected_experiment)
 
     treatment_dict=[]
-    for x in myresult:
-        tmpdict={'name':x[0], 'type':x[1], 'concentration':x[2], 'description':x[3], 
-                 'developmental_stage':x[4], 'duration':x[5], 'solvent':x[6], 'temperature':x[7]}
-        treatment_dict.append(tmpdict)
-
-
-    #GET THE EXPERIMENTAL DATASET DETAILS: INSTRUMENTAL CONDITIONS
-    query = (
-        "select inj.name, inj.type, inj.concentration, inj.description, inj.developmental_stage, inj.slim_id from rawdata_catalog_rawdataset rds"
-        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
-        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
-        " inner join experimentalcondition_catalog_experimentalcondition_injection expcond_inj on expcond.id  = expcond_inj.experimentalcondition_id"
-        " inner join experimentalcondition_catalog_injection inj          on inj.id = expcond_inj.injection_id"
-        " where rds.data_name = \"{}\"".format(selected_well)
-        )
-    mycursor = cnx.cursor()
-    mycursor.execute(query)
-    myresult = mycursor.fetchall()
-
     injection_dict=[]
-    for x in myresult:
-        tmpdict={'name':x[0], 'type':x[1], 'concentration':x[2], 'description':x[3], 
-                 'developmental_stage':x[4], 'slim_id':x[5]}
-        injection_dict.append(tmpdict)
-
-    #GET THE EXPERIMENTAL DATASET DETAILS: INJECTION
-    query = (
-        "select inst.name, inst.instrument_name, inst.instrument_name, inst.instrument_name from rawdata_catalog_rawdataset rds"
-        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
-        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
-        " inner join experimentalcondition_catalog_experimentalcondition_instrumeceac expcond_inst on expcond.id  = expcond_inst.experimentalcondition_id"
-        " inner join experimentalcondition_catalog_instrumentalcondition inst          on inst.id = expcond_inst.instrumentalcondition_id"
-        " where rds.data_name = \"{}\"".format(selected_well)
-        )
-    mycursor = cnx.cursor()
-    mycursor.execute(query)
-    myresult = mycursor.fetchall()
-
     instrumental_dict=[]
-    for x in myresult:
-        tmpdict={'name':x[0], 'instrument_name':x[1], 'instrument_name':x[2], 'instrument_name':x[3]}
-        instrumental_dict.append(tmpdict)
-
-    #GET THE EXPERIMENTAL DATASET DETAILS: SAMPLE
-    query = (
-        "select samp.id, samp.specie, samp.date_of_crossing, samp.developmental_stage, samp.pyrat_crossing_id from rawdata_catalog_rawdataset rds"
-        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
-        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
-        " inner join experimentalcondition_catalog_experimentalcondition_sample expcond_samp on expcond.id  = expcond_samp.experimentalcondition_id"
-        " inner join experimentalcondition_catalog_sample samp          on samp.id = expcond_samp.sample_id"
-        " where rds.data_name = \"{}\"".format(selected_well)
-        )
-    mycursor = cnx.cursor()
-    mycursor.execute(query)
-    sample_res = mycursor.fetchall()
-
-    query = (
-        "select samp.id, par.age_at_crossing, par.date_of_birth, par.mutation_grade, par.number_of_female, par.number_of_male, par.number_of_unknown, par.strain_name from rawdata_catalog_rawdataset rds"
-        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
-        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
-        " inner join experimentalcondition_catalog_experimentalcondition_sample expcond_samp on expcond.id  = expcond_samp.experimentalcondition_id"
-        " inner join experimentalcondition_catalog_sample samp          on samp.id = expcond_samp.sample_id"
-        " inner join experimentalcondition_catalog_sample_parent samp_par on samp_par.sample_id = samp.id"
-        " inner join experimentalcondition_catalog_parent par on par.id = samp_par.parent_id"
-        " where rds.data_name = \"{}\"".format(selected_well)
-        )
-    mycursor = cnx.cursor()
-    mycursor.execute(query)
-    parents_res = mycursor.fetchall()   
-
-    query = (
-        "select samp.id, mutname.name, mutgrade.grade from rawdata_catalog_rawdataset rds"
-        " inner join experiment_catalog_experimentaldataset              dataset      on rds.id                            = dataset.raw_dataset_id"
-        " inner join experimentalcondition_catalog_experimentalcondition expcond      on dataset.experimental_condition_id = expcond.id"
-        " inner join experimentalcondition_catalog_experimentalcondition_sample expcond_samp on expcond.id  = expcond_samp.experimentalcondition_id"
-        " inner join experimentalcondition_catalog_sample samp          on samp.id = expcond_samp.sample_id"
-        " inner join experimentalcondition_catalog_sample_mutation samp_mut on samp_mut.sample_id = samp.id"
-        " inner join experimentalcondition_catalog_mutation mut on mut.id = samp_mut.mutation_id"
-        " inner join experimentalcondition_catalog_mutationname mutname on mutname.id = mut.name_id"
-        " inner join experimentalcondition_catalog_mutationgrade mutgrade on mutgrade.id = mut.grade_id"
-        " where rds.data_name = \"{}\"".format(selected_well)
-        )
-    mycursor = cnx.cursor()
-    mycursor.execute(query)
-    mutation_res = mycursor.fetchall()
-
-
     sample_dict=[]
-    for samp in sample_res:
-        parents=[]
-        for par in parents_res:
-            if par[0]==samp[0]:
-                parents.append({'age_at_crossing':par[1], 'date_of_birth':par[2], 'mutation_grade':par[3], 'number_of_female':par[4], 
-                                'number_of_male':par[5], 'number_of_unknown':par[6], 'strain_name':par[7]})
-        mutations=[]
-        for mut in mutation_res:
-            if mut[0]==samp[0]:
-                mutations.append({'name':mut[1], 'grade':mut[2]})
-        
-        tmpdict={'specie':samp[1], 'date_of_crossing':samp[2], 'developmental_stage':samp[3], 'pyrat_crossing_id':samp[4], 'parents':parents, 'mutations':mutations}
-        sample_dict.append(tmpdict)
+    if selected_well != '':
+        #GET THE EXPERIMENTAL DATASET DETAILS: TREATMENT
+        treatment_dict = get_treatment_details(selected_well)
+        #GET THE EXPERIMENTAL DATASET DETAILS: INSTRUMENTAL CONDITIONS
+        injection_dict = get_injection_details(selected_well)
+        #GET THE EXPERIMENTAL DATASET DETAILS: INJECTION
+        instrumental_dict = get_instrumental_details(selected_well)
+        #GET THE EXPERIMENTAL DATASET DETAILS: SAMPLE
+        sample_dict = get_sample_details(selected_well)
+    
+
 
     context = {
         #'num_samples': num_samples,
