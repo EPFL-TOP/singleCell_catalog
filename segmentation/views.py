@@ -765,8 +765,9 @@ def index(request):
     # Create plots and widgets 
     plot = bokeh.plotting.figure() 
   
-    plot.line('x', 'y', source=source, line_width=3, line_alpha=0.5) 
-  
+    #plot.line('x', 'y', source=source, line_width=3, line_alpha=0.5) 
+    im_bokeh = plot.image(image=[im], x=0, y=0, dw=m, dh=n, color_mapper=color)
+
     # Create Slider object 
     slider = bokeh.models.Slider(start=0, end=6, value=2, 
                 step=0.2, title='Number of points') 
