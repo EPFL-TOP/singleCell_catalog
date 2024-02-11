@@ -757,29 +757,40 @@ def index(request):
     script, div = bokeh.embed.components(layout)
 
 
-    N = 100
-
-    x_ = np.linspace(0, 10, 200)
-    y_ = np.linspace(0, 10, 200)
-    z_ = np.linspace(0, 10, N)
-
-    x, y, z = np.meshgrid(x_, y_, z_, indexing='xy')
-
-    data = np.sin(x+z)*np.cos(y)
-
-    source = bokeh.models.ColumnDataSource(data=dict(image=[data[:, :, 0]]))
-
-    p = bokeh.plotting.figure(x_range=(0, 10), y_range=(0, 10))
-    p.image(image='image', x=0, y=0, dw=10, dh=10, source=source, palette="Spectral11")
-
-    slider = bokeh.models.Slider(start=0, end=(N-1), value=0, step=1, title="Frame")
-
-    def update(attr, old, new):
-        source.data = dict(image=[data[:, :, slider.value]])
-
-    slider.on_change('value', update)
-
-    layout = bokeh.layouts.column(p, slider)
+    x = np.linspace(0, 10, 500) 
+    y = np.sin(x) 
+  
+    source = bokeh.models.ColumnDataSource(data=dict(x=x, y=y)) 
+  
+    # Create plots and widgets 
+    plot = bokeh.plotting.figure() 
+  
+    plot.line('x', 'y', source=source, line_width=3, line_alpha=0.5) 
+  
+    # Create Slider object 
+    slider = bokeh.models.Slider(start=0, end=6, value=2, 
+                step=0.2, title='Number of points') 
+  
+    # Adding callback code 
+    callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
+                    code=""" 
+    const data = source.data; 
+    const freq = val.value; 
+    const x = data['x']; 
+    const y = data['y']; 
+   for (var i = 0; i < x.length; i++) { 
+        y[i] = Math.sin(freq*x[i]); 
+    } 
+      
+    source.change.emit(); 
+""") 
+  
+    slider.js_on_change('value', callback) 
+  
+    # Arrange plots and widgets in layouts 
+    layout = bokeh.layouts.column(slider, plot) 
+  
+    output_file('exam.html') 
     script, div = bokeh.embed.components(layout)
 
     context = {
