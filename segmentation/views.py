@@ -790,7 +790,7 @@ def index(request):
     # Arrange plots and widgets in layouts 
     layout = bokeh.layouts.column(slider, plot) 
   
-    output_file('exam.html') 
+    bokeh.plotting.output_file('exam.html') 
     script, div = bokeh.embed.components(layout)
 
     context = {
