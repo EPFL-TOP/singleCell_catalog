@@ -756,6 +756,32 @@ def index(request):
     #plot.circle([1, 2, 3, 4, 5], [6, 7, 2, 4, 5], size=20, color="navy", alpha=0.5)
     script, div = bokeh.embed.components(layout)
 
+
+    N = 100
+
+    x_ = np.linspace(0, 10, 200)
+    y_ = np.linspace(0, 10, 200)
+    z_ = np.linspace(0, 10, N)
+
+    x, y, z = np.meshgrid(x_, y_, z_, indexing='xy')
+
+    data = np.sin(x+z)*np.cos(y)
+
+    source = bokeh.models.ColumnDataSource(data=dict(image=[data[:, :, 0]]))
+
+    p = bokeh.plotting.figure(x_range=(0, 10), y_range=(0, 10))
+    p.image(image='image', x=0, y=0, dw=10, dh=10, source=source, palette="Spectral11")
+
+    slider = bokeh.models.Slider(start=0, end=(N-1), value=0, step=1, title="Frame")
+
+    def update(attr, old, new):
+        source.data = dict(image=[data[:, :, slider.value]])
+
+    slider.on_change('value', update)
+
+    layout = bokeh.layouts.column(p, slider)
+    script, div = bokeh.embed.components(layout)
+
     context = {
         #'num_samples': num_samples,
         'select_dict':select_dict,
