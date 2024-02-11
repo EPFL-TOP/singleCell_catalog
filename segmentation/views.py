@@ -746,7 +746,7 @@ def index(request):
 
     # add a circle renderer with a size, color, and alpha
     #plot.circle([1, 2, 3, 4, 5], [6, 7, 2, 4, 5], size=20, color="navy", alpha=0.5)
-    script, div = bokeh.components(p)
+    script, div = bokeh.embed.components(p)
 
     context = {
         #'num_samples': num_samples,
