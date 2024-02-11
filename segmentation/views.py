@@ -751,10 +751,10 @@ def index(request):
     range_slider.js_link("value", p.x_range, "start", attr_selector=0) 
     range_slider.js_link("value", p.x_range, "end", attr_selector=1) 
   
-    layout = bokeh.layouts.layout([range_slider], [p]) 
-    # add a circle renderer with a size, color, and alpha
+    #layout = bokeh.layouts.layout([range_slider], [p]) 
+    ## add a circle renderer with a size, color, and alpha
     #plot.circle([1, 2, 3, 4, 5], [6, 7, 2, 4, 5], size=20, color="navy", alpha=0.5)
-    script, div = bokeh.embed.components(layout)
+    #script, div = bokeh.embed.components(layout)
 
 
     x = np.linspace(0, 10, 500) 
@@ -765,8 +765,8 @@ def index(request):
     # Create plots and widgets 
     plot = bokeh.plotting.figure() 
   
-    plot.line('x', 'y', source=source, line_width=3, line_alpha=0.5) 
-    #plot.image(image=[im], x=0, y=0, dw=m, dh=n, color_mapper=color)
+    #plot.line('x', 'y', source=source, line_width=3, line_alpha=0.5) 
+    plot.image(image=[im], x=0, y=0, dw=m, dh=n, color_mapper=color)
 
     # Create Slider object 
     slider = bokeh.models.Slider(start=0, end=6, value=2, 
