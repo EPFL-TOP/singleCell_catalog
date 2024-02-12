@@ -797,11 +797,7 @@ def index(request):
 
 #######################################################################
     images, channels = read.nd2reader_getFrames('/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0060_well1/raw_files/wsc_epfl-wscl_060_xy01.nd2')
-
     bf_channel = 0
-    #time_lapse_path = Path('./raw/ppf005_xy002.nd2')
-    #time_lapse = nd2.imread(time_lapse_path.as_posix())
-    #time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
     time_lapse = images[:,bf_channel,:,:] # Assume I(t, c, x, y)
 
     time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
@@ -828,20 +824,21 @@ def index(request):
     #    source.data = {'img':[new_image]}
     #    source.change.emit()
 
-        
     ## Adding callback code 
     callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
                     code=""" 
-    const time_point = val.value;
+    var time_point = val.value;
+    var data = source.data;
+    var im = data['img'];
     console.log(time_point);
-    const data = source.data;
     console.log(data);
+    console.log(im);
 
     //console.log(data['img']);
-    const img = [data['img2']];
+    //const img = [data['img2']];
     //data= ind_images[time_point];
     //source.data = {'img':[data['img2']]};
-    console.log(img);
+    //console.log(img);
 
     source.change.emit(); 
     """) 
