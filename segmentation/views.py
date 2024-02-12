@@ -822,15 +822,15 @@ def index(request):
     slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
 
     # Define a callback to update bf_display with slider
-    def tp_callback(attr, old, new):
-        time_point = slider.value
-        new_image = ind_images[time_point]
-        source.data = {'img':[new_image]}
-        source.change.emit()
+    #def tp_callback(attr, old, new):
+    #    time_point = slider.value
+    #    new_image = ind_images[time_point]
+    #    source.data = {'img':[new_image]}
+    #    source.change.emit()
 
         
     ## Adding callback code 
-    tp_callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
+    callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
                     code=""" 
     const time_point = slider.value;
     const data = source.data;
@@ -846,7 +846,7 @@ def index(request):
     #""") 
 
     # Attach the callback to the slider
-    slider.js_on_change('value', tp_callback)
+    slider.js_on_change('value', callback)
     slider_layout = bokeh.layouts.column(
         bokeh.layouts.Spacer(height=30),
         slider
