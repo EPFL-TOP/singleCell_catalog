@@ -848,6 +848,7 @@ def index(request):
     //source.data = {'img':[data['img2']]};
     //console.log(img);
 
+    source.data = {img:[source.data['img2']]}
     source.change.emit(); 
     //im.data_source.change.emit(); 
     """) 
