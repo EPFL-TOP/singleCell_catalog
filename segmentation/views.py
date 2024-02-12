@@ -806,7 +806,7 @@ def index(request):
 
     time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
     ind_images = [time_lapse[i,:,:] for i in time_domain]
-    data={'img':[ind_images[0]]}
+    data={'img':[ind_images[0]], 'allimg':ind_images}
     source=bokeh.models.ColumnDataSource(data=data)
 
     # Create Bokeh figure and use image display
@@ -835,7 +835,8 @@ def index(request):
     const time_point = val.value;
     console.log(time_point);
     const data = source.data;
-    console.log(data)
+    console.log(data);
+    console.log(data['img']);
     const img = ind_images[time_point];
     data= ind_images[time_point];
     source.change.emit(); 
