@@ -834,7 +834,7 @@ def index(request):
                     code=""" 
     const time_point = slider.value;
     const data = source.data;
-    data['img']=ind_images[time_point];
+    const img = = ind_images[time_point];
     #const freq = val.value; 
     #const x = data['x']; 
     #const y = data['y']; 
@@ -844,6 +844,21 @@ def index(request):
     #  
     source.change.emit(); 
     #""") 
+
+    ## Adding callback code 
+    #callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
+    #                code=""" 
+    #const data = source.data; 
+    #const freq = val.value; 
+    #const x = data['x']; 
+    #const y = data['y']; 
+    #for (var i = 0; i < x.length; i++) { 
+    #    y[i] = Math.sin(freq*x[i]); 
+    #} 
+    #  
+    #source.change.emit(); 
+    #""") 
+
 
     # Attach the callback to the slider
     slider.js_on_change('value', callback)
