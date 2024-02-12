@@ -848,7 +848,7 @@ def index(request):
     //console.log(img);
 
     //source.data = {'img':source.data['img2']}
-    source.data['img'] = source.data['img2']
+    source.data['img'] = source.data[concat]
     source.change.emit(); 
     //im.data_source.change.emit(); 
     """) 
