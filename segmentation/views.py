@@ -805,9 +805,7 @@ def index(request):
     data={'img':[ind_images[0]], 'img2':[ind_images[10]]}
     source=bokeh.models.ColumnDataSource(data=data)
 
-    # Remove the axes
-    p.axis.visible = False
-    p.grid.visible = False
+
 
     # Create a Slider widget
     initial_time_point = 0
@@ -887,7 +885,9 @@ def index(request):
     # Create Bokeh figure and use image display
     p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]))
     im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
-
+    # Remove the axes
+    p.axis.visible = False
+    p.grid.visible = False
     norm_layout = bokeh.layouts.row(
         p,
         bokeh.layouts.Spacer(width=15),
