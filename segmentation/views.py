@@ -807,7 +807,7 @@ def index(request):
 
     # Create Bokeh figure and use image display
     p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]))
-    p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
+    im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
 
     # Remove the axes
     p.axis.visible = False
@@ -824,14 +824,14 @@ def index(request):
     #    source.data = {'img':[new_image]}
     #    source.change.emit()
 
-    def tp_callback(source=source, image_ind=None):
-        time_point = image_ind.value
-        new_image  = ind_images[time_point]
-        source.data = {'img':[new_image]}
-        source.change.emit()
+    #def tp_callback(source=source, image_ind=None):
+    #    time_point = image_ind.value
+    #    new_image  = ind_images[time_point]
+    #    source.data = {'img':[new_image]}
+    #    source.change.emit()
 
     ## Adding callback code 
-    callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
+    callback = bokeh.models.CustomJS(args=dict(im=im,source=source, val=slider), 
                     code=""" 
     var time_point = val.value;
     var data = source.data;
@@ -841,7 +841,7 @@ def index(request):
     console.log(data);
     console.log(img);
     console.log(img2);
-
+    im.data_source.data['img'] = [source.data['img2']];
     //console.log(data['img']);
     //const img = [data['img2']];
     //data= ind_images[time_point];
@@ -849,6 +849,7 @@ def index(request):
     //console.log(img);
 
     source.change.emit(); 
+    im.data_source.change.emit(); 
     """) 
 
 
@@ -874,12 +875,12 @@ def index(request):
     #""") 
 
 
-    callback_test = bokeh.models.CustomJS.from_py_func(tp_callback)
-    slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
-    callback_test.args["image_ind"] = slider
+    #callback_test = bokeh.models.CustomJS.from_py_func(tp_callback)
+    #slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
+    #callback_test.args["image_ind"] = slider
 
     # Attach the callback to the slider
-    #slider.js_on_change('value', callback)
+    slider.js_on_change('value', callback)
     slider_layout = bokeh.layouts.column(
         bokeh.layouts.Spacer(height=30),
         slider
