@@ -826,10 +826,11 @@ def index(request):
         time_point = slider.value
         new_image = ind_images[time_point]
         source.data = {'img':[new_image]}
+        source.change.emit()
 
         
     # Attach the callback to the slider
-    slider.js_on_change('value', tp_callback)
+    slider.on_change('value', tp_callback)
 
 
     slider_layout = bokeh.layouts.column(
