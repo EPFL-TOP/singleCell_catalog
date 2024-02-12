@@ -796,9 +796,13 @@ def index(request):
 
 
 #######################################################################
-    images, channels = read.nd2reader_getFrames('/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0060_well1/raw_files/wsc_epfl-wscl_060_xy01.nd2')
+    import nd2
+    import Path
+    #images, channels = read.nd2reader_getFrames('/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0060_well1/raw_files/wsc_epfl-wscl_060_xy01.nd2')
     bf_channel = 0
-    time_lapse = images[:,bf_channel,:,:] # Assume I(t, c, x, y)
+    time_lapse_path = Path('/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0060_well1/raw_files/wsc_epfl-wscl_060_xy01.nd2')
+    time_lapse = nd2.imread(time_lapse_path.as_posix())
+    time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
 
     time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
     ind_images = [time_lapse[i,:,:] for i in time_domain]
