@@ -846,7 +846,7 @@ def index(request):
     #} 
     #  
     source.change.emit(); 
-    #""") 
+    """) 
 
     ## Adding callback code 
     #callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
