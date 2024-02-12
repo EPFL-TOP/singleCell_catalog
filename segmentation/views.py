@@ -797,7 +797,7 @@ def index(request):
 
 #######################################################################
     import nd2
-    import Path
+    from pathlib import Path
     #images, channels = read.nd2reader_getFrames('/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0060_well1/raw_files/wsc_epfl-wscl_060_xy01.nd2')
     bf_channel = 0
     time_lapse_path = Path('/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0060_well1/raw_files/wsc_epfl-wscl_060_xy01.nd2')
