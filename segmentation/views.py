@@ -802,7 +802,10 @@ def index(request):
 
     time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
     ind_images = [time_lapse[i,:,:] for i in time_domain]
-    data={'img':[ind_images[0]], 'img2':[ind_images[10]]}
+
+    data={'img':[ind_images[0]]}
+    for i in len(ind_images):
+        data['img{}'.format(i)]=[ind_images[i]]
     source=bokeh.models.ColumnDataSource(data=data)
 
 
@@ -827,9 +830,11 @@ def index(request):
     ## Adding callback code 
     callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
                     code=""" 
-    var time_point = val.value;
+    const time_point = val.value;
     var data = source.data;
-    var img = [data['img2']];
+    const concat = 'img'+time_point; 
+    console.log(concat)
+    var img = data['img'];
     var img2 = [data['img2']];
     console.log(time_point);
     console.log(data);
