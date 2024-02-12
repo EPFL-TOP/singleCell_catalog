@@ -805,10 +805,6 @@ def index(request):
     data={'img':[ind_images[0]], 'img2':[ind_images[10]]}
     source=bokeh.models.ColumnDataSource(data=data)
 
-    # Create Bokeh figure and use image display
-    p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]))
-    im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
-
     # Remove the axes
     p.axis.visible = False
     p.grid.visible = False
@@ -831,7 +827,7 @@ def index(request):
     #    source.change.emit()
 
     ## Adding callback code 
-    callback = bokeh.models.CustomJS(args=dict(im=im,source=source, val=slider), 
+    callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
                     code=""" 
     var time_point = val.value;
     var data = source.data;
@@ -848,7 +844,7 @@ def index(request):
     //source.data = {'img':[data['img2']]};
     //console.log(img);
 
-    source.data = {img:[source.data['img2']]}
+    source.data = {'img':[source.data['img2']]}
     source.change.emit(); 
     //im.data_source.change.emit(); 
     """) 
@@ -886,6 +882,11 @@ def index(request):
         bokeh.layouts.Spacer(height=30),
         slider
     )
+
+
+    # Create Bokeh figure and use image display
+    p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]))
+    im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
 
     norm_layout = bokeh.layouts.row(
         p,
