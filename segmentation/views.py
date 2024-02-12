@@ -841,6 +841,8 @@ def index(request):
     const img = [data['img2']];
     //data= ind_images[time_point];
     //source.data = {'img':[data['img2']]};
+    console.log(img);
+
     source.change.emit(); 
     """) 
 
