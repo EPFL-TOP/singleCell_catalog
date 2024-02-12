@@ -804,7 +804,7 @@ def index(request):
     ind_images = [time_lapse[i,:,:] for i in time_domain]
 
     data={'img':[ind_images[0]]}
-    for i in len(ind_images):
+    for i in range(len(ind_images)):
         data['img{}'.format(i)]=[ind_images[i]]
     source=bokeh.models.ColumnDataSource(data=data)
 
