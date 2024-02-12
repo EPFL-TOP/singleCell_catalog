@@ -829,10 +829,12 @@ def index(request):
                     code=""" 
     var time_point = val.value;
     var data = source.data;
-    var im = data['img'];
+    var img = data['img'];
+    var img2 = data['img2'];
     console.log(time_point);
     console.log(data);
-    console.log(im);
+    console.log(img);
+    console.log(img2);
 
     //console.log(data['img']);
     //const img = [data['img2']];
