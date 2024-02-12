@@ -846,7 +846,7 @@ def index(request):
     #""") 
 
     # Attach the callback to the slider
-    slider.on_change('value', tp_callback)
+    slider.js_on_change('value', tp_callback)
     slider_layout = bokeh.layouts.column(
         bokeh.layouts.Spacer(height=30),
         slider
