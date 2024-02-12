@@ -837,7 +837,7 @@ def index(request):
     const data = source.data;
     #console.log(data);
     #console.log(data['img']);
-    const img = source.data['allimg'][time_point];
+    const img = [source.data['allimg'][time_point]];
     #data= ind_images[time_point];
     source.change.emit(); 
     """) 
