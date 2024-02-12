@@ -835,10 +835,10 @@ def index(request):
     const time_point = val.value;
     console.log(time_point);
     const data = source.data;
-    #console.log(data);
-    #console.log(data['img']);
+    //console.log(data);
+    //console.log(data['img']);
     const img = [source.data['allimg'][time_point]];
-    #data= ind_images[time_point];
+    //data= ind_images[time_point];
     source.change.emit(); 
     """) 
 
