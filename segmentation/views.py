@@ -829,10 +829,24 @@ def index(request):
         source.change.emit()
 
         
+    ## Adding callback code 
+    tp_callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
+                    code=""" 
+    const time_point = slider.value;
+    const data = source.data;
+    data['img']=ind_images[time_point]
+    #const freq = val.value; 
+    #const x = data['x']; 
+    #const y = data['y']; 
+    #for (var i = 0; i < x.length; i++) { 
+    #    y[i] = Math.sin(freq*x[i]); 
+    #} 
+    #  
+    source.change.emit(); 
+    #""") 
+
     # Attach the callback to the slider
     slider.on_change('value', tp_callback)
-
-
     slider_layout = bokeh.layouts.column(
         bokeh.layouts.Spacer(height=30),
         slider
@@ -844,7 +858,6 @@ def index(request):
         slider_layout,
     )
 
-    bokeh.plotting.output_file('exam.html') 
 
     script, div = bokeh.embed.components(norm_layout)
 
