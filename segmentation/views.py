@@ -836,12 +836,12 @@ def index(request):
     var time_point = val.value;
     var data = source.data;
     var img = data['img'];
-    var img2 = data['img2'];
+    var img2 = [data['img2']];
     console.log(time_point);
     console.log(data);
     console.log(img);
     console.log(img2);
-    im.data_source.data['img'] = [source.data['img2']];
+    //im.data_source.data['img'] = [source.data['img2']];
     //console.log(data['img']);
     //const img = [data['img2']];
     //data= ind_images[time_point];
@@ -849,7 +849,7 @@ def index(request):
     //console.log(img);
 
     source.change.emit(); 
-    im.data_source.change.emit(); 
+    //im.data_source.change.emit(); 
     """) 
 
 
