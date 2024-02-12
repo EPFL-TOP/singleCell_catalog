@@ -844,6 +844,7 @@ def index(request):
         slider_layout,
     )
 
+    bokeh.plotting.output_file('exam.html') 
 
     script, div = bokeh.embed.components(norm_layout)
 
