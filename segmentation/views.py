@@ -834,7 +834,7 @@ def index(request):
                     code=""" 
     const time_point = slider.value;
     const data = source.data;
-    data['img']=ind_images[time_point]
+    data['img']=ind_images[time_point];
     #const freq = val.value; 
     #const x = data['x']; 
     #const y = data['y']; 
