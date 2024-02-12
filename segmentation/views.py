@@ -833,9 +833,9 @@ def index(request):
     callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
                     code=""" 
     const time_point = val.value;
-    console.log("here");
     console.log(time_point);
     const data = source.data;
+    console.log(data)
     const img = ind_images[time_point];
     data= ind_images[time_point];
     source.change.emit(); 
