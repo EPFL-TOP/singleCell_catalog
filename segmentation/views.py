@@ -710,7 +710,7 @@ def index(request):
 
     experiment_dict={}
     contribution_dict=[]
-    if selected_experiment!='':
+    if selected_experiment != None:
         #GET THE LIST OF EXPERIMENTS
         experiment_dict=get_experiement_details(selected_experiment)
         #GET THE CONTRIBUTION TO THE EXPERIMENT 
@@ -720,7 +720,7 @@ def index(request):
     injection_dict=[]
     instrumental_dict=[]
     sample_dict=[]
-    if selected_well != '':
+    if selected_well != None:
         #GET THE EXPERIMENTAL DATASET DETAILS: TREATMENT
         treatment_dict = get_treatment_details(selected_well)
         #GET THE EXPERIMENTAL DATASET DETAILS: INSTRUMENTAL CONDITIONS
@@ -730,7 +730,7 @@ def index(request):
         #GET THE EXPERIMENTAL DATASET DETAILS: SAMPLE
         sample_dict = get_sample_details(selected_well)
     
-    if selected_position != '':
+    if selected_position != None:
         print('================',selected_position)
         bf_channel = 0
         time_lapse_path = Path('/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0060_well1/raw_files/wsc_epfl-wscl_060_xy01.nd2')
