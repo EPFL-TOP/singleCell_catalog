@@ -778,7 +778,7 @@ def index(request):
         p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]))
         im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
         for roi in rois:
-            p.rect(roi.min_col+(roi.max_col-roi.min_col)/2, 512-(roi.min_row+(roi.max_row-roi.min_row)/2), roi.max_col-roi.min_col, roi.max_col-roi.min_col, line_width=2, fill_alpha=0, line_color="white") 
+            p.rect(roi.min_col+(roi.max_col-roi.min_col)/2, (roi.min_row+(roi.max_row-roi.min_row)/2), roi.max_col-roi.min_col, roi.max_col-roi.min_col, line_width=2, fill_alpha=0, line_color="white") 
             print('roi.min_col=',roi.min_col, '  roi.max_col=',roi.max_col,'  roi.min_row=',roi.min_row,'  roi.max_row=',roi.max_row)
         # Remove the axes
         p.axis.visible = False
