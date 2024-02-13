@@ -822,15 +822,15 @@ def index(request):
     callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
                     code=""" 
     const time_point = val.value;
-    var data = source.data;
+    //var data = source.data;
     const concat = 'img'+time_point; 
     console.log(concat)
-    var img = data['img'];
-    var img2 = [data['img2']];
-    console.log(time_point);
-    console.log(data);
-    console.log(img);
-    console.log(img2);
+    //var img = data['img'];
+    //var img2 = [data['img2']];
+    //console.log(time_point);
+    //console.log(data);
+    //console.log(img);
+    //console.log(img2);
     //im.data_source.data['img'] = [source.data['img2']];
     //console.log(data['img']);
     //const img = [data['img2']];
@@ -838,7 +838,7 @@ def index(request):
     //source.data = {'img':[data['img2']]};
     //console.log(img);
 
-    //source.data['img'] = source.data[concat]
+    source.data['img'] = source.data[concat]
     source.change.emit(); 
     """) 
 
