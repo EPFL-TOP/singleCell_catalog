@@ -730,6 +730,9 @@ def index(request):
         #GET THE EXPERIMENTAL DATASET DETAILS: SAMPLE
         sample_dict = get_sample_details(selected_well)
     
+
+    script = None
+    div = None
     if selected_position != None:
         print('================',selected_position)
         bf_channel = 0
