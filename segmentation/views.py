@@ -24,6 +24,8 @@ import bokeh.plotting
 import bokeh.embed
 import bokeh.layouts
 
+import nd2
+from pathlib import Path
 
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
@@ -728,129 +730,60 @@ def index(request):
         #GET THE EXPERIMENTAL DATASET DETAILS: SAMPLE
         sample_dict = get_sample_details(selected_well)
     
+    if selected_position != '':
+   
+        bf_channel = 0
+        time_lapse_path = Path(selected_position)
+        time_lapse = nd2.imread(time_lapse_path.as_posix())
+        time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
+        #time_lapse=np.uint8(time_lapse)
 
-    ##create a plot
-    #p = bokeh.plotting.figure(width=400, height=400)
-    #p.x_range.range_padding = p.y_range.range_padding = 0
+        time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
+        ind_images = [time_lapse[i,:,:] for i in time_domain]
 
-    #color = bokeh.models.LinearColorMapper(bokeh.palettes.gray(256))
-    ## Display the image
-    #images, channels = read.nd2reader_getFrames('/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0060_well1/raw_files/wsc_epfl-wscl_060_xy01.nd2')
-    #BF_images=images.transpose(1,0,2,3)
-    #BF_images=BF_images[0]
-    #im=BF_images[0]
-    #n, m = im.shape 
-    ##im_bokeh = p.image(image=[im], x=0, y=0, dw=m, dh=n, color_mapper=color)
+        data={'img':[ind_images[0]]}
+        for i in range(len(ind_images)):
+            data['img{}'.format(i)]=[ind_images[i]]
+        source=bokeh.models.ColumnDataSource(data=data)
 
-    #x = list(range(12)) 
-    #y = [i**2 for i in x] 
-  
-    #output_file = ('range_slider.html') 
-
-    #range_slider = bokeh.models.RangeSlider(title=" Adjust X-Axis range", start=0, end=12, step=1, value=(p.x_range.start, p.x_range.end), ) 
-    #range_slider.js_link("value", p.x_range, "start", attr_selector=0) 
-    #range_slider.js_link("value", p.x_range, "end", attr_selector=1) 
-  
-    ##layout = bokeh.layouts.layout([range_slider], [p]) 
-    ### add a circle renderer with a size, color, and alpha
-    ##plot.circle([1, 2, 3, 4, 5], [6, 7, 2, 4, 5], size=20, color="navy", alpha=0.5)
-    ##script, div = bokeh.embed.components(layout)
+        # Create a Slider widget
+        initial_time_point = 0
+        slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
 
 
-    #x = np.linspace(0, 10, 500) 
-    #y = np.sin(x) 
-  
-    #source = bokeh.models.ColumnDataSource(data=dict(x=x, y=y)) 
-  
-    ## Create plots and widgets 
-    #plot = bokeh.plotting.figure() 
-  
-    ##plot.line('x', 'y', source=source, line_width=3, line_alpha=0.5) 
-    #plot.image(image=[BF_images[0]], x=0, y=0, dw=m, dh=n, color_mapper=color)
+        ## Adding callback code 
+        callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
+                        code=""" 
+        const time_point = val.value;
+        const concat = 'img'+time_point; 
+        //console.log(concat)
+        source.data['img'] = source.data[concat]
+        source.change.emit(); 
+        """) 
 
-    ## Create Slider object 
-    #slider = bokeh.models.Slider(start=0, end=90, value=0, step=1, title='Image number') 
-  
-    ## Adding callback code 
-    #callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
-    #                code=""" 
-    #const data = source.data; 
-    #const freq = val.value; 
-    #const x = data['x']; 
-    #const y = data['y']; 
-    #for (var i = 0; i < x.length; i++) { 
-    #    y[i] = Math.sin(freq*x[i]); 
-    #} 
-    #  
-    #source.change.emit(); 
-    #""") 
-  
-    #slider.js_on_change('value', callback) 
-  
-    ## Arrange plots and widgets in layouts 
-    #layout = bokeh.layouts.column(slider, plot) 
-  
-    #bokeh.plotting.output_file('exam.html') 
-    #script, div = bokeh.embed.components(layout)
+        # Attach the callback to the slider
+        slider.js_on_change('value', callback)
+        slider_layout = bokeh.layouts.column(
+            bokeh.layouts.Spacer(height=30),
+            slider
+        )
 
 
+        # Create Bokeh figure and use image display
+        p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]))
+        im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
+        p.rect(100, 100, 50, 50, line_width=2, fill_alpha=0, line_color="white") 
+        # Remove the axes
+        p.axis.visible = False
+        p.grid.visible = False
+        norm_layout = bokeh.layouts.row(
+            p,
+            bokeh.layouts.Spacer(width=15),
+            slider_layout,
+        )
 
-#######################################################################
-    import nd2
-    from pathlib import Path
-    #images, channels = read.nd2reader_getFrames('/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0060_well1/raw_files/wsc_epfl-wscl_060_xy01.nd2')
-    bf_channel = 0
-    time_lapse_path = Path('/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0060_well1/raw_files/wsc_epfl-wscl_060_xy01.nd2')
-    time_lapse = nd2.imread(time_lapse_path.as_posix())
-    time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
-    #time_lapse=np.uint8(time_lapse)
-
-    time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
-    ind_images = [time_lapse[i,:,:] for i in time_domain]
-
-    data={'img':[ind_images[0]]}
-    for i in range(len(ind_images)):
-        data['img{}'.format(i)]=[ind_images[i]]
-    source=bokeh.models.ColumnDataSource(data=data)
-
-    # Create a Slider widget
-    initial_time_point = 0
-    slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
-
-
-    ## Adding callback code 
-    callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
-                    code=""" 
-    const time_point = val.value;
-    const concat = 'img'+time_point; 
-    //console.log(concat)
-    source.data['img'] = source.data[concat]
-    source.change.emit(); 
-    """) 
-
-    # Attach the callback to the slider
-    slider.js_on_change('value', callback)
-    slider_layout = bokeh.layouts.column(
-        bokeh.layouts.Spacer(height=30),
-        slider
-    )
-
-
-    # Create Bokeh figure and use image display
-    p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]))
-    im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
-    p.rect(100, 100, 50, 50, line_width=2, fill_alpha=0) 
-    # Remove the axes
-    p.axis.visible = False
-    p.grid.visible = False
-    norm_layout = bokeh.layouts.row(
-        p,
-        bokeh.layouts.Spacer(width=15),
-        slider_layout,
-    )
-
-    bokeh.plotting.output_file("python_callback.html", title="python_callback.py example")
-    script, div = bokeh.embed.components(norm_layout)
+        bokeh.plotting.output_file("python_callback.html", title="python_callback.py example")
+        script, div = bokeh.embed.components(norm_layout)
 
 
 
