@@ -731,9 +731,9 @@ def index(request):
         sample_dict = get_sample_details(selected_well)
     
     if selected_position != '':
-   
+        print('================',selected_position)
         bf_channel = 0
-        time_lapse_path = Path(selected_position)
+        time_lapse_path = Path('/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0060_well1/raw_files/wsc_epfl-wscl_060_xy01.nd2')
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
         #time_lapse=np.uint8(time_lapse)
