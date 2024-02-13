@@ -839,7 +839,7 @@ def index(request):
     # Create Bokeh figure and use image display
     p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]))
     im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
-    p.graph.rect(100, 
+    p.rect(100, 
            100, 
            50, 
            50) 
