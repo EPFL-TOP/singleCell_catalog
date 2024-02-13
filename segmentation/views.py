@@ -734,6 +734,8 @@ def index(request):
     script = None
     div = None
     if selected_position != None:
+        sample = Sample.objects.get(file_name = selected_position)
+        rois = ROI.objects.select_related().filter(sample = sample)
         print('================',selected_position)
         bf_channel = 0
         time_lapse_path = Path(selected_position)
@@ -775,7 +777,8 @@ def index(request):
         # Create Bokeh figure and use image display
         p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]))
         im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
-        p.rect(100, 100, 50, 50, line_width=2, fill_alpha=0, line_color="white") 
+        for roi in rois:
+            p.rect(roi.min_row, roi.min_col, roi.max_row-roi.min_row, roi.max_col-roi.min_col, line_width=2, fill_alpha=0, line_color="white") 
         # Remove the axes
         p.axis.visible = False
         p.grid.visible = False
