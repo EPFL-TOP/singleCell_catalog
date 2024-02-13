@@ -784,7 +784,6 @@ def index(request):
         p.axis.visible = False
         p.grid.visible = False
 
-
         #custom rROI
         source_roi = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
 
@@ -799,6 +798,7 @@ def index(request):
                 top: data.top.concat([geometry.y0]),
                 bottom: data.bottom.concat([geometry.y1])
             }
+            source.change.emit()
         """)
 
         #p = figure(width=400, height=400, title="Select below to draw rectangles",
@@ -811,9 +811,6 @@ def index(request):
         p.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
 
         p.js_on_event(bokeh.events.SelectionGeometry, callback_roi)
-
-
-
 
         norm_layout = bokeh.layouts.row(
             p,
