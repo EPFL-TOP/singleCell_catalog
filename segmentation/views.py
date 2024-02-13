@@ -813,24 +813,10 @@ def index(request):
         data['img{}'.format(i)]=[ind_images[i]]
     source=bokeh.models.ColumnDataSource(data=data)
 
-
-
     # Create a Slider widget
     initial_time_point = 0
     slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
 
-    # Define a callback to update bf_display with slider
-    #def tp_callback(attr, old, new):
-    #    time_point = slider.value
-    #    new_image = ind_images[time_point]
-    #    source.data = {'img':[new_image]}
-    #    source.change.emit()
-
-    #def tp_callback(source=source, image_ind=None):
-    #    time_point = image_ind.value
-    #    new_image  = ind_images[time_point]
-    #    source.data = {'img':[new_image]}
-    #    source.change.emit()
 
     ## Adding callback code 
     callback = bokeh.models.CustomJS(args=dict(source=source, val=slider), 
@@ -852,10 +838,8 @@ def index(request):
     //source.data = {'img':[data['img2']]};
     //console.log(img);
 
-    //source.data = {'img':source.data['img2']}
-    source.data['img'] = source.data[concat]
+    //source.data['img'] = source.data[concat]
     source.change.emit(); 
-    //im.data_source.change.emit(); 
     """) 
 
 
