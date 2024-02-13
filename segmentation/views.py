@@ -775,7 +775,7 @@ def index(request):
 
 
         # Create Bokeh figure and use image display
-        p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]))
+        p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select")
         im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
         for roi in rois:
             p.rect(roi.min_col+(roi.max_col-roi.min_col)/2, (roi.min_row+(roi.max_row-roi.min_row)/2), roi.max_col-roi.min_col, roi.max_col-roi.min_col, line_width=2, fill_alpha=0, line_color="white") 
@@ -788,7 +788,7 @@ def index(request):
         #custom rROI
         source_roi = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
 
-        callback_roi = bokeh.models.CustomJS(args=dict(source=source), code="""
+        callback_roi = bokeh.models.CustomJS(args=dict(source=source_roi), code="""
             const geometry = cb_obj.geometry
             const data = source.data
 
@@ -810,7 +810,7 @@ def index(request):
 
         p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
 
-        p.js_on_event(bokeh.events.SelectionGeometry, callback)
+        p.js_on_event(bokeh.events.SelectionGeometry, callback_roi)
 
 
 
