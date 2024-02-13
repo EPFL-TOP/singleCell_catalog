@@ -808,7 +808,7 @@ def index(request):
         quad = bokeh.models.Quad(left='left', right='right',top='top', bottom='bottom',
                     fill_alpha=0.3, fill_color='#009933')
 
-        p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
+        p.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
 
         p.js_on_event(bokeh.events.SelectionGeometry, callback_roi)
 
