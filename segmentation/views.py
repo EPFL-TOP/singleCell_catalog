@@ -865,6 +865,41 @@ def index(request):
     return render(request, 'embed.html', context=context)
     #return render(request, 'segmentation/index.html', context=context)
 
+from bokeh.document import Document
+from bokeh.embed import server_document
+from bokeh.layouts import column
+from bokeh.models import ColumnDataSource, Slider
+from bokeh.plotting import figure
+from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
+from bokeh.themes import Theme
+
+def sea_surface_handler(doc: Document) -> None:
+    df = sea_surface_temperature.copy()
+    source = bokeh.models.ColumnDataSource(data=df)
+
+    plot = bokeh.plotting.figure(x_axis_type="datetime", y_range=(0, 25), y_axis_label="Temperature (Celsius)",
+                  title="Sea Surface Temperature at 43.18, -70.43")
+    plot.line("time", "temperature", source=source)
+
+    def callback(attr: str, old: Any, new: Any) -> None:
+        if new == 0:
+            data = df
+        else:
+            data = df.rolling(f"{new}D").mean()
+        source.data = dict(bokeh.models.ColumnDataSource(data=data).data)
+        print('CALLBACK sea_surface_handler source.data=', source.data)
+
+    slider = Slider(start=0, end=30, value=0, step=1, title="Smoothing by N Days")
+    slider.on_change("value", callback)
+
+    doc.theme = theme
+    doc.add_root(column(slider, plot))
+    print('START sea_surface_handler source.data=', source.data)
+
 
 def index_test(request: HttpRequest) -> HttpResponse:
     return render(request, 'index.html', {})
+
+def sea_surface(request: HttpRequest) -> HttpResponse:
+    script = bokeh.embed.server_document(request.build_absolute_uri())
+    return render(request, "embed.html", dict(script=script))
