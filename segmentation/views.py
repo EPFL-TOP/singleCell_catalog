@@ -866,5 +866,5 @@ def index(request):
     #return render(request, 'segmentation/index.html', context=context)
 
 
-def index(request: HttpRequest) -> HttpResponse:
+def index_test(request: HttpRequest) -> HttpResponse:
     return render(request, 'index.html', {})

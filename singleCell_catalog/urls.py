@@ -28,7 +28,7 @@ from segmentation import views
 
 
 urlpatterns = [
-    path(r"", views.index, name="index"),
+    path(r"", views.index_test, name="index"),
 
     path('admin/', admin.site.urls),
     path('segmentation/', include('segmentation.urls')),
