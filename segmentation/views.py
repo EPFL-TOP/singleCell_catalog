@@ -618,8 +618,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     doc.add_root(norm_layout)
 
+
 #___________________________________________________________________________________________
-def index(request):
+def index(request: HttpRequest) -> HttpResponse:
+
+#def index(request):
     """View function for home page of site."""
     print('The visualisation request method is:', request.method)
     print('The visualisation POST data is:     ', request.POST)
