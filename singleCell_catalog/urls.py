@@ -29,13 +29,12 @@ from segmentation import views
 
 urlpatterns = [
     path(r"segmentation/", views.index_test, name="index"),
-
     path('admin/', admin.site.urls),
 #    path('segmentation/', include('segmentation.urls')),
     #path('', RedirectView.as_view(url='segmentation/', permanent=True)),
     #path("segmentation/", views.index_test),
-        #path("sea-surface-temp", views.sea_surface),
-        path("segmentation", views.sea_surface),
+        path("sea-surface-temp", views.sea_surface),
+        #path("segmentation", views.sea_surface),
 
 ]
 
@@ -43,7 +42,7 @@ urlpatterns = [
 #urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 bokeh_apps = [
-    autoload("segmentation", views.sea_surface_handler) ,
-    #autoload("sea-surface-temp", views.sea_surface_handler),
+    #autoload("segmentation", views.sea_surface_handler) ,
+    autoload("sea-surface-temp", views.sea_surface_handler),
 
 ]
