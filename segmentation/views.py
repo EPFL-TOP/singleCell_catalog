@@ -234,8 +234,6 @@ def get_sample_details(selected_well):
 
     return sample_dict
 
-
-
 #___________________________________________________________________________________________
 def register_rawdataset():
     query = (
@@ -320,8 +318,6 @@ def register_rawdataset():
                                   )
                     print('            adding frame with name ',fr)
                     frame.save()
-
-
 
 #___________________________________________________________________________________________
 def segment():
@@ -417,7 +413,6 @@ def segment():
 
                 print('gc collect 1: ',gc.collect())
 
-
 #___________________________________________________________________________________________
 def build_cells():
     #loop over all experiments
@@ -465,8 +460,6 @@ def build_cells():
                         #cell_frame_list[cid].cell_id = cellid_list[clustering.labels_[cid]]
                         cell_frame_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
                         cell_frame_list[cid].save()
-
-
 
 #___________________________________________________________________________________________
 def build_cell_frames():
@@ -553,7 +546,6 @@ def intensity(experiment='', well='', position=''):
                 print(cell_dict)
                 return cell_dict
 
-
 #___________________________________________________________________________________________
 def build_ROIs():
     exp_list = Experiment.objects.all()
@@ -580,7 +572,6 @@ def build_ROIs():
                               roi_number=r)
                     roi.save()
 
-
 #___________________________________________________________________________________________
 def index(request):
     """View function for home page of site."""
@@ -595,8 +586,6 @@ def index(request):
     #THIS BUILDS THE ROIS FOR ALL THE EXISTING SAMPLES
     if 'build_ROIs' in request.POST:
         build_ROIs()
-
-
 
 
     #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
@@ -760,7 +749,7 @@ def index(request):
         time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
         ind_images = [time_lapse[i,:,:] for i in time_domain]
 
-        segmentation_handler(ind_images, time_lapse)
+        #segmentation_handler(ind_images, time_lapse)
 
 
 #        data={'img':[ind_images[0]]}
@@ -834,11 +823,11 @@ def index(request):
 #
 #        #p.js_on_event(bokeh.events.SelectionGeometry, callback_roi)
 #
-        norm_layout = bokeh.layouts.row(
-            p,
-            bokeh.layouts.Spacer(width=15),
-            slider_layout,
-        )
+#        norm_layout = bokeh.layouts.row(
+#            p,
+#            bokeh.layouts.Spacer(width=15),
+#            slider_layout,
+#        )
 
         #bokeh.plotting.output_file("python_callback.html", title="python_callback.py example")
         #script, div = bokeh.embed.components(norm_layout)
