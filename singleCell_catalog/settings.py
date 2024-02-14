@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    #'segmentation.apps.SegmentationConfig', 
+    'segmentation.apps.SegmentationConfig', 
     'channels',
     'bokeh_django',
 ]
