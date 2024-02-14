@@ -60,6 +60,9 @@ import bokeh.embed
 import bokeh.layouts
 
 
+ind_images=None
+time_lapse=None
+
 #___________________________________________________________________________________________
 def deltaR(c1, c2):
     return math.sqrt( math.pow((c1['x'] - c2['x']),2) +  math.pow((c1['y'] - c2['y']),2) + math.pow((c1['z'] - c2['z']),2))
@@ -862,7 +865,7 @@ def index(request):
     return render(request, "embed.html", dict(script=script))
 
 #___________________________________________________________________________________________
-def segmentation_handler(doc: bokeh.document.Document, ind_images, time_lapse) -> None:
+def segmentation_handler(doc: bokeh.document.Document) -> None:
     data={'img':[ind_images[0]]}
     source=bokeh.models.ColumnDataSource(data=data)
 
