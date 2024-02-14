@@ -894,7 +894,7 @@ def index(request: HttpRequest) -> HttpResponse:
         'instrumental_dict':instrumental_dict,
         'sample_dict':sample_dict,
         'plot':uri, 
-        'script': script, 'div': div
+        'script': script
     }
 
     return render(request, 'segmentation/index.html', context=context)
