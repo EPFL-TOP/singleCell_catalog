@@ -59,10 +59,6 @@ import bokeh.plotting
 import bokeh.embed
 import bokeh.layouts
 
-def bokeh_handler(doc: bokeh.document.Document) -> None:
-    slider = bokeh.models.Slider(start=0, end=30, value=0, step=1, title="Example")
-    doc.add_root(bokeh.layouts.column(slider))
-
 
 #___________________________________________________________________________________________
 def deltaR(c1, c2):
@@ -862,8 +858,16 @@ def index(request):
 
 
 
-    return render(request, 'embed.html', context=context)
-    #return render(request, 'segmentation/index.html', context=context)
+    #return render(request, 'embed.html', context=context)
+    return render(request, 'segmentation/index.html', context=context)
+
+
+#___________________________________________________________________________________________
+def bokeh_handler(doc: bokeh.document.Document) -> None:
+    slider = bokeh.models.Slider(start=0, end=30, value=0, step=1, title="Example")
+    doc.add_root(bokeh.layouts.column(slider))
+
+
 
 from bokeh.document import Document
 from bokeh.embed import server_document
