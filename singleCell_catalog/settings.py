@@ -15,7 +15,6 @@ import os#, sys
 from bokeh.settings import bokehjsdir, settings as bokeh_settings
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-print("BASE_DIR ",BASE_DIR)
 #VMachine
 #if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
 #    sys.path.append('/home/helsens/Software/UPOATES_catalog')
