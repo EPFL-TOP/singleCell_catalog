@@ -572,6 +572,46 @@ def build_ROIs():
                               roi_number=r)
                     roi.save()
 
+
+#___________________________________________________________________________________________
+def segmentation_handler(doc: bokeh.document.Document) -> None:
+
+    print ('in segmentation_handler ind_images=',ind_images)
+    data={'img':[ind_images[0]]}
+    source=bokeh.models.ColumnDataSource(data=data)
+
+    # Create a Slider widget
+    initial_time_point = 0
+    slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
+
+    # Define a callback to update bf_display with slider
+    def callback(attr: str, old: Any, new: Any) -> None:
+        time_point = slider.value
+        new_image = ind_images[time_point]
+        source.data = {'img':[new_image]}
+
+    # Attach the callback to the slider
+    slider.on_change('value', callback)
+    slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=30), slider)
+
+    # Create Bokeh figure and use image display
+    p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select")
+    im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
+    for roi in rois:
+        p.rect(roi.min_col+(roi.max_col-roi.min_col)/2, (roi.min_row+(roi.max_row-roi.min_row)/2), roi.max_col-roi.min_col, roi.max_col-roi.min_col, line_width=2, fill_alpha=0, line_color="white") 
+        print('roi.min_col=',roi.min_col, '  roi.max_col=',roi.max_col,'  roi.min_row=',roi.min_row,'  roi.max_row=',roi.max_row)
+    # Remove the axes
+    p.axis.visible = False
+    p.grid.visible = False
+
+    norm_layout = bokeh.layouts.row(
+            p,
+            bokeh.layouts.Spacer(width=15),
+            slider_layout,
+        )
+
+    doc.add_root(norm_layout)
+
 #___________________________________________________________________________________________
 def index(request):
     """View function for home page of site."""
@@ -748,7 +788,7 @@ def index(request):
 
         time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
         ind_images = [time_lapse[i,:,:] for i in time_domain]
-
+        print('ind_images = ',len(ind_images))
         #segmentation_handler(ind_images, time_lapse)
 
 
@@ -853,42 +893,7 @@ def index(request):
     script = bokeh.embed.server_document(request.build_absolute_uri())
     return render(request, "embed.html", dict(script=script))
 
-#___________________________________________________________________________________________
-def segmentation_handler(doc: bokeh.document.Document) -> None:
-    data={'img':[ind_images[0]]}
-    source=bokeh.models.ColumnDataSource(data=data)
 
-    # Create a Slider widget
-    initial_time_point = 0
-    slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
-
-    # Define a callback to update bf_display with slider
-    def callback(attr: str, old: Any, new: Any) -> None:
-        time_point = slider.value
-        new_image = ind_images[time_point]
-        source.data = {'img':[new_image]}
-
-    # Attach the callback to the slider
-    slider.on_change('value', callback)
-    slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=30), slider)
-
-    # Create Bokeh figure and use image display
-    p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select")
-    im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
-    for roi in rois:
-        p.rect(roi.min_col+(roi.max_col-roi.min_col)/2, (roi.min_row+(roi.max_row-roi.min_row)/2), roi.max_col-roi.min_col, roi.max_col-roi.min_col, line_width=2, fill_alpha=0, line_color="white") 
-        print('roi.min_col=',roi.min_col, '  roi.max_col=',roi.max_col,'  roi.min_row=',roi.min_row,'  roi.max_row=',roi.max_row)
-    # Remove the axes
-    p.axis.visible = False
-    p.grid.visible = False
-
-    norm_layout = bokeh.layouts.row(
-            p,
-            bokeh.layouts.Spacer(width=15),
-            slider_layout,
-        )
-
-    doc.add_root(norm_layout)
 
 
 
