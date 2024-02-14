@@ -23,7 +23,7 @@ from django.conf.urls.static import static
 from django.contrib.staticfiles.storage import staticfiles_storage
 
 from bokeh_django import autoload
-from singleCell_catalog import views
+from segmentation import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
