@@ -860,4 +860,5 @@ def index(request):
 
 
 
-    return render(request, 'segmentation/index.html', context=context)
+    return render(request, 'embed.html', context=context)
+    #return render(request, 'segmentation/index.html', context=context)
