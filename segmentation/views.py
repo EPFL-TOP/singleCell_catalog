@@ -18,11 +18,7 @@ import urllib, base64
 
 import math
 
-import bokeh.models
-import bokeh.palettes
-import bokeh.plotting
-import bokeh.embed
-import bokeh.layouts
+
 
 import nd2
 from pathlib import Path
@@ -48,6 +44,23 @@ if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
 
 import reader as read
 import segmentationTools as segtools
+
+
+#from bokeh.document import Document
+#from bokeh.layouts import column
+#from bokeh.models import Slider
+#from bokeh.embed import server_document
+
+import bokeh.models
+import bokeh.palettes
+import bokeh.plotting
+import bokeh.embed
+import bokeh.layouts
+
+def bokeh_handler(doc: bokeh.document.Document) -> None:
+    slider = bokeh.models.Slider(start=0, end=30, value=0, step=1, title="Example")
+    doc.add_root(bokeh.layouts.column(slider))
+
 
 #___________________________________________________________________________________________
 def deltaR(c1, c2):
@@ -828,6 +841,7 @@ def index(request):
 
 #######################################################################
 
+    script = bokeh.embed.server_document(request.build_absolute_uri())
 
     context = {
         #'num_samples': num_samples,
@@ -845,6 +859,5 @@ def index(request):
 
 
 
- 
 
     return render(request, 'segmentation/index.html', context=context)

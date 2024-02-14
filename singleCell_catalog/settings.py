@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 TEST=True
 from pathlib import Path
 import os#, sys
+from bokeh.settings import bokehjsdir, settings as bokeh_settings
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 #VMachine
@@ -47,6 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'segmentation.apps.SegmentationConfig', 
+    'channels',
+    'bokeh_django',
 ]
 
 MIDDLEWARE = [
@@ -80,6 +83,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'singleCell_catalog.asgi.application'
 WSGI_APPLICATION = 'singleCell_catalog.wsgi.application'
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240 # higher than the count of fields
@@ -160,4 +164,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
    os.path.join(BASE_DIR, "static"),
+   bokehjsdir()
 ]
+
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    'bokeh_django.static.BokehExtensionFinder',
+)
+
+bokeh_settings.resources = 'server'

@@ -34,3 +34,6 @@ dependencies:
     - django-debug-toolbar
     - memory_profiler
     - bokeh
+    - channels
+    - bokeh-django
+    - panel
