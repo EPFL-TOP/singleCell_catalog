@@ -872,6 +872,7 @@ from bokeh.models import ColumnDataSource, Slider
 from bokeh.plotting import figure
 from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
 from bokeh.themes import Theme
+from typing import Any
 
 def sea_surface_handler(doc: Document) -> None:
     df = sea_surface_temperature.copy()
