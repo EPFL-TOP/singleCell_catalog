@@ -582,7 +582,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
     time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
     ind_images = [time_lapse[i,:,:] for i in time_domain]
-    print ('in segmentation_handler ind_images=',ind_images)
+    print ('in segmentation_handler ind_images=',len(ind_images))
     data={'img':[ind_images[0]]}
     source=bokeh.models.ColumnDataSource(data=data)
 
@@ -595,6 +595,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_point = slider.value
         new_image = ind_images[time_point]
         source.data = {'img':[new_image]}
+        print('CALLBACK segmentation_handler time_point=', time_point)
 
     # Attach the callback to the slider
     slider.on_change('value', callback)
@@ -893,16 +894,12 @@ def index(request: HttpRequest) -> HttpResponse:
         'injection_dict':injection_dict,
         'instrumental_dict':instrumental_dict,
         'sample_dict':sample_dict,
-        'plot':uri, 
         'script': script
     }
 
     return render(request, 'segmentation/index.html', context=context)
 
-    script = bokeh.embed.server_document(request.build_absolute_uri())
-    return render(request, "embed.html", dict(script=script))
-
-
+    
 
 
 
