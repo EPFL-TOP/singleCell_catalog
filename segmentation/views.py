@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.db import reset_queries
 from django.db import connection
+from django.http import HttpRequest, HttpResponse
+
 from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellFrame, ROI
 
 import os, sys, json, glob, gc
@@ -862,3 +864,7 @@ def index(request):
 
     return render(request, 'embed.html', context=context)
     #return render(request, 'segmentation/index.html', context=context)
+
+
+def index(request: HttpRequest) -> HttpResponse:
+    return render(request, 'index.html', {})

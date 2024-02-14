@@ -25,7 +25,11 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from bokeh_django import autoload
 from segmentation import views
 
+
+
 urlpatterns = [
+    path(r"", views.index, name="index"),
+
     path('admin/', admin.site.urls),
     path('segmentation/', include('segmentation.urls')),
     #path('', RedirectView.as_view(url='segmentation/', permanent=True)),
