@@ -28,12 +28,12 @@ from segmentation import views
 
 
 urlpatterns = [
-    path(r"", views.index_test, name="index"),
+    path(r"segmentation/", views.index_test, name="index"),
 
     path('admin/', admin.site.urls),
 #    path('segmentation/', include('segmentation.urls')),
     #path('', RedirectView.as_view(url='segmentation/', permanent=True)),
-    #path("segmentation", views.index),
+    #path("segmentation/", views.index_test),
         #path("sea-surface-temp", views.sea_surface),
         path("segmentation", views.sea_surface),
 
