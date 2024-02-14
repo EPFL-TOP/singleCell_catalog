@@ -42,7 +42,7 @@ urlpatterns = [
 #urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 bokeh_apps = [
-    autoload("segmentation", views.bokeh_handler) ,
-        autoload("sea-surface-temp", views.sea_surface_handler),
+    #autoload("segmentation", views.bokeh_handler) ,
+    autoload("sea-surface-temp", views.sea_surface_handler),
 
 ]
