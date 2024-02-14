@@ -8,9 +8,10 @@
 
 <body>
   <div>
-    This Bokeh app below is served by a Django server (via autoload.js):
+    This Bokeh app below is served by a Django server (via autoload.js):<br>
+    context: {{ context }}
+
   </div>
-  {{ context }}
   {{ script|safe }}
 </body>
 </html>
