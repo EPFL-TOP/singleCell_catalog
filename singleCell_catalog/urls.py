@@ -22,6 +22,9 @@ from django.conf.urls.static import static
 
 from django.contrib.staticfiles.storage import staticfiles_storage
 
+from bokeh_django import autoload
+from singleCell_catalog import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
@@ -32,8 +35,13 @@ urlpatterns += [
 
 urlpatterns += [
     path('', RedirectView.as_view(url='segmentation/', permanent=True)),
+    path("segmentation/", views.index),
 
 ]
 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+bokeh_apps = [
+    autoload("embedded-bokeh-app/", views.bokeh_handler) 
+]
