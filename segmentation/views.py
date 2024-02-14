@@ -882,7 +882,8 @@ def index(request: HttpRequest) -> HttpResponse:
         #bokeh.plotting.output_file("python_callback.html", title="python_callback.py example")
         #script, div = bokeh.embed.components(norm_layout)
 
-        script = bokeh.embed.server_document(request.build_absolute_uri())
+        script, div = bokeh.embed.components(request.build_absolute_uri())
+        #script = bokeh.embed.server_document(request.build_absolute_uri())
 
     context = {
         #'num_samples': num_samples,
