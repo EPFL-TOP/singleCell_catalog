@@ -575,7 +575,13 @@ def build_ROIs():
 
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document) -> None:
-
+#def segmentation_handler(doc, ind_images, time_lapse):
+    bf_channel = 0
+    time_lapse_path = Path('/mnt/nas_rcp/raw_data/microscopy/cell_culture/ppf001_well1/raw_files/ppf001_xy001.nd2')
+    time_lapse = nd2.imread(time_lapse_path.as_posix())
+    time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
+    time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
+    ind_images = [time_lapse[i,:,:] for i in time_domain]
     print ('in segmentation_handler ind_images=',ind_images)
     data={'img':[ind_images[0]]}
     source=bokeh.models.ColumnDataSource(data=data)
@@ -597,9 +603,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Create Bokeh figure and use image display
     p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select")
     im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
-    for roi in rois:
-        p.rect(roi.min_col+(roi.max_col-roi.min_col)/2, (roi.min_row+(roi.max_row-roi.min_row)/2), roi.max_col-roi.min_col, roi.max_col-roi.min_col, line_width=2, fill_alpha=0, line_color="white") 
-        print('roi.min_col=',roi.min_col, '  roi.max_col=',roi.max_col,'  roi.min_row=',roi.min_row,'  roi.max_row=',roi.max_row)
+    #for roi in rois:
+    #    p.rect(roi.min_col+(roi.max_col-roi.min_col)/2, (roi.min_row+(roi.max_row-roi.min_row)/2), roi.max_col-roi.min_col, roi.max_col-roi.min_col, line_width=2, fill_alpha=0, line_color="white") 
+    #    print('roi.min_col=',roi.min_col, '  roi.max_col=',roi.max_col,'  roi.min_row=',roi.min_row,'  roi.max_row=',roi.max_row)
     # Remove the axes
     p.axis.visible = False
     p.grid.visible = False
