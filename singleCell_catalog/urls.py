@@ -27,16 +27,9 @@ from segmentation import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-]
-
-urlpatterns += [
-    path('segmentation/', include('segmentation.urls')),
-]
-
-urlpatterns += [
-    path('', RedirectView.as_view(url='segmentation/', permanent=True)),
+    #path('segmentation/', include('segmentation.urls')),
+    #path('', RedirectView.as_view(url='segmentation/', permanent=True)),
     path("segmentation/", views.index),
-
 ]
 
 
