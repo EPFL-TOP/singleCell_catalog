@@ -28,7 +28,7 @@ from segmentation import views
 
 
 urlpatterns = [
-    path(r"segmentation/", views.index_test, name="index"),
+    path(r"segmentation/", views.index, name="index"),
     path('admin/', admin.site.urls),
     path("segmentation/sea-surface-temp", views.index),
         #path("segmentation", views.sea_surface),
