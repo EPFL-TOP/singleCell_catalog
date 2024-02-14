@@ -29,12 +29,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     #path('segmentation/', include('segmentation.urls')),
     #path('', RedirectView.as_view(url='segmentation/', permanent=True)),
-    path("segmentation/", views.index),
+    path("segmentation", views.index),
 ]
 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 bokeh_apps = [
-    autoload("embedded-bokeh-app/", views.bokeh_handler) 
+    autoload("segmentation", views.bokeh_handler) 
 ]
