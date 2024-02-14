@@ -893,7 +893,7 @@ def sea_surface_handler(doc: Document) -> None:
     slider = Slider(start=0, end=30, value=0, step=1, title="Smoothing by N Days")
     slider.on_change("value", callback)
 
-    doc.theme = theme
+    #doc.theme = theme
     doc.add_root(column(slider, plot))
     print('START sea_surface_handler source.data=', source.data)
 
