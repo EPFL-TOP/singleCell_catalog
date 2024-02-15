@@ -910,7 +910,7 @@ from bokeh.server.server import Server
 from bokeh.embed import server_document
 from bokeh.application.handlers import FunctionHandler
 from .bokeh_app import create_bokeh_app
-
+from bokeh.application import Application
 
 def bokeh_server(request):
     # Generate or retrieve image data (3D numpy array) here
@@ -937,11 +937,12 @@ def bokeh_server(request):
         def __init__(self):
             super().__init__(modify_doc)
 
-        def on_session_created(self, session_context):
-            session_context.session.allow_websocket_origin = [f"{bokeh_server_host}:8001"]
 
     handler = MyHandler()
-    server = Server({'/bokeh_app': handler}, allow_origin=[f"http://{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
+    application = Application(handler)
+    server = Server({'/bokeh_app': application}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"http://{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
+
+    #server = Server({'/bokeh_app': handler}, allow_origin=[f"http://{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
 
     #server = Server({'/bokeh_app': with_cors(modify_doc)}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
     server.start()
