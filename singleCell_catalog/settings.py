@@ -176,4 +176,4 @@ STATICFILES_FINDERS = (
 bokeh_settings.resources = 'server'
 
 
-BOEKH_PORT = 
+BOEKH_PORT = 5006
