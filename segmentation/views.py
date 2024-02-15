@@ -923,40 +923,16 @@ def bokeh_server(request):
     
     # Get Bokeh server URL
     bokeh_url = f"http://localhost:{settings.BOEKH_PORT}/bokeh_app"
-    script = server_document(bokeh_url, application=bokeh_app)
+    script = server_document(bokeh_url)
     
     return render(request, 'segmentation/bokeh_template.html', {'bokeh_script': script})
 
 
 
-from django.shortcuts import render
-from django.http import HttpResponse
-from bokeh.embed import server_document
-from django.conf import settings
-#from .models import ImageModel
-from .bokeh_app import create_bokeh_app
 
-def bokeh_server_old(request):
-    # Retrieve image data from Django model
-    #image_id = request.GET.get('image_id')  # Assuming 'image_id' is passed via query parameter
-    #image = ImageModel.objects.get(pk=image_id)
-    #image_data = {'image_url': image.image_url}
-    bf_channel = 0
-    time_lapse_path = Path("/mnt/nas_rcp/raw_data/microscopy/cell_culture/ppf001_well1/raw_files/ppf001_xy001.nd2")
-    time_lapse = nd2.imread(time_lapse_path.as_posix())
-    time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
-    time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
-    ind_images = [time_lapse[i,:,:] for i in time_domain]
-    image_data=ind_images[0]
-    # Create Bokeh application
-    bokeh_app = create_bokeh_app(image_data)
-    
-    # Get Bokeh server URL
-    #bokeh_url = f"http://localhost:{settings.BOEKH_PORT}/bokeh_app"
-    bokeh_url = f"http://localhost:{settings.BOEKH_PORT}/bokeh_app"
-    script = server_document(bokeh_url, application=bokeh_app)
-    
-    return render(request, 'segmentation/bokeh_template.html', {'bokeh_script': script})
+
+
+
 
 
 
