@@ -908,7 +908,7 @@ from django.shortcuts import render
 import numpy as np
 from bokeh.server.server import Server
 from bokeh.embed import server_document
-
+from bokeh.application.handlers import FunctionHandler
 from .bokeh_app import create_bokeh_app
 
 
@@ -933,18 +933,14 @@ def bokeh_server(request):
     #server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"])
     #server.start(host=bokeh_server_host, port=bokeh_server_port)
  
-    def with_cors(handler):
-        #def wrapper(doc, *args, **kwargs):
-        def wrapper(doc):
-            #doc = args[0]  # Extract the first argument which should be the Bokeh Document object
-            handler(doc, *args, **kwargs)
-            response = HttpResponse()
-            response["Access-Control-Allow-Origin"] = "*"
-            response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-            response["Access-Control-Allow-Headers"] = "Content-Type"
-            return response
-        return wrapper
+    class MyHandler(FunctionHandler):
+        def __init__(self):
+            super().__init__(modify_doc)
 
+        def on_session_created(self, session_context):
+            session_context.session.allow_websocket_origin = [f"{bokeh_server_host}:8001"]
+
+    handler = MyHandler()
 
 
     server = Server({'/bokeh_app': with_cors(modify_doc)}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
