@@ -925,7 +925,7 @@ def bokeh_server(request):
         app = create_bokeh_app(image_data)
         doc.add_root(app.layout)
 
-    server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=["localhost:8001"], allow_origin=["localhost:8001"])
+    server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=["localhost:0.0.0.0:8001"], allow_origin=["localhost:0.0.0.0:8001"])
     server.start()
 
     #server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=["localhost:8001"], allow_origin=["localhost:8001"])
