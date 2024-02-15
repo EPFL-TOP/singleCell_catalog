@@ -940,7 +940,7 @@ def bokeh_server(request):
 
     handler = MyHandler()
     application = Application(handler)
-    server = Server({'/bokeh_app': application}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"http://{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
+    server = Server({'/bokeh_app': application}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"http://{bokeh_server_host}:8001"], port=bokeh_server_port)
 
     #server = Server({'/bokeh_app': handler}, allow_origin=[f"http://{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
 
