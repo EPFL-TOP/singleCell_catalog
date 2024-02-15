@@ -908,9 +908,9 @@ from django.shortcuts import render
 import numpy as np
 from bokeh.server.server import Server
 from bokeh.embed import server_document
-from tornado.ioloop import IOLoop
 
 from .bokeh_app import create_bokeh_app
+
 
 def bokeh_server(request):
     # Generate or retrieve image data (3D numpy array) here
@@ -925,14 +925,8 @@ def bokeh_server(request):
         app = create_bokeh_app(image_data)
         doc.add_root(app.layout)
 
-    # Set up CORS headers
-    class CorsServer(Server):
-        def _check_origin(self, origin):
-            return True  # Allow all origins
-
-    server = CorsServer({'/bokeh_app': modify_doc}, io_loop=IOLoop(), allow_websocket_origin=["localhost:8001"], allow_origin=["localhost:8001"])
+    server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=["localhost:8001"], allow_origin=["localhost:8001"])
     server.start()
-
 
     #server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=["localhost:8001"], allow_origin=["localhost:8001"])
     #server.start()
