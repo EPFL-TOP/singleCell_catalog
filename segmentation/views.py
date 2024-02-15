@@ -923,7 +923,9 @@ def bokeh_server(request):
     # Create and start the Bokeh server with CORS headers
     def modify_doc(doc):
         app = create_bokeh_app(image_data)
-        doc.add_root(app.layout)
+        app.modify_doc(doc)  # Pass the Bokeh Document object to modify_doc method
+        return doc
+        #doc.add_root(app.layout)
 
 
     bokeh_server_host = '0.0.0.0'
