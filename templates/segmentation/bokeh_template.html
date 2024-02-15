@@ -12,8 +12,11 @@
 </head>
 <body>
     TOTOTOTOTOTO
+    {{ bokeh_script }}
     <div>
         <iframe src="{{ bokeh_url }}" frameborder="0" width="100%" height="600"></iframe>
     </div>
+    {{ bokeh_script | safe }}
+
 </body>
 </html>

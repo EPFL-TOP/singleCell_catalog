@@ -7,8 +7,10 @@ from bokeh.application import Application
 from bokeh.application.handlers.function import FunctionHandler
 from bokeh.layouts import column, row
 import numpy as np
+import sys
+sys.path.append('/Users/helsens/Software/github/EPFL-TOP/singleCell_catalog')
 
-from .models import ROI
+from segmentation.models import ROI
 
 class BokehApp:
     def __init__(self, image_data, file):
@@ -33,6 +35,10 @@ class BokehApp:
         self.slider.on_change('value', self.slider_callback)
 
         self.layout = column(row(self.play_button, self.slider), self.p)
+
+        # Configure CORS settings
+        self.allow_websocket_origin = ["localhost:8001"]  # Replace with actual origin
+        self.allow_origin = ["localhost:8001"]  # Replace with actual origin
 
     def play_callback(self):
         if self.play_button.label == "Play":
@@ -73,3 +79,7 @@ class BokehApp:
 
 def create_bokeh_app(image_data):
     return Application(FunctionHandler(lambda doc: BokehApp(image_data).layout))
+
+# Create and start the Bokeh server with CORS settings
+server = Server({'/bokeh_app': create_bokeh_app}, allow_websocket_origin=["localhost:8001"], allow_origin=["localhost:8001"])
+server.start()
