@@ -934,7 +934,7 @@ def bokeh_server(request):
     #server.start(host=bokeh_server_host, port=bokeh_server_port)
  
     def with_cors(handler):
-        def wrapper(*args, **kwargs):
+        def wrapper(doc, *args, **kwargs):
             #doc = args[0]  # Extract the first argument which should be the Bokeh Document object
             handler(doc, *args, **kwargs)
             response = HttpResponse()
