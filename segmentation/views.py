@@ -927,7 +927,7 @@ def bokeh_server(request):
 
 
     bokeh_server_host = '0.0.0.0'
-    bokeh_server_port = 8001  # Choose a different port for Bokeh server
+    bokeh_server_port = 8002  # Choose a different port for Bokeh server
     #server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"])
     #server.start(host=bokeh_server_host, port=bokeh_server_port)
 
