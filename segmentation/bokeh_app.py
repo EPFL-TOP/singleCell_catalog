@@ -80,6 +80,3 @@ class BokehApp:
 def create_bokeh_app(image_data):
     return Application(FunctionHandler(lambda doc: BokehApp(image_data).layout))
 
-# Create and start the Bokeh server with CORS settings
-server = Server({'/bokeh_app': create_bokeh_app}, allow_websocket_origin=["localhost:8001"], allow_origin=["localhost:8001"])
-server.start()

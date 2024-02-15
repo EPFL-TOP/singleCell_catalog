@@ -918,12 +918,18 @@ def bokeh_server(request):
     width = 300
     image_data = np.random.randint(0, 255, size=(num_images, height, width), dtype=np.uint8)
 
-    # Create Bokeh application
-    bokeh_app = create_bokeh_app(image_data)
+    # Create and start the Bokeh server with CORS headers
+    def modify_doc(doc):
+        app = create_bokeh_app(image_data)
+        doc.add_root(app.layout)
+
+
+    ## Create Bokeh application
+    #bokeh_app = create_bokeh_app(image_data)
     
     # Get Bokeh server URL
     bokeh_url = f"http://localhost:{settings.BOEKH_PORT}/bokeh_app"
-    script = server_document(bokeh_url)
+    script = server_document(bokeh_url, resources=None)
     print(bokeh_url)
     print(script)
     return render(request, 'segmentation/bokeh_template.html', {'bokeh_script': script})
