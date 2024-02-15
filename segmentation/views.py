@@ -909,7 +909,7 @@ from bokeh.embed import server_document
 from django.conf import settings
 import numpy as np
 from .bokeh_app import create_bokeh_app
-
+from bokeh.server.server import Server
 def bokeh_server(request):
     # Generate or retrieve image data (3D numpy array) here
     # For demonstration, let's create a dummy image data
@@ -924,6 +924,8 @@ def bokeh_server(request):
         doc.add_root(app.layout)
 
 
+    server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=["localhost:8001"], allow_origin=["localhost:8001"])
+    server.start()
     ## Create Bokeh application
     #bokeh_app = create_bokeh_app(image_data)
     
