@@ -924,7 +924,7 @@ def bokeh_server(request):
     def modify_doc(doc):
         app = create_bokeh_app(image_data)
         app.modify_doc(doc)  # Pass the Bokeh Document object to modify_doc method
-        return doc
+        #return doc
         #doc.add_root(app.layout)
 
 
@@ -932,10 +932,12 @@ def bokeh_server(request):
     bokeh_server_port = 8002  # Choose a different port for Bokeh server
     #server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"])
     #server.start(host=bokeh_server_host, port=bokeh_server_port)
-
+ 
     def with_cors(handler):
         def wrapper(*args, **kwargs):
-            response = handler(*args, **kwargs)
+            doc = args[0]  # Extract the first argument which should be the Bokeh Document object
+            handler(doc)
+            response = HttpResponse()
             response["Access-Control-Allow-Origin"] = "*"
             response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
             response["Access-Control-Allow-Headers"] = "Content-Type"
