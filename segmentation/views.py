@@ -931,13 +931,15 @@ def bokeh_server(request):
     #server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"])
     #server.start(host=bokeh_server_host, port=bokeh_server_port)
 
-    def with_cors(app, enable=True):
-        def with_cors_hook(*args, **kwargs):
-            app(*args, **kwargs)
-            if enable:
-                from bokeh.server.views.docs import inject_cors_headers
-                inject_cors_headers(request=request, response=HttpResponse())
-        return with_cors_hook
+    def with_cors(handler):
+        def wrapper(*args, **kwargs):
+            response = handler(*args, **kwargs)
+            response["Access-Control-Allow-Origin"] = "*"
+            response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+            response["Access-Control-Allow-Headers"] = "Content-Type"
+            return response
+        return wrapper
+
 
 
     server = Server({'/bokeh_app': with_cors(modify_doc)}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"])
