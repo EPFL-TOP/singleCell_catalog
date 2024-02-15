@@ -925,7 +925,7 @@ def bokeh_server(request):
     bokeh_url = f"http://localhost:{settings.BOEKH_PORT}/bokeh_app"
     script = server_document(bokeh_url, application=bokeh_app)
     
-    return render(request, 'bokeh_template.html', {'bokeh_script': script})
+    return render(request, 'segmentation/bokeh_template.html', {'bokeh_script': script})
 
 
 
