@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'segmentation.apps.SegmentationConfig', 
+        'corsheaders',
     'channels',
     'bokeh_django',
 ]
@@ -60,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'corsheaders.middleware.CorsMiddleware',  # Add this line
 ]
 
 
@@ -176,4 +178,13 @@ STATICFILES_FINDERS = (
 bokeh_settings.resources = 'server'
 
 
-BOEKH_PORT = 5008
+
+CORS_ALLOWED_ORIGINS = [
+    "http://0.0.0.0:8001",  # Add the origin of your Django server
+]
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "OPTIONS"
+]

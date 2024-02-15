@@ -930,22 +930,15 @@ def bokeh_server(request):
 
     bokeh_server_host = '0.0.0.0'
     bokeh_server_port = 8002  # Choose a different port for Bokeh server
-    #server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"])
-    #server.start(host=bokeh_server_host, port=bokeh_server_port)
- 
-    class MyHandler(FunctionHandler):
-        def __init__(self):
-            super().__init__(modify_doc)
+    server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"http://{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
+    server.start()
 
 
-    handler = MyHandler()
-    application = Application(handler)
-    server = Server({'/bokeh_app': application}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"http://{bokeh_server_host}:8001"], port=bokeh_server_port)
-
+   
     #server = Server({'/bokeh_app': handler}, allow_origin=[f"http://{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
 
     #server = Server({'/bokeh_app': with_cors(modify_doc)}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
-    server.start()
+    #server.start()
     #server.start(host=bokeh_server_host, port=bokeh_server_port)
 
     #server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
@@ -960,8 +953,8 @@ def bokeh_server(request):
     #bokeh_app = create_bokeh_app(image_data)
     
     # Get Bokeh server URL
-    bokeh_url = f"http://localhost:8002/bokeh_app"
-    #bokeh_url = f"http://{bokeh_server_host}:{bokeh_server_port}/bokeh_app"
+    #bokeh_url = f"http://localhost:8002/bokeh_app"
+    bokeh_url = f"http://{bokeh_server_host}:{bokeh_server_port}/bokeh_app"
     script = server_document(bokeh_url, resources=None)
     print(bokeh_url)
     print(script)
