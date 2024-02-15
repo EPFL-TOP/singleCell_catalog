@@ -935,8 +935,8 @@ def bokeh_server(request):
  
     def with_cors(handler):
         def wrapper(*args, **kwargs):
-            doc = args[0]  # Extract the first argument which should be the Bokeh Document object
-            handler(doc)
+            #doc = args[0]  # Extract the first argument which should be the Bokeh Document object
+            handler(doc, *args, **kwargs)
             response = HttpResponse()
             response["Access-Control-Allow-Origin"] = "*"
             response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
