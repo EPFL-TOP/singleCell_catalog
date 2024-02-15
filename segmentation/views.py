@@ -931,8 +931,20 @@ def bokeh_server(request):
     #server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"])
     #server.start(host=bokeh_server_host, port=bokeh_server_port)
 
-    server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
-    server.start()
+    def with_cors(app, enable=True):
+        def with_cors_hook(*args, **kwargs):
+            app(*args, **kwargs)
+            if enable:
+                from bokeh.server.views.docs import inject_cors_headers
+                inject_cors_headers(request=request, response=HttpResponse())
+        return with_cors_hook
+
+
+    server = Server({'/bokeh_app': with_cors(modify_doc)}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"])
+    server.start(host=bokeh_server_host, port=bokeh_server_port)
+
+    #server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
+    #server.start()
 
     #server = Server({'/bokeh_app': modify_doc}, allow_websocket_origin=["localhost:8001"], allow_origin=["localhost:8001"])
     #server.start()
@@ -943,7 +955,7 @@ def bokeh_server(request):
     #bokeh_app = create_bokeh_app(image_data)
     
     # Get Bokeh server URL
-    bokeh_url = f"http://localhost:8001/bokeh_app"
+    #bokeh_url = f"http://localhost:8001/bokeh_app"
     bokeh_url = f"http://{bokeh_server_host}:{bokeh_server_port}/bokeh_app"
     script = server_document(bokeh_url, resources=None)
     print(bokeh_url)
