@@ -960,8 +960,8 @@ def bokeh_server(request):
     #bokeh_app = create_bokeh_app(image_data)
     
     # Get Bokeh server URL
-    #bokeh_url = f"http://localhost:8001/bokeh_app"
-    bokeh_url = f"http://{bokeh_server_host}:{bokeh_server_port}/bokeh_app"
+    bokeh_url = f"http://localhost:8002/bokeh_app"
+    #bokeh_url = f"http://{bokeh_server_host}:{bokeh_server_port}/bokeh_app"
     script = server_document(bokeh_url, resources=None)
     print(bokeh_url)
     print(script)
