@@ -941,9 +941,9 @@ def bokeh_server(request):
             session_context.session.allow_websocket_origin = [f"{bokeh_server_host}:8001"]
 
     handler = MyHandler()
+    server = Server({'/bokeh_app': handler}, allow_origin=[f"http://{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
 
-
-    server = Server({'/bokeh_app': with_cors(modify_doc)}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
+    #server = Server({'/bokeh_app': with_cors(modify_doc)}, allow_websocket_origin=[f"{bokeh_server_host}:8001"], allow_origin=[f"{bokeh_server_host}:8001"], host=bokeh_server_host, port=bokeh_server_port)
     server.start()
     #server.start(host=bokeh_server_host, port=bokeh_server_port)
 
