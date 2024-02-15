@@ -933,7 +933,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from bokeh.embed import server_document
 from django.conf import settings
-from .models import ImageModel
+#from .models import ImageModel
 from .bokeh_app import create_bokeh_app
 
 def bokeh_server_old(request):
