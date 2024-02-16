@@ -635,7 +635,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
     def callback_roi(event):
         if isinstance(event, SelectionGeometry):
-            print(source_roi.data)
+            print('beofre ',source_roi.data)
             #source_roi.data = {
             #"left": [event.geometry['x0']],
             #"right": [event.geometry['x1']],
@@ -647,6 +647,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             source_roi.data["right"].append(event.geometry['x1'])
             source_roi.data["top"].append(event.geometry['y0'])
             source_roi.data["bottom"].append(event.geometry['y1'])
+            print('after ',source_roi.data)
+
             for exp in Experiment.objects.all():
                 print(' ---- Experiment name in  callback_roi ',exp.name)
                 experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
