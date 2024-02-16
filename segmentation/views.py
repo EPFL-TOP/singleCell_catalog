@@ -667,7 +667,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             sample = Sample.objects.get(file_name=current_file)
             print('sample ',sample)
             print('sample ',type(sample))
-            frame = None
+            frame = Frame.objects.select_related().filter(sample=sample).get(number=current_index-1)
+            print('framee  ',frame)
             roi = ROI(min_col=source_roi.data['left'][i], max_col=source_roi.data['right'][i], 
                       min_row=source_roi.data['top'][i], max_row=source_roi.data['bottom'][i],
                       roi_number=i, frame=frame)
