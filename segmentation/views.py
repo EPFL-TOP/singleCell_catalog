@@ -671,6 +671,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         # Increment the image index
         current_index = (current_index + 1) % len(ind_images)
         print('index= ',current_index)
+        slider.value = current_index
 
     # Create play/stop button
     button_play_stop = bokeh.models.Button(label="Play")
