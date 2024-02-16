@@ -631,36 +631,19 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     # Attach the callback to the slider
     slider.on_change('value', callback)
     slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=30), slider)
-
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
+
     def callback_roi(event):
         if isinstance(event, SelectionGeometry):
             print('beofre ',source_roi.data)
-
-
             data = dict(
-        left=source_roi.data['left'] + [event.geometry['x0']],
-        right=source_roi.data['right'] + [event.geometry['x1']],
-        top=source_roi.data['top'] + [event.geometry['y0']],
-        bottom=source_roi.data['bottom'] + [event.geometry['y1']]
-    )
+                left=source_roi.data['left'] + [event.geometry['x0']],
+                right=source_roi.data['right'] + [event.geometry['x1']],
+                top=source_roi.data['top'] + [event.geometry['y0']],
+                bottom=source_roi.data['bottom'] + [event.geometry['y1']]
+                )
             source_roi.data = data
-
-            #source_roi.data = {
-            #"left": [event.geometry['x0']],
-            #"right": [event.geometry['x1']],
-            #"top": [event.geometry['y0']],
-            #"bottom": [event.geometry['y1']]
-            #}
-
-            #data["left"].append(event.geometry['x0'])
-            #data["right"].append(event.geometry['x1'])
-            #data["top"].append(event.geometry['y0'])
-            #data["bottom"].append(event.geometry['y1'])
-
             print('after data  ',data)
-
-            #source_roi.data = data
 
             print('after source_roi.data ',source_roi.data)
 
@@ -671,6 +654,12 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                     print('    ---- experimental dataset name callback_roi ',expds.data_name)
 
     p.on_event(SelectionGeometry, callback_roi)
+
+    # Create buttons
+    button_delete_roi = bokeh.models.Button(label="Delete ROI")
+    def delete_roi_callback():
+        source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
+    button_delete_roi.on_click(delete_roi_callback)
 
     # Function to update the image displayed
     def update_image():
@@ -724,6 +713,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         slider_layout,
         button_play_stop
     )
+    norm_layout = bokeh.layouts([p],[slider_layout,
+        button_play_stop,button_delete_roi ])
 
     doc.add_root(norm_layout)
 
