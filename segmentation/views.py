@@ -682,7 +682,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             # Change button label to "Stop"
             button_play_stop.label = "Stop"
             # Start playing images
-            timerr = doc.add_periodic_callback(update_image, 1000)  # Change the interval as needed
+            timerr = doc.add_periodic_callback(update_image, 500)  # Change the interval as needed
             playing = True
         else:
             # Change button label to "Play"
