@@ -664,8 +664,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     def save_roi_callback():
         print('Saving ROI===================================',source_roi.data)
         for i in range(len(source_roi.data['left'])):
-            roi = ROI(min_col=source_roi.data['left'], max_col=source_roi.data['right'], 
-                      min_row=source_roi.data['top'], max_row=source_roi.data['bottom'])
+            roi = ROI(min_col=source_roi.data['left'][i], max_col=source_roi.data['right'][i], 
+                      min_row=source_roi.data['top'][i], max_row=source_roi.data['bottom'][i])
             roi.save()
     button_save_roi.on_click(save_roi_callback)
 
