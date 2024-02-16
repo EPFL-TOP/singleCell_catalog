@@ -588,16 +588,22 @@ async def saveROI(request):
 current_index = 0
 playing = False
 timerr = None
-
+current_file = None
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document ) -> None:
 #def segmentation_handler(doc, ind_images, time_lapse):
-    #bf_channel = 0
-    #ime_lapse_path = Path('/mnt/nas_rcp/raw_data/microscopy/cell_culture/ppf001_well1/raw_files/ppf001_xy001.nd2')
-    #time_lapse = nd2.imread(time_lapse_path.as_posix())
-    #time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
-    #time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
-    #ind_images = [time_lapse[i,:,:] for i in time_domain]
+    bf_channel = 0
+    time_lapse_path = Path(current_file)
+    time_lapse = nd2.imread(time_lapse_path.as_posix())
+    time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
+    time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
+    ind_images = [time_lapse[i,:,:] for i in time_domain]
+
+    #num_images = 5
+    #height = 500
+    #width = 500
+    #images = np.random.randint(0, 255, size=(num_images, height, width), dtype=np.uint8)
+    #ind_images =  images
 
 
     for exp in Experiment.objects.all():
@@ -605,13 +611,10 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
             print('    ---- experimental dataset name seghandler ',expds.data_name)
-            expds.data_name = 'totottototototo'
-            expds.save()
-    num_images = 5
-    height = 500
-    width = 500
-    images = np.random.randint(0, 255, size=(num_images, height, width), dtype=np.uint8)
-    ind_images =  images
+            #expds.data_name = 'totottototototo'
+            #expds.save()
+
+
 
 
     print ('in segmentation_handler ind_images=',len(ind_images))
@@ -911,6 +914,7 @@ def index(request: HttpRequest) -> HttpResponse:
     script = None
     div = None
     if selected_position != None:
+        current_file = selected_position
         sample = Sample.objects.get(file_name = selected_position)
         rois = ROI.objects.select_related().filter(sample = sample)
         print('================',selected_position)
@@ -1009,8 +1013,8 @@ def index(request: HttpRequest) -> HttpResponse:
         #script, div = bokeh.embed.components(request.build_absolute_uri())
         script = bokeh.embed.server_document(request.build_absolute_uri())
         print("request.build_absolute_uri() ",request.build_absolute_uri())
-    script = bokeh.embed.server_document(request.build_absolute_uri())
-    print("request.build_absolute_uri() ",request.build_absolute_uri())
+    #script = bokeh.embed.server_document(request.build_absolute_uri())
+    #print("request.build_absolute_uri() ",request.build_absolute_uri())
 
     context = {
         #'num_samples': num_samples,
