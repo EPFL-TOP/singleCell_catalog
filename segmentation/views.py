@@ -636,17 +636,17 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     def callback_roi(event):
         if isinstance(event, SelectionGeometry):
             print('beofre ',source_roi.data)
-            #source_roi.data = {
-            #"left": [event.geometry['x0']],
-            #"right": [event.geometry['x1']],
-            #"top": [event.geometry['y0']],
-            #"bottom": [event.geometry['y1']]
-            #}
+            source_roi.data = {
+            "left": [event.geometry['x0']],
+            "right": [event.geometry['x1']],
+            "top": [event.geometry['y0']],
+            "bottom": [event.geometry['y1']]
+            }
 
-            source_roi.data["left"].append(event.geometry['x0'])
-            source_roi.data["right"].append(event.geometry['x1'])
-            source_roi.data["top"].append(event.geometry['y0'])
-            source_roi.data["bottom"].append(event.geometry['y1'])
+            #source_roi.data["left"].append(event.geometry['x0'])
+            #source_roi.data["right"].append(event.geometry['x1'])
+            #source_roi.data["top"].append(event.geometry['y0'])
+            #source_roi.data["bottom"].append(event.geometry['y1'])
             print('after ',source_roi.data)
 
             for exp in Experiment.objects.all():
