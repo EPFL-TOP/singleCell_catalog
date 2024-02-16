@@ -655,11 +655,15 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     p.on_event(SelectionGeometry, callback_roi)
 
-    # Create buttons
     button_delete_roi = bokeh.models.Button(label="Delete ROI")
     def delete_roi_callback():
         source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
     button_delete_roi.on_click(delete_roi_callback)
+
+    button_save_roi = bokeh.models.Button(label="Save ROI")
+    def save_roi_callback():
+        print('===================================',source_roi.data)
+    button_save_roi.on_click(save_roi_callback)
 
     # Function to update the image displayed
     def update_image():
@@ -709,7 +713,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(p), bokeh.layouts.row(bokeh.layouts.Spacer(width=15),
         slider_layout,
-        button_play_stop,button_delete_roi ))
+        button_play_stop,button_delete_roi, button_save_roi ))
     #norm_layout = bokeh.layout([p],[slider_layout,button_play_stop,button_delete_roi ])
 
     doc.add_root(norm_layout)
