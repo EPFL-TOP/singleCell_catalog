@@ -643,7 +643,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=30), slider)
 
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
-    
+    os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
     def callback_roi(event):
         if isinstance(event, SelectionGeometry):
             print(source_roi.data)
