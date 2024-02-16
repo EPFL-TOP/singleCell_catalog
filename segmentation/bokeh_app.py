@@ -7,10 +7,8 @@ from bokeh.application import Application
 from bokeh.application.handlers.function import FunctionHandler
 from bokeh.layouts import column, row
 import numpy as np
-import sys
-sys.path.append('/Users/helsens/Software/github/EPFL-TOP/singleCell_catalog')
 
-from segmentation.models import ROI
+from .models import ROI
 
 class BokehApp:
     def __init__(self, image_data, file):

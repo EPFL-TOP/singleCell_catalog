@@ -3,11 +3,13 @@ from . import views
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView
 
-
+from .views import image_view, save_selected_region
 
 urlpatterns = [
     path(r"", views.index, name="index"),
+
     path("bokeh_template", views.bokeh_server, name="bokeh_template"),
+    path("image_template", views.image_view, name="image_template"),
     #path('', views.index, name='index'),
     #path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('images/favicon.ico'))),
     #path("segmentation", views.index),
@@ -16,3 +18,7 @@ urlpatterns = [
 
 
 
+urlpatterns += [
+    path('', image_view, name='image_view'),
+    path('save-selected-region/', save_selected_region, name='save_selected_region'),
+]

@@ -86,7 +86,7 @@ TEMPLATES = [
 ]
 
 ASGI_APPLICATION = 'singleCell_catalog.asgi.application'
-WSGI_APPLICATION = 'singleCell_catalog.wsgi.application'
+#WSGI_APPLICATION = 'singleCell_catalog.wsgi.application'
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240 # higher than the count of fields
 

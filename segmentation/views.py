@@ -20,7 +20,7 @@ import urllib, base64
 
 import math
 
-
+from typing import Any
 
 import nd2
 from pathlib import Path
@@ -58,7 +58,6 @@ import bokeh.palettes
 import bokeh.plotting
 import bokeh.embed
 import bokeh.layouts
-
 
 ind_images=None
 time_lapse=None
@@ -573,51 +572,176 @@ def build_ROIs():
                     roi.save()
 
 
+async def saveROI(request):
+    #roi = sync_to_async(ROI)(min_row=1, max_row=1, roi_number=10000)
+    samples = Sample.objects.all()
+    print('nsample :',len(samples))
+    for s in samples:
+        print(s)
+    sample = Sample(file_name='totot')
+    sample.save()
+    roi = ROI(min_row=1, max_row=1, roi_number=10000, sample=sample)
+    roi.asave()
+    print('----',roi)
+
+
+current_index = 0
+playing = False
+timerr = None
+
 #___________________________________________________________________________________________
-def segmentation_handler(doc: bokeh.document.Document) -> None:
+def segmentation_handler(doc: bokeh.document.Document ) -> None:
 #def segmentation_handler(doc, ind_images, time_lapse):
-    bf_channel = 0
-    time_lapse_path = Path('/mnt/nas_rcp/raw_data/microscopy/cell_culture/ppf001_well1/raw_files/ppf001_xy001.nd2')
-    time_lapse = nd2.imread(time_lapse_path.as_posix())
-    time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
-    time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
-    ind_images = [time_lapse[i,:,:] for i in time_domain]
+    #bf_channel = 0
+    #ime_lapse_path = Path('/mnt/nas_rcp/raw_data/microscopy/cell_culture/ppf001_well1/raw_files/ppf001_xy001.nd2')
+    #time_lapse = nd2.imread(time_lapse_path.as_posix())
+    #time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
+    #time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
+    #ind_images = [time_lapse[i,:,:] for i in time_domain]
+
+
+    for exp in Experiment.objects.all():
+        print(' ---- Experiment name in seghandler',exp.name)
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        for expds in experimentaldataset:
+            print('    ---- experimental dataset name seghandler ',expds.data_name)
+            expds.data_name = 'totottototototo'
+            expds.save()
+    num_images = 5
+    height = 500
+    width = 500
+    images = np.random.randint(0, 255, size=(num_images, height, width), dtype=np.uint8)
+    ind_images =  images
+
+
     print ('in segmentation_handler ind_images=',len(ind_images))
     data={'img':[ind_images[0]]}
     source=bokeh.models.ColumnDataSource(data=data)
 
     # Create a Slider widget
     initial_time_point = 0
-    slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
+    #slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
+    slider = bokeh.models.Slider(start=0, end=num_images - 1, value=initial_time_point, step=1, title="Time Point")
+    p = bokeh.plotting.figure(x_range=(0, width), y_range=(0, height), tools="box_select,reset, undo")
 
     # Define a callback to update bf_display with slider
     def callback(attr: str, old: Any, new: Any) -> None:
         time_point = slider.value
         new_image = ind_images[time_point]
         source.data = {'img':[new_image]}
-        print('CALLBACK segmentation_handler time_point=', time_point)
+        print('CALLBACK segmentation_handler slider time_point=', time_point)
+        source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
+        #saveROI()
 
     # Attach the callback to the slider
     slider.on_change('value', callback)
     slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=30), slider)
 
+    source_roi  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
+    
+    def callback_roi(event):
+        if isinstance(event, SelectionGeometry):
+            print(source_roi.data)
+            source_roi.data = {
+            "left": [event.geometry['x0']],
+            "right": [event.geometry['x1']],
+            "top": [event.geometry['y0']],
+            "bottom": [event.geometry['y1']]
+            }
+
+            for exp in Experiment.objects.all():
+                print(' ---- Experiment name in  callback_roi ',exp.name)
+                experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+                for expds in experimentaldataset:
+                    print('    ---- experimental dataset name callback_roi ',expds.data_name)
+
+    p.on_event(SelectionGeometry, callback_roi)
+
+    # Function to update the image displayed
+    def update_image():
+        global current_index
+        # Update the image displayed
+        new_image = ind_images[current_index]
+        source.data = {'img':[new_image]}
+        # Increment the image index
+        current_index = (current_index + 1) % len(ind_images)
+        print('index= ',current_index)
+
+    # Create play/stop button
+    button_play_stop = bokeh.models.Button(label="Play")
+    def play_stop_callback():
+        global playing
+        global timerr
+
+        if not playing:
+            # Change button label to "Stop"
+            button_play_stop.label = "Stop"
+            # Start playing images
+            timerr = doc.add_periodic_callback(update_image, 1000)  # Change the interval as needed
+            playing = True
+        else:
+            # Change button label to "Play"
+            button_play_stop.label = "Play"
+            # Stop playing images
+            doc.remove_periodic_callback(timerr)
+            #doc.remove_periodic_callback(update_image)
+            playing = False
+
+    button_play_stop.on_click(play_stop_callback)
+
+
     # Create Bokeh figure and use image display
-    p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select")
-    im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
-    #for roi in rois:
-    #    p.rect(roi.min_col+(roi.max_col-roi.min_col)/2, (roi.min_row+(roi.max_row-roi.min_row)/2), roi.max_col-roi.min_col, roi.max_col-roi.min_col, line_width=2, fill_alpha=0, line_color="white") 
-    #    print('roi.min_col=',roi.min_col, '  roi.max_col=',roi.max_col,'  roi.min_row=',roi.min_row,'  roi.max_row=',roi.max_row)
+    #p = bokeh.plotting.figure(x_range=(0, width), y_range=(0, height), tools="box_select,reset, undo")
+    im = p.image(image='img', x=0, y=0, dw=width, dh=height, source=source, palette='Greys256')
+
+    # Add the rectangle glyph after adding the image
+    quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
+    p.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
+
     # Remove the axes
     p.axis.visible = False
     p.grid.visible = False
 
     norm_layout = bokeh.layouts.row(
-            p,
-            bokeh.layouts.Spacer(width=15),
-            slider_layout,
-        )
+        p,
+        bokeh.layouts.Spacer(width=15),
+        slider_layout,
+        button_play_stop
+    )
 
     doc.add_root(norm_layout)
+
+
+
+#    using Quad model directly to control (non)selection glyphs more carefully
+#    quad = bokeh.models.Quad(left='left', right='right',top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
+#    print('source_roi',source_roi)
+#    p.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
+#
+#    p.on_event(SelectionGeometry, callback_roi)
+#
+#
+#    # Create Bokeh figure and use image display
+#    #p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select")
+#    #im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
+#    im = p.image(image='img', x=0, y=0, dw=width, dh=height,source=source, palette='Greys256')
+#    #for roi in rois:
+#    #    p.rect(roi.min_col+(roi.max_col-roi.min_col)/2, (roi.min_row+(roi.max_row-roi.min_row)/2), roi.max_col-roi.min_col, roi.max_col-roi.min_col, line_width=2, fill_alpha=0, line_color="white") 
+#    #    print('roi.min_col=',roi.min_col, '  roi.max_col=',roi.max_col,'  roi.min_row=',roi.min_row,'  roi.max_row=',roi.max_row)
+#    # Remove the axes
+#    p.axis.visible = False
+#    p.grid.visible = False
+#
+#    norm_layout = bokeh.layouts.row(
+#            p,
+#            bokeh.layouts.Spacer(width=15),
+#            slider_layout,
+#            
+#        )
+#
+#    doc.add_root(norm_layout)
+
+
 
 
 #___________________________________________________________________________________________
@@ -885,6 +1009,9 @@ def index(request: HttpRequest) -> HttpResponse:
         #script, div = bokeh.embed.components(request.build_absolute_uri())
         script = bokeh.embed.server_document(request.build_absolute_uri())
         print("request.build_absolute_uri() ",request.build_absolute_uri())
+    script = bokeh.embed.server_document(request.build_absolute_uri())
+    print("request.build_absolute_uri() ",request.build_absolute_uri())
+
     context = {
         #'num_samples': num_samples,
         'select_dict':select_dict,
@@ -955,7 +1082,9 @@ def bokeh_server(request):
     # Get Bokeh server URL
     #bokeh_url = f"http://localhost:8002/bokeh_app"
     bokeh_url = f"http://{bokeh_server_host}:{bokeh_server_port}/bokeh_app"
-    script = server_document(bokeh_url, resources=None)
+    bokeh_url = f"http://{bokeh_server_host}:{bokeh_server_port}/bokeh_app"
+    #script = server_document(bokeh_url, resources=None)
+    script = server_document(bokeh_url)
     print(bokeh_url)
     print(script)
     return render(request, 'segmentation/bokeh_template.html', {'bokeh_script': script})
@@ -964,8 +1093,59 @@ def bokeh_server(request):
 
 
 
+from django.shortcuts import render
+from bokeh.plotting import figure
+from bokeh.models import ColumnDataSource, BoxSelectTool
+from bokeh.events import SelectionGeometry
+from bokeh.embed import components
+from .models import ROI
+
+# views.py
+import numpy as np
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import ROI
+from PIL import Image
+import io
+
+def image_view(request):
+    # Get all images from the model
+    #images = ImageModel.objects.all()
+    num_images = 5
+    height = 200
+    width = 300
+    images = np.random.randint(0, 255, size=(num_images, height, width), dtype=np.uint8)
+
+    # Convert NumPy arrays to images
+    image_data = []
+    for image_model in images:
+        print(image_model)
+        img = Image.fromarray(image_model)
+        # Convert image to bytes
+        img_bytes = io.BytesIO()
+        img.save(img_bytes, format='PNG')
+        img_base64 = base64.b64encode(img_bytes.getvalue()).decode('utf-8')
+        image_data.append(img_base64)
 
 
+    return render(request, 'segmentation/image_template.html', {'images': image_data})
+
+def save_selected_region(request):
+    if request.method == 'POST':
+        # Retrieve selected region data from the POST request
+        x0 = float(request.POST.get('x0'))
+        y0 = float(request.POST.get('y0'))
+        x1 = float(request.POST.get('x1'))
+        y1 = float(request.POST.get('y1'))
+        
+        # Update the ImageModel with the selected region
+        image_model = ROI()#.objects.first()  # Assuming only one image for simplicity
+        image_model.selected_region = {'x0': x0, 'y0': y0, 'x1': x1, 'y1': y1}
+        image_model.save()
+        
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 
 
