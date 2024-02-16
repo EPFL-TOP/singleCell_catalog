@@ -697,7 +697,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     # Create Bokeh figure and use image display
     #p = bokeh.plotting.figure(x_range=(0, width), y_range=(0, height), tools="box_select,reset, undo")
-    im = p.image(image='img', x=0, y=0, dw=width, dh=height, source=source, palette='Greys256')
+    im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2], source=source, palette='Greys256')
 
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
