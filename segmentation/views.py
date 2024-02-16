@@ -908,18 +908,18 @@ def index(request: HttpRequest) -> HttpResponse:
     if selected_position != None:
         global current_file
         current_file = selected_position
-        sample = Sample.objects.get(file_name = selected_position)
-        rois = ROI.objects.select_related().filter(sample = sample)
+        #sample = Sample.objects.get(file_name = selected_position)
+        #rois = ROI.objects.select_related().filter(sample = sample)
         print('================',selected_position)
-        bf_channel = 0
-        time_lapse_path = Path(selected_position)
-        time_lapse = nd2.imread(time_lapse_path.as_posix())
-        time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
+        #bf_channel = 0
+        #time_lapse_path = Path(selected_position)
+        #time_lapse = nd2.imread(time_lapse_path.as_posix())
+        #time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
         #time_lapse=np.uint8(time_lapse)
 
-        time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
-        ind_images = [time_lapse[i,:,:] for i in time_domain]
-        print('ind_images = ',len(ind_images))
+        #time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
+        #ind_images = [time_lapse[i,:,:] for i in time_domain]
+        #print('ind_images = ',len(ind_images))
         #segmentation_handler(ind_images, time_lapse)
 
 
