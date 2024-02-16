@@ -662,7 +662,11 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     button_save_roi = bokeh.models.Button(label="Save ROI")
     def save_roi_callback():
-        print('===================================',source_roi.data)
+        print('Saving ROI===================================',source_roi.data)
+        for i in range(len(source_roi.data['left'])):
+            roi = ROI(min_col=source_roi.data['left'], max_col=source_roi.data['right'], 
+                      min_row=source_roi.data['top'], max_col=source_roi.data['bottom'])
+            roi.save()
     button_save_roi.on_click(save_roi_callback)
 
     # Function to update the image displayed
