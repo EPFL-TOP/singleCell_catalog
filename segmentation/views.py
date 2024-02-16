@@ -624,9 +624,10 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     # Create a Slider widget
     initial_time_point = 0
-    #slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
-    slider = bokeh.models.Slider(start=0, end=num_images - 1, value=initial_time_point, step=1, title="Time Point")
-    p = bokeh.plotting.figure(x_range=(0, width), y_range=(0, height), tools="box_select,reset, undo")
+    slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
+    #slider = bokeh.models.Slider(start=0, end=num_images - 1, value=initial_time_point, step=1, title="Time Point")
+    p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select,reset, undo")
+
 
     # Define a callback to update bf_display with slider
     def callback(attr: str, old: Any, new: Any) -> None:
