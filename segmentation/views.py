@@ -638,6 +638,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             print('beofre ',source_roi.data)
             data = source_roi.data
 
+            print('beofre daa ',data)
+
             #source_roi.data = {
             #"left": [event.geometry['x0']],
             #"right": [event.geometry['x1']],
@@ -649,6 +651,9 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             data["right"].append(event.geometry['x1'])
             data["top"].append(event.geometry['y0'])
             data["bottom"].append(event.geometry['y1'])
+
+            print('after daa ',data)
+
             source_roi.data = data
 
             print('after ',source_roi.data)
