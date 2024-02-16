@@ -643,10 +643,10 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             "bottom": [event.geometry['y1']]
             }
 
-            #source_roi.data["left"].append(event.geometry['x0'])
-            #source_roi.data["right"].append(event.geometry['x1'])
-            #source_roi.data["top"].append(event.geometry['y0'])
-            #source_roi.data["bottom"].append(event.geometry['y1'])
+            source_roi.data["left"].push(event.geometry['x0'])
+            source_roi.data["right"].push(event.geometry['x1'])
+            source_roi.data["top"].push(event.geometry['y0'])
+            source_roi.data["bottom"].push(event.geometry['y1'])
             print('after ',source_roi.data)
 
             for exp in Experiment.objects.all():
