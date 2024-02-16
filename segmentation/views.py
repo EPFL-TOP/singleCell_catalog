@@ -593,6 +593,8 @@ current_file = None
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document ) -> None:
 #def segmentation_handler(doc, ind_images, time_lapse):
+    os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
     bf_channel = 0
     time_lapse_path = Path(current_file)
     time_lapse = nd2.imread(time_lapse_path.as_posix())
@@ -605,18 +607,6 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     #width = 500
     #images = np.random.randint(0, 255, size=(num_images, height, width), dtype=np.uint8)
     #ind_images =  images
-
-
-    for exp in Experiment.objects.all():
-        print(' ---- Experiment name in seghandler',exp.name)
-        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-        for expds in experimentaldataset:
-            print('    ---- experimental dataset name seghandler ',expds.data_name)
-            #expds.data_name = 'totottototototo'
-            #expds.save()
-
-
-
 
     print ('in segmentation_handler ind_images=',len(ind_images))
     data={'img':[ind_images[0]]}
@@ -643,7 +633,6 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=30), slider)
 
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
-    os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
     def callback_roi(event):
         if isinstance(event, SelectionGeometry):
             print(source_roi.data)
