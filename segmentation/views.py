@@ -589,6 +589,7 @@ current_index = 0
 playing = False
 timerr = None
 current_file = None
+
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document ) -> None:
 #def segmentation_handler(doc, ind_images, time_lapse):
@@ -914,6 +915,7 @@ def index(request: HttpRequest) -> HttpResponse:
     script = None
     div = None
     if selected_position != None:
+        global current_file
         current_file = selected_position
         sample = Sample.objects.get(file_name = selected_position)
         rois = ROI.objects.select_related().filter(sample = sample)
