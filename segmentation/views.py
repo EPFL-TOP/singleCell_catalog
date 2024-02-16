@@ -709,7 +709,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(p), bokeh.layouts.row(bokeh.layouts.Spacer(width=15),
         slider_layout,
-        button_play_stop))
+        button_play_stop,button_delete_roi ))
     #norm_layout = bokeh.layout([p],[slider_layout,button_play_stop,button_delete_roi ])
 
     doc.add_root(norm_layout)
