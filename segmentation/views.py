@@ -614,7 +614,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     menu = [("100ms", "100"), ("200ms", "200"), ("500ms", "500"), ("1sec", "1000")]
     dropdown_time = bokeh.models.Dropdown(label="Refresh time", button_type="warning", menu=menu)
-    dropdown_time.value = "250"
+    #dropdown_time.value = "250"
     # Callback function to handle menu item click
     def refresh_time_callback(event):
         item = int(event.item)
