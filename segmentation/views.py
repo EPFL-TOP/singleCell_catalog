@@ -649,8 +649,6 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         print('bottom_rois ',bottom_rois)
         return left_rois,right_rois,right_rois,bottom_rois
 
-    left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
-    source_roi    = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
     #___________________________________________________________________________________________
     # Define a callback to update bf_display with slider
     def callback_slider(attr: str, old: Any, new: Any) -> None:
@@ -746,6 +744,9 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     button_play_stop = bokeh.models.Button(label="Play")
     button_play_stop.on_click(play_stop_callback)
+    
+    left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
+    source_roi    = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
 
 
     # Create Bokeh figure and use image display
