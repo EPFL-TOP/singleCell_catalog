@@ -622,7 +622,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         refresh_time = item
         print(f"dropdown: {item}")
         print('===========================================')
-
+        play_stop_callback()
     dropdown_time.on_click(refresh_time_callback)
 
 
