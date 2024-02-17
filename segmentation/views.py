@@ -610,6 +610,10 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
     p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select,reset, undo")
 
+
+    menu = [("100ms", 100), ("200ms", 200), ("500ms", 500), ("1sec", 1000)]
+    dropdown = bokeh.models.Dropdown(label="Dropdown button", button_type="warning", menu=menu)      
+
     left_rois=[]
     right_rois=[]
     top_rois=[]
@@ -731,7 +735,6 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     button_play_stop.on_click(play_stop_callback)
 
 
-
    #___________________________________________________________________________________________
     # Create next button
     def next_callback():
@@ -767,7 +770,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(p), 
                                        bokeh.layouts.row(slider_layout,button_play_stop, button_prev, button_next ),
-                                       bokeh.layouts.row(slider_layout,button_delete_roi, button_save_roi ))
+                                       bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown ))
 
     doc.add_root(norm_layout)
 
