@@ -648,6 +648,10 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         right_rois.append(roi.max_col)
         top_rois.append(roi.min_row)
         bottom_rois.append(roi.max_row)
+    print('left_rois ',left_rois)
+    print('right_rois ',right_rois)
+    print('top_rois ',top_rois)
+    print('bottom_rois ',bottom_rois)
     source_roi    = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
 
     #___________________________________________________________________________________________
