@@ -618,6 +618,38 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select,reset, undo")
 
 
+    left_rois=[]
+    right_rois=[]
+    top_rois=[]
+    bottom_rois=[]
+    #___________________________________________________________________________________________
+    # update the source_roi
+    def update_source_roi():
+        left_rois.clear()
+        right_rois.clear()
+        top_rois.clear()
+        bottom_rois.clear()
+        sample = Sample.objects.get(file_name=current_file)
+        frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
+        if len(frame)!=1:
+            print('NOT ONLY FRAME FOUND< PLEASE CHECKKKKKKKK')
+            print('======sample: ',sample)
+            for f in frame:
+                print('===============frame: ',f)
+        rois   = ROI.objects.select_related().filter(frame=frame[0])
+
+        for roi in rois:
+            left_rois.append(roi.min_col)
+            right_rois.append(roi.max_col)
+            top_rois.append(roi.min_row)
+            bottom_rois.append(roi.max_row)
+        print('left_rois ',left_rois)
+        print('right_rois ',right_rois)
+        print('top_rois ',top_rois)
+        print('bottom_rois ',bottom_rois)
+
+    update_source_roi()
+    source_roi    = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
     #___________________________________________________________________________________________
     # Define a callback to update bf_display with slider
     def callback_slider(attr: str, old: Any, new: Any) -> None:
@@ -631,28 +663,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     slider.on_change('value', callback_slider)
     slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=30), slider)
     
-    sample = Sample.objects.get(file_name=current_file)
-    frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
-    if len(frame)!=1:
-        print('NOT ONLY FRAME FOUND< PLEASE CHECKKKKKKKK')
-        print('======sample: ',sample)
-        for f in frame:
-            print('===============frame: ',f)
-    rois   = ROI.objects.select_related().filter(frame=frame[0])
-    left_rois=[]
-    right_rois=[]
-    top_rois=[]
-    bottom_rois=[]
-    for roi in rois:
-        left_rois.append(roi.min_col)
-        right_rois.append(roi.max_col)
-        top_rois.append(roi.min_row)
-        bottom_rois.append(roi.max_row)
-    print('left_rois ',left_rois)
-    print('right_rois ',right_rois)
-    print('top_rois ',top_rois)
-    print('bottom_rois ',bottom_rois)
-    source_roi    = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
+
 
     #___________________________________________________________________________________________
     # Define a callback to update the ROI
