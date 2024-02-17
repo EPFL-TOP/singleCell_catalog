@@ -609,7 +609,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     print ('in segmentation_handler ind_images=',len(ind_images))
     data={'img':[ind_images[0]]}
-    source=bokeh.models.ColumnDataSource(data=data)
+    source_img=bokeh.models.ColumnDataSource(data=data)
 
     # Create a Slider widget
     initial_time_point = 0
@@ -623,14 +623,24 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         time_point = slider.value
         new_image = ind_images[time_point]
-        source.data = {'img':[new_image]}
+        source_img.data = {'img':[new_image]}
         source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
         global current_index
         current_index = slider.value
     # Attach the callback to the slider
     slider.on_change('value', callback_slider)
     slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=30), slider)
-    source_roi    = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
+    
+    sample = Sample.objects.get(file_name=current_file)
+    frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
+    rois   = ROI.objects.select_related().filter(frame=frame)
+    left_rois=[], right_rois=[], top_rois=[], bottom_rois=[]
+    for roi in rois:
+        left_rois.append(roi.min_col)
+        right_rois.append(roi.max_col)
+        top_rois.append(roi.min_row)
+        bottom_rois.append(roi.max_row)
+    source_roi    = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
 
     #___________________________________________________________________________________________
     # Define a callback to update the ROI
@@ -648,12 +658,6 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
             print('after source_roi.data ',source_roi.data)
 
-            for exp in Experiment.objects.all():
-                print(' ---- Experiment name in  callback_roi ',exp.name)
-                experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-                for expds in experimentaldataset:
-                    print('    ---- experimental dataset name callback_roi ',expds.data_name)
-
     p.on_event(SelectionGeometry, callback_roi)
 
     button_delete_roi = bokeh.models.Button(label="Delete ROI")
@@ -664,43 +668,41 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
     button_delete_roi.on_click(delete_roi_callback)
 
-    button_save_roi = bokeh.models.Button(label="Save ROI")
+    #___________________________________________________________________________________________
+    # Save ROI
     def save_roi_callback():
         print('Saving ROI===================================',source_roi.data)
         for i in range(len(source_roi.data['left'])):
             sample = Sample.objects.get(file_name=current_file)
             print('sample ',sample)
-            print('sample ',type(sample))
             frame = Frame.objects.select_related().filter(sample=sample, number=current_index)
-            print('framee  ',frame)
+            print('frame  ',frame)
             for f in frame:
                 print(f.number, current_index)
                 if f.number == current_index:
-                    print('saving ',f)
+                    print('save_roi_callback saving ',f)
                     roi = ROI(min_col=source_roi.data['left'][i], max_col=source_roi.data['right'][i], 
                       min_row=source_roi.data['top'][i], max_row=source_roi.data['bottom'][i],
                       roi_number=i, frame=f)
                     roi.save()
+    button_save_roi = bokeh.models.Button(label="Save ROI")
     button_save_roi.on_click(save_roi_callback)
 
     #___________________________________________________________________________________________
     # Function to update the image displayed
     def update_image():
         global current_index
-        # Update the image displayed
         new_image = ind_images[current_index]
-        source.data = {'img':[new_image]}
-        # Increment the image index
+        source_img.data = {'img':[new_image]}
         current_index = (current_index + 1) % len(ind_images)
-        print('index= ',current_index)
         slider.value = current_index
+        print('update_image index=',current_index)
 
     #___________________________________________________________________________________________
     # Create play/stop button
     def play_stop_callback():
         global playing
         global timerr
-
         if not playing:
             # Change button label to "Stop"
             button_play_stop.label = "Stop"
@@ -721,7 +723,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     # Create Bokeh figure and use image display
     #p = bokeh.plotting.figure(x_range=(0, width), y_range=(0, height), tools="box_select,reset, undo")
-    im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2], source=source, palette='Greys256')
+    im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2], source=source_img, palette='Greys256')
 
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
