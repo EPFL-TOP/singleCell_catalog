@@ -685,12 +685,21 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     p.on_event(SelectionGeometry, callback_roi)
 
-    button_delete_roi = bokeh.models.Button(label="Delete ROI")
-
     #___________________________________________________________________________________________
     # Define a callback to delete the ROI
+    button_delete_roi = bokeh.models.Button(label="Delete ROI")
     def delete_roi_callback():
         source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
+        sample = Sample.objects.get(file_name=current_file)
+        frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
+        if len(frame)!=1:
+            print('NOT ONLY FRAME FOUND< PLEASE CHECKKKKKKKK')
+            print('======sample: ',sample)
+            for f in frame:
+                print('===============frame: ',f)
+        rois   = ROI.objects.select_related().filter(frame=frame[0])
+        for roi in rois:
+            roi.delete()
     button_delete_roi.on_click(delete_roi_callback)
 
     #___________________________________________________________________________________________
