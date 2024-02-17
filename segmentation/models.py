@@ -146,7 +146,7 @@ class ROI(models.Model):
     roi_number = models.PositiveSmallIntegerField(default=-1, help_text="ROI number")
     
     def __str__(self):
-        return 'frame={0}, roi={1}, file={3}'.format(self.frame.number,self.roi_number, self.frame.sample.file_name)
+        return 'frame={0}, roi={1}, file={2}'.format(self.frame.number,self.roi_number, self.frame.sample.file_name)
 
 
 #############################################################################################
