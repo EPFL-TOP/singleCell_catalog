@@ -601,12 +601,6 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
     ind_images = [time_lapse[i,:,:] for i in time_domain]
 
-    #num_images = 5
-    #height = 500
-    #width = 500
-    #images = np.random.randint(0, 255, size=(num_images, height, width), dtype=np.uint8)
-    #ind_images =  images
-
     print ('in segmentation_handler ind_images=',len(ind_images))
     data={'img':[ind_images[0]]}
     source_img=bokeh.models.ColumnDataSource(data=data)
@@ -614,9 +608,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     # Create a Slider widget
     initial_time_point = 0
     slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
-    #slider = bokeh.models.Slider(start=0, end=num_images - 1, value=initial_time_point, step=1, title="Time Point")
     p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select,reset, undo")
-
 
     left_rois=[]
     right_rois=[]
@@ -659,19 +651,13 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         current_index = slider.value
         left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
         source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
-
-
-    # Attach the callback to the slider
     slider.on_change('value', callback_slider)
     slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=30), slider)
     
-
-
     #___________________________________________________________________________________________
     # Define a callback to update the ROI
     def callback_roi(event):
         if isinstance(event, SelectionGeometry):
-            print('beofre ',source_roi.data)
             data = dict(
                 left=source_roi.data['left'] + [event.geometry['x0']],
                 right=source_roi.data['right'] + [event.geometry['x1']],
@@ -679,15 +665,10 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                 bottom=source_roi.data['bottom'] + [event.geometry['y1']]
                 )
             source_roi.data = data
-            print('after data  ',data)
-
-            print('after source_roi.data ',source_roi.data)
-
     p.on_event(SelectionGeometry, callback_roi)
 
     #___________________________________________________________________________________________
     # Define a callback to delete the ROI
-    button_delete_roi = bokeh.models.Button(label="Delete ROI")
     def delete_roi_callback():
         source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
         sample = Sample.objects.get(file_name=current_file)
@@ -700,6 +681,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         rois   = ROI.objects.select_related().filter(frame=frame[0])
         for roi in rois:
             roi.delete()
+    button_delete_roi = bokeh.models.Button(label="Delete ROI")
     button_delete_roi.on_click(delete_roi_callback)
 
     #___________________________________________________________________________________________
@@ -738,21 +720,20 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         global playing
         global timerr
         if not playing:
-            # Change button label to "Stop"
             button_play_stop.label = "Stop"
-            # Start playing images
             timerr = doc.add_periodic_callback(update_image, 500)  # Change the interval as needed
             playing = True
         else:
-            # Change button label to "Play"
             button_play_stop.label = "Play"
-            # Stop playing images
             doc.remove_periodic_callback(timerr)
-            #doc.remove_periodic_callback(update_image)
             playing = False
-
     button_play_stop = bokeh.models.Button(label="Play")
     button_play_stop.on_click(play_stop_callback)
+
+    button_next = bokeh.models.Button(label="Next")
+    button_prev = bokeh.models.Button(label="Prev")
+
+
 
     left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
     source_roi    = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
@@ -770,9 +751,9 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     p.axis.visible = False
     p.grid.visible = False
 
-    norm_layout = bokeh.layouts.column(bokeh.layouts.row(p), bokeh.layouts.row(bokeh.layouts.Spacer(width=15),
-        slider_layout,
-        button_play_stop,button_delete_roi, button_save_roi ))
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(p), 
+                                       bokeh.layouts.row(slider_layout,button_play_stop, button_prev, button_next ),
+                                       bokeh.layouts.row(slider_layout,button_delete_roi, button_save_roi ))
     #norm_layout = bokeh.layout([p],[slider_layout,button_play_stop,button_delete_roi ])
 
     doc.add_root(norm_layout)
