@@ -783,11 +783,12 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     p.axis.visible = False
     p.grid.visible = False
 
-    slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=10), slider)
+    #slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=10), slider)
 
-    right_col = bokeh.layouts.column( text,
-                                       bokeh.layouts.row(slider_layout,button_play_stop, button_prev, button_next ),
-                                       bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_time ))
+    right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
+                                     bokeh.layouts.row(button_play_stop, button_prev, button_next ),
+                                    bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_time ),
+                                    text)
     
     norm_layout = bokeh.layouts.row(p, right_col)
     #norm_layout = bokeh.layouts.column(bokeh.layouts.row(p), text,
