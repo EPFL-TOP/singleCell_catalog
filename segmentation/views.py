@@ -611,7 +611,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select,reset, undo")
 
 
-    menu = [("100ms", 100), ("200ms", 200), ("500ms", 500), ("1sec", 1000)]
+    menu = [("100ms", "100"), ("200ms", "200"), ("500ms", "500"), ("1sec", "1000")]
     dropdown = bokeh.models.Dropdown(label="Dropdown button", button_type="warning", menu=menu)      
 
     left_rois=[]
