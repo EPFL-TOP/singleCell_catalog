@@ -647,8 +647,9 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         print('right_rois ',right_rois)
         print('top_rois ',top_rois)
         print('bottom_rois ',bottom_rois)
+        return left_rois,right_rois,right_rois,bottom_rois
 
-    update_source_roi()
+    left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
     source_roi    = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
     #___________________________________________________________________________________________
     # Define a callback to update bf_display with slider
@@ -656,7 +657,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         time_point = slider.value
         new_image = ind_images[time_point]
         source_img.data = {'img':[new_image]}
-        source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
+        left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
+        source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
         global current_index
         current_index = slider.value
         update_source_roi()
