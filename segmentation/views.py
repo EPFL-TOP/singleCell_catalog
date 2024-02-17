@@ -639,7 +639,10 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         for f in frame:
             print('===============frame: ',f)
     rois   = ROI.objects.select_related().filter(frame=frame[0])
-    left_rois=[], right_rois=[], top_rois=[], bottom_rois=[]
+    left_rois=[]
+    right_rois=[]
+    top_rois=[]
+    bottom_rois=[]
     for roi in rois:
         left_rois.append(roi.min_col)
         right_rois.append(roi.max_col)
