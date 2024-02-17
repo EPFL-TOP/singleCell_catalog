@@ -671,7 +671,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             sample = Sample.objects.get(file_name=current_file)
             print('sample ',sample)
             print('sample ',type(sample))
-            frame = Frame.objects.select_related().filter(sample=sample, frame__number=current_index)
+            frame = Frame.objects.select_related().filter(sample=sample, number=current_index)
             print('framee  ',frame)
             for f in frame:
                 print(f.number, current_index)
