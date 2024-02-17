@@ -655,11 +655,11 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         time_point = slider.value
         new_image = ind_images[time_point]
         source_img.data = {'img':[new_image]}
-        left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
-        source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
         global current_index
         current_index = slider.value
-        update_source_roi()
+        left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
+        source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
+
 
     # Attach the callback to the slider
     slider.on_change('value', callback_slider)
@@ -744,7 +744,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     button_play_stop = bokeh.models.Button(label="Play")
     button_play_stop.on_click(play_stop_callback)
-    
+
     left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
     source_roi    = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
 
