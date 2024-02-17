@@ -592,7 +592,6 @@ current_file = None
 
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document ) -> None:
-#def segmentation_handler(doc, ind_images, time_lapse):
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
     bf_channel = 0
@@ -619,20 +618,22 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select,reset, undo")
 
 
+    #___________________________________________________________________________________________
     # Define a callback to update bf_display with slider
-    def callback(attr: str, old: Any, new: Any) -> None:
+    def callback_slider(attr: str, old: Any, new: Any) -> None:
         time_point = slider.value
         new_image = ind_images[time_point]
         source.data = {'img':[new_image]}
-        print('CALLBACK segmentation_handler slider time_point=', time_point)
         source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
-        #saveROI()
-
+        global current_index
+        current_index = slider.value
     # Attach the callback to the slider
-    slider.on_change('value', callback)
+    slider.on_change('value', callback_slider)
     slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=30), slider)
-    source_roi  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
+    source_roi    = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
 
+    #___________________________________________________________________________________________
+    # Define a callback to update the ROI
     def callback_roi(event):
         if isinstance(event, SelectionGeometry):
             print('beofre ',source_roi.data)
@@ -656,6 +657,9 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     p.on_event(SelectionGeometry, callback_roi)
 
     button_delete_roi = bokeh.models.Button(label="Delete ROI")
+
+    #___________________________________________________________________________________________
+    # Define a callback to delete the ROI
     def delete_roi_callback():
         source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
     button_delete_roi.on_click(delete_roi_callback)
@@ -667,7 +671,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             sample = Sample.objects.get(file_name=current_file)
             print('sample ',sample)
             print('sample ',type(sample))
-            frame = Frame.objects.select_related().filter(sample=sample)
+            frame = Frame.objects.select_related().filter(sample=sample, frame__number==current_index)
             print('framee  ',frame)
             for f in frame:
                 print(f.number, current_index)
@@ -679,6 +683,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                     roi.save()
     button_save_roi.on_click(save_roi_callback)
 
+    #___________________________________________________________________________________________
     # Function to update the image displayed
     def update_image():
         global current_index
@@ -690,8 +695,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         print('index= ',current_index)
         slider.value = current_index
 
+    #___________________________________________________________________________________________
     # Create play/stop button
-    button_play_stop = bokeh.models.Button(label="Play")
     def play_stop_callback():
         global playing
         global timerr
@@ -710,6 +715,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             #doc.remove_periodic_callback(update_image)
             playing = False
 
+    button_play_stop = bokeh.models.Button(label="Play")
     button_play_stop.on_click(play_stop_callback)
 
 
