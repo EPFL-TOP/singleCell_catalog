@@ -589,7 +589,7 @@ current_index = 0
 playing = False
 timerr = None
 current_file = None
-refresh_time = 250
+refresh_time = 500
 
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document ) -> None:
@@ -621,6 +621,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         global refresh_time
         refresh_time = item
         print(f"dropdown: {item}")
+        print('===========================================')
 
     dropdown_time.on_event("refresh_time", refresh_time_callback)
 
