@@ -623,7 +623,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         print(f"dropdown: {item}")
         print('===========================================')
 
-    dropdown_time.on_event("refresh_time", refresh_time_callback)
+    dropdown_time.on_click(refresh_time_callback)
 
 
     left_rois=[]
