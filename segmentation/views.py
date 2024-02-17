@@ -659,6 +659,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
         global current_index
         current_index = slider.value
+        update_source_roi()
+
     # Attach the callback to the slider
     slider.on_change('value', callback_slider)
     slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=30), slider)
