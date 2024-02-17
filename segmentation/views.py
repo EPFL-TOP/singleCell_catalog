@@ -589,6 +589,7 @@ current_index = 0
 playing = False
 timerr = None
 current_file = None
+refresh_time = 250
 
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document ) -> None:
@@ -612,7 +613,17 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
 
     menu = [("100ms", "100"), ("200ms", "200"), ("500ms", "500"), ("1sec", "1000")]
-    dropdown = bokeh.models.Dropdown(label="Dropdown button", button_type="warning", menu=menu)      
+    dropdown_time = bokeh.models.Dropdown(label="Refresh time", button_type="warning", menu=menu, default_value = "250")
+
+    # Callback function to handle menu item click
+    def refresh_time_callback(event):
+        item = int(event.item)
+        global refresh_time
+        refresh_time = item
+        print(f"dropdown: {item}")
+
+    dropdown_time.on_event("refresh_time", refresh_time_callback)
+
 
     left_rois=[]
     right_rois=[]
@@ -656,7 +667,6 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
         source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
     slider.on_change('value', callback_slider)
-    slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=30), slider)
     
     #___________________________________________________________________________________________
     # Define a callback to update the ROI
@@ -723,9 +733,10 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     def play_stop_callback():
         global playing
         global timerr
+        global refresh_time
         if not playing:
             button_play_stop.label = "Stop"
-            timerr = doc.add_periodic_callback(update_image, 500)  # Change the interval as needed
+            timerr = doc.add_periodic_callback(update_image, refresh_time)  # Change the interval as needed
             playing = True
         else:
             button_play_stop.label = "Play"
@@ -767,7 +778,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     p.axis.visible = False
     p.grid.visible = False
 
-    
+    slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=10), slider)
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(p), 
                                        bokeh.layouts.row(slider_layout,button_play_stop, button_prev, button_next ),
                                        bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown ))
