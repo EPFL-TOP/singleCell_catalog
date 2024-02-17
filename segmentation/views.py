@@ -706,11 +706,11 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     #___________________________________________________________________________________________
     # Function to update the image displayed
-    def update_image():
+    def update_image(way=1):
         global current_index
         new_image = ind_images[current_index]
         source_img.data = {'img':[new_image]}
-        current_index = (current_index + 1) % len(ind_images)
+        current_index = (current_index + 1*way) % len(ind_images)
         slider.value = current_index
         print('update_image index=',current_index)
 
@@ -730,8 +730,21 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     button_play_stop = bokeh.models.Button(label="Play")
     button_play_stop.on_click(play_stop_callback)
 
+
+
+   #___________________________________________________________________________________________
+    # Create next button
+    def next_callback():
+        update_image()
     button_next = bokeh.models.Button(label="Next")
+    button_next.on_click(next_callback)
+
+   #___________________________________________________________________________________________
+    # Create next button
+    def prev_callback():
+        update_image(-1)
     button_prev = bokeh.models.Button(label="Prev")
+    button_prev.on_click(prev_callback)
 
 
 
@@ -751,10 +764,10 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     p.axis.visible = False
     p.grid.visible = False
 
+    
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(p), 
                                        bokeh.layouts.row(slider_layout,button_play_stop, button_prev, button_next ),
                                        bokeh.layouts.row(slider_layout,button_delete_roi, button_save_roi ))
-    #norm_layout = bokeh.layout([p],[slider_layout,button_play_stop,button_delete_roi ])
 
     doc.add_root(norm_layout)
 
