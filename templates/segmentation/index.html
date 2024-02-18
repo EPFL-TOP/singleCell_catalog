@@ -6,9 +6,9 @@
 </style>
 
  
-
-  {{ script| safe }}
-
+  {% if script %}
+    {{ script| safe }}
+  {% endif %}
   <div class="result"></div>
 
 
