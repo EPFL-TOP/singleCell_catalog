@@ -700,15 +700,22 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     # Save ROI
     def save_roi_callback():
         print('Saving ROI===================================',source_roi.data)
+        sample   = Sample.objects.get(file_name=current_file)
+        frame    = Frame.objects.select_related().filter(sample=sample, number=current_index)
+        if len(frame)!=1:
+            print('NOT ONLY FRAME FOUND< PLEASE CHECKKKKKKKK')
+            print('======sample: ',sample)
+            for f in frame:
+                print('===============frame: ',f)
         for i in range(len(source_roi.data['left'])):
-            sample = Sample.objects.get(file_name=current_file)
-            frame = Frame.objects.select_related().filter(sample=sample, number=current_index)
-            if len(frame)!=1:
-                print('NOT ONLY FRAME FOUND< PLEASE CHECKKKKKKKK')
-                print('======sample: ',sample)
-                for f in frame:
-                    print('===============frame: ',f)
-
+            cellrois = CellROI.objects.select_related().filter(frame=frame[0])
+            for cellroi in cellrois:
+                if cellroi.min_col == math.floor(source_roi.data['left'][i]) and \
+                    cellroi.min_row == math.floor(source_roi.data['top'][i])  and \
+                        cellroi.max_col == math.ceil(source_roi.data['right'][i]) and \
+                            cellroi.min_col == math.ceil(source_roi.data['bottom'][i]):
+                        print('save_roi_callback already exist ',frame[0])
+                        continue
             print('save_roi_callback saving ',frame[0])
             roi = CellROI(min_col=math.floor(source_roi.data['left'][i]), max_col=math.ceil(source_roi.data['right'][i]), 
                           min_row=math.floor(source_roi.data['top'][i]),  max_row=math.ceil(source_roi.data['bottom'][i]),
@@ -745,14 +752,14 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     button_play_stop.on_click(play_stop_callback)
 
 
-   #___________________________________________________________________________________________
+    #___________________________________________________________________________________________
     # Create next button
     def next_callback():
         update_image()
     button_next = bokeh.models.Button(label="Next")
     button_next.on_click(next_callback)
 
-   #___________________________________________________________________________________________
+    #___________________________________________________________________________________________
     # Create next button
     def prev_callback():
         update_image(-1)
@@ -1094,8 +1101,6 @@ def index(request: HttpRequest) -> HttpResponse:
         #script, div = bokeh.embed.components(request.build_absolute_uri())
         script = bokeh.embed.server_document(request.build_absolute_uri())
         print("request.build_absolute_uri() ",request.build_absolute_uri())
-    #script = bokeh.embed.server_document(request.build_absolute_uri())
-    #print("request.build_absolute_uri() ",request.build_absolute_uri())
 
     context = {
         #'num_samples': num_samples,
