@@ -652,10 +652,6 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             right_rois.append(roi.max_col)
             top_rois.append(roi.min_row)
             bottom_rois.append(roi.max_row)
-        print('left_rois ',left_rois)
-        print('right_rois ',right_rois)
-        print('top_rois ',top_rois)
-        print('bottom_rois ',bottom_rois)
         return left_rois,right_rois,right_rois,bottom_rois
 
     #___________________________________________________________________________________________
@@ -706,17 +702,18 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         print('Saving ROI===================================',source_roi.data)
         for i in range(len(source_roi.data['left'])):
             sample = Sample.objects.get(file_name=current_file)
-            print('sample ',sample)
             frame = Frame.objects.select_related().filter(sample=sample, number=current_index)
-            print('frame  ',frame)
-            for f in frame:
-                print(f.number, current_index)
-                if f.number == current_index:
-                    print('save_roi_callback saving ',f)
-                    roi = ROI(min_col=source_roi.data['left'][i], max_col=source_roi.data['right'][i], 
-                      min_row=source_roi.data['top'][i], max_row=source_roi.data['bottom'][i],
+            if len(frame)!=1:
+                print('NOT ONLY FRAME FOUND< PLEASE CHECKKKKKKKK')
+                print('======sample: ',sample)
+                for f in frame:
+                    print('===============frame: ',f)
+
+            print('save_roi_callback saving ',frame[0])
+            roi = ROI(min_col=math.floor(source_roi.data['left'][i]), max_col=math.ceil(source_roi.data['right'][i]), 
+                      min_row=math.floor(source_roi.data['top'][i]),  max_row=math.ceil(source_roi.data['bottom'][i]),
                       roi_number=i, frame=f)
-                    roi.save()
+            roi.save()
     button_save_roi = bokeh.models.Button(label="Save ROI")
     button_save_roi.on_click(save_roi_callback)
 
@@ -764,7 +761,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
 
     # Create a Div widget with some text
-    text = bokeh.models.Div(text="<h1>This is some text next to the plot</h1>")
+    text = bokeh.models.Div(text="<h1>Cell Frame informations</h1>")
 
 
     left_rois,right_rois,right_rois,bottom_rois=update_source_roi()

@@ -137,16 +137,17 @@ class Contour(models.Model):
 
 
 #___________________________________________________________________________________________
-class ROI(models.Model):
-    min_row = models.FloatField(default=-9999, help_text="min row ROI")
-    min_col = models.FloatField(default=-9999, help_text="min col ROI")
-    max_row = models.FloatField(default=-9999, help_text="max row ROI")
-    max_col = models.FloatField(default=-9999, help_text="max col ROI")
-    frame   = models.ForeignKey(Frame, default='',on_delete=models.CASCADE)
+class CellROI(models.Model):
+    #Coordinates according to skimage.measure.regionprops.bbox
+    min_row    = models.FloatField(default=-9999, help_text="skimage.measure.regionprops.bbox min row ROI")
+    min_col    = models.FloatField(default=-9999, help_text="skimage.measure.regionprops.bbox min col ROI")
+    max_row    = models.FloatField(default=-9999, help_text="skimage.measure.regionprops.bbox max row ROI")
+    max_col    = models.FloatField(default=-9999, help_text="skimage.measure.regionprops.bbox max col ROI")
+    frame      = models.ForeignKey(Frame, default='',on_delete=models.CASCADE)
     roi_number = models.PositiveSmallIntegerField(default=-1, help_text="ROI number")
     
     def __str__(self):
-        return 'frame={0}, roi={1}, file={2}'.format(self.frame.number,self.roi_number, self.frame.sample.file_name)
+        return 'file={0}, frame={1}, roi={2}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number)
 
 
 #############################################################################################
