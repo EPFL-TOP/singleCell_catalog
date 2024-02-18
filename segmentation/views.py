@@ -675,6 +675,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             height.append(roi.min_col+(roi.max_col - roi.min_col)/2.)
             weight.append(roi.min_row+(roi.max_row - roi.min_row)/2.)
             names.append('CellROI {0}'.format(roi.roi_number))
+        print('ppppppp ',height, weight, names)
         return height, weight, names
 
     #___________________________________________________________________________________________
