@@ -672,7 +672,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                 print('===============frame: ',f)
         rois   = CellROI.objects.select_related().filter(frame=frame[0])
         for roi in rois:
-            weight.append(roi.min_col+(roi.max_col - roi.min_col)/2.)
+            weight.append(roi.min_col)
+            #weight.append(roi.min_col+(roi.max_col - roi.min_col)/2.)
             #height.append(roi.min_row+(roi.max_row - roi.min_row)/2.)
             height.append(roi.max_row)
             names.append('CellROI {0}'.format(roi.roi_number))
