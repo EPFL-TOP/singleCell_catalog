@@ -558,18 +558,20 @@ def build_ROIs():
                     print('===================BREAK ROIS========================')
                     break
                 counter_samp+=1
-                rois = CellROI.objects.select_related().filter(sample = s)
-                if len(rois)>0: continue
+                frames = Frame.objects.select_related().filter(sample=s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 ROIs=segtools.get_ROIs(images)
-                for r in range(len(ROIs)):
-                    roi = CellROI(min_row = ROIs[r][0], 
-                              min_col = ROIs[r][1], 
-                              max_row = ROIs[r][2], 
-                              max_col = ROIs[r][3], 
-                              sample = s, 
-                              roi_number=r)
-                    roi.save()
+                for frame in frames:
+                    rois = CellROI.objects.select_related().filter(frame = frame)
+                    #Just for now, should normally check that same ROI don't overlap
+                    if len(rois)>0: continue
+                
+                    #for now, same CELLROI FOR ALL FRAME
+                    for r in range(len(ROIs)):
+                        roi = CellROI(min_row = ROIs[r][0], min_col = ROIs[r][1],
+                                      max_row = ROIs[r][2], max_col = ROIs[r][3], 
+                                      frame = frame, roi_number=r)
+                        roi.save()
 
 
 async def saveROI(request):
@@ -815,8 +817,6 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                   x_offset=0, y_offset=0, source=source_labels, text_color='white', text_font_size="11pt")
 
     p.add_layout(labels)
-    # Create Bokeh figure and use image display
-    #p = bokeh.plotting.figure(x_range=(0, width), y_range=(0, height), tools="box_select,reset, undo")
     im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2], source=source_img, palette='Greys256')
 
     # Add the rectangle glyph after adding the image
@@ -827,18 +827,12 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     p.axis.visible = False
     p.grid.visible = False
 
-    #slider_layout = bokeh.layouts.column(bokeh.layouts.Spacer(height=10), slider)
-
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next ),
-                                    bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_time ),
-                                    text)
+                                     bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_time ),
+                                     text)
     
     norm_layout = bokeh.layouts.row(p, right_col)
-    #norm_layout = bokeh.layouts.column(bokeh.layouts.row(p), text,
-    #                                   bokeh.layouts.row(slider_layout,button_play_stop, button_prev, button_next ),
-    #                                   bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_time ))
-
     doc.add_root(norm_layout)
 
 
