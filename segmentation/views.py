@@ -782,7 +782,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     names=['Mark', 'Amir', 'Matt', 'Greg', 'Owen', 'Juan'],
 ))
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names',
-                  x_offset=5, y_offset=5, source=source)
+                  x_offset=5, y_offset=5, source=source_labels)
     citation = bokeh.models.Label(x=70, y=70, x_units='canvas', y_units='canvas',
                  text='Collected by Luke C. 2016-04-01',
                  border_line_color='black', background_fill_color='white')
