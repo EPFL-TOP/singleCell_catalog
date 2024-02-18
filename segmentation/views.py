@@ -774,9 +774,20 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
 
     left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
-    source_roi    = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
+    source_roi  = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
 
-
+    source_labels = bokeh.models.ColumnDataSource(data=dict(
+    height=[66, 71, 72, 68, 58, 62],
+    weight=[165, 189, 220, 141, 260, 174],
+    names=['Mark', 'Amir', 'Matt', 'Greg', 'Owen', 'Juan'],
+))
+    labels = bokeh.models.LabelSet(x='weight', y='height', text='names',
+                  x_offset=5, y_offset=5, source=source)
+    citation = bokeh.models.Label(x=70, y=70, x_units='canvas', y_units='canvas',
+                 text='Collected by Luke C. 2016-04-01',
+                 border_line_color='black', background_fill_color='white')
+    p.add_layout(citation)
+    p.add_layout(labels)
     # Create Bokeh figure and use image display
     #p = bokeh.plotting.figure(x_range=(0, width), y_range=(0, height), tools="box_select,reset, undo")
     im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2], source=source_img, palette='Greys256')
