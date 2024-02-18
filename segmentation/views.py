@@ -806,7 +806,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     print('---ffeefefefe -   ',height, weight, names)
     source_labels = bokeh.models.ColumnDataSource(data=dict(height=height,weight=weight,names=names))
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
-                  x_offset=5, y_offset=5, source=source_labels, text_color='white', text_font_size="20pt")
+                  x_offset=5, y_offset=5, source=source_labels, text_color='white', text_font_size="10pt")
 
     p.add_layout(labels)
     # Create Bokeh figure and use image display
