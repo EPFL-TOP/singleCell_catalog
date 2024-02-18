@@ -8,7 +8,7 @@ from bokeh.application.handlers.function import FunctionHandler
 from bokeh.layouts import column, row
 import numpy as np
 
-from .models import ROI
+from .models import CellROI
 
 class BokehApp:
     def __init__(self, image_data, file):
