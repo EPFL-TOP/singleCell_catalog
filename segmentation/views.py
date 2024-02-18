@@ -669,7 +669,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     #___________________________________________________________________________________________
     # Define a callback to update the ROI
     def callback_roi(event):
-        if isinstance(event, SelectionGeometry):
+        if isinstance(event, bokeh.events.SelectionGeometry):
             data = dict(
                 left=source_roi.data['left'] + [event.geometry['x0']],
                 right=source_roi.data['right'] + [event.geometry['x1']],
@@ -677,7 +677,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                 bottom=source_roi.data['bottom'] + [event.geometry['y1']]
                 )
             source_roi.data = data
-    p.on_event(SelectionGeometry, callback_roi)
+    p.on_event(bokeh.events.SelectionGeometry, callback_roi)
 
     #___________________________________________________________________________________________
     # Define a callback to delete the ROI
