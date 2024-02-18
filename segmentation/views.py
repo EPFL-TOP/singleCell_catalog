@@ -871,6 +871,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 #___________________________________________________________________________________________
 def index(request: HttpRequest) -> HttpResponse:
 
+    global current_index
+    current_index=0
 #def index(request):
     """View function for home page of site."""
     print('The visualisation request method is:', request.method)
