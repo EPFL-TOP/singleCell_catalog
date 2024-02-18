@@ -654,6 +654,29 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             bottom_rois.append(roi.max_row)
         return left_rois,right_rois,right_rois,bottom_rois
 
+    height=[]
+    weight=[]
+    names=[]
+    #___________________________________________________________________________________________
+    # update the source_labels
+    def update_source_labels():
+        height.clear()
+        weight.clear()
+        names.clear
+        sample = Sample.objects.get(file_name=current_file)
+        frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
+        if len(frame)!=1:
+            print('NOT ONLY FRAME FOUND< PLEASE CHECKKKKKKKK')
+            print('======sample: ',sample)
+            for f in frame:
+                print('===============frame: ',f)
+        rois   = CellROI.objects.select_related().filter(frame=frame[0])
+        for roi in rois:
+            height.append((roi.max_col - roi.min_col)/2.)
+            weight.append((roi.max_row - roi.min_row)/2.)
+            names.append('CellROI {0}'.format(roi.roi_number))
+        return height, weight, names
+
     #___________________________________________________________________________________________
     # Define a callback to update bf_display with slider
     def callback_slider(attr: str, old: Any, new: Any) -> None:
@@ -773,15 +796,12 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     text = bokeh.models.Div(text="<h1>Cell Frame informations</h1>")
 
 
-    left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
+    left_rois, right_rois, right_rois, bottom_rois = update_source_roi()
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
 
-    source_labels = bokeh.models.ColumnDataSource(data=dict(
-    height=[66, 71, 72, 68, 58, 62],
-    weight=[165, 189, 220, 141, 260, 174],
-    names=['Mark', 'Amir', 'Matt', 'Greg', 'Owen', 'Juan'],
-))
-    labels = bokeh.models.LabelSet(x='weight', y='height', text='names',
+    height, weight, names = update_source_labels()
+    source_labels = bokeh.models.ColumnDataSource(data=dict(height=height,weight=weight,names=names))
+    labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='canvas', y_units='canvas',
                   x_offset=5, y_offset=5, source=source_labels)
     citation = bokeh.models.Label(x=70, y=70, x_units='canvas', y_units='canvas',
                  text='Collected by Luke C. 2016-04-01',
