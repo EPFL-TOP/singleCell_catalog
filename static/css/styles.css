@@ -106,10 +106,10 @@
   /* Create two unequal columns that sits next to each other */
   /* Sidebar/left column */
   .side {
-    -ms-flex: 7%; /* IE10 */
-    flex: 7%;
+    -ms-flex: 5%; /* IE10 */
+    flex: 5%;
     background-color: #f1f1f1;
-    padding: 20px;
+    padding: 10px;
   }
   
   /* Main column */
