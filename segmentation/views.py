@@ -805,12 +805,9 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     height, weight, names = update_source_labels()
     print('---ffeefefefe -   ',height, weight, names)
     source_labels = bokeh.models.ColumnDataSource(data=dict(height=height,weight=weight,names=names))
-    labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='canvas', y_units='canvas',
+    labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
                   x_offset=5, y_offset=5, source=source_labels, text_color='white', text_font_size="20pt")
-    citation = bokeh.models.Label(x=70, y=70, x_units='canvas', y_units='canvas',
-                 text='Collected by Luke C. 2016-04-01',
-                 border_line_color='black', background_fill_color='white')
-    p.add_layout(citation)
+
     p.add_layout(labels)
     # Create Bokeh figure and use image display
     #p = bokeh.plotting.figure(x_range=(0, width), y_range=(0, height), tools="box_select,reset, undo")
