@@ -749,6 +749,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                               min_row=math.floor(source_roi.data['top'][i]),  max_row=math.ceil(source_roi.data['bottom'][i]),
                               roi_number=i, frame=frame[0])
                 roi.save()
+        height, weight, names = update_source_labels()
+        source_labels.data = {'height':height, 'weight':weight, 'names':names}
     button_save_roi = bokeh.models.Button(label="Save ROI")
     button_save_roi.on_click(save_roi_callback)
 
@@ -806,7 +808,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     print('---ffeefefefe -   ',height, weight, names)
     source_labels = bokeh.models.ColumnDataSource(data=dict(height=height,weight=weight,names=names))
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
-                  x_offset=5, y_offset=5, source=source_labels, text_color='white', text_font_size="10pt")
+                  x_offset=0, y_offset=15, source=source_labels, text_color='white', text_font_size="12pt")
 
     p.add_layout(labels)
     # Create Bokeh figure and use image display
