@@ -709,22 +709,20 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                 print('===============frame: ',f)
         for i in range(len(source_roi.data['left'])):
             cellrois = CellROI.objects.select_related().filter(frame=frame[0])
+            roi_exist=False
             for cellroi in cellrois:
-                print(cellroi.min_col, math.floor(source_roi.data['left'][i]) )
-                print(cellroi.min_row , math.floor(source_roi.data['top'][i]))
-                print(cellroi.max_col , math.ceil(source_roi.data['right'][i]) )
-                print(cellroi.min_col , math.ceil(source_roi.data['bottom'][i]))
                 if cellroi.min_col == math.floor(source_roi.data['left'][i]) and \
                     cellroi.min_row == math.floor(source_roi.data['top'][i])  and \
                         cellroi.max_col == math.ceil(source_roi.data['right'][i]) and \
                             cellroi.max_row == math.ceil(source_roi.data['bottom'][i]):
                         print('save_roi_callback already exist ',frame[0])
-                        continue
-            print('save_roi_callback saving ',frame[0])
-            roi = CellROI(min_col=math.floor(source_roi.data['left'][i]), max_col=math.ceil(source_roi.data['right'][i]), 
-                          min_row=math.floor(source_roi.data['top'][i]),  max_row=math.ceil(source_roi.data['bottom'][i]),
-                          roi_number=i, frame=frame[0])
-            roi.save()
+                        roi_exist=True
+            if not roi_exist:
+                print('save_roi_callback saving ',frame[0])
+                roi = CellROI(min_col=math.floor(source_roi.data['left'][i]), max_col=math.ceil(source_roi.data['right'][i]), 
+                              min_row=math.floor(source_roi.data['top'][i]),  max_row=math.ceil(source_roi.data['bottom'][i]),
+                              roi_number=i, frame=frame[0])
+                roi.save()
     button_save_roi = bokeh.models.Button(label="Save ROI")
     button_save_roi.on_click(save_roi_callback)
 
