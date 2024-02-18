@@ -690,7 +690,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             print('======sample: ',sample)
             for f in frame:
                 print('===============frame: ',f)
-        rois   = ROI.objects.select_related().filter(frame=frame[0])
+        rois   = CellROI.objects.select_related().filter(frame=frame[0])
         for roi in rois:
             roi.delete()
     button_delete_roi = bokeh.models.Button(label="Delete ROI")
