@@ -662,7 +662,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     def update_source_labels():
         height.clear()
         weight.clear()
-        names.clear
+        names.clear()
         sample = Sample.objects.get(file_name=current_file)
         frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
         if len(frame)!=1:
@@ -672,8 +672,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                 print('===============frame: ',f)
         rois   = CellROI.objects.select_related().filter(frame=frame[0])
         for roi in rois:
-            height.append(roi.min_col+(roi.max_col - roi.min_col)/2.)
-            weight.append(roi.min_row+(roi.max_row - roi.min_row)/2.)
+            weight.append(roi.min_col+(roi.max_col - roi.min_col)/2.)
+            height.append(roi.min_row+(roi.max_row - roi.min_row)/2.)
             names.append('CellROI {0}'.format(roi.roi_number))
         print('ppppppp ',height, weight, names)
         return height, weight, names
