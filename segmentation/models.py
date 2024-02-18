@@ -139,10 +139,10 @@ class Contour(models.Model):
 #___________________________________________________________________________________________
 class CellROI(models.Model):
     #Coordinates according to skimage.measure.regionprops.bbox
-    min_row    = models.FloatField(default=-9999, help_text="skimage.measure.regionprops.bbox min row ROI")
-    min_col    = models.FloatField(default=-9999, help_text="skimage.measure.regionprops.bbox min col ROI")
-    max_row    = models.FloatField(default=-9999, help_text="skimage.measure.regionprops.bbox max row ROI")
-    max_col    = models.FloatField(default=-9999, help_text="skimage.measure.regionprops.bbox max col ROI")
+    min_row    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox min row ROI")
+    min_col    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox min col ROI")
+    max_row    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox max row ROI")
+    max_col    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox max col ROI")
     frame      = models.ForeignKey(Frame, default='',on_delete=models.CASCADE)
     roi_number = models.PositiveSmallIntegerField(default=-1, help_text="ROI number")
     
