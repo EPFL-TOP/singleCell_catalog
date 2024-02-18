@@ -800,9 +800,10 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
 
     height, weight, names = update_source_labels()
+    print('---ffeefefefe -   ',height, weight, names)
     source_labels = bokeh.models.ColumnDataSource(data=dict(height=height,weight=weight,names=names))
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='canvas', y_units='canvas',
-                  x_offset=5, y_offset=5, source=source_labels)
+                  x_offset=5, y_offset=5, source=source_labels, text_color='white', text_font_size="20pt")
     citation = bokeh.models.Label(x=70, y=70, x_units='canvas', y_units='canvas',
                  text='Collected by Luke C. 2016-04-01',
                  border_line_color='black', background_fill_color='white')
