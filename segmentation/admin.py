@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Sample, Frame, Cell, CellStatus, Contour, Experiment, ExperimentalDataset, Data, Segmentation, SegmentationChannel, CellFrame, CellID, ROI
+from .models import Sample, Frame, Cell, CellStatus, Contour, Experiment, ExperimentalDataset, Data, Segmentation, SegmentationChannel, CellFrame, CellID, CellROI
 # Register your models here.
 admin.site.register(Sample)
 admin.site.register(Frame)

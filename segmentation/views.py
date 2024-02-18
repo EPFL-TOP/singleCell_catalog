@@ -3,7 +3,7 @@ from django.db import reset_queries
 from django.db import connection
 from django.http import HttpRequest, HttpResponse
 
-from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellFrame, ROI
+from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellFrame, CellROI
 
 import os, sys, json, glob, gc
 import time
