@@ -45,9 +45,11 @@
 
     <br><br>
     <input type="submit" value="Submit" name="submit_data">
+    <form method="POST">
+      {% csrf_token %}
+      <input type="submit" name="reset" value="Reset">
+    </form>
   </form>
-
-
 
 
   <form method="POST">
@@ -55,16 +57,7 @@
     <input type="submit" name="reset" value="Reset">
   </form>
 
-  <form method="POST">
-    {% csrf_token %}
-    <input type="submit" name="register_rawdataset" value="Register RAW datasets (build frames)">
-    <input type="submit" name="build_ROIs" value="Build ROIs (sample)">
 
-    <input type="submit" name="segment" value="Segment">
-    <input type="submit" name="build_cell_frames" value="Build Cell Frames">
-    <input type="submit" name="build_cells" value="Build Cells">
-    <input type="submit" name="intensity" value="Intensity">
-  </form>
 
 <br>
 
@@ -169,16 +162,18 @@
 {% endif %}
 
 
+<br><br><br><br><br><br>
 
-    <br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-  <h2>Dynamic content</h2>
-  <p>The library has the following record counts:</p>
-  <ul>
-    <li><strong>Books:</strong> {{ num_books }}</li>
-    <li><strong>Copies:</strong> {{ num_instances }}</li>
-    <li><strong>Copies available:</strong> {{ num_instances_available }}</li>
-    <li><strong>Authors:</strong> {{ num_authors }}</li>
-  </ul>
+<form method="POST">
+  {% csrf_token %}
+  <input type="submit" name="register_rawdataset" value="Register RAW datasets (build frames)">
+  <input type="submit" name="build_ROIs" value="Build ROIs (sample)">
+  <input type="submit" name="segment" value="Segment">
+  <input type="submit" name="build_cell_frames" value="Build Cell Frames">
+  <input type="submit" name="build_cells" value="Build Cells">
+  <input type="submit" name="intensity" value="Intensity">
+</form>
+
+    
 {% endblock %}
