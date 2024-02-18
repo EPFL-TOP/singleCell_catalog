@@ -686,7 +686,9 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         global current_index
         current_index = slider.value
         left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
+        height, weight, names = update_source_labels()
         source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
+        source_labels.data = {'height':height, 'weight':weight, 'names':names}
     slider.on_change('value', callback_slider)
     
     #___________________________________________________________________________________________
