@@ -106,8 +106,8 @@
   /* Create two unequal columns that sits next to each other */
   /* Sidebar/left column */
   .side {
-    -ms-flex: 15%; /* IE10 */
-    flex: 15%;
+    -ms-flex: 10%; /* IE10 */
+    flex: 10%;
     background-color: #f1f1f1;
     padding: 20px;
   }
