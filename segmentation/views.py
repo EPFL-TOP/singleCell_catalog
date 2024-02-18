@@ -711,6 +711,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     # Define a callback to delete the ROI
     def delete_roi_callback():
         source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
+        source_labels.data = {'height':[], 'weight':[], 'names':[]}
+
         sample = Sample.objects.get(file_name=current_file)
         frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
         if len(frame)!=1:
@@ -810,7 +812,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     print('---ffeefefefe -   ',height, weight, names)
     source_labels = bokeh.models.ColumnDataSource(data=dict(height=height,weight=weight,names=names))
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
-                  x_offset=0, y_offset=0, source=source_labels, text_color='white', text_font_size="12pt")
+                  x_offset=0, y_offset=0, source=source_labels, text_color='white', text_font_size="11pt")
 
     p.add_layout(labels)
     # Create Bokeh figure and use image display
