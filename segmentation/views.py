@@ -673,7 +673,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         rois   = CellROI.objects.select_related().filter(frame=frame[0])
         for roi in rois:
             weight.append(roi.min_col+(roi.max_col - roi.min_col)/2.)
-            height.append(roi.min_row+(roi.max_row - roi.min_row)/2.)
+            #height.append(roi.min_row+(roi.max_row - roi.min_row)/2.)
+            height.append(roi.min_row)
             names.append('CellROI {0}'.format(roi.roi_number))
         print('ppppppp ',height, weight, names)
         return height, weight, names
@@ -808,7 +809,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     print('---ffeefefefe -   ',height, weight, names)
     source_labels = bokeh.models.ColumnDataSource(data=dict(height=height,weight=weight,names=names))
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
-                  x_offset=0, y_offset=15, source=source_labels, text_color='white', text_font_size="12pt")
+                  x_offset=0, y_offset=5, source=source_labels, text_color='white', text_font_size="12pt")
 
     p.add_layout(labels)
     # Create Bokeh figure and use image display
