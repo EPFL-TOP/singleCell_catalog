@@ -813,7 +813,9 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             for cellroi in cellrois_t2:
                 if cellroi.cell_id.name != None: ncells_t2+=1
 
-        if ncells_t1 == 0: update_image(number=f)
+            if ncells_t1 == 0: 
+                update_image(number=f)
+                break
     button_inspect = bokeh.models.Button(label="Inspect")
     button_inspect.on_click(inspect_cells_callback)
 
