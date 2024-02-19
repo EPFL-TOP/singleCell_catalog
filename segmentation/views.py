@@ -816,6 +816,9 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             if ncells_t1 == 0: 
                 update_image(number=f)
                 break
+            if ncells_t2 == 0: 
+                update_image(number=f+1)
+                break
             if ncells_t2>ncells_t1:
                 update_image(number=f)
                 break
