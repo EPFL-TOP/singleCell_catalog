@@ -816,13 +816,21 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             if ncells_t1 == 0: 
                 update_image(number=f)
                 break
+            if ncells_t2>ncells_t1:
+                update_image(number=f)
+                break
+            if ncells_t2<ncells_t1:
+                update_image(number=f)
+                break
     button_inspect = bokeh.models.Button(label="Inspect")
     button_inspect.on_click(inspect_cells_callback)
 
     #___________________________________________________________________________________________
     # Go to next frame with possible issue
     def build_cells_callback():
-        return
+        build_cells(sample=current_file)
+    button_build_cells = bokeh.models.Button(label="build cells")
+    button_build_cells.on_click(build_cells_callback)
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell Frame informations</h2>")
@@ -859,7 +867,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_time ),
-                                     bokeh.layouts.row(button_inspect),
+                                     bokeh.layouts.row(button_inspect, build_cells),
                                      text)
     
     norm_layout = bokeh.layouts.row(p, right_col)
