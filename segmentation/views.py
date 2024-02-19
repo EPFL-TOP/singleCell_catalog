@@ -560,18 +560,16 @@ def build_ROIs():
                 counter_samp+=1
                 frames = Frame.objects.select_related().filter(sample=s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
-                ROIs=segtools.get_ROIs(images)
-                counter_frame=0
+
+                BF_images=images.transpose(1,0,2,3)
+                BF_images=BF_images[0]
+
                 for frame in frames:
-                    if counter_frame==1: 
-                        print('===================BREAK ROIS frame========================')
-                        break
-                    counter_frame+=1
                     rois = CellROI.objects.select_related().filter(frame = frame)
                     #Just for now, should normally check that same ROI don't overlap
                     if len(rois)>0: continue
-                
-                    #for now, same CELLROI FOR ALL FRAME
+                    ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number])
+
                     for r in range(len(ROIs)):
                         roi = CellROI(min_row = ROIs[r][0], min_col = ROIs[r][1],
                                       max_row = ROIs[r][2], max_col = ROIs[r][3], 
