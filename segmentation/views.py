@@ -554,14 +554,19 @@ def build_ROIs():
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             counter_samp=0
             for s in samples:
-                if counter_samp==4: 
+                if counter_samp==1: 
                     print('===================BREAK ROIS========================')
                     break
                 counter_samp+=1
                 frames = Frame.objects.select_related().filter(sample=s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 ROIs=segtools.get_ROIs(images)
+                counter_frame=0
                 for frame in frames:
+                    if counter_frame==1: 
+                        print('===================BREAK ROIS frame========================')
+                        break
+                    counter_frame+=1
                     rois = CellROI.objects.select_related().filter(frame = frame)
                     #Just for now, should normally check that same ROI don't overlap
                     if len(rois)>0: continue
@@ -703,8 +708,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             data = dict(
                 left=source_roi.data['left'] + [event.geometry['x0']],
                 right=source_roi.data['right'] + [event.geometry['x1']],
-                top=source_roi.data['top'] + [event.geometry['y0']],
-                bottom=source_roi.data['bottom'] + [event.geometry['y1']]
+                top=source_roi.data['top'] + [event.geometry['y1']],
+                bottom=source_roi.data['bottom'] + [event.geometry['y0']]
                 )
             source_roi.data = data
     p.on_event(bokeh.events.SelectionGeometry, callback_roi)
@@ -802,10 +807,20 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     button_prev = bokeh.models.Button(label="Prev")
     button_prev.on_click(prev_callback)
 
+    #___________________________________________________________________________________________
+    # Go to next frame with possible issue
+    def inspect_cells_callback():
+        sample   = Sample.objects.get(file_name=current_file)
+        frames   = Frame.objects.select_related().filter(sample=sample)
+        for frame in frames:
+            cellrois = CellROI.objects.select_related().filter(frame=frame)
+
+
+    button_inspect = bokeh.models.Button(label="Inspect")
+    button_inspect.on_click(inspect_cells_callback)
 
     # Create a Div widget with some text
-    text = bokeh.models.Div(text="<h1>Cell Frame informations</h1>")
-
+    text = bokeh.models.Div(text="<h2>Cell Frame informations</h2>")
 
     left_rois, right_rois, right_rois, bottom_rois = update_source_roi()
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
