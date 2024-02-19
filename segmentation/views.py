@@ -692,8 +692,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             data = dict(
                 left=source_roi.data['left'] + [event.geometry['x0']],
                 right=source_roi.data['right'] + [event.geometry['x1']],
-                top=source_roi.data['top'] + [event.geometry['y1']],
-                bottom=source_roi.data['bottom'] + [event.geometry['y0']]
+                top=source_roi.data['top'] + [event.geometry['y0']],
+                bottom=source_roi.data['bottom'] + [event.geometry['y1']]
                 )
             source_roi.data = data
     p.on_event(bokeh.events.SelectionGeometry, callback_roi)
@@ -832,6 +832,8 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     # Go to next frame with possible issue
     def build_cells_callback():
         build_cells(sample=current_file)
+        height_cells, weight_cells, names_cells = update_source_cells()
+        source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
     button_build_cells = bokeh.models.Button(label="build cells")
     button_build_cells.on_click(build_cells_callback)
 
