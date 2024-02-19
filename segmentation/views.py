@@ -827,7 +827,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     print('---ffeefefefe - cells  ',height_cells, weight_cells, names_cells)
     source_cells = bokeh.models.ColumnDataSource(data=dict(height=height_cells,weight=weight_cells,names=names_cells))
     labels_cells = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
-                  x_offset=0, y_offset=-5, source=source_cells, text_color='white', text_font_size="11pt")
+                  x_offset=0, y_offset=-15, source=source_cells, text_color='white', text_font_size="11pt")
 
     p.add_layout(labels_cells)
 
