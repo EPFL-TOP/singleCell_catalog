@@ -413,7 +413,7 @@ def segment():
                 print('gc collect 1: ',gc.collect())
 
 #___________________________________________________________________________________________
-def build_cells():
+def build_cells(sample=None):
     #loop over all experiments
     exp_list = Experiment.objects.all()
     for exp in exp_list:
@@ -423,6 +423,7 @@ def build_cells():
             print('    ---- BUILD CELLS experimentaldataset name ',expds.data_name, expds.data_type)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
+                if sample!=None and sample!=s.file_name:continue
                 print('        ---- BUILD CELL sample name ',s.file_name)
                 cellsid = CellID.objects.select_related().filter(sample = s)
                 #delete the existing cellID
@@ -754,12 +755,15 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     #___________________________________________________________________________________________
     # Function to update the image displayed
-    def update_image(way=1):
+    def update_image(way=1, number=-9999):
         global current_index
         new_image = ind_images[current_index]
         source_img.data = {'img':[new_image]}
         current_index = (current_index + 1*way) % len(ind_images)
+        if number>=0:
+            current_index = number
         slider.value = current_index
+
         print('update_image index=',current_index)
 
     #___________________________________________________________________________________________
@@ -799,12 +803,24 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     def inspect_cells_callback():
         sample   = Sample.objects.get(file_name=current_file)
         frames   = Frame.objects.select_related().filter(sample=sample)
-        for frame in frames:
-            cellrois = CellROI.objects.select_related().filter(frame=frame)
+        for f in range(len(frames)-1):
+            ncells_t1=0
+            cellrois_t1 = CellROI.objects.select_related().filter(frame=frames[f])
+            for cellroi in cellrois_t1:
+                if cellroi.cell_id.name != None: ncells_t1+=1
+            ncells_t2=0
+            cellrois_t2 = CellROI.objects.select_related().filter(frame=frames[f+1])
+            for cellroi in cellrois_t2:
+                if cellroi.cell_id.name != None: ncells_t2+=1
 
-
+        if ncells_t1 == 0: update_image(number=f)
     button_inspect = bokeh.models.Button(label="Inspect")
     button_inspect.on_click(inspect_cells_callback)
+
+    #___________________________________________________________________________________________
+    # Go to next frame with possible issue
+    def build_cells_callback():
+        return
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell Frame informations</h2>")
@@ -841,6 +857,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_time ),
+                                     bokeh.layouts.row(button_inspect),
                                      text)
     
     norm_layout = bokeh.layouts.row(p, right_col)
