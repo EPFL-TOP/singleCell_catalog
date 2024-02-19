@@ -448,17 +448,14 @@ def build_cells():
                 #Create the cells ID according to existing clusters (one per cluster >=0)
                 #Connect the cellFrames to cellID
                 createdcells=[]
-                cellid_list=[]
                 cellid_dict={}
                 for cid in range(len(clustering.labels_)):
                     if clustering.labels_[cid] not in createdcells and clustering.labels_[cid]!=-1:
                         cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]))
                         cellid.save()
                         createdcells.append(clustering.labels_[cid])
-                        #cellid_list.append(cellid)
                         cellid_dict['cell{}'.format(clustering.labels_[cid])]=cellid
                     if clustering.labels_[cid]!=-1:
-                        #cell_frame_list[cid].cell_id = cellid_list[clustering.labels_[cid]]
                         cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
                         cell_roi_list[cid].save()
 

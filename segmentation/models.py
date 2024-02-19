@@ -131,7 +131,7 @@ class CellROI(models.Model):
     max_col    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox max col ROI and right in bokeh")
     frame      = models.ForeignKey(Frame, default='',on_delete=models.CASCADE)
     roi_number = models.PositiveSmallIntegerField(default=-1, help_text="ROI number")
-    cell_id    = models.ForeignKey(CellID, null=True, default='', on_delete=models.CASCADE)
+    cell_id    = models.ForeignKey(CellID, null=True, default='', on_delete=models.SET_NULL)
 
     def __str__(self):
         if self.cell_id != None:
