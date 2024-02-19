@@ -134,7 +134,10 @@ class CellROI(models.Model):
     cell_id    = models.ForeignKey(CellID, null=True, default='', on_delete=models.CASCADE)
 
     def __str__(self):
-        return 'file={0}, frame={1}, roi={2}, cell={3}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id.name)
+        if self.cell_id != None:
+            return 'file={0}, frame={1}, roi={2}, cell={3}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id.name)
+        else:
+            return 'file={0}, frame={1}, roi={2}, cell={3}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id)
 
 
 #___________________________________________________________________________________________
