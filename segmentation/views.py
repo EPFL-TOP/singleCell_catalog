@@ -510,7 +510,7 @@ def build_ROIs():
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             counter_samp=0
             for s in samples:
-                if counter_samp==1: 
+                if counter_samp==4: 
                     print('===================BREAK ROIS========================')
                     break
                 counter_samp+=1
