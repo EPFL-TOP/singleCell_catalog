@@ -3,7 +3,7 @@ from django.db import reset_queries
 from django.db import connection
 from django.http import HttpRequest, HttpResponse
 
-from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellFrame, CellROI
+from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellROI
 
 import os, sys, json, glob, gc
 import time
@@ -425,22 +425,24 @@ def build_cells():
             for s in samples:
                 print('        ---- BUILD CELL sample name ',s.file_name)
                 cellsid = CellID.objects.select_related().filter(sample = s)
-                #temporary, continue is already cellsid connected to sample
-                if len(cellsid)>0:
-                    continue
+                #delete the existing cellID
+                cellsid.delete()
+
                 frames = Frame.objects.select_related().filter(sample = s)
-                cell_frame_list=[]
-                cell_frame_coord=[]
+                cell_roi_list=[]
+                cell_roi_coord=[]
 
                 for f in frames:
-                    cellframes = CellFrame.objects.select_related().filter(frame=f)
-                    for cellf in cellframes:
-                        cell_frame_list.append(cellf)
-                        cell_frame_coord.append([cellf.pos_x, cellf.pos_y, cellf.pos_z])
-                print('number of cell frames=',len(cell_frame_list))
-                if len(cell_frame_list)==0:continue
-                X = np.array(cell_frame_coord)
-                clustering = DBSCAN(eps=25, min_samples=10).fit(X)
+                    cellrois = CellROI.objects.select_related().filter(frame=f)
+                    for cellroi in cellrois:
+                        cell_roi_list.append(cellroi)
+                        cell_roi_coord.append([cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., 
+                                               cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.])
+                print('number of cell frames=',len(cell_roi_list))
+                if len(cell_roi_list)==0:continue
+                X = np.array(cell_roi_coord)
+                eps= ((cellroi.max_col-cellroi.min_col)/2. + (cellroi.max_row-cellroi.min_row)/2.)/4.
+                clustering = DBSCAN(eps=eps, min_samples=20).fit(X)
                 print(clustering.labels_)
 
                 #Create the cells ID according to existing clusters (one per cluster >=0)
@@ -457,53 +459,10 @@ def build_cells():
                         cellid_dict['cell{}'.format(clustering.labels_[cid])]=cellid
                     if clustering.labels_[cid]!=-1:
                         #cell_frame_list[cid].cell_id = cellid_list[clustering.labels_[cid]]
-                        cell_frame_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
-                        cell_frame_list[cid].save()
+                        cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
+                        cell_roi_list[cid].save()
 
-#___________________________________________________________________________________________
-def build_cell_frames():
-    #For now build cells from contours
-    #loop over all experiments
-    exp_list = Experiment.objects.all()
-    for exp in exp_list:
-        print('---- BUILD CELL FRAMES experiment name ',exp.name)
-        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-        for expds in experimentaldataset:
-            print('    ---- BUILD CELL FRAMES experimentaldataset name ',expds.data_name, expds.data_type)
-            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-            for s in samples:
-                if 'xy06' in s.file_name or 'xy74' in s.file_name: 
-                    print('===========================================')
-                    break
-                print('        ---- BUILD CELL FRAMES sample name ',s.file_name)
-                frames = Frame.objects.select_related().filter(sample = s)
-                for f in frames:
-                    print('            ---- BUILD CELL FRAMES frame number ',f.number,' ',f.time)
-                    contours = Contour.objects.select_related().filter(frame = f)
-                    cellframe = CellFrame.objects.select_related().filter(frame = f)
-                    if len(contours) == len(cellframe):
-                        print('cell frames already exist')
 
-                        continue
-                    elif len(contours) > len(cellframe) and len(cellframe)!=0:
-                        print('more contours than cell frames, investigate...')
-                        continue
-                    elif len(cellframe)!=0:
-                        print('already cell frames')
-                        continue
-                    for cont in contours:
-                        print('                ---- BUILD CELL FRAMES contour ',cont.center)
-                        cellf = CellFrame(frame=f,
-                                          time=f.time,
-                                          pos_x=cont.center['x'],
-                                          pos_y=cont.center['y'],
-                                          pos_z=cont.center['z'],
-                                          sig_x=10,
-                                          sig_y=10,
-                                          sig_z=0)
-                        cellf.save()
-                        cont.cell_frame = cellf
-                        cont.save()
 
 #___________________________________________________________________________________________
 def intensity(experiment='', well='', position=''):
@@ -585,7 +544,7 @@ async def saveROI(request):
         print(s)
     sample = Sample(file_name='totot')
     sample.save()
-    roi = ROI(min_row=1, max_row=1, roi_number=10000, sample=sample)
+    roi = CellROI(min_row=1, max_row=1, roi_number=10000, sample=sample)
     roi.asave()
     print('----',roi)
 
@@ -883,10 +842,10 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
 #___________________________________________________________________________________________
 def index(request: HttpRequest) -> HttpResponse:
+#def index(request):
 
     global current_index
     current_index=0
-#def index(request):
     """View function for home page of site."""
     print('The visualisation request method is:', request.method)
     print('The visualisation POST data is:     ', request.POST)
@@ -906,8 +865,6 @@ def index(request: HttpRequest) -> HttpResponse:
         segment()
 
 
-    if 'build_cell_frames' in request.POST:
-        build_cell_frames()
     if 'build_cells' in request.POST:
         build_cells()
 

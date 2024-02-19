@@ -110,16 +110,31 @@ class CellID(models.Model):
     sample = models.ForeignKey(Sample, default='', on_delete=models.SET_DEFAULT)
 
 #___________________________________________________________________________________________
-class CellFrame(models.Model):
-    time   = models.FloatField(default=-9999, help_text="time")
-    pos_x  = models.FloatField(default=-9999, help_text="Cell x position in pixel")
-    pos_y  = models.FloatField(default=-9999, help_text="Cell y position in pixel")
-    pos_z  = models.FloatField(default=-9999, help_text="Cell z position in pixel")
-    sig_x  = models.FloatField(default=-9999, help_text="Cell x error in pixel")
-    sig_y  = models.FloatField(default=-9999, help_text="Cell y error in pixel")
-    sig_z  = models.FloatField(default=-9999, help_text="Cell z error in pixel")
-    frame  = models.ForeignKey(Frame, default='', on_delete=models.SET_DEFAULT)
-    cell_id = models.ForeignKey(CellID, null=True, default='', on_delete=models.CASCADE)
+#class CellFrame(models.Model):
+#    time   = models.FloatField(default=-9999, help_text="time")
+#    pos_x  = models.FloatField(default=-9999, help_text="Cell x position in pixel")
+#    pos_y  = models.FloatField(default=-9999, help_text="Cell y position in pixel")
+#    pos_z  = models.FloatField(default=-9999, help_text="Cell z position in pixel")
+#    sig_x  = models.FloatField(default=-9999, help_text="Cell x error in pixel")
+#    sig_y  = models.FloatField(default=-9999, help_text="Cell y error in pixel")
+#    sig_z  = models.FloatField(default=-9999, help_text="Cell z error in pixel")
+#    frame  = models.ForeignKey(Frame, default='', on_delete=models.SET_DEFAULT)
+#    cell_id = models.ForeignKey(CellID, null=True, default='', on_delete=models.CASCADE)
+
+
+#___________________________________________________________________________________________
+class CellROI(models.Model):
+    #Coordinates according to skimage.measure.regionprops.bbox
+    min_row    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox min row ROI and bottom in bokeh")
+    min_col    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox min col ROI and left in bokeh")
+    max_row    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox max row ROI and top in bokeh")
+    max_col    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox max col ROI and right in bokeh")
+    frame      = models.ForeignKey(Frame, default='',on_delete=models.CASCADE)
+    roi_number = models.PositiveSmallIntegerField(default=-1, help_text="ROI number")
+    cell_id    = models.ForeignKey(CellID, null=True, default='', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return 'file={0}, frame={1}, roi={2}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number)
 
 
 #___________________________________________________________________________________________
@@ -131,23 +146,11 @@ class Contour(models.Model):
     pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
     segmentation_channel = models.ForeignKey(SegmentationChannel, default='', on_delete=models.CASCADE)
     frame                = models.ForeignKey(Frame, default='', on_delete=models.SET_DEFAULT)
-    cell_frame           = models.ForeignKey(CellFrame, default='', null=True,on_delete=models.SET_DEFAULT)
+    cell_roi             = models.ForeignKey(CellROI, default='', null=True,on_delete=models.SET_DEFAULT)
     #cell                 = models.ForeignKey(Cell, blank=True, null=True, default='',on_delete=models.CASCADE)
     #uid_name             = models.CharField(default='', max_length=1000, help_text="unique name ID used not to create multiple times the same contour. Based on the input file name, frame number, algorithm type, version and parameters")
 
 
-#___________________________________________________________________________________________
-class CellROI(models.Model):
-    #Coordinates according to skimage.measure.regionprops.bbox
-    min_row    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox min row ROI")
-    min_col    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox min col ROI")
-    max_row    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox max row ROI")
-    max_col    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox max col ROI")
-    frame      = models.ForeignKey(Frame, default='',on_delete=models.CASCADE)
-    roi_number = models.PositiveSmallIntegerField(default=-1, help_text="ROI number")
-    
-    def __str__(self):
-        return 'file={0}, frame={1}, roi={2}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number)
 
 
 #############################################################################################
