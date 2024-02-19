@@ -618,15 +618,15 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             bottom_rois.append(roi.max_row)
         return left_rois,right_rois,right_rois,bottom_rois
 
-    height=[]
-    weight=[]
-    names=[]
+    height_labels=[]
+    weight_labels=[]
+    names_labels=[]
     #___________________________________________________________________________________________
     # update the source_labels
     def update_source_labels():
-        height.clear()
-        weight.clear()
-        names.clear()
+        height_labels.clear()
+        weight_labels.clear()
+        names_labels.clear()
         sample = Sample.objects.get(file_name=current_file)
         frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
         if len(frame)!=1:
@@ -636,13 +636,40 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                 print('===============frame: ',f)
         rois   = CellROI.objects.select_related().filter(frame=frame[0])
         for roi in rois:
-            weight.append(roi.min_col)
+            weight_labels.append(roi.min_col)
+            height_labels.append(roi.max_row)
+            names_labels.append('CellROI {0}'.format(roi.roi_number))
+        print('ppppppp ',height_labels, weight_labels, names_labels)
+        return height_labels, weight_labels, names_labels
+
+
+    height_cells=[]
+    weight_cells=[]
+    names_cells=[]
+    #___________________________________________________________________________________________
+    # update the source_labels
+    def update_source_labels():
+        height_cells.clear()
+        weight_cells.clear()
+        names_cells.clear()
+        sample = Sample.objects.get(file_name=current_file)
+        frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
+        if len(frame)!=1:
+            print('NOT ONLY FRAME FOUND< PLEASE CHECKKKKKKKK')
+            print('======sample: ',sample)
+            for f in frame:
+                print('===============frame: ',f)
+        rois = CellROI.objects.select_related().filter(frame=frame[0])
+        for roi in rois:
+            weight_cells.append(roi.min_col)
             #weight.append(roi.min_col+(roi.max_col - roi.min_col)/2.)
             #height.append(roi.min_row+(roi.max_row - roi.min_row)/2.)
-            height.append(roi.max_row)
-            names.append('CellROI {0}'.format(roi.roi_number))
-        print('ppppppp ',height, weight, names)
-        return height, weight, names
+            height_cells.append(roi.min_row)
+            names_cells.append('Cell {0}'.format(roi.roi_number))
+        print('ppppppp ',height_labels, weight_labels, names_labels)
+        return height_labels, weight_labels, names_labels
+
+
 
     #___________________________________________________________________________________________
     # Define a callback to update bf_display with slider
@@ -653,9 +680,9 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         global current_index
         current_index = slider.value
         left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
-        height, weight, names = update_source_labels()
+        height_labels, weight_labels, names_labels = update_source_labels()
         source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
-        source_labels.data = {'height':height, 'weight':weight, 'names':names}
+        source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
     slider.on_change('value', callback_slider)
     
     #___________________________________________________________________________________________
@@ -782,9 +809,9 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     left_rois, right_rois, right_rois, bottom_rois = update_source_roi()
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
 
-    height, weight, names = update_source_labels()
-    print('---ffeefefefe -   ',height, weight, names)
-    source_labels = bokeh.models.ColumnDataSource(data=dict(height=height,weight=weight,names=names))
+    height_labels, weight_labels, names_labels = update_source_labels()
+    print('---ffeefefefe -   ',height_labels, weight_labels, names_labels)
+    source_labels = bokeh.models.ColumnDataSource(data=dict(height=height_labels,weight=weight_labels,names=names_labels))
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
                   x_offset=0, y_offset=0, source=source_labels, text_color='white', text_font_size="11pt")
 
@@ -859,15 +886,12 @@ def index(request: HttpRequest) -> HttpResponse:
     if 'build_ROIs' in request.POST:
         build_ROIs()
 
-
     #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
     if 'segment' in request.POST:
         segment()
 
-
     if 'build_cells' in request.POST:
         build_cells()
-
 
     if 'intensity' in request.POST:
         intensity()
@@ -949,8 +973,6 @@ def index(request: HttpRequest) -> HttpResponse:
     #print('selected_project =  ', selected_project)
     print('selected_dict    =  ', selected_dict)
     #print('select_dict      =  ', select_dict)
-
- 
 
     # Render the HTML template index.html with the data in the context variable
 
