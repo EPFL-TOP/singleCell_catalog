@@ -648,7 +648,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     names_cells=[]
     #___________________________________________________________________________________________
     # update the source_labels
-    def update_source_labels():
+    def update_source_cells():
         height_cells.clear()
         weight_cells.clear()
         names_cells.clear()
@@ -661,13 +661,12 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                 print('===============frame: ',f)
         rois = CellROI.objects.select_related().filter(frame=frame[0])
         for roi in rois:
+            if roi.cell_id == None: continue
             weight_cells.append(roi.min_col)
-            #weight.append(roi.min_col+(roi.max_col - roi.min_col)/2.)
-            #height.append(roi.min_row+(roi.max_row - roi.min_row)/2.)
             height_cells.append(roi.min_row)
-            names_cells.append('Cell {0}'.format(roi.roi_number))
-        print('ppppppp ',height_labels, weight_labels, names_labels)
-        return height_labels, weight_labels, names_labels
+            names_cells.append(roi.cell_id.name)
+        print('ppppppp cells',height_cells, weight_cells, names_cells)
+        return height_cells, weight_cells, names_cells
 
 
 
@@ -681,8 +680,11 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         current_index = slider.value
         left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
         height_labels, weight_labels, names_labels = update_source_labels()
+        height_cells, weight_cells, names_cells = update_source_cells()
+        
         source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
+        source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
     slider.on_change('value', callback_slider)
     
     #___________________________________________________________________________________________
@@ -703,6 +705,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     def delete_roi_callback():
         source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
         source_labels.data = {'height':[], 'weight':[], 'names':[]}
+        source_cells.data = {'height':[], 'weight':[], 'names':[]}
 
         sample = Sample.objects.get(file_name=current_file)
         frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
@@ -744,8 +747,11 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                               min_row=math.floor(source_roi.data['top'][i]),  max_row=math.ceil(source_roi.data['bottom'][i]),
                               roi_number=i, frame=frame[0])
                 roi.save()
-        height, weight, names = update_source_labels()
-        source_labels.data = {'height':height, 'weight':weight, 'names':names}
+        height_labels, weight_labels, names_labels = update_source_labels()
+        source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
+        height_cells, weight_cells, names_cells = update_source_cells()
+        source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+        
     button_save_roi = bokeh.models.Button(label="Save ROI")
     button_save_roi.on_click(save_roi_callback)
 
@@ -816,6 +822,15 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                   x_offset=0, y_offset=0, source=source_labels, text_color='white', text_font_size="11pt")
 
     p.add_layout(labels)
+
+    height_cells, weight_cells, names_cells = update_source_cells()
+    print('---ffeefefefe - cells  ',height_cells, weight_cells, names_cells)
+    source_cells = bokeh.models.ColumnDataSource(data=dict(height=height_cells,weight=weight_cells,names=names_cells))
+    labels_cells = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
+                  x_offset=0, y_offset=-5, source=source_cells, text_color='white', text_font_size="11pt")
+
+    p.add_layout(labels_cells)
+
     im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2], source=source_img, palette='Greys256')
 
     # Add the rectangle glyph after adding the image
