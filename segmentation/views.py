@@ -910,10 +910,10 @@ def index(request: HttpRequest) -> HttpResponse:
 
     if 'intensity' in request.POST:
         intensity()
-    if 'select_experiment' in request.POST and 'select_well' in request.POST and 'select_position' in request.POST:
-        cell_dict = intensity(experiment=request.POST.get('select_experiment'), 
-                              well=request.POST.get('select_well'), 
-                              position=request.POST.get('select_position'))
+    #if 'select_experiment' in request.POST and 'select_well' in request.POST and 'select_position' in request.POST:
+    #    cell_dict = intensity(experiment=request.POST.get('select_experiment'), 
+    #                          well=request.POST.get('select_well'), 
+    #                          position=request.POST.get('select_position'))
 
     #dictionary to provide possible selection choices
     select_dict={
