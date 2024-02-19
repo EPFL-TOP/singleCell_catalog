@@ -638,7 +638,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
         for roi in rois:
             weight_labels.append(roi.min_col)
             height_labels.append(roi.max_row)
-            names_labels.append('CellROI {0}'.format(roi.roi_number))
+            names_labels.append('cellROI{0}'.format(roi.roi_number))
         print('ppppppp ',height_labels, weight_labels, names_labels)
         return height_labels, weight_labels, names_labels
 
@@ -819,7 +819,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     print('---ffeefefefe -   ',height_labels, weight_labels, names_labels)
     source_labels = bokeh.models.ColumnDataSource(data=dict(height=height_labels,weight=weight_labels,names=names_labels))
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
-                  x_offset=0, y_offset=0, source=source_labels, text_color='white', text_font_size="11pt")
+                  x_offset=0, y_offset=0, source=source_labels, text_color='white', text_font_size="10pt")
 
     p.add_layout(labels)
 
