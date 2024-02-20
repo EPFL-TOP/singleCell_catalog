@@ -815,7 +815,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             cellrois_t2 = CellROI.objects.select_related().filter(frame=frames[f+1])
             for cellroi in cellrois_t2:
                 if cellroi.cell_id != None: ncells_t2+=1
-
+            print('frame ',f, '  ncells_t1 ',ncells_t1,'  ncells_t2 ',ncells_t2)
             if ncells_t1 == 0: 
                 update_image(number=f)
                 break
