@@ -566,13 +566,16 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 
     print ('in segmentation_handler ind_images=',len(ind_images))
     data={'img':[ind_images[0]]}
-    source_img=bokeh.models.ColumnDataSource(data=data)
+    source_img = bokeh.models.ColumnDataSource(data=data)
+
+    data_intensity={'time':[], 'intensity':[]}
+    source_intensity = bokeh.models.ColumnDataSource(data=data_intensity)
 
     # Create a Slider widget
     initial_time_point = 0
     slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
-    p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
-
+    plot_image     = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
+    plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time', y_axis_label='Intensity')
 
     menu = [("100ms", "100"), ("200ms", "200"), ("500ms", "500"), ("1sec", "1000")]
     dropdown_time = bokeh.models.Dropdown(label="Refresh time", button_type="warning", menu=menu)
@@ -696,7 +699,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                 bottom=source_roi.data['bottom'] + [event.geometry['y1']]
                 )
             source_roi.data = data
-    p.on_event(bokeh.events.SelectionGeometry, callback_roi)
+    plot_image.on_event(bokeh.events.SelectionGeometry, callback_roi)
 
     #___________________________________________________________________________________________
     # Define a callback to delete the ROI
@@ -807,11 +810,11 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
             ncells_t1=0
             cellrois_t1 = CellROI.objects.select_related().filter(frame=frames[f])
             for cellroi in cellrois_t1:
-                if cellroi.cell_id.name != None: ncells_t1+=1
+                if cellroi.cell_id != None: ncells_t1+=1
             ncells_t2=0
             cellrois_t2 = CellROI.objects.select_related().filter(frame=frames[f+1])
             for cellroi in cellrois_t2:
-                if cellroi.cell_id.name != None: ncells_t2+=1
+                if cellroi.cell_id != None: ncells_t2+=1
 
             if ncells_t1 == 0: 
                 update_image(number=f)
@@ -837,8 +840,19 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     button_build_cells = bokeh.models.Button(label="build cells")
     button_build_cells.on_click(build_cells_callback)
 
+    #___________________________________________________________________________________________
+    # Go to next frame with possible issue
+    def set_cell_callback():
+        height_cells, weight_cells, names_cells = update_source_cells()
+        source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+    button_build_cells = bokeh.models.Button(label="build cells")
+    button_build_cells.on_click(build_cells_callback)
+
+
     # Create a Div widget with some text
-    text = bokeh.models.Div(text="<h2>Cell Frame informations</h2>")
+    text = bokeh.models.Div(text="<h2>Cell informations</h2>")
+
+
 
     left_rois, right_rois, right_rois, bottom_rois = update_source_roi()
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
@@ -849,7 +863,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
                   x_offset=0, y_offset=0, source=source_labels, text_color='white', text_font_size="10pt")
 
-    p.add_layout(labels)
+    plot_image.add_layout(labels)
 
     height_cells, weight_cells, names_cells = update_source_cells()
     print('---ffeefefefe - cells  ',height_cells, weight_cells, names_cells)
@@ -857,17 +871,17 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
     labels_cells = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
                   x_offset=0, y_offset=-15, source=source_cells, text_color='white', text_font_size="11pt")
 
-    p.add_layout(labels_cells)
+    plot_image.add_layout(labels_cells)
 
-    im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2], source=source_img, palette='Greys256')
+    im = plot_image.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2], source=source_img, palette='Greys256')
 
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
-    p.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
+    plot_image.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
 
     # Remove the axes
-    p.axis.visible = False
-    p.grid.visible = False
+    plot_image.axis.visible = False
+    plot_image.grid.visible = False
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_time ),
@@ -875,7 +889,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
                                      bokeh.layouts.row(button_inspect, button_build_cells),
                                      text)
     
-    norm_layout = bokeh.layouts.row(p, right_col)
+    norm_layout = bokeh.layouts.row(plot_image, right_col)
     doc.add_root(norm_layout)
 
 
