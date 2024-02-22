@@ -695,6 +695,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         right_rois.clear()
         top_rois.clear()
         bottom_rois.clear()
+        current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
         frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
         if len(frame)!=1:
