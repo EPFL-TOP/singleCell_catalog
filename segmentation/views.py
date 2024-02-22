@@ -661,6 +661,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  update_dropdown_pos ****************************')
         print(positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        dropdown_pos.value = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
         images = get_current_stack()
         source_imgages.data = {'images':images}
         source_img.data = {'img':[images[0]]}
