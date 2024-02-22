@@ -48,19 +48,13 @@ import reader as read
 import segmentationTools as segtools
 
 
-#from bokeh.document import Document
-#from bokeh.layouts import column
-#from bokeh.models import Slider
-#from bokeh.embed import server_document
-
 import bokeh.models
 import bokeh.palettes
 import bokeh.plotting
 import bokeh.embed
 import bokeh.layouts
 
-ind_images=None
-time_lapse=None
+
 
 #___________________________________________________________________________________________
 def deltaR(c1, c2):
@@ -601,13 +595,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])    
-    dropdown_pos  = bokeh.models.Select(title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
+    dropdown_pos  = bokeh.models.Select(value=positions['{0}_{1}'.format(experiments[0], wells[experiments[0]][0])][0],title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
 
+    #___________________________________________________________________________________________
     def update_dropdown_well(attr, old, new):
         dropdown_well.options = wells[dropdown_exp.value]
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
     dropdown_exp.on_change('value', update_dropdown_well)
 
+    #___________________________________________________________________________________________
     def update_dropdown_pos(attr, old, new):
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
     dropdown_well.on_change('value', update_dropdown_pos)
@@ -619,7 +615,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if dropdown_pos.value in f:
             current_file = f
     print('currrrfrqegewgwegewgwegewegwe  ',current_file)
-    current_file ='/mnt/nas_rcp/raw_data/microscopy/cell_culture/ppf001_well1/raw_files/ppf001_xy001.nd2'
     bf_channel = 0
     time_lapse_path = Path(current_file)
     time_lapse = nd2.imread(time_lapse_path.as_posix())
