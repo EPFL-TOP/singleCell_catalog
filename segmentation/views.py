@@ -547,18 +547,11 @@ async def saveROI(request):
     print('----',roi)
 
 
-current_index = 0
-playing = False
-timerr = None
-current_file = None
-refresh_time = 500
-
 
 def with_request(f):
     def wrapper(doc):
         return f(doc, doc.session_context.request)
     return wrapper
-
 
 @with_request
 def segmentation_handler_with_template(doc: bokeh.document.Document, request: Any) -> None:
@@ -568,16 +561,38 @@ def segmentation_handler_with_template(doc: bokeh.document.Document, request: An
     print('segmentation_handler_with_template request_arguments: ',request._arguments)
     print('segmentation_handler_with_template request_cookies:   ',request._cookies)
     print('segmentation_handler_with_template request_headers:   ',request._headers)
-
-    
-    print('segmentation_handler_with_template The visualisation request method is:', request.method)
-    print('segmentation_handler_with_template The visualisation GET data is:     ', request.GET)
-    print('segmentation_handler_with_template The visualisation POST data is:     ', request.POST)
     segmentation_handler(doc)
+
+
+
+current_index = 0
+playing = False
+timerr = None
+current_file = None
+refresh_time = 500
 
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document) -> None:
+    #TO BE CHANGED WITH ASYNC?????
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
+    data_experiment={'experiment':[], 'sample':[], 'position':[]}
+
+    for exp in Experiment.objects.all():
+        data_experiment['experiment'].append(exp.name)
+
+    # Create a dropdown widget
+    dropdown_exp = bokeh.models.Dropdown(label="Select an Option", menu=data_experiment['experiment'])
+
+    # Define a Python callback function to update the label of the dropdown
+    def update_dropdown_exp(attr, old, new):
+        dropdown_exp.label = new
+
+    # Attach the Python callback function to the dropdown widget
+    dropdown_exp.on_change('value', update_dropdown_exp)
+
+
+
     global current_file
     bf_channel = 0
     time_lapse_path = Path(current_file)
@@ -905,13 +920,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.axis.visible = False
     plot_image.grid.visible = False
 
+    left_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp))
+
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_time ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi ),
                                      bokeh.layouts.row(button_inspect, button_build_cells),
                                      text)
     
-    norm_layout = bokeh.layouts.row(plot_image, right_col)
+    norm_layout = bokeh.layouts.row(left_col, plot_image, right_col)
     doc.add_root(norm_layout)
 
 
