@@ -652,6 +652,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  update_dropdown_well ****************************')
         dropdown_well.options = wells[dropdown_exp.value]
         print('dropdown_exp.value ',dropdown_exp.value, '  wells[dropdown_exp.value]  ',wells[dropdown_exp.value],'   ',)
+        print('positions[{0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0])] ',positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])])
+
         print('positions[{0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0] ',positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0])
         dropdown_pos.options  = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
         dropdown_pos.value    = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0]
