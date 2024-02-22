@@ -553,8 +553,19 @@ timerr = None
 current_file = None
 refresh_time = 500
 
+
+def with_request(f):
+    def wrapper(doc):
+        return f(doc, doc.session_context.request)
+    return wrapper
+
+
+@with_request
+def segmentation_handler_with_template(doc: bokeh.document.Document, request: Any) -> None:
+    segmentation_handler(doc)
+
 #___________________________________________________________________________________________
-def segmentation_handler(doc: bokeh.document.Document, request: Any) -> None:
+def segmentation_handler(doc: bokeh.document.Document) -> None:
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
     global current_file
     bf_channel = 0
