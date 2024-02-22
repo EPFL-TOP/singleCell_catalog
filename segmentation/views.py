@@ -579,14 +579,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data_experiment={'experiment':[], 'well':[], 'position':[]}
     source_file  = bokeh.models.ColumnDataSource(data=data_experiment)
 
-
-
     for exp in Experiment.objects.all():
         data_experiment['experiment'].append(exp.name)
-
     data_experiment['experiment']=sorted(data_experiment['experiment'])
 
-    dropdown_exp = bokeh.models.Select(value='', title='Experiment', options=data_experiment['experiment'])    
+    dropdown_exp = bokeh.models.Select(value='', title='Experiment', options=data_experiment['experiment'])
     def update_dropdown_exp(attr, old, new):
         print('selected: ', new)
         experiment = Experiment.objects.get(name = new)
@@ -597,6 +594,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         data_experiment['well']=sorted(data_experiment['well'])
         print(data_experiment)
         source_file.data = {'experiment':data_experiment['experiment'], 'well':data_experiment['well'], 'position':[]}
+        print(source_file.data )
     dropdown_exp.on_change('value', update_dropdown_exp)
 
     dropdown_well = bokeh.models.Select(value='', title='Well', options=source_file.data['well'])    
