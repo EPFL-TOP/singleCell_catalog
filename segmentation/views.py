@@ -604,7 +604,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def get_current_file():
         print('****************************  get_current_file ****************************')
-        print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   ropdown_well.value',dropdown_well.value, '  ropdown_pos.value',dropdown_pos.value)
+        print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   dropdown_well.value',dropdown_well.value, '  dropdown_pos.value',dropdown_pos.value)
 
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         current_file = ''
@@ -651,13 +651,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_dropdown_well(attr, old, new):
         print('****************************  update_dropdown_well ****************************')
         dropdown_well.options = wells[dropdown_exp.value]
-        print('dropdown_exp.value ',dropdown_exp.value, '  wells[dropdown_exp.value]  ',wells[dropdown_exp.value],'   ',)
-        print('positions[{0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0])] ',positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])])
-        print('positions[{0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0] ',positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0])
-        print('{0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0]) ', '{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0]))
+        print('+++++++++++++++++  dropdown_exp.value ',dropdown_exp.value, '  wells[dropdown_exp.value]  +++++++++++  ',wells[dropdown_exp.value],'   ',)
+        print('+++++++++++++++++  positions[{0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0])] ++++++  ',positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])])
+        print('+++++++++++++++++  positions[{0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0] +++  ',positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0])
+        print('+++++++++++++++++  {0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0]) +++++++++++++++++  ', '{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0]))
+        dropdown_well.value   = wells[dropdown_exp.value][0]
         dropdown_pos.options  = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
         dropdown_pos.value    = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0]
-        dropdown_well.value   = wells[dropdown_exp.value][0]
         if slider.value == 0:
             print('in the if update_dropdown_pos')
             left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
