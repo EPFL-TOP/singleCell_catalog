@@ -576,29 +576,29 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #TO BE CHANGED WITH ASYNC?????
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
-    data_experiment={'experiment':[], 'sample':[], 'position':[]}
+    data_experiment={'experiment':[], 'well':[], 'position':[]}
 
     for exp in Experiment.objects.all():
         data_experiment['experiment'].append(exp.name)
 
-    # Create a dropdown widget
-    dropdown_exp = bokeh.models.Dropdown(label="Select an Option", menu=data_experiment['experiment'])
-    dropdown_exp2 = bokeh.models.Select(value='woof', title='y-axis', options=data_experiment['experiment'])    
+    data_experiment['experiment']=sorted(data_experiment['experiment'])
 
-    # Define a Python callback function to update the label of the dropdown
-    def update_dropdown_exp(event):
-        print(event.item)
-        print(event)
-    # Attach the Python callback function to the dropdown widget
-    dropdown_exp.on_click(update_dropdown_exp)
+    dropdown_exp = bokeh.models.Select(value='', title='Experiment', options=data_experiment['experiment'])    
+    def update_dropdown_exp(attr, old, new):
+        samples = Sample.objects.select_related().filter(experiment=new)
+        for s in samples:
+            data_experiment['well'].append(s.data_name)
+        data_experiment['well']=sorted(data_experiment['well'])
+    dropdown_exp.on_change('value', update_dropdown_exp)
 
-    # Define a Python callback function to update the label of the dropdown
-    def update_dropdown_exp2(attr, old, new):
-        print(dropdown_exp2.value)
-
-    # Attach the Python callback function to the dropdown widget
-    dropdown_exp2.on_change('value', update_dropdown_exp2)
-
+    dropdown_well = bokeh.models.Select(value='', title='Well', options=data_experiment['well'])    
+    def update_dropdown_well(attr, old, new):
+        #samples = Sample.objects.select_related().filter(experiment=new)
+        #for s in samples:
+        #    data_experiment['sample'].append(s.data_name)
+        #data_experiment['sample']=sorted(data_experiment['sample'])
+        print(new)
+    dropdown_well.on_change('value', update_dropdown_well)
 
 
     #global current_file
