@@ -652,14 +652,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  update_dropdown_well ****************************')
         dropdown_well.options = wells[dropdown_exp.value]
         print('+++++++++++++++++  dropdown_exp.value ',dropdown_exp.value, '  wells[dropdown_exp.value]  +++++++++++  ',wells[dropdown_exp.value],'   ',)
-        print('+++++++++++++++++  positions[{0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0])] ++++++  ',positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])])
         print('+++++++++++++++++  positions[{0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0] +++  ',positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0])
         print('+++++++++++++++++  {0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0]) +++++++++++++++++  ', '{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0]))
         dropdown_well.value   = wells[dropdown_exp.value][0]
         dropdown_pos.options  = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
-        dropdown_pos.value    = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0]
+        #dropdown_pos.value    = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0]
         if slider.value == 0:
-            print('in the if update_dropdown_pos')
+            print('in the if update_dropdown_well')
             left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
             height_labels, weight_labels, names_labels = update_source_labels()
             height_cells, weight_cells, names_cells = update_source_cells()
@@ -668,7 +667,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
             source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         else:
-            print('in the else update_dropdown_pos')
+            print('in the else update_dropdown_well')
             slider.value = 0
 
     dropdown_exp.on_change('value', update_dropdown_well)
