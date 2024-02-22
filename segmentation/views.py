@@ -657,6 +657,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_image_stack(way=1, number=-9999):
         current_file = get_current_file()
 
+
+    def get_current_index():
+        return slider.value
+
+
+
         #global current_index
         new_image = ind_images[current_index]
         source_img.data = {'img':[new_image]}
@@ -696,6 +702,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         top_rois.clear()
         bottom_rois.clear()
         current_file=get_current_file()
+        current_index=get_current_index()
         sample = Sample.objects.get(file_name=current_file)
         frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
         if len(frame)!=1:
