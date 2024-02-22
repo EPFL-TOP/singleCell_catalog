@@ -662,7 +662,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         slider.value = 0
         images = get_current_stack()
         source_imgages.data = {'images':images}
-        source_img.data = {'imag':[images[0]]}
+        source_img.data = {'img':[images[0]]}
+        update_image()
     dropdown_pos.on_change('value', prepare_pos)
 
     # Function to get the current index
