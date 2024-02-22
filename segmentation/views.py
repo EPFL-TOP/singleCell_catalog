@@ -651,8 +651,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_dropdown_well(attr, old, new):
         print('****************************  update_dropdown_well ****************************')
         dropdown_well.options = wells[dropdown_exp.value]
+        print('dropdown_exp.value ',dropdown_exp.value, '  wells[dropdown_exp.value]  ',wells[dropdown_exp.value],'   ',)
+
         dropdown_pos.options  = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
-        dropdown_pos.value    = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
+        dropdown_pos.value    = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0]
 
         if slider.value == 0:
             print('in the if update_dropdown_pos')
@@ -666,7 +668,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         else:
             print('in the else update_dropdown_pos')
             slider.value = 0
-            
+
     dropdown_exp.on_change('value', update_dropdown_well)
 
     # Function to update the position depending on the experiment and the well
