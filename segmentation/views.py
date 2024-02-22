@@ -929,8 +929,7 @@ def segmentation_handler(doc: bokeh.document.Document ) -> None:
 def index(request: HttpRequest) -> HttpResponse:
 #def index(request):
 
-    global current_index
-    current_index=0
+
     """View function for home page of site."""
     print('The visualisation request method is:', request.method)
     print('The visualisation POST data is:     ', request.POST)
@@ -1087,7 +1086,6 @@ def index(request: HttpRequest) -> HttpResponse:
     script = None
     div = None
     if selected_position != None:
-        global current_file
         current_file = selected_position
         #sample = Sample.objects.get(file_name = selected_position)
         #rois = ROI.objects.select_related().filter(sample = sample)
