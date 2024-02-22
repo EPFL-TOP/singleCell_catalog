@@ -597,24 +597,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])    
     dropdown_pos  = bokeh.models.Select(value=positions['{0}_{1}'.format(experiments[0], wells[experiments[0]][0])][0],title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
 
-    #___________________________________________________________________________________________
-    def update_dropdown_well(attr, old, new):
-        dropdown_well.options = wells[dropdown_exp.value]
-        dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
-    dropdown_exp.on_change('value', update_dropdown_well)
 
-    #___________________________________________________________________________________________
-    def update_dropdown_pos(attr, old, new):
-        dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
-    dropdown_well.on_change('value', update_dropdown_pos)
 
-    #global current_file
     current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
     current_file = ''
     for f in current_files:
         if dropdown_pos.value in f:
             current_file = f
-    print('currrrfrqegewgwegewgwegewegwe  ',current_file)
+
     bf_channel = 0
     time_lapse_path = Path(current_file)
     time_lapse = nd2.imread(time_lapse_path.as_posix())
@@ -635,10 +625,40 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image     = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time', y_axis_label='Intensity')
 
+
+    # Function to update the well depending on the experiment
+    #___________________________________________________________________________________________
+    def update_dropdown_well(attr, old, new):
+        dropdown_well.options = wells[dropdown_exp.value]
+        dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
+    dropdown_exp.on_change('value', update_dropdown_well)
+
+    # Function to update the position depending on the experiment and the well
+    #___________________________________________________________________________________________
+    def update_dropdown_pos(attr, old, new):
+        dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+    dropdown_well.on_change('value', update_dropdown_pos)
+
+
+    # Function to update the image displayed
+    #___________________________________________________________________________________________
+    def update_image_stack(way=1, number=-9999):
+        global current_index
+        new_image = ind_images[current_index]
+        source_img.data = {'img':[new_image]}
+        current_index = (current_index + 1*way) % len(ind_images)
+        if number>=0:
+            current_index = number
+        slider.value = current_index
+
+
+
+
     menu = [("100ms", "100"), ("200ms", "200"), ("500ms", "500"), ("1sec", "1000")]
-    dropdown_time = bokeh.models.Dropdown(label="Refresh time", button_type="warning", menu=menu)
+    dropdown_time = bokeh.models.Select(label="Refresh time", button_type="warning", menu=menu)
     #dropdown_time.value = "250"
     # Callback function to handle menu item click
+    #___________________________________________________________________________________________
     def refresh_time_callback(event):
         item = int(event.item)
         global refresh_time
@@ -814,6 +834,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_save_roi = bokeh.models.Button(label="Save ROI")
     button_save_roi.on_click(save_roi_callback)
 
+
+
+
     #___________________________________________________________________________________________
     # Function to update the image displayed
     def update_image(way=1, number=-9999):
@@ -951,37 +974,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     
     norm_layout = bokeh.layouts.row(left_col, plot_image, right_col)
     doc.add_root(norm_layout)
-
-
-
-#    using Quad model directly to control (non)selection glyphs more carefully
-#    quad = bokeh.models.Quad(left='left', right='right',top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
-#    print('source_roi',source_roi)
-#    p.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
-#
-#    p.on_event(SelectionGeometry, callback_roi)
-#
-#
-#    # Create Bokeh figure and use image display
-#    #p = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select")
-#    #im = p.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2],source=source, palette='Greys256')
-#    im = p.image(image='img', x=0, y=0, dw=width, dh=height,source=source, palette='Greys256')
-#    #for roi in rois:
-#    #    p.rect(roi.min_col+(roi.max_col-roi.min_col)/2, (roi.min_row+(roi.max_row-roi.min_row)/2), roi.max_col-roi.min_col, roi.max_col-roi.min_col, line_width=2, fill_alpha=0, line_color="white") 
-#    #    print('roi.min_col=',roi.min_col, '  roi.max_col=',roi.max_col,'  roi.min_row=',roi.min_row,'  roi.max_row=',roi.max_row)
-#    # Remove the axes
-#    p.axis.visible = False
-#    p.grid.visible = False
-#
-#    norm_layout = bokeh.layouts.row(
-#            p,
-#            bokeh.layouts.Spacer(width=15),
-#            slider_layout,
-#            
-#        )
-#
-#    doc.add_root(norm_layout)
-
 
 
 
