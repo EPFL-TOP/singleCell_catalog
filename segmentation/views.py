@@ -969,7 +969,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     plot_image.add_layout(labels_cells)
 
-    im = plot_image.image(image='img', x=0, y=0, dw=time_lapse.shape[1], dh=time_lapse.shape[2], source=source_img, palette='Greys256')
+    im = plot_image.image(image='img', x=0, y=0, dw=ind_images[0].shape[0], dh=ind_images[0].shape[1], source=source_img, palette='Greys256')
 
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
