@@ -594,7 +594,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     # Define a Python callback function to update the label of the dropdown
     def update_dropdown_exp2(attr, old, new):
-        dropdown_exp2.label = dropdown_exp2.value
+        print(dropdown_exp2.value)
 
     # Attach the Python callback function to the dropdown widget
     dropdown_exp2.on_change('value', update_dropdown_exp2)
