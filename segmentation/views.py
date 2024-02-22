@@ -577,7 +577,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
     data_experiment={'experiment':[], 'well':[], 'position':[]}
-    source_file  = bokeh.models.ColumnDataSource(data=data_experiment)
 
     for exp in Experiment.objects.all():
         data_experiment['experiment'].append(exp.name)
@@ -594,7 +593,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         data_experiment['well']=sorted(data_experiment['well'])
         print(data_experiment)
         source_file.data = {'experiment':data_experiment['experiment'], 'well':data_experiment['well'], 'position':[]}
-        print(source_file.data )
+        print(source_file.data)
     dropdown_exp.on_change('value', update_dropdown_exp)
 
     dropdown_well = bokeh.models.Select(value='', title='Well', options=source_file.data['well'])    
@@ -906,6 +905,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
+    source_file  = bokeh.models.ColumnDataSource(data=data_experiment)
 
 
     left_rois, right_rois, right_rois, bottom_rois = update_source_roi()
