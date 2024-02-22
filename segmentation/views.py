@@ -673,7 +673,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         else:
             slider.value = 0
-        dropdown_well.on_change('value', update_dropdown_pos)
+    dropdown_well.on_change('value', update_dropdown_pos)
 
     # Function to update the position
     #___________________________________________________________________________________________
