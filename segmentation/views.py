@@ -631,7 +631,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Create a Slider widget
     initial_time_point = 0
     slider = bokeh.models.Slider(start=0, end=len(ind_images) - 1, value=initial_time_point, step=1, title="Time Point")
-    plot_image     = bokeh.plotting.figure(x_range=(0, ind_images.shape[0]), y_range=(0, ind_images.shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
+    plot_image     = bokeh.plotting.figure(x_range=(0, len(ind_images[0])), y_range=(0, len(ind_images.shape[1])), tools="box_select,wheel_zoom,box_zoom,reset,undo")
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time', y_axis_label='Intensity')
 
 
