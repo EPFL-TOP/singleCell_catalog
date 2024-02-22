@@ -562,6 +562,7 @@ def with_request(f):
 
 @with_request
 def segmentation_handler_with_template(doc: bokeh.document.Document, request: Any) -> None:
+    print('segmentation_handler_with_template request : ',request)
     segmentation_handler(doc)
 
 #___________________________________________________________________________________________
