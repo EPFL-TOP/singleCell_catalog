@@ -643,12 +643,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_dropdown_well(attr, old, new):
         dropdown_well.options = wells[dropdown_exp.value]
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
+        slider.value = 0
     dropdown_exp.on_change('value', update_dropdown_well)
 
     # Function to update the position depending on the experiment and the well
     #___________________________________________________________________________________________
     def update_dropdown_pos(attr, old, new):
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        slider.value = 0
     dropdown_well.on_change('value', update_dropdown_pos)
 
     # Function to get the current index
