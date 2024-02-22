@@ -652,24 +652,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_well.on_change('value', update_dropdown_pos)
 
 
-    # Function to update the image displayed
     #___________________________________________________________________________________________
-    def update_image_stack(way=1, number=-9999):
-        current_file = get_current_file()
-
-
     def get_current_index():
         return slider.value
 
 
 
-        #global current_index
-        new_image = ind_images[current_index]
-        source_img.data = {'img':[new_image]}
-        current_index = (current_index + 1*way) % len(ind_images)
-        if number>=0:
-            current_index = number
-        slider.value = current_index
+
 
 
 
@@ -728,6 +717,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         height_labels.clear()
         weight_labels.clear()
         names_labels.clear()
+        current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
         frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
         if len(frame)!=1:
@@ -753,6 +743,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         height_cells.clear()
         weight_cells.clear()
         names_cells.clear()
+        current_file=get_current_file()
+        current_index=get_current_index()
         sample = Sample.objects.get(file_name=current_file)
         frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
         if len(frame)!=1:
@@ -777,8 +769,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_point = slider.value
         new_image = ind_images[time_point]
         source_img.data = {'img':[new_image]}
-        global current_index
-        current_index = slider.value
+        #global current_index
+        #current_index = slider.value
         left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
         height_labels, weight_labels, names_labels = update_source_labels()
         height_cells, weight_cells, names_cells = update_source_cells()
@@ -807,6 +799,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
         source_labels.data = {'height':[], 'weight':[], 'names':[]}
         source_cells.data = {'height':[], 'weight':[], 'names':[]}
+
+        current_file=get_current_file()
 
         sample = Sample.objects.get(file_name=current_file)
         frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
