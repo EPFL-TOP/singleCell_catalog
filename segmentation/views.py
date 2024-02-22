@@ -575,46 +575,39 @@ refresh_time = 500
 def segmentation_handler(doc: bokeh.document.Document) -> None:
     #TO BE CHANGED WITH ASYNC?????
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
-
-    data_experiment={'experiment':[], 'well':[], 'position':[]}
+    experiments=[]
+    wells={}
+    positions={}
 
     for exp in Experiment.objects.all():
-        data_experiment['experiment'].append(exp.name)
-    data_experiment['experiment'] = sorted(data_experiment['experiment'])
+        experiments.append(exp.name)
+        for exp in experiments:
+            wells[exp.name] = []
+            experimentaldatasets = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+            for expds in experimentaldatasets:
+                wells[exp.name].append(expds.data_name)
 
-    experiment = Experiment.objects.get(name = data_experiment['experiment'][0])
-    experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = experiment)
-    for expds in experimentaldataset:
-        data_experiment['well'].append(expds.data_name)
+    experiments=sorted(experiments)
 
-    samples = Sample.objects.select_related().filter(experimental_dataset = experimentaldataset[0])
 
+
+    data_experiment={'experiment':[], 'well':[], 'position':[]}
     source_file  = bokeh.models.ColumnDataSource(data=data_experiment)
 
-    dropdown_exp = bokeh.models.Select(value=data_experiment['experiment'][0], title='Experiment', options=data_experiment['experiment'])
+    dropdown_exp = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
+    dropdown_well = bokeh.models.Select( title='Well', options=wells[dropdown_exp.value])    
+
+    #def update_dropdown_exp(attr, old, new):
+    #    
+    #    source_file.data = {'experiment':data_experiment['experiment'], 'well':data_experiment['well'], 'position':[]}
+    #    print(source_file.data)
+    #dropdown_exp.on_change('value', update_dropdown_exp)
+
     def update_dropdown_exp(attr, old, new):
-        print('selected: ', new)
-        experiment = Experiment.objects.get(name = new)
-        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = experiment)
-        data_experiment['well']=[]
-        for expds in experimentaldataset:
-            data_experiment['well'].append(expds.data_name)
-        data_experiment['well']=sorted(data_experiment['well'])
-        print(data_experiment)
-        source_file.data = {'experiment':data_experiment['experiment'], 'well':data_experiment['well'], 'position':[]}
-        print(source_file.data)
-    dropdown_exp.on_change('value', update_dropdown_exp)
-
-    dropdown_well = bokeh.models.Select(value=source_file.data['well'][0], title='Well', options=source_file.data['well'])    
-    def update_dropdown_well(attr, old, new):
-        #samples = Sample.objects.select_related().filter(experiment=new)
-        #for s in samples:
-        #    data_experiment['sample'].append(s.data_name)
-        #data_experiment['sample']=sorted(data_experiment['sample'])
+        dropdown_well.options = wells[dropdown_exp.value]
         print(new)
-        print('source file ',source_file.data)
 
-    dropdown_well.on_change('value', update_dropdown_well)
+    dropdown_exp.on_change('value', update_dropdown_exp)
 
 
     #global current_file
