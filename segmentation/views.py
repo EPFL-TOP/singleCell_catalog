@@ -593,7 +593,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     experiments=sorted(experiments)
     for i in wells:
         wells[i] = sorted(wells[i])
-
+    for i in positions:
+        positions[i] = sorted(positions[i])
 
 
     data_experiment={'experiment':[], 'well':[], 'position':[]}
@@ -603,10 +604,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])    
     dropdown_pos  = bokeh.models.Select(title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
 
-
-
     def update_dropdown_well(attr, old, new):
         dropdown_well.options = wells[dropdown_exp.value]
+        dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
     dropdown_exp.on_change('value', update_dropdown_well)
 
     def update_dropdown_pos(attr, old, new):
