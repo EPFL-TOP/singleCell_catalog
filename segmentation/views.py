@@ -577,12 +577,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
     data_experiment={'experiment':[], 'well':[], 'position':[]}
+    source_file  = bokeh.models.ColumnDataSource(data=data_experiment)
 
     for exp in Experiment.objects.all():
         data_experiment['experiment'].append(exp.name)
-    data_experiment['experiment']=sorted(data_experiment['experiment'])
+    data_experiment['experiment'] = sorted(data_experiment['experiment'])
 
-    dropdown_exp = bokeh.models.Select(value='', title='Experiment', options=data_experiment['experiment'])
+    dropdown_well = bokeh.models.Select(value='', title='Well', options=source_file.data['well'])
+
+    dropdown_exp = bokeh.models.Select(value=data_experiment['experiment'][0], title='Experiment', options=data_experiment['experiment'])
     def update_dropdown_exp(attr, old, new):
         print('selected: ', new)
         experiment = Experiment.objects.get(name = new)
@@ -594,6 +597,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print(data_experiment)
         source_file.data = {'experiment':data_experiment['experiment'], 'well':data_experiment['well'], 'position':[]}
         print(source_file.data)
+        dropdown_well = bokeh.models.Select(value='', title='Well', options=source_file.data['well'])
     dropdown_exp.on_change('value', update_dropdown_exp)
 
     dropdown_well = bokeh.models.Select(value='', title='Well', options=source_file.data['well'])    
@@ -902,11 +906,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
-
-
-
-    source_file  = bokeh.models.ColumnDataSource(data=data_experiment)
-
 
     left_rois, right_rois, right_rois, bottom_rois = update_source_roi()
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
