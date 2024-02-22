@@ -559,7 +559,7 @@ def segmentation_handler_with_template(doc: bokeh.document.Document, request: An
 
 
 
-current_index = 0
+#current_index = 0
 playing = False
 timerr = None
 #current_file = None
@@ -598,19 +598,28 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_pos  = bokeh.models.Select(value=positions['{0}_{1}'.format(experiments[0], wells[experiments[0]][0])][0],title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
 
 
+     #___________________________________________________________________________________________
+   def get_current_file():
+        current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        current_file = ''
+        for f in current_files:
+            if dropdown_pos.value in f:
+                current_file = f
+        return current_file
 
-    current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
-    current_file = ''
-    for f in current_files:
-        if dropdown_pos.value in f:
-            current_file = f
 
-    bf_channel = 0
-    time_lapse_path = Path(current_file)
-    time_lapse = nd2.imread(time_lapse_path.as_posix())
-    time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
-    time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
-    ind_images = [time_lapse[i,:,:] for i in time_domain]
+    #___________________________________________________________________________________________
+    def get_current_stack():
+        bf_channel = 0
+        current_file=get_current_file()
+        time_lapse_path = Path(current_file)
+        time_lapse = nd2.imread(time_lapse_path.as_posix())
+        time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
+        time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
+        ind_images = [time_lapse[i,:,:] for i in time_domain]
+        return ind_images
+
+    ind_images = get_current_stack()
 
     print ('in segmentation_handler ind_images=',len(ind_images))
     data={'img':[ind_images[0]]}
@@ -643,7 +652,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to update the image displayed
     #___________________________________________________________________________________________
     def update_image_stack(way=1, number=-9999):
-        global current_index
+        current_file = get_current_file()
+
+        #global current_index
         new_image = ind_images[current_index]
         source_img.data = {'img':[new_image]}
         current_index = (current_index + 1*way) % len(ind_images)
