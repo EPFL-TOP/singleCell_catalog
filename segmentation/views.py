@@ -662,9 +662,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  update_dropdown_pos ****************************')
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
-        images = get_current_stack()
-        source_imgages.data = {'images':images}
-        source_img.data = {'img':[images[0]]}
+        #images = get_current_stack()
+        #source_imgages.data = {'images':images}
+        #source_img.data = {'img':[images[0]]}
         if slider.value == 0:
             print('in the if update_dropdown_pos')
             left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
