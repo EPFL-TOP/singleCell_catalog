@@ -588,7 +588,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             positions['{0}_{1}'.format(exp.name, expds.data_name)] = []
             for samp in samples:
-                positions['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name)
+                positions['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name.split('/')[-1])
 
     experiments=sorted(experiments)
     for i in wells:
