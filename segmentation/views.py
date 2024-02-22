@@ -614,6 +614,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #global current_file
     current_file = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+    print('currrrfrqegewgwegewgwegewegwe  ',current_file)
     bf_channel = 0
     time_lapse_path = Path(current_file)
     time_lapse = nd2.imread(time_lapse_path.as_posix())
