@@ -603,7 +603,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print(data_experiment)
         source_file.data = {'experiment':data_experiment['experiment'], 'well':data_experiment['well'], 'position':[]}
         print(source_file.data)
-        dropdown_well = bokeh.models.Select(value='', title='Well', options=source_file.data['well'])
     dropdown_exp.on_change('value', update_dropdown_exp)
 
     dropdown_well = bokeh.models.Select(value=source_file.data['well'][0], title='Well', options=source_file.data['well'])    
@@ -613,6 +612,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #    data_experiment['sample'].append(s.data_name)
         #data_experiment['sample']=sorted(data_experiment['sample'])
         print(new)
+        print('source file ',source_file.data)
+
     dropdown_well.on_change('value', update_dropdown_well)
 
 
