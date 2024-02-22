@@ -559,10 +559,8 @@ def segmentation_handler_with_template(doc: bokeh.document.Document, request: An
 
 
 
-#current_index = 0
 playing = False
 timerr = None
-#current_file = None
 refresh_time = 500
 
 #___________________________________________________________________________________________
@@ -652,13 +650,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_well.on_change('value', update_dropdown_pos)
 
 
+    # Function to get the current index
     #___________________________________________________________________________________________
     def get_current_index():
         return slider.value
-
-
-
-
 
 
 
@@ -770,8 +765,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_point = slider.value
         new_image = ind_images[time_point]
         source_img.data = {'img':[new_image]}
-        #global current_index
-        #current_index = slider.value
         left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
         height_labels, weight_labels, names_labels = update_source_labels()
         height_cells, weight_cells, names_cells = update_source_cells()
@@ -802,6 +795,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_cells.data = {'height':[], 'weight':[], 'names':[]}
 
         current_file=get_current_file()
+        current_index=get_current_index()
 
         sample = Sample.objects.get(file_name=current_file)
         frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
@@ -905,6 +899,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Go to next frame with possible issue
     def inspect_cells_callback():
+        current_file=get_current_file()
+
         sample   = Sample.objects.get(file_name=current_file)
         frames   = Frame.objects.select_related().filter(sample=sample)
         for f in range(len(frames)-1):
@@ -935,6 +931,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Go to next frame with possible issue
     def build_cells_callback():
+        current_file=get_current_file()
         build_cells(sample=current_file)
         height_cells, weight_cells, names_cells = update_source_cells()
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
