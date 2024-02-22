@@ -599,7 +599,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
      #___________________________________________________________________________________________
-   def get_current_file():
+    def get_current_file():
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         current_file = ''
         for f in current_files:
