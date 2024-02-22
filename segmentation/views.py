@@ -565,6 +565,8 @@ def segmentation_handler_with_template(doc: bokeh.document.Document, request: An
     print('segmentation_handler_with_template request : ',request)
     print('segmentation_handler_with_template request doc: ',doc)
     print('segmentation_handler_with_template request doc.session_context: ',doc.session_context)
+    print('segmentation_handler_with_template request_request: ',request._request)
+    print('segmentation_handler_with_template request_arguments: ',request._arguments)
 
     
     print('segmentation_handler_with_template The visualisation request method is:', request.method)
