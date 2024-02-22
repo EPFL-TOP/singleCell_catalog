@@ -585,29 +585,33 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         experimentaldatasets = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldatasets:
             wells[exp.name].append(expds.data_name)
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            positions['{0}_{1}'.format(exp.name, expds.data_name)] = []
+            for samp in samples:
+                positions['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name)
 
     experiments=sorted(experiments)
+    for i in range(len(wells)):
+        wells[wells[i]] = sorted(wells[wells[i]])
 
 
 
     data_experiment={'experiment':[], 'well':[], 'position':[]}
     source_file  = bokeh.models.ColumnDataSource(data=data_experiment)
 
-    dropdown_exp = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
-    dropdown_well = bokeh.models.Select( title='Well', options=wells[dropdown_exp.value])    
+    dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
+    dropdown_well = bokeh.models.Select(title='Well', options=wells[dropdown_exp.value])    
+    dropdown_pos  = bokeh.models.Select(title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
 
-    #def update_dropdown_exp(attr, old, new):
-    #    
-    #    source_file.data = {'experiment':data_experiment['experiment'], 'well':data_experiment['well'], 'position':[]}
-    #    print(source_file.data)
-    #dropdown_exp.on_change('value', update_dropdown_exp)
 
-    def update_dropdown_exp(attr, old, new):
+
+    def update_dropdown_well(attr, old, new):
         dropdown_well.options = wells[dropdown_exp.value]
-        print(new)
+    dropdown_exp.on_change('value', update_dropdown_well)
 
-    dropdown_exp.on_change('value', update_dropdown_exp)
-
+    def update_dropdown_pos(attr, old, new):
+        dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+    dropdown_well.on_change('value', update_dropdown_pos)
 
     #global current_file
     current_file = '/mnt/nas_rcp/raw_data/microscopy/cell_culture/ppf001_well1/raw_files/ppf001_xy001.nd2'
@@ -936,7 +940,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.grid.visible = False
 
     left_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
-                                    bokeh.layouts.row(dropdown_well))
+                                    bokeh.layouts.row(dropdown_well),
+                                    bokeh.layouts.row(dropdown_pos))
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_time ),
