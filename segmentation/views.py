@@ -585,6 +585,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     dropdown_exp = bokeh.models.Select(value='', title='Experiment', options=data_experiment['experiment'])    
     def update_dropdown_exp(attr, old, new):
+        print('selected: ', new)
         samples = Sample.objects.select_related().filter(experiment=new)
         for s in samples:
             data_experiment['well'].append(s.data_name)
