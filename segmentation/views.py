@@ -565,6 +565,10 @@ refresh_time = 500
 
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document) -> None:
+    print('****************************  segmentation_handler ****************************')
+    print('****************************  segmentation_handler ****************************')
+    print('****************************  segmentation_handler ****************************')
+    print('****************************  segmentation_handler ****************************')
     #TO BE CHANGED WITH ASYNC?????
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
     experiments=[]
@@ -599,6 +603,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to get the current file
     #___________________________________________________________________________________________
     def get_current_file():
+        print('****************************  get_current_file ****************************')
         print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   ropdown_well.value',dropdown_well.value, '  ropdown_pos.value',dropdown_pos.value)
 
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
@@ -613,6 +618,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to get the image stack
     #___________________________________________________________________________________________
     def get_current_stack():
+        print('****************************  get_current_stack ****************************')
         bf_channel = 0
         current_file=get_current_file()
         time_lapse_path = Path(current_file)
