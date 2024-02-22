@@ -577,13 +577,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
     data_experiment={'experiment':[], 'well':[], 'position':[]}
-    source_file  = bokeh.models.ColumnDataSource(data=data_experiment)
 
     for exp in Experiment.objects.all():
         data_experiment['experiment'].append(exp.name)
     data_experiment['experiment'] = sorted(data_experiment['experiment'])
 
-    dropdown_well = bokeh.models.Select(value='', title='Well', options=source_file.data['well'])
+    experiment = Experiment.objects.get(name = data_experiment['experiment'][0])
+    experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = experiment)
+    for expds in experimentaldataset:
+        data_experiment['well'].append(expds.data_name)
+
+    samples = Sample.objects.select_related().filter(experimentaldataset = )
+
+    source_file  = bokeh.models.ColumnDataSource(data=data_experiment)
 
     dropdown_exp = bokeh.models.Select(value=data_experiment['experiment'][0], title='Experiment', options=data_experiment['experiment'])
     def update_dropdown_exp(attr, old, new):
