@@ -578,6 +578,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     experiments=[]
     wells={}
     positions={}
+    files={}
 
     for exp in Experiment.objects.all():
         experiments.append(exp.name)
@@ -587,18 +588,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             wells[exp.name].append(expds.data_name)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             positions['{0}_{1}'.format(exp.name, expds.data_name)] = []
+            files['{0}_{1}'.format(exp.name, expds.data_name)] = []
             for samp in samples:
                 positions['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name.split('/')[-1])
+                files['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name)
 
     experiments=sorted(experiments)
     for i in wells:
         wells[i] = sorted(wells[i])
     for i in positions:
         positions[i] = sorted(positions[i])
-
-
-    data_experiment={'experiment':[], 'well':[], 'position':[]}
-    source_file  = bokeh.models.ColumnDataSource(data=data_experiment)
 
     dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])    
@@ -614,7 +613,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_well.on_change('value', update_dropdown_pos)
 
     #global current_file
-    current_file = '/mnt/nas_rcp/raw_data/microscopy/cell_culture/ppf001_well1/raw_files/ppf001_xy001.nd2'
+    current_file = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
     bf_channel = 0
     time_lapse_path = Path(current_file)
     time_lapse = nd2.imread(time_lapse_path.as_posix())
