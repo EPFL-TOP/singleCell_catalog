@@ -719,6 +719,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         names_labels.clear()
         current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
+        current_index=get_current_index()
         frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
         if len(frame)!=1:
             print('NOT ONLY FRAME FOUND< PLEASE CHECKKKKKKKK')
