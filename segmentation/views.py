@@ -870,9 +870,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to update the image displayed
     def update_image(way=1, number=-9999):
         current_index=get_current_index()
-        new_image = ind_images[current_index]
+        images=source_imgages.data["images"]
+        new_image = images[current_index]
         source_img.data = {'img':[new_image]}
-        current_index = (current_index + 1*way) % len(ind_images)
+        current_index = (current_index + 1*way) % len(images)
         if number>=0:
             current_index = number
         slider.value = current_index
