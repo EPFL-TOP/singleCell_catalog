@@ -652,6 +652,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to get the current index
     #___________________________________________________________________________________________
     def get_current_index():
+        print('=========================== get_current_index  ',slider.value)
         return slider.value
 
 
