@@ -565,11 +565,7 @@ def segmentation_handler_with_template(doc: bokeh.document.Document, request: An
     print('segmentation_handler_with_template request : ',request)
     print('segmentation_handler_with_template request doc: ',doc)
     print('segmentation_handler_with_template request doc.session_context: ',doc.session_context)
-    print('segmentation_handler_with_template request doc.application_context: ',doc.application_context)
-    print('segmentation_handler_with_template request user: ',request.user)
-    print('segmentation_handler_with_template request ApplicationContext:  ',request.ApplicationContext)
-    print('segmentation_handler_with_template request BokehServerContext:  ',request.BokehServerContext)
-    print('segmentation_handler_with_template request BokehSessionContext: ',request.BokehSessionContext)
+
     
     print('segmentation_handler_with_template The visualisation request method is:', request.method)
     print('segmentation_handler_with_template The visualisation POST data is:     ', request.POST)
