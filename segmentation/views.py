@@ -666,6 +666,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_imgages.data = {'images':images}
         source_img.data = {'img':[images[0]]}
         if slider.value == 0:
+            print('in the if')
             left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
             height_labels, weight_labels, names_labels = update_source_labels()
             height_cells, weight_cells, names_cells = update_source_cells()
@@ -674,6 +675,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
             source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         else:
+            print('in the else')
             slider.value = 0
     dropdown_well.on_change('value', update_dropdown_pos)
 
