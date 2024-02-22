@@ -599,12 +599,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to get the current file
     #___________________________________________________________________________________________
     def get_current_file():
+        print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   ropdown_well.value',dropdown_well.value, '  ropdown_pos.value',dropdown_pos.value)
+
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         current_file = ''
         for f in current_files:
             if dropdown_pos.value in f:
                 current_file = f
-        print('---------------get current file.  dropdown_exp.value=', dropdown_exp.value, '   ropdown_well.value',dropdown_well.value, '  ropdown_pos.value',dropdown_pos.value, '  current fule=', current_file)
+        print('--------------- get_current_file() current file  ',current_file)
         return current_file
 
 
