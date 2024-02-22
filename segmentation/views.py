@@ -820,6 +820,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Save ROI
     def save_roi_callback():
         print('Saving ROI===================================',source_roi.data)
+        current_file=get_current_file
+        current_index=get_current_index()
+
         sample   = Sample.objects.get(file_name=current_file)
         frame    = Frame.objects.select_related().filter(sample=sample, number=current_index)
         if len(frame)!=1:
