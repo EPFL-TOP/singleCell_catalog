@@ -581,11 +581,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     for exp in Experiment.objects.all():
         experiments.append(exp.name)
-        for exp in experiments:
-            wells[exp.name] = []
-            experimentaldatasets = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-            for expds in experimentaldatasets:
-                wells[exp.name].append(expds.data_name)
+        wells[exp.name] = []
+        experimentaldatasets = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        for expds in experimentaldatasets:
+            wells[exp.name].append(expds.data_name)
 
     experiments=sorted(experiments)
 
