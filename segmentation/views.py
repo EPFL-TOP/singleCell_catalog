@@ -613,7 +613,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_well.on_change('value', update_dropdown_pos)
 
     #global current_file
-    current_file = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+    current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+    current_file = ''
+    for f in current_files:
+        if dropdown_pos.value in f:
+            current_file = f
     print('currrrfrqegewgwegewgwegewegwe  ',current_file)
     bf_channel = 0
     time_lapse_path = Path(current_file)
