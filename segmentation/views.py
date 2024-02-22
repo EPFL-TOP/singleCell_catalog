@@ -619,6 +619,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if dropdown_pos.value in f:
             current_file = f
     print('currrrfrqegewgwegewgwegewegwe  ',current_file)
+    current_file ='/mnt/nas_rcp/raw_data/microscopy/cell_culture/ppf001_well1/raw_files/ppf001_xy001.nd2'
     bf_channel = 0
     time_lapse_path = Path(current_file)
     time_lapse = nd2.imread(time_lapse_path.as_posix())
