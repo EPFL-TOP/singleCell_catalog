@@ -583,6 +583,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     # Create a dropdown widget
     dropdown_exp = bokeh.models.Dropdown(label="Select an Option", menu=data_experiment['experiment'])
+    dropdown_exp2 = bokeh.models.Select(value='woof', title='y-axis', options=data_experiment['experiment'])    
 
     # Define a Python callback function to update the label of the dropdown
     def update_dropdown_exp(event):
@@ -590,6 +591,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print(event)
     # Attach the Python callback function to the dropdown widget
     dropdown_exp.on_click(update_dropdown_exp)
+
+    # Define a Python callback function to update the label of the dropdown
+    def update_dropdown_exp2(attr, old, new):
+        dropdown_exp2.label = dropdown_exp2.value
+
+    # Attach the Python callback function to the dropdown widget
+    dropdown_exp2.on_change('value', update_dropdown_exp2)
 
 
 
@@ -921,7 +929,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.axis.visible = False
     plot_image.grid.visible = False
 
-    left_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp))
+    left_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
+                                    bokeh.layouts.row(dropdown_exp2))
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_time ),
