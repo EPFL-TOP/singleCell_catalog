@@ -600,7 +600,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_file  = bokeh.models.ColumnDataSource(data=data_experiment)
 
     dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
-    dropdown_well = bokeh.models.Select(title='Well', options=wells[dropdown_exp.value])    
+    dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])    
     dropdown_pos  = bokeh.models.Select(title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
 
 
