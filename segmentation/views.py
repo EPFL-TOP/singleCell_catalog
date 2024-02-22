@@ -620,8 +620,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         return ind_images
 
     ind_images = get_current_stack()
-    print(type(ind_images))
-    print(ind_images)
+    print(len(ind_images))
+    print(ind_images.shape[0])
+    print(ind_images.shape[1])
 
     print ('in segmentation_handler ind_images=',len(ind_images))
     data={'img':[ind_images[0]]}
