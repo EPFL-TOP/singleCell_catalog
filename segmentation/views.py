@@ -625,8 +625,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     print ('in segmentation_handler ind_images=',len(ind_images))
-    data={'img':[ind_images[0]]}
-    source_img = bokeh.models.ColumnDataSource(data=data)
+    data_img={'img':[ind_images[0]]}
+    source_img = bokeh.models.ColumnDataSource(data=data_img)
+    data_images={'images':ind_images}
+    source_imgages = bokeh.models.ColumnDataSource(data=data_images)
 
     data_intensity={'time':[], 'intensity':[]}
     source_intensity = bokeh.models.ColumnDataSource(data=data_intensity)
@@ -657,6 +659,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def prepare_pos(attr, old, new):
         slider.value = 0
+        images = get_current_stack()
+        source_imgages.data = {'images':images}
     dropdown_pos.on_change('value', prepare_pos)
 
     # Function to get the current index
@@ -773,7 +777,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Define a callback to update bf_display with slider
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         time_point = slider.value
-        new_image = ind_images[time_point]
+        images=source_imgages.data['images']
+        new_image = images[time_point]
         source_img.data = {'img':[new_image]}
         left_rois,right_rois,right_rois,bottom_rois=update_source_roi()
         height_labels, weight_labels, names_labels = update_source_labels()
