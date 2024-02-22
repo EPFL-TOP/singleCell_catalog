@@ -568,7 +568,7 @@ def segmentation_handler_with_template(doc: bokeh.document.Document, request: An
 current_index = 0
 playing = False
 timerr = None
-current_file = None
+#current_file = None
 refresh_time = 500
 
 #___________________________________________________________________________________________
@@ -592,7 +592,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    global current_file
+    #global current_file
+    current_file = '/mnt/nas_rcp/raw_data/microscopy/cell_culture/ppf001_well1/raw_files/ppf001_xy001.nd2'
     bf_channel = 0
     time_lapse_path = Path(current_file)
     time_lapse = nd2.imread(time_lapse_path.as_posix())
