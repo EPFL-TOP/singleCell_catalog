@@ -649,7 +649,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
     dropdown_well.on_change('value', update_dropdown_pos)
 
-
     # Function to get the current index
     #___________________________________________________________________________________________
     def get_current_index():
