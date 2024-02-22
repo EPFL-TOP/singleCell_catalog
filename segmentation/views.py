@@ -585,7 +585,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_exp = bokeh.models.Dropdown(label="Select an Option", menu=data_experiment['experiment'])
 
     # Define a Python callback function to update the label of the dropdown
-    def update_dropdown_exp(attr, old, new):
+    def update_dropdown_exp(attr: str, old: Any, new: Any):
         dropdown_exp.label = dropdown_exp.value
 
     # Attach the Python callback function to the dropdown widget
