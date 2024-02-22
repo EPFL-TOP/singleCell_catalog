@@ -617,7 +617,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
         time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
         ind_images = [time_lapse[i,:,:] for i in time_domain]
-        return ind_images
+        return ind_images, 
 
     ind_images = get_current_stack()
 
@@ -630,8 +630,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     # Create a Slider widget
     initial_time_point = 0
-    slider = bokeh.models.Slider(start=0, end=time_lapse.shape[0] - 1, value=initial_time_point, step=1, title="Time Point")
-    plot_image     = bokeh.plotting.figure(x_range=(0, time_lapse.shape[1]), y_range=(0, time_lapse.shape[2]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
+    slider = bokeh.models.Slider(start=0, end=len(ind_images) - 1, value=initial_time_point, step=1, title="Time Point")
+    plot_image     = bokeh.plotting.figure(x_range=(0, ind_images.shape[0]), y_range=(0, ind_images.shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time', y_axis_label='Intensity')
 
 
