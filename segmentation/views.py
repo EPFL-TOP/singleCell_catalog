@@ -857,7 +857,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to update the image displayed
     def update_image(way=1, number=-9999):
-        global current_index
+        current_index=get_current_index()
         new_image = ind_images[current_index]
         source_img.data = {'img':[new_image]}
         current_index = (current_index + 1*way) % len(ind_images)
