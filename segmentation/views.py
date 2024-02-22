@@ -930,7 +930,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.grid.visible = False
 
     left_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
-                                    bokeh.layouts.row(dropdown_exp2))
+                                    bokeh.layouts.row(dropdown_well))
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_time ),
