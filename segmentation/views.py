@@ -769,13 +769,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         return left_rois,right_rois,right_rois,bottom_rois
 
-    #height_labels=[]
-    #weight_labels=[]
-    #names_labels=[]
+
     #___________________________________________________________________________________________
     # update the source_labels
     def update_source_labels():
         print('****************************  update_source_labels ****************************')
+        height_labels=[]
+        weight_labels=[]
+        names_labels=[]
         height_labels.clear()
         weight_labels.clear()
         names_labels.clear()
