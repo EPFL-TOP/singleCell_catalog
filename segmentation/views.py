@@ -962,7 +962,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             button_play_stop.label = "Play"
             #doc.remove_periodic_callback(timerr)
             doc.remove_periodic_callback(play_state_id.state)
-            playing = False
+            #playing = False
+            play_state.playing = False
     button_play_stop = bokeh.models.Button(label="Play")
     button_play_stop.on_click(play_stop_callback)
 
