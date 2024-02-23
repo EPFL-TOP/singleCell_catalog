@@ -561,7 +561,6 @@ def segmentation_handler_with_template(doc: bokeh.document.Document, request: An
 
 playing = False
 timerr = None
-refresh_time = 500
 
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document) -> None:
@@ -729,9 +728,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def refresh_time_callback(attr, old, new):
         print('****************************  refresh_time_callback ****************************')
-        #dropdown_refresh_time.value = int(dropdown_refresh_time.value)
         print("refresh time : {}".format(dropdown_refresh_time.value))
-        print('===========================================')
         play_stop_callback()
         play_stop_callback()
     dropdown_refresh_time.on_change('value',refresh_time_callback)
@@ -921,9 +918,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_save_roi = bokeh.models.Button(label="Save ROI")
     button_save_roi.on_click(save_roi_callback)
 
-
-
-
     #___________________________________________________________________________________________
     # Function to update the image displayed
     def update_image(way=1, number=-9999):
@@ -939,17 +933,27 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         print('update_image index=',current_index)
 
+
+    class PlaybackState:
+        def __init__(self):
+            self.playing = False
+
+    # Create an instance of PlaybackState
+    state = PlaybackState()
+
     #___________________________________________________________________________________________
     # Create play/stop button
     def play_stop_callback():
         print('****************************  play_stop_callback ****************************')
-        global playing
+        #global playing
         global timerr
         refresh_time = int(dropdown_refresh_time.value)
-        if not playing:
+        #if not playing:
+        if    not state.playing:
             button_play_stop.label = "Stop"
             timerr = doc.add_periodic_callback(update_image, refresh_time)  # Change the interval as needed
-            playing = True
+            #playing = True
+            state.playing = True
         else:
             button_play_stop.label = "Play"
             doc.remove_periodic_callback(timerr)
