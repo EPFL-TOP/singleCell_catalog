@@ -722,21 +722,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  get_current_index ****************************')
         return slider.value
 
-    menu = [("100ms", "100"), ("200ms", "200"), ("500ms", "500"), ("1sec", "1000")]
-    dropdown_time = bokeh.models.Dropdown(label="Refresh time", button_type="warning", menu=menu)
-    #dropdown_time.value = "250"
+    refresh_time_list = ["100", "200", "300", "400", "500", "750" "1000", "2000"]
+    dropdown_refresh_time = bokeh.models.Select(value=refresh_time_list[3], title="time (ms)", options=refresh_time_list)
+
     # Callback function to handle menu item click
     #___________________________________________________________________________________________
-    def refresh_time_callback(event):
+    def refresh_time_callback(attr, old, new):
         print('****************************  refresh_time_callback ****************************')
-        item = int(event.item)
-        global refresh_time
-        refresh_time = item
-        print(f"dropdown: {item}")
+        dropdown_refresh_time.value = int(dropdown_refresh_time.value)
+        print("refresh time : {}".format(dropdown_refresh_time.value))
         print('===========================================')
         play_stop_callback()
         play_stop_callback()
-    dropdown_time.on_click(refresh_time_callback)
+    dropdown_refresh_time.on_change('value',refresh_time_callback)
 
 
     left_rois=[]
@@ -771,9 +769,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         return left_rois,right_rois,right_rois,bottom_rois
 
-    height_labels=[]
-    weight_labels=[]
-    names_labels=[]
+    #height_labels=[]
+    #weight_labels=[]
+    #names_labels=[]
     #___________________________________________________________________________________________
     # update the source_labels
     def update_source_labels():
@@ -798,10 +796,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('ppppppp ',height_labels, weight_labels, names_labels)
         return height_labels, weight_labels, names_labels
 
-
-    height_cells=[]
-    weight_cells=[]
-    names_cells=[]
     #___________________________________________________________________________________________
     # update the source_labels
     def update_source_cells():
@@ -947,7 +941,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  play_stop_callback ****************************')
         global playing
         global timerr
-        global refresh_time
+        refresh_time = dropdown_refresh_time.value
         if not playing:
             button_play_stop.label = "Stop"
             timerr = doc.add_periodic_callback(update_image, refresh_time)  # Change the interval as needed
@@ -1036,15 +1030,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
 
     height_labels, weight_labels, names_labels = update_source_labels()
-    print('---ffeefefefe -   ',height_labels, weight_labels, names_labels)
     source_labels = bokeh.models.ColumnDataSource(data=dict(height=height_labels,weight=weight_labels,names=names_labels))
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
-                  x_offset=0, y_offset=0, source=source_labels, text_color='white', text_font_size="10pt")
+                                   x_offset=0, y_offset=0, source=source_labels, text_color='white', text_font_size="10pt")
 
     plot_image.add_layout(labels)
 
     height_cells, weight_cells, names_cells = update_source_cells()
-    print('---ffeefefefe - cells  ',height_cells, weight_cells, names_cells)
     source_cells = bokeh.models.ColumnDataSource(data=dict(height=height_cells,weight=weight_cells,names=names_cells))
     labels_cells = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
                   x_offset=0, y_offset=-15, source=source_cells, text_color='white', text_font_size="11pt")
