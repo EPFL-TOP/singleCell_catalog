@@ -937,26 +937,31 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     class PlaybackState:
         def __init__(self):
             self.playing = False
+    play_state = PlaybackState()
 
-    # Create an instance of PlaybackState
-    state = PlaybackState()
+    class PlaybackID:
+        def __init__(self) -> None:
+            self.state = None
+    play_state_id = PlaybackID()
 
     #___________________________________________________________________________________________
     # Create play/stop button
     def play_stop_callback():
         print('****************************  play_stop_callback ****************************')
         #global playing
-        global timerr
+        #global timerr
         refresh_time = int(dropdown_refresh_time.value)
         #if not playing:
-        if    not state.playing:
+        if    not play_state.playing:
             button_play_stop.label = "Stop"
             timerr = doc.add_periodic_callback(update_image, refresh_time)  # Change the interval as needed
+            play_state_id.state = timerr
             #playing = True
-            state.playing = True
+            play_state.playing = True
         else:
             button_play_stop.label = "Play"
-            doc.remove_periodic_callback(timerr)
+            #doc.remove_periodic_callback(timerr)
+            doc.remove_periodic_callback(play_state_id.state)
             playing = False
     button_play_stop = bokeh.models.Button(label="Play")
     button_play_stop.on_click(play_stop_callback)
