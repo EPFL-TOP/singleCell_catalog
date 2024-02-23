@@ -801,6 +801,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # update the source_labels
     def update_source_cells():
         print('****************************  update_source_cells ****************************')
+        height_labels=[]
+        weight_labels=[]
+        names_labels=[]
         height_cells.clear()
         weight_cells.clear()
         names_cells.clear()
