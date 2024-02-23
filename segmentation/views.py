@@ -1062,7 +1062,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                     bokeh.layouts.row(dropdown_pos))
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
-                                     bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_time ),
+                                     bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi ),
                                      bokeh.layouts.row(button_inspect, button_build_cells),
                                      text)
