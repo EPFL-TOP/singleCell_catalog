@@ -722,14 +722,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  get_current_index ****************************')
         return slider.value
 
-    refresh_time_list = ["100", "200", "300", "400", "500", "750" "1000", "2000"]
+    refresh_time_list = ["100", "200", "300", "400", "500", "750", "1000", "2000"]
     dropdown_refresh_time = bokeh.models.Select(value=refresh_time_list[3], title="time (ms)", options=refresh_time_list)
 
     # Callback function to handle menu item click
     #___________________________________________________________________________________________
     def refresh_time_callback(attr, old, new):
         print('****************************  refresh_time_callback ****************************')
-        dropdown_refresh_time.value = int(dropdown_refresh_time.value)
+        #dropdown_refresh_time.value = int(dropdown_refresh_time.value)
         print("refresh time : {}".format(dropdown_refresh_time.value))
         print('===========================================')
         play_stop_callback()
@@ -945,7 +945,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  play_stop_callback ****************************')
         global playing
         global timerr
-        refresh_time = dropdown_refresh_time.value
+        refresh_time = int(dropdown_refresh_time.value)
         if not playing:
             button_play_stop.label = "Stop"
             timerr = doc.add_periodic_callback(update_image, refresh_time)  # Change the interval as needed
