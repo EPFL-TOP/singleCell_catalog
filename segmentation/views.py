@@ -308,6 +308,7 @@ def register_rawdataset():
                                   pos_z=metadataFrame['z_pos'][fr],
                                   height=metadataFrame['height'],
                                   width=metadataFrame['width'],
+                                  pixel_microns=metadataFrame['pixel_microns'],
                                   )
                     print('            adding frame with name ',fr)
                     frame.save()
