@@ -131,23 +131,18 @@ class CellROI(models.Model):
 #___________________________________________________________________________________________
 class Contour(models.Model):
 
-    center_x_pix       = models.FloatField(default=-9999, help_text="Contour center x position in pixels")
-    center_y_pix       = models.FloatField(default=-9999, help_text="Contour center y position in pixels")
-    center_z_pix       = models.FloatField(default=-9999, help_text="Contour center z position in pixels")
-    center_x_mic       = models.FloatField(default=-9999, help_text="Contour center x position in microns")
-    center_y_mic       = models.FloatField(default=-9999, help_text="Contour center y position in microns")
-    center_z_mic       = models.FloatField(default=-9999, help_text="Contour center z position in microns")
+    center_x_pix = models.FloatField(default=-9999, help_text="Contour center x position in pixels")
+    center_y_pix = models.FloatField(default=-9999, help_text="Contour center y position in pixels")
+    center_z_pix = models.FloatField(default=-9999, help_text="Contour center z position in pixels")
+    center_x_mic = models.FloatField(default=-9999, help_text="Contour center x position in microns")
+    center_y_mic = models.FloatField(default=-9999, help_text="Contour center y position in microns")
+    center_z_mic = models.FloatField(default=-9999, help_text="Contour center z position in microns")
+    file_name    = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
+    cell_roi     = models.ForeignKey(CellROI, default='', null=True,on_delete=models.SET_DEFAULT)
 
-    #number_of_pixels     = models.PositiveIntegerField(default=0, help_text="Number of pixels of the contour")
-    center               = models.JSONField(help_text="center of the contour")
-    pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
-    pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
-    segmentation_channel = models.ForeignKey(SegmentationChannel, default='', on_delete=models.CASCADE)
-    #frame                = models.ForeignKey(Frame, default='', on_delete=models.SET_DEFAULT)
-    cell_roi             = models.ForeignKey(CellROI, default='', null=True,on_delete=models.SET_DEFAULT)
-    #cell                 = models.ForeignKey(Cell, blank=True, null=True, default='',on_delete=models.CASCADE)
-    #uid_name             = models.CharField(default='', max_length=1000, help_text="unique name ID used not to create multiple times the same contour. Based on the input file name, frame number, algorithm type, version and parameters")
-
+#    pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
+#    pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
+#    segmentation_channel = models.ForeignKey(SegmentationChannel, default='', on_delete=models.CASCADE)
 
 
 
