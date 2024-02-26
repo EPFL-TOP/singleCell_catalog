@@ -28,20 +28,12 @@ from bokeh_django import autoload, directory, document, static_extensions
 
 urlpatterns = [
     path(r"segmentation/", views.index, name="index"),
-    #path(r"segmentation/bokeh_template", views.bokeh_server, name="bokeh_template"),
-    #path(r"segmentation/image_template", views.image_view, name="image_template"),
     path('admin/', admin.site.urls),
-
-    #path("segmentation/sea-surface-temp", views.index),
-        #path("segmentation", views.sea_surface),
-
 ]
 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 bokeh_apps = [
-    #autoload("segmentation", views.sea_surface_handler) ,
     autoload("segmentation/", views.segmentation_handler),
-    #document("segmentation/", views.segmentation_handler),
 ]

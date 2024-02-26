@@ -790,7 +790,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for roi in rois:
             weight_labels.append(roi.min_col)
             height_labels.append(roi.max_row)
-            names_labels.append('cellROI{0}'.format(roi.roi_number))
+            names_labels.append('ROI{0}'.format(roi.roi_number))
         print('ppppppp ',height_labels, weight_labels, names_labels)
         return height_labels, weight_labels, names_labels
 

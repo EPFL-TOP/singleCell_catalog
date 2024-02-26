@@ -109,18 +109,6 @@ class CellID(models.Model):
     name   = models.CharField(default='', max_length=20, help_text="cell name")
     sample = models.ForeignKey(Sample, default='', on_delete=models.SET_DEFAULT)
 
-#___________________________________________________________________________________________
-#class CellFrame(models.Model):
-#    time   = models.FloatField(default=-9999, help_text="time")
-#    pos_x  = models.FloatField(default=-9999, help_text="Cell x position in pixel")
-#    pos_y  = models.FloatField(default=-9999, help_text="Cell y position in pixel")
-#    pos_z  = models.FloatField(default=-9999, help_text="Cell z position in pixel")
-#    sig_x  = models.FloatField(default=-9999, help_text="Cell x error in pixel")
-#    sig_y  = models.FloatField(default=-9999, help_text="Cell y error in pixel")
-#    sig_z  = models.FloatField(default=-9999, help_text="Cell z error in pixel")
-#    frame  = models.ForeignKey(Frame, default='', on_delete=models.SET_DEFAULT)
-#    cell_id = models.ForeignKey(CellID, null=True, default='', on_delete=models.CASCADE)
-
 
 #___________________________________________________________________________________________
 class CellROI(models.Model):
@@ -131,7 +119,7 @@ class CellROI(models.Model):
     max_col    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox max col ROI and right in bokeh")
     frame      = models.ForeignKey(Frame, default='',on_delete=models.CASCADE)
     roi_number = models.PositiveSmallIntegerField(default=-1, help_text="ROI number")
-    cell_id    = models.ForeignKey(CellID, null=True, default='', on_delete=models.SET_NULL)
+    cell_id    = models.ForeignKey(CellID, blank=True, null=True, default='', on_delete=models.SET_NULL)
 
     def __str__(self):
         if self.cell_id != None:
