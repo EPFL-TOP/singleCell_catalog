@@ -506,13 +506,13 @@ def build_ROIs():
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             counter_samp=0
             for s in samples:
-                if counter_samp==4: 
+                if counter_samp==1: 
                     print('===================BREAK ROIS========================')
                     break
                 counter_samp+=1
                 frames = Frame.objects.select_related().filter(sample=s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
-
+                #images are t, c, x, y 
                 BF_images=images.transpose(1,0,2,3)
                 BF_images=BF_images[0]
 
@@ -527,6 +527,32 @@ def build_ROIs():
                                       max_row = ROIs[r][2], max_col = ROIs[r][3], 
                                       frame = frame, roi_number=r)
                         roi.save()
+                        cropped_dict = {'npixels':0, 'x':[], 'y':[]}
+                        for ch in channels:
+                            cropped_dict['intensity_{}'.format(ch)]=[]
+
+                        out_file_name = "/data/singleCell_catalog/contour_data/{0}/{1}/{2}/frame{3}_ROI{4}.json".format(exp.name, expds.data_name,s.split('/')[-1].replace('.nd2',''),frame.number, r)
+                        cropped_img = images[frame.number][:, ROIs[r][1]:ROIs[r][3], ROIs[r][0]:ROIs[r][2]]
+                        for iy, ix in np.ndindex(cropped_img[0].shape):
+                            cropped_dict['npixels']+=1
+                            cropped_dict['x'].append(ix+ROIs[r][1])
+                            cropped_dict['y'].append(iy+ROIs[r][0])
+                            for ch in range(len(channels)):
+                                cropped_dict['intensity_{}'.format(channels[ch])].append(cropped_img[ch][iy, ix])
+
+                        out_file = open(out_file_name, "w") 
+                        json.dump(cropped_dict, out_file) 
+                        out_file.close() 
+
+                        contour = Contour(center_x_pix=ROIs[r][1]+(ROIs[r][3]-ROIs[r][1])/2., 
+                                          center_y_pix=ROIs[r][0]+(ROIs[r][2]-ROIs[r][0])/2.,
+                                          center_z_pix=0, 
+                                          center_x_mic=(ROIs[r][1]+(ROIs[r][3]-ROIs[r][1])/2.)*roi.frame.pixel_microns+roi.frame.pos_x,
+                                          center_y_mic=(ROIs[r][0]+(ROIs[r][2]-ROIs[r][0])/2.)*roi.frame.pixel_microns+roi.frame.pos_y,
+                                          center_z_mic=0,
+                                          file_name=out_file_name,
+                                          cell_roi=roi)
+                        contour.save()
 
 
 async def saveROI(request):

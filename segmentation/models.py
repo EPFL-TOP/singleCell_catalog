@@ -117,9 +117,12 @@ class CellROI(models.Model):
     min_col    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox min col ROI and left in bokeh")
     max_row    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox max row ROI and top in bokeh")
     max_col    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox max col ROI and right in bokeh")
-    frame      = models.ForeignKey(Frame, default='',on_delete=models.CASCADE)
     roi_number = models.PositiveSmallIntegerField(default=-1, help_text="ROI number")
+
+    frame      = models.ForeignKey(Frame, default='',on_delete=models.CASCADE)
     cell_id    = models.ForeignKey(CellID, blank=True, null=True, default='', on_delete=models.SET_NULL)
+
+    #contour     = models.OneToOneField("Contour", default='', null=True,on_delete=models.SET_DEFAULT)
 
     def __str__(self):
         if self.cell_id != None:
@@ -138,7 +141,7 @@ class Contour(models.Model):
     center_y_mic = models.FloatField(default=-9999, help_text="Contour center y position in microns")
     center_z_mic = models.FloatField(default=-9999, help_text="Contour center z position in microns")
     file_name    = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
-    cell_roi     = models.ForeignKey(CellROI, default='', null=True,on_delete=models.SET_DEFAULT)
+    cell_roi     = models.OneToOneField(CellROI, default='', null=True,on_delete=models.CASCADE)
 
 #    pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
 #    pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
