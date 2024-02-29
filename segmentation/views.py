@@ -515,8 +515,12 @@ def build_ROIs():
                 #images are t, c, x, y 
                 BF_images=images.transpose(1,0,2,3)
                 BF_images=BF_images[0]
-
+                counter_frame=0
                 for frame in frames:
+                    if counter_frame==2: 
+                        print('===================BREAK Frame========================')
+                        break
+                    counter_frame+=1
                     rois = CellROI.objects.select_related().filter(frame = frame)
                     #Just for now, should normally check that same ROI don't overlap
                     if len(rois)>0: continue
