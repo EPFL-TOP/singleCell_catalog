@@ -798,8 +798,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for roi in rois:
             left_rois.append(roi.min_col)
             right_rois.append(roi.max_col)
-            top_rois.append(frame.height-roi.max_row)
-            bottom_rois.append(frame.height-roi.min_row)
+            top_rois.append(frame[0].height-roi.max_row)
+            bottom_rois.append(frame[0].height-roi.min_row)
         print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
         return left_rois,right_rois,top_rois,bottom_rois
@@ -937,9 +937,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             roi_exist=False
             for cellroi in cellrois:
                 if cellroi.min_col == math.floor(source_roi.data['left'][i]) and \
-                    cellroi.min_row == math.floor(frame.height-source_roi.data['top'][i])  and \
+                    cellroi.min_row == math.floor(frame[0].height-source_roi.data['top'][i])  and \
                         cellroi.max_col == math.ceil(source_roi.data['right'][i]) and \
-                            cellroi.max_row == math.ceil(frame.height-source_roi.data['bottom'][i]):
+                            cellroi.max_row == math.ceil(frame[0].height-source_roi.data['bottom'][i]):
                         print('save_roi_callback already exist ',frame[0])
                         roi_exist=True
             if not roi_exist:
