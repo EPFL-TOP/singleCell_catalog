@@ -531,7 +531,7 @@ def build_ROIs():
                                       max_row = ROIs[r][2], max_col = ROIs[r][3], 
                                       frame = frame, roi_number=r)
                         roi.save()
-                        cropped_dict = {'npixels':0, 'x':[], 'y':[]}
+                        cropped_dict = {'npixels':0, 'shape_original':BF_images[frame.number].shape, 'x':[], 'y':[]}
                         for ch in channels:
                             cropped_dict['intensity_{}'.format(ch)]=[]
                         out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
@@ -539,6 +539,7 @@ def build_ROIs():
                         if not os.path.exists(out_dir_name):
                             os.makedirs(out_dir_name)
                         cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
+                        cropped_dict['shape']=cropped_img.shape
                         for iy, ix in np.ndindex(cropped_img[0].shape):
                             cropped_dict['npixels']+=1
                             cropped_dict['x'].append(int(ix+ROIs[r][1]))#was1
