@@ -534,7 +534,7 @@ def build_ROIs():
                         cropped_dict = {'npixels':0, 'x':[], 'y':[]}
                         for ch in channels:
                             cropped_dict['intensity_{}'.format(ch)]=[]
-                        out_dir_name  = os.path.join("data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
+                        out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
                         out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, r))
                         if not os.path.exists(out_dir_name):
                             os.makedirs(out_dir_name)
