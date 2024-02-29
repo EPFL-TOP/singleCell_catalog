@@ -532,8 +532,8 @@ def build_ROIs():
                                       frame = frame, roi_number=r)
                         roi.save()
                         cropped_dict = {'npixels':0, 'shape_original':BF_images[frame.number].shape, 'x':[], 'y':[]}
-                        for ch in channels:
-                            cropped_dict['intensity_{}'.format(ch)]=[]
+                        #for ch in channels:
+                        #    cropped_dict['intensity_{}'.format(ch.replace(" ",""))]=[]
                         out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
                         out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, r))
                         if not os.path.exists(out_dir_name):
@@ -542,11 +542,12 @@ def build_ROIs():
                         cropped_dict['shape']=cropped_img.shape
                         for iy, ix in np.ndindex(cropped_img[0].shape):
                             cropped_dict['npixels']+=1
-                            cropped_dict['x'].append(int(ix+ROIs[r][1]))#was1
-                            cropped_dict['y'].append(int(iy+ROIs[r][0]))#was0
+                            cropped_dict['x'].append(int(ix+ROIs[r][1]))
+                            cropped_dict['y'].append(int(iy+ROIs[r][0]))
                         for ch in range(len(channels)):
                             cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = cropped_img[ch].tolist()
-                        print('cropped_dict =',cropped_dict)
+                            cropped_dict['intensityFull_{}'.format(channels[ch].replace(" ",""))] = images[frame.number][ch].tolist()
+                            
                         print('out_file_name=',out_file_name)
                         out_file = open(out_file_name, "w") 
                         json.dump(cropped_dict, out_file) 
