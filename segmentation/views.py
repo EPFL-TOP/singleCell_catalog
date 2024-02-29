@@ -545,7 +545,8 @@ def build_ROIs():
                             cropped_dict['y'].append(iy+ROIs[r][0])
                             for ch in range(len(channels)):
                                 cropped_dict['intensity_{}'.format(channels[ch])].append(cropped_img[ch][iy, ix])
-
+                        print('cropped_dict =',cropped_dict)
+                        print('out_file_name=',out_file_name)
                         out_file = open(out_file_name, "w") 
                         json.dump(cropped_dict, out_file) 
                         out_file.close() 
