@@ -538,13 +538,13 @@ def build_ROIs():
                         out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, r))
                         if not os.path.exists(out_dir_name):
                             os.makedirs(out_dir_name)
-                        cropped_img = images[frame.number][:, ROIs[r][1]:ROIs[r][3], ROIs[r][0]:ROIs[r][2]]
+                        cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
                         for iy, ix in np.ndindex(cropped_img[0].shape):
                             cropped_dict['npixels']+=1
                             cropped_dict['x'].append(int(ix+ROIs[r][1]))
                             cropped_dict['y'].append(int(iy+ROIs[r][0]))
                             for ch in range(len(channels)):
-                                cropped_dict['intensity_{}'.format(channels[ch])].append(float(cropped_img[ch][iy, ix]))
+                                cropped_dict['intensity_{}'.format(channels[ch])].append(int(cropped_img[ch][iy, ix]))
                         print('cropped_dict =',cropped_dict)
                         print('out_file_name=',out_file_name)
                         out_file = open(out_file_name, "w") 
