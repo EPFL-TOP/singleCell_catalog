@@ -546,6 +546,7 @@ def build_ROIs():
                             cropped_dict['y'].append(int(iy+ROIs[r][0]))
                         for ch in range(len(channels)):
                             cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = cropped_img[ch].tolist()
+
                             cropped_dict['intensityFull_{}'.format(channels[ch].replace(" ",""))] = images[frame.number][ch].tolist()
                             
                         print('out_file_name=',out_file_name)
@@ -660,7 +661,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
         time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
-        ind_images = [time_lapse[i,:,:] for i in time_domain]
+        ind_images = [np.flip(time_lapse[i,:,:],0) for i in time_domain]
+
         return ind_images
     ind_images = get_current_stack()
 
