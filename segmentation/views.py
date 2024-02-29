@@ -530,8 +530,10 @@ def build_ROIs():
                         cropped_dict = {'npixels':0, 'x':[], 'y':[]}
                         for ch in channels:
                             cropped_dict['intensity_{}'.format(ch)]=[]
-
-                        out_file_name = "/data/singleCell_catalog/contour_data/{0}/{1}/{2}/frame{3}_ROI{4}.json".format(exp.name, expds.data_name,s.file_name.split('/')[-1].replace('.nd2',''),frame.number, r)
+                        out_dir_name  = os.path.join("data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
+                        out_file_name = os.path.join(out_dir_name, "frame{3}_ROI{4}.json".format(frame.number, r))
+                        if not os.path.exists(out_dir_name):
+                            os.makedirs(out_dir_name)
                         cropped_img = images[frame.number][:, ROIs[r][1]:ROIs[r][3], ROIs[r][0]:ROIs[r][2]]
                         for iy, ix in np.ndindex(cropped_img[0].shape):
                             cropped_dict['npixels']+=1
