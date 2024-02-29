@@ -544,8 +544,8 @@ def build_ROIs():
                             cropped_dict['npixels']+=1
                             cropped_dict['x'].append(int(ix+ROIs[r][1]))#was1
                             cropped_dict['y'].append(int(iy+ROIs[r][0]))#was0
-                            for ch in range(len(channels)):
-                                cropped_dict['intensity_{}'.format(channels[ch])].append(int(cropped_img[ch][iy, ix]))
+                        for ch in range(len(channels)):
+                            cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = cropped_img[ch].tolist()
                         print('cropped_dict =',cropped_dict)
                         print('out_file_name=',out_file_name)
                         out_file = open(out_file_name, "w") 
