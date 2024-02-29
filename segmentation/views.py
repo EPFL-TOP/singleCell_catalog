@@ -541,10 +541,10 @@ def build_ROIs():
                         cropped_img = images[frame.number][:, ROIs[r][1]:ROIs[r][3], ROIs[r][0]:ROIs[r][2]]
                         for iy, ix in np.ndindex(cropped_img[0].shape):
                             cropped_dict['npixels']+=1
-                            cropped_dict['x'].append(ix+ROIs[r][1])
-                            cropped_dict['y'].append(iy+ROIs[r][0])
+                            cropped_dict['x'].append(int(ix+ROIs[r][1]))
+                            cropped_dict['y'].append(int(iy+ROIs[r][0]))
                             for ch in range(len(channels)):
-                                cropped_dict['intensity_{}'.format(channels[ch])].append(cropped_img[ch][iy, ix])
+                                cropped_dict['intensity_{}'.format(channels[ch])].append(float(cropped_img[ch][iy, ix]))
                         print('cropped_dict =',cropped_dict)
                         print('out_file_name=',out_file_name)
                         out_file = open(out_file_name, "w") 
