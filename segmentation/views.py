@@ -669,7 +669,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_img_ch = bokeh.models.ColumnDataSource(data=data_img_ch)
 
     #current image to be displayed
-    data_img={'img':[data_img_ch[0]]}
+    data_img={'img':[data_img_ch['img'][0]]}
     source_img = bokeh.models.ColumnDataSource(data=data_img)
 
     #list of all images for all channels
