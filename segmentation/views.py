@@ -746,6 +746,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_channel.options = ch_list
         dropdown_channel.value = new
         source_img.data = {'img':[source_img_ch.data['img'][int(new)]]}
+        color_mapper.low=source_img.data['img'][0].min()
+        color_mapper.high=source_img.data['img'][0].max()
         print('update_dropdown_channel options: ',dropdown_channel.options)
         print('update_dropdown_channel value : ',dropdown_channel.value)
     dropdown_channel.on_change('value', update_dropdown_channel)
