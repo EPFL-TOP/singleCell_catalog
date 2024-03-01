@@ -762,7 +762,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         palette = dropdown_color.value
         color_mapper.palette = palette
         color_mapper.low=source_img.data['img'][0].min()
-        color_mapper.max=source_img.data['img'][0].max()
+        color_mapper.high=source_img.data['img'][0].max()
     dropdown_color.on_change('value',update_dropdown_color)
 
     # Function to update the position
@@ -1173,7 +1173,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                   x_offset=0, y_offset=-15, source=source_cells, text_color='white', text_font_size="11pt")
 
     plot_image.add_layout(labels_cells)
-    plot_image.add_layout(color_bar, 'right')
+    #plot_image.add_layout(color_bar, 'right')
 
     #im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, palette='Greys256')
     im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
