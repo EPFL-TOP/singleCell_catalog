@@ -745,18 +745,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             ch_list.append(str(ch))
         dropdown_channel.options = ch_list
         dropdown_channel.value = new
+        
+        new_image = source_img_ch.data['img'][int(new)]
+        x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
 
-        color_mapper.low=source_img_ch.data['img'][int(new)].min()
-        color_mapper.high=source_img_ch.data['img'][int(new)].max()
-
-        source_img.data = {'img':[source_img_ch.data['img'][int(new)]]}
-
+        source_img.data   = {'img':[x_norm]}
         print('update_dropdown_channel options: ',dropdown_channel.options)
         print('update_dropdown_channel value : ',dropdown_channel.value)
     dropdown_channel.on_change('value', update_dropdown_channel)
 
     colormaps = ['Greys256','Inferno256','Viridis256']
-    color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=data_img['img'][0].min(), high=data_img['img'][0].max())
+    color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=0, high=1)
     color_bar = bokeh.models.ColorBar(color_mapper=color_mapper, location=(0,0))
 
     dropdown_color = bokeh.models.Select(title="Color Palette", value="Grey256",options=colormaps)
@@ -766,8 +765,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  update_dropdown_channel ****************************')
         palette = dropdown_color.value
         color_mapper.palette = palette
-        color_mapper.low=source_img.data['img'][0].min()
-        color_mapper.high=source_img.data['img'][0].max()
+        #color_mapper.low=source_img.data['img'][0].min()
+        #color_mapper.high=source_img.data['img'][0].max()
     dropdown_color.on_change('value',update_dropdown_color)
 
     # Function to update the position
@@ -777,7 +776,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         images = get_current_stack()
         source_imgs.data = {'images':images}
         source_img_ch.data = {'img':[images[ch][0] for ch in range(len(images))]}
-        source_img.data = {'img':[images[int(dropdown_channel.value)][0]]}
+
+        new_image = images[int(dropdown_channel.value)][0]
+        x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
+
+        source_img.data = {'img':[x_norm]}
         dropdown_channel.value = dropdown_channel.options[0]
         print('prepare_pos dropdown_channel.value ',dropdown_channel.value)
         print('prepare_pos dropdown_channel.options ',dropdown_channel.options)
@@ -915,7 +918,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_point = slider.value
         images=source_imgs.data['images']
         new_image = images[int(dropdown_channel.value)][time_point]
-        source_img.data = {'img':[new_image]}
+        norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
+        source_img.data = {'img':[norm]}
         left_rois,right_rois,top_rois,bottom_rois=update_source_roi()
         height_labels, weight_labels, names_labels = update_source_labels_roi()
         height_cells, weight_cells, names_cells = update_source_labels_cells()
@@ -1046,7 +1050,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img_ch.data = {'img':[images[ch][current_index] for ch in range(len(images))]}
 
         new_image = images[int(dropdown_channel.value)][current_index]
-        source_img.data = {'img':[new_image]}
+        x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
+
+        source_img.data = {'img':[x_norm]}
         current_index = (current_index + 1*way) % len(images[0])
         if number>=0:
             current_index = number
