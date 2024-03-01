@@ -750,6 +750,28 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('update_dropdown_channel value : ',dropdown_channel.value)
     dropdown_channel.on_change('value', update_dropdown_channel)
 
+    colormaps = ['Inferno256','Viridis256', 'Greys256']
+    bokeh_maps = {k: list(eval('bokeh.palettes.{}'.format(k)).values())[-1] for k in colormaps}###### This is where the main change is located
+    color_mapper = bokeh.models.LinearColorMapper(palette=bokeh_maps[colormaps[0]], low=0, high=1)
+    color_bar = bokeh.models.ColorBar(color_mapper=color_mapper, location=(0,0))
+
+    dropdown_color = bokeh.models.Select(title='Palette:', options=colormaps, value=colormaps[0])
+
+    update_dropdown_color = bokeh.models.CustomJS(args=dict(
+                        bokeh_maps=bokeh_maps,
+                        color_bar=color_bar,
+                        ),
+                        code="""
+                        color_bar.color_mapper.palette = bokeh_maps[cb_obj.value]
+                        """)
+    dropdown_color.js_on_change('value',update_dropdown_color)
+
+    #___________________________________________________________________________________________
+    #def update_dropdown_color(attr, old, new):
+    #    print('****************************  update_dropdown_channel ****************************')
+#
+ #   dropdown_color.on_change('value',update_dropdown_color)
+
     # Function to update the position
     #___________________________________________________________________________________________
     def prepare_pos(attr, old, new):
@@ -1158,6 +1180,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                   x_offset=0, y_offset=-15, source=source_cells, text_color='white', text_font_size="11pt")
 
     plot_image.add_layout(labels_cells)
+    plot_image.add_layout(color_bar, 'right')
 
     im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, palette='Greys256')
 
@@ -1172,7 +1195,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     left_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
                                     bokeh.layouts.row(dropdown_well),
                                     bokeh.layouts.row(dropdown_pos), 
-                                    bokeh.layouts.row(dropdown_channel))
+                                    bokeh.layouts.row(dropdown_channel),
+                                    bokeh.layouts.row(dropdown_color))
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
