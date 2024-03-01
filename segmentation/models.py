@@ -126,9 +126,13 @@ class CellROI(models.Model):
 
     def __str__(self):
         if self.cell_id != None:
-            return 'file={0}, frame={1}, roi={2}, cell={3}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id.name)
+            if self.contour_cellroi != None:
+                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id.name, self.contour_cellroi.file_name)
         else:
-            return 'file={0}, frame={1}, roi={2}, cell={3}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id)
+            if self.contour_cellroi != None:
+                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id, self.contour_cellroi.file_name)
+            else:
+                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id, self.contour_cellroi)
 
 
 #___________________________________________________________________________________________
@@ -141,7 +145,7 @@ class Contour(models.Model):
     center_y_mic = models.FloatField(default=-9999, help_text="Contour center y position in microns")
     center_z_mic = models.FloatField(default=-9999, help_text="Contour center z position in microns")
     file_name    = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
-    cell_roi     = models.OneToOneField(CellROI, default='', null=True,on_delete=models.CASCADE)
+    cell_roi     = models.OneToOneField(CellROI, default='', null=True,on_delete=models.CASCADE, related_name="contour_cellroi")
 
 #    pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
 #    pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
