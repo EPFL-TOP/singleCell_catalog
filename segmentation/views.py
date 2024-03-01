@@ -1135,7 +1135,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_build_cells.on_click(build_cells_callback)
 
 
-    update_dropdown_channel()
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
