@@ -662,9 +662,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     ind_images_list = get_current_stack()
 
 
-    print ('in segmentation_handler ind_images=',len(ind_images_list))
-    data_img={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
+    print ('in segmentation_handler ind_images_list (channel)=',len(ind_images_list))
+    print ('in segmentation_handler ind_images_list (timepoints)=',len(ind_images_list[0]))
+    #current images (current index and list of channels)
+    data_img_ch={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
+    source_img_ch = bokeh.models.ColumnDataSource(data=data_img_ch)
+
+    #current image to be displayed
+    data_img={'img':[data_img_ch[0]]}
     source_img = bokeh.models.ColumnDataSource(data=data_img)
+
+    #list of all images for all channels
     data_imgs={'images':ind_images_list}
     source_imgs = bokeh.models.ColumnDataSource(data=data_imgs)
 
@@ -731,10 +739,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_dropdown_channel(attr, old, new):
         print('****************************  update_dropdown_channel ****************************')
         ch_list=[]
-        for ch in range(len(source_img.data)):
+        for ch in range(len(source_img_ch.data)):
             ch_list.append(str(ch))
         dropdown_channel.options = ch_list
         dropdown_channel.value = ch_list[0]
+        print('update_dropdown_channel options: ',dropdown_channel.options)
+        print('update_dropdown_channel values : ',dropdown_channel.values)
     dropdown_channel.on_change('value', update_dropdown_channel)
 
     # Function to update the position
@@ -743,6 +753,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  prepare_pos ****************************')
         images = get_current_stack()
         source_imgs.data = {'images':images}
+        source_img_ch.data = {'img':[images[ch][0] for ch in range(len(images))]}
         source_img.data = {'img':[images[int(dropdown_channel.value)][0]]}
         print('prepare_pos before slider')
         if slider.value == 0:
@@ -750,7 +761,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             left_rois,right_rois,top_rois,bottom_rois=update_source_roi()
             height_labels, weight_labels, names_labels = update_source_labels_roi()
             height_cells, weight_cells, names_cells = update_source_labels_cells()
-            update_dropdown_channel()
             source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
             source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
             source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
