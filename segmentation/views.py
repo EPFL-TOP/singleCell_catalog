@@ -755,6 +755,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_imgs.data = {'images':images}
         source_img_ch.data = {'img':[images[ch][0] for ch in range(len(images))]}
         source_img.data = {'img':[images[int(dropdown_channel.value)][0]]}
+        print('dropdown_channel.value ',dropdown_channel.value)
+        print('dropdown_channel.options ',dropdown_channel.options)
         print('prepare_pos before slider')
         if slider.value == 0:
             print('in the if prepare_pos')
