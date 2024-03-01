@@ -1007,7 +1007,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 images=source_img_ch.data['img']
                 images=np.array(images)
                 print('save_roi_callback images shape ', images.shape)
-                cropped_dict = {'npixels':0, 'shape_original':image[0][frame.number].shape}
+                cropped_dict = {'npixels':0, 'shape_original':images[0][frame.number].shape}
                 out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
                 out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, i))
                 if not os.path.exists(out_dir_name):
