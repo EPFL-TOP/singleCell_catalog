@@ -1017,7 +1017,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 cropped_dict['npixels']=cropped_img.shape[0]*cropped_img.shape[1]
 
                 channels=exp.name_of_channels.split(',')
-                for ch in range(len(exp.number_of_channels)):
+                for ch in range(len(channels)):
                     cropped_dict['intensity_{}'.format(channels[ch])] = cropped_img[ch].tolist()
                             
                     print('out_file_name=',out_file_name)
