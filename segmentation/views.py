@@ -1027,7 +1027,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         new_image = images[int(dropdown_channel.value)][current_index]
         source_img.data = {'img':[new_image]}
-        current_index = (current_index + 1*way) % len(images)
+        current_index = (current_index + 1*way) % len(images[0])
         if number>=0:
             current_index = number
         slider.value = current_index
