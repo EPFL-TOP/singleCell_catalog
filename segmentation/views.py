@@ -654,9 +654,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         ind_images_list=[]
         for nch in range(time_lapse.shape[1]):
-            time_lapse = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
-            time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
-            ind_images = [np.flip(time_lapse[i,:,:],0) for i in time_domain]
+            time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
+            time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
+            ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
             ind_images_list.append(ind_images)
         return ind_images_list
     ind_images_list = get_current_stack()
