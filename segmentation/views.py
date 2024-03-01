@@ -782,6 +782,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         source_img.data = {'img':[x_norm]}
         dropdown_channel.value = dropdown_channel.options[0]
+        dropdown_color.value = dropdown_color.options[0]
         print('prepare_pos dropdown_channel.value ',dropdown_channel.value)
         print('prepare_pos dropdown_channel.options ',dropdown_channel.options)
         print('prepare_pos before slider')
