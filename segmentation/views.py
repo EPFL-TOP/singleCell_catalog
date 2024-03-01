@@ -1015,7 +1015,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 print('roi.min_row, roi.max_row, roi.min_col,roi.max_col',roi.min_row, roi.max_row, roi.min_col,roi.max_col)
                 cropped_img = images[:, roi.min_row:roi.max_row, roi.min_col:roi.max_col]
                 print(cropped_img)
-                cropped_dict['shape']=[cropped_img.shape[1],cropped_img[2]]
+                cropped_dict['shape']=[cropped_img.shape[1],cropped_img.shape[2]]
                 cropped_dict['npixels']=cropped_img.shape[1]*cropped_img.shape[2]
 
                 channels=exp.name_of_channels.split(',')
