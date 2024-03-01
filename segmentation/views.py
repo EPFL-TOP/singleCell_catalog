@@ -531,21 +531,17 @@ def build_ROIs():
                                       max_row = ROIs[r][2], max_col = ROIs[r][3], 
                                       frame = frame, roi_number=r)
                         roi.save()
-                        cropped_dict = {'npixels':0, 'shape_original':BF_images[frame.number].shape, 'x':[], 'y':[]}
+                        cropped_dict = {'npixels':0, 'shape_original':BF_images[frame.number].shape}
                         out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
                         out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, r))
                         if not os.path.exists(out_dir_name):
                             os.makedirs(out_dir_name)
                         cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
                         cropped_dict['shape']=cropped_img.shape
-                        for iy, ix in np.ndindex(cropped_img[0].shape):
-                            cropped_dict['npixels']+=1
-                            cropped_dict['x'].append(int(ix+ROIs[r][1]))
-                            cropped_dict['y'].append(int(iy+ROIs[r][0]))
+                        cropped_dict['npixels']=cropped_img.shape[0]*cropped_img.shape[1]
+
                         for ch in range(len(channels)):
                             cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = cropped_img[ch].tolist()
-
-                            cropped_dict['intensityFull_{}'.format(channels[ch].replace(" ",""))] = images[frame.number][ch].tolist()
                             
                         print('out_file_name=',out_file_name)
                         out_file = open(out_file_name, "w") 
@@ -653,31 +649,32 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def get_current_stack():
         print('****************************  get_current_stack ****************************')
-        bf_channel = 0
         current_file=get_current_file()
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
-        time_lapse = time_lapse[:,bf_channel,:,:] # Assume I(t, c, x, y)
-        time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
-        ind_images = [np.flip(time_lapse[i,:,:],0) for i in time_domain]
+        ind_images_list=[]
+        for nch in range(time_lapse.shape[1]):
+            time_lapse = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
+            time_domain = np.asarray(np.linspace(0, time_lapse.shape[0] - 1, time_lapse.shape[0]), dtype=np.uint)
+            ind_images = [np.flip(time_lapse[i,:,:],0) for i in time_domain]
+            ind_images_list.append(ind_images)
+        return ind_images_list
+    ind_images_list = get_current_stack()
 
-        return ind_images
-    ind_images = get_current_stack()
 
-
-    print ('in segmentation_handler ind_images=',len(ind_images))
-    data_img={'img':[ind_images[0]]}
+    print ('in segmentation_handler ind_images=',len(ind_images_list))
+    data_img={'img':[ind_images_list[0][0]]}
     source_img = bokeh.models.ColumnDataSource(data=data_img)
-    data_images={'images':ind_images}
-    source_imgages = bokeh.models.ColumnDataSource(data=data_images)
+    data_images={'images':ind_images_list}
+    source_imgs = bokeh.models.ColumnDataSource(data=data_images)
 
     data_intensity={'time':[], 'intensity':[]}
     source_intensity = bokeh.models.ColumnDataSource(data=data_intensity)
 
     # Create a Slider widget
     initial_time_point = 0
-    slider         = bokeh.models.Slider(start=0, end=len(ind_images) - 1, value=initial_time_point, step=1, title="Time Point")
-    plot_image     = bokeh.plotting.figure(x_range=(0, ind_images[0].shape[0]), y_range=(0, ind_images[0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
+    slider         = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point")
+    plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time', y_axis_label='Intensity')
 
 
@@ -733,8 +730,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def prepare_pos(attr, old, new):
         print('****************************  prepare_pos ****************************')
         images = get_current_stack()
-        source_imgages.data = {'images':images}
-        source_img.data = {'img':[images[0]]}
+        source_imgs.data = {'images':images}
+        source_img.data = {'img':[images[0][0]]}
         print('prepare_pos before slider')
         if slider.value == 0:
             print('in the if prepare_pos')
@@ -870,8 +867,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         print('****************************  callback_slider ****************************')
         time_point = slider.value
-        images=source_imgages.data['images']
-        new_image = images[time_point]
+        images=source_imgs.data['images']
+        new_image = images[0][time_point]
         source_img.data = {'img':[new_image]}
         left_rois,right_rois,top_rois,bottom_rois=update_source_roi()
         height_labels, weight_labels, names_labels = update_source_labels_roi()
@@ -951,6 +948,41 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                               min_row=math.floor(frame[0].height-source_roi.data['top'][i]),  max_row=math.ceil(frame[0].height-source_roi.data['bottom'][i]),
                               roi_number=i, frame=frame[0])
                 roi.save()
+
+#                image=source_imgs.data
+#                cropped_dict = {'npixels':0, 'shape_original':BF_images[frame.number].shape}
+#                        out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
+#                        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, r))
+#                        if not os.path.exists(out_dir_name):
+#                            os.makedirs(out_dir_name)
+#                        cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
+#                        cropped_dict['shape']=cropped_img.shape
+#                        cropped_dict['npixels']=cropped_img.shape[0]*cropped_img.shape[1]
+#
+#                        for ch in range(len(channels)):
+#                            cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = cropped_img[ch].tolist()
+#                            
+#                        print('out_file_name=',out_file_name)
+#                        out_file = open(out_file_name, "w") 
+#                        json.dump(cropped_dict, out_file) 
+#                        out_file.close() 
+#
+#                        contour = Contour(center_x_pix=ROIs[r][1]+(ROIs[r][3]-ROIs[r][1])/2., 
+#                                          center_y_pix=ROIs[r][0]+(ROIs[r][2]-ROIs[r][0])/2.,
+#                                          center_z_pix=0, 
+#                                          center_x_mic=(ROIs[r][1]+(ROIs[r][3]-ROIs[r][1])/2.)*roi.frame.pixel_microns+roi.frame.pos_x,
+#                                          center_y_mic=(ROIs[r][0]+(ROIs[r][2]-ROIs[r][0])/2.)*roi.frame.pixel_microns+roi.frame.pos_y,
+#                                          center_z_mic=0,
+#                                          file_name=out_file_name,
+#                                          cell_roi=roi)
+#                        contour.save()
+
+
+
+
+
+
+
         height_labels, weight_labels, names_labels = update_source_labels_roi()
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
         height_cells, weight_cells, names_cells = update_source_labels_cells()
@@ -964,8 +996,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_image(way=1, number=-9999):
         print('****************************  update_image ****************************')
         current_index=get_current_index()
-        images=source_imgages.data["images"]
-        new_image = images[current_index]
+        images=source_imgs.data["images"]
+        new_image = images[0][current_index]
         source_img.data = {'img':[new_image]}
         current_index = (current_index + 1*way) % len(images)
         if number>=0:
@@ -1098,7 +1130,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     plot_image.add_layout(labels_cells)
 
-    im = plot_image.image(image='img', x=0, y=0, dw=ind_images[0].shape[0], dh=ind_images[0].shape[1], source=source_img, palette='Greys256')
+    im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, palette='Greys256')
 
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
