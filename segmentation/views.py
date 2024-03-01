@@ -745,6 +745,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             ch_list.append(str(ch))
         dropdown_channel.options = ch_list
         dropdown_channel.value = new
+        update_image()
         print('update_dropdown_channel options: ',dropdown_channel.options)
         print('update_dropdown_channel value : ',dropdown_channel.value)
     dropdown_channel.on_change('value', update_dropdown_channel)
@@ -757,6 +758,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_imgs.data = {'images':images}
         source_img_ch.data = {'img':[images[ch][0] for ch in range(len(images))]}
         source_img.data = {'img':[images[int(dropdown_channel.value)][0]]}
+        dropdown_channel.value = dropdown_channel.options[0]
         print('prepare_pos dropdown_channel.value ',dropdown_channel.value)
         print('prepare_pos dropdown_channel.options ',dropdown_channel.options)
         print('prepare_pos before slider')
