@@ -750,7 +750,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             left_rois,right_rois,top_rois,bottom_rois=update_source_roi()
             height_labels, weight_labels, names_labels = update_source_labels_roi()
             height_cells, weight_cells, names_cells = update_source_labels_cells()
-        
+            update_dropdown_channel()
             source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
             source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
             source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
