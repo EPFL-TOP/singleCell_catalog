@@ -710,7 +710,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         else:
             print('in the else update_dropdown_well')
             slider.value = 0
-        print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$source_img.data[img]', len(source_imgs.data['images'][0]))
         slider.end=len(source_imgs.data['images'][0]) - 1
 
     dropdown_exp.on_change('value', update_dropdown_well)
@@ -980,6 +979,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_index=get_current_index()
 
         sample   = Sample.objects.get(file_name=current_file)
+        expds    = ExperimentalDataset.objects.get(id=sample.experimental_dataset.id)
+        exp      = Experiment.objects.get(id=expds.experiment.id)
         frame    = Frame.objects.select_related().filter(sample=sample, number=current_index)
         if len(frame)!=1:
             print('NOT ONLY FRAME FOUND< PLEASE CHECKKKKKKKK')
@@ -1003,13 +1004,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                               roi_number=i, frame=frame[0])
                 roi.save()
 
-#                image=source_imgs.data
-#                cropped_dict = {'npixels':0, 'shape_original':BF_images[frame.number].shape}
-#                        out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
-#                        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, r))
-#                        if not os.path.exists(out_dir_name):
-#                            os.makedirs(out_dir_name)
-#                        cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
+                images=source_img_ch.data['img']
+                images=np.array(images)
+                print('save_roi_callback images shape ', images.shape)
+                cropped_dict = {'npixels':0, 'shape_original':image[0][frame.number].shape}
+                out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
+                out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, i))
+                if not os.path.exists(out_dir_name):
+                    os.makedirs(out_dir_name)
+                #cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
 #                        cropped_dict['shape']=cropped_img.shape
 #                        cropped_dict['npixels']=cropped_img.shape[0]*cropped_img.shape[1]
 #
