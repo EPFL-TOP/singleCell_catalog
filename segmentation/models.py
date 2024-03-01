@@ -153,7 +153,7 @@ class Contour(models.Model):
     center_z_mic = models.FloatField(default=-9999, help_text="Contour center z position in microns")
     file_name    = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
     cell_roi     = models.OneToOneField(CellROI, default='', null=True,on_delete=models.CASCADE, related_name="contour_cellroi")
-    type         = models.CharField(max_length=200, choices=TYPE, help_text="contour type")
+    type         = models.CharField(max_length=200, choices=TYPE, help_text="contour type", default='')
 #    pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
 #    pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
 #    segmentation_channel = models.ForeignKey(SegmentationChannel, default='', on_delete=models.CASCADE)
