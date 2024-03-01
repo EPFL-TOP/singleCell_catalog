@@ -555,7 +555,8 @@ def build_ROIs():
                                           center_y_mic=(ROIs[r][0]+(ROIs[r][2]-ROIs[r][0])/2.)*roi.frame.pixel_microns+roi.frame.pos_y,
                                           center_z_mic=0,
                                           file_name=out_file_name,
-                                          cell_roi=roi)
+                                          cell_roi=roi,
+                                          type="auto")
                         contour.save()
 
 
@@ -1024,7 +1025,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
                 channels=exp.name_of_channels.split(',')
                 for ch in range(len(channels)):
-                    cropped_dict['intensity_{}'.format(channels[ch])] = cropped_img[ch].tolist()
+                    cropped_dict['intensity_{}'.format(channels[ch])] = np.flip(cropped_img[ch],0).tolist()
                             
                 print('out_file_name=',out_file_name)
                 out_file = open(out_file_name, "w") 
@@ -1043,7 +1044,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                   center_y_mic=(roi.min_row+(roi.max_row-roi.min_row)/2.)*frame[0].pixel_microns+frame[0].pos_y,
                                   center_z_mic=0,
                                   file_name=out_file_name,
-                                  cell_roi=roi)
+                                  cell_roi=roi,
+                                  type="manual")
                 contour.save()
 
 
