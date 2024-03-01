@@ -537,8 +537,8 @@ def build_ROIs():
                         if not os.path.exists(out_dir_name):
                             os.makedirs(out_dir_name)
                         cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
-                        cropped_dict['shape']=cropped_img.shape
-                        cropped_dict['npixels']=cropped_img.shape[0]*cropped_img.shape[1]
+                        cropped_dict['shape']=[cropped_img.shape[1], cropped_img.shape[2]]
+                        cropped_dict['npixels']=cropped_img.shape[1]*cropped_img.shape[2]
 
                         for ch in range(len(channels)):
                             cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = cropped_img[ch].tolist()
@@ -1007,7 +1007,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 images=source_img_ch.data['img']
                 images=np.array(images)
                 print('save_roi_callback images shape ', images.shape)
-                cropped_dict = {'npixels':0, 'shape_original':images[0][frame[0].number].shape}
+                cropped_dict = {'npixels':0, 'shape_original':images[frame[0].number].shape}
                 out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
                 out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame[0].number, i))
                 if not os.path.exists(out_dir_name):
