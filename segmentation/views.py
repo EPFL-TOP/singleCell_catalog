@@ -750,28 +750,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('update_dropdown_channel value : ',dropdown_channel.value)
     dropdown_channel.on_change('value', update_dropdown_channel)
 
-    colormaps = ['Inferno256','Viridis256', 'Greys256']
-    #bokeh_maps = {k: list(eval('bokeh.palettes.{}'.format(k)).values())[-1] for k in colormaps}###### This is where the main change is located
-    bokeh_maps = {k: bokeh.palettes.__getattribute__(k)[-1] for k in colormaps}
-    color_mapper = bokeh.models.LinearColorMapper(palette=bokeh_maps[colormaps[0]], low=0, high=1)
-    color_bar = bokeh.models.ColorBar(color_mapper=color_mapper, location=(0,0))
+    colormaps = ['Greys256','Inferno256','Viridis256']
+    color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=data_img['img'][0].min(), high=data_img['img'][0].max())
 
-    dropdown_color = bokeh.models.Select(title='Palette:', options=colormaps, value=colormaps[0])
 
-    update_dropdown_color = bokeh.models.CustomJS(args=dict(
-                        bokeh_maps=bokeh_maps,
-                        color_bar=color_bar,
-                        ),
-                        code="""
-                        color_bar.color_mapper.palette = bokeh_maps[cb_obj.value]
-                        """)
-    dropdown_color.js_on_change('value',update_dropdown_color)
+    dropdown_color = bokeh.models.Select(title="Color Palette", value="Grey256",options=colormaps)
 
     #___________________________________________________________________________________________
-    #def update_dropdown_color(attr, old, new):
-    #    print('****************************  update_dropdown_channel ****************************')
-#
- #   dropdown_color.on_change('value',update_dropdown_color)
+    def update_dropdown_color(attr, old, new):
+        print('****************************  update_dropdown_channel ****************************')
+        palette = dropdown_color.value
+        color_mapper.palette = palette
+        color_mapper.low=source_img.data['img'][0].min()
+        color_mapper.max=source_img.data['img'][0].max()
+    dropdown_color.on_change('value',update_dropdown_color)
 
     # Function to update the position
     #___________________________________________________________________________________________
@@ -1183,7 +1175,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.add_layout(labels_cells)
     plot_image.add_layout(color_bar, 'right')
 
-    im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, palette='Greys256')
+    #im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, palette='Greys256')
+    im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
 
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
