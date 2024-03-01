@@ -752,7 +752,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     colormaps = ['Greys256','Inferno256','Viridis256']
     color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=data_img['img'][0].min(), high=data_img['img'][0].max())
-
+    color_bar = bokeh.models.ColorBar(color_mapper=color_mapper, location=(0,0))
 
     dropdown_color = bokeh.models.Select(title="Color Palette", value="Grey256",options=colormaps)
 
