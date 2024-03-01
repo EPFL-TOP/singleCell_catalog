@@ -663,10 +663,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     print ('in segmentation_handler ind_images=',len(ind_images_list))
-    data_img={'img':[ind_images_list[0][0]]}
+    data_img={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
     source_img = bokeh.models.ColumnDataSource(data=data_img)
-    data_images={'images':ind_images_list}
-    source_imgs = bokeh.models.ColumnDataSource(data=data_images)
+    data_imgs={'images':ind_images_list}
+    source_imgs = bokeh.models.ColumnDataSource(data=data_imgs)
 
     data_intensity={'time':[], 'intensity':[]}
     source_intensity = bokeh.models.ColumnDataSource(data=data_intensity)
@@ -725,13 +725,25 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             slider.value = 0
     dropdown_well.on_change('value', update_dropdown_pos)
 
+
+    dropdown_channel  = bokeh.models.Select(value='0', title='Channel', options=[])
+    #___________________________________________________________________________________________
+    def update_dropdown_channel(attr, old, new):
+        print('****************************  update_dropdown_channel ****************************')
+        ch_list=[]
+        for ch in range(len(source_img.data)):
+            ch_list.append(str(ch))
+        dropdown_channel.options = ch_list
+        dropdown_channel.value = ch_list[0]
+    dropdown_channel.on_change('value', update_dropdown_channel)
+
     # Function to update the position
     #___________________________________________________________________________________________
     def prepare_pos(attr, old, new):
         print('****************************  prepare_pos ****************************')
         images = get_current_stack()
         source_imgs.data = {'images':images}
-        source_img.data = {'img':[images[0][0]]}
+        source_img.data = {'img':[images[int(dropdown_channel.value)][0]]}
         print('prepare_pos before slider')
         if slider.value == 0:
             print('in the if prepare_pos')
@@ -756,7 +768,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     refresh_time_list = ["100", "200", "300", "400", "500", "750", "1000", "2000"]
     dropdown_refresh_time = bokeh.models.Select(value=refresh_time_list[3], title="time (ms)", options=refresh_time_list)
-
     # Callback function to handle menu item click
     #___________________________________________________________________________________________
     def refresh_time_callback(attr, old, new):
@@ -765,6 +776,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         play_stop_callback()
         play_stop_callback()
     dropdown_refresh_time.on_change('value',refresh_time_callback)
+
+
+
+
 
 
     left_rois=[]
@@ -860,15 +875,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('ppppppp cells',height_cells, weight_cells, names_cells)
         return height_cells, weight_cells, names_cells
 
-
-
     #___________________________________________________________________________________________
     # Define a callback to update bf_display with slider
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         print('****************************  callback_slider ****************************')
         time_point = slider.value
         images=source_imgs.data['images']
-        new_image = images[0][time_point]
+        new_image = images[int(dropdown_channel.value)][time_point]
         source_img.data = {'img':[new_image]}
         left_rois,right_rois,top_rois,bottom_rois=update_source_roi()
         height_labels, weight_labels, names_labels = update_source_labels_roi()
@@ -997,7 +1010,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  update_image ****************************')
         current_index=get_current_index()
         images=source_imgs.data["images"]
-        new_image = images[0][current_index]
+        new_image = images[int(dropdown_channel.value)][current_index]
         source_img.data = {'img':[new_image]}
         current_index = (current_index + 1*way) % len(images)
         if number>=0:
@@ -1142,7 +1155,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     left_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
                                     bokeh.layouts.row(dropdown_well),
-                                    bokeh.layouts.row(dropdown_pos))
+                                    bokeh.layouts.row(dropdown_pos), 
+                                    bokeh.layouts.row(dropdown_channel))
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
