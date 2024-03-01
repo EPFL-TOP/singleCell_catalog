@@ -795,9 +795,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-
-
-
     left_rois=[]
     right_rois=[]
     top_rois=[]
@@ -1026,6 +1023,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  update_image ****************************')
         current_index=get_current_index()
         images=source_imgs.data["images"]
+        source_img_ch.data = {'img':[images[ch][current_index] for ch in range(len(images))]}
+
         new_image = images[int(dropdown_channel.value)][current_index]
         source_img.data = {'img':[new_image]}
         current_index = (current_index + 1*way) % len(images)
