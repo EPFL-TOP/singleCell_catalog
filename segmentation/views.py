@@ -1012,7 +1012,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame[0].number, i))
                 if not os.path.exists(out_dir_name):
                     os.makedirs(out_dir_name)
-                cropped_img = images[frame[0].number][:, roi.min_row:roi.max_row, roi.min_col:roi.max_col]
+                cropped_img = images[:, roi.min_row:roi.max_row, roi.min_col:roi.max_col]
                 cropped_dict['shape']=cropped_img.shape
                 cropped_dict['npixels']=cropped_img.shape[0]*cropped_img.shape[1]
 
