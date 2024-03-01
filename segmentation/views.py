@@ -710,8 +710,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         else:
             print('in the else update_dropdown_well')
             slider.value = 0
-        print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$source_img.data[img]', source_img.data['img'], len(source_img.data['img'][0]))
-        slider.end=len(source_img.data['img'][0]) - 1
+        print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$source_img.data[img]', source_imgs.data['images'], len(source_imgs.data['images']))
+        slider.end=len(source_imgs.data['images']) - 1
 
     dropdown_exp.on_change('value', update_dropdown_well)
 
