@@ -129,13 +129,13 @@ class CellROI(models.Model):
             if  hasattr(self, 'contour_cellroi'):
                 return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id.name, self.contour_cellroi.file_name)
             else:
-                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id.name, self.contour_cellroi)
+                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id.name, None
 
         else:
             if  hasattr(self, 'contour_cellroi'):
                 return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id, self.contour_cellroi.file_name)
             else:
-                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id, self.contour_cellroi)
+                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id, None)
 
 
 #___________________________________________________________________________________________
