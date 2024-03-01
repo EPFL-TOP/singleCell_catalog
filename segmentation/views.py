@@ -751,7 +751,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_channel.on_change('value', update_dropdown_channel)
 
     colormaps = ['Inferno256','Viridis256', 'Greys256']
-    bokeh_maps = {k: list(eval('bokeh.palettes.{}'.format(k)).values())[-1] for k in colormaps}###### This is where the main change is located
+    #bokeh_maps = {k: list(eval('bokeh.palettes.{}'.format(k)).values())[-1] for k in colormaps}###### This is where the main change is located
+    bokeh_maps = {k: bokeh.palettes.__getattribute__(k)[-1] for k in colormaps}
     color_mapper = bokeh.models.LinearColorMapper(palette=bokeh_maps[colormaps[0]], low=0, high=1)
     color_bar = bokeh.models.ColorBar(color_mapper=color_mapper, location=(0,0))
 
