@@ -1020,25 +1020,25 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 for ch in range(len(channels)):
                     cropped_dict['intensity_{}'.format(channels[ch])] = cropped_img[ch].tolist()
                             
-                    print('out_file_name=',out_file_name)
-                    out_file = open(out_file_name, "w") 
-                    json.dump(cropped_dict, out_file) 
-                    out_file.close() 
+                print('out_file_name=',out_file_name)
+                out_file = open(out_file_name, "w") 
+                json.dump(cropped_dict, out_file) 
+                out_file.close() 
 
 
                    #     roi = CellROI(min_row = ROIs[r][0], min_col = ROIs[r][1],
                    #                   max_row = ROIs[r][2], max_col = ROIs[r][3], 
                    #                   frame = frame, roi_number=r)
                     
-                    contour = Contour(center_x_pix=roi.min_col+(roi.max_col-roi.min_col)/2., 
-                                      center_y_pix=roi.min_row+(roi.max_row-roi.min_row)/2.,
-                                      center_z_pix=0, 
-                                      center_x_mic=(roi.min_col+(roi.max_col-roi.min_col)/2.)*frame[0].pixel_microns+frame[0].pos_x,
-                                      center_y_mic=(roi.min_row+(roi.max_row-roi.min_row)/2.)*frame[0].pixel_microns+frame[0].pos_y,
-                                      center_z_mic=0,
-                                      file_name=out_file_name,
-                                      cell_roi=roi)
-                    contour.save()
+                contour = Contour(center_x_pix=roi.min_col+(roi.max_col-roi.min_col)/2., 
+                                  center_y_pix=roi.min_row+(roi.max_row-roi.min_row)/2.,
+                                  center_z_pix=0, 
+                                  center_x_mic=(roi.min_col+(roi.max_col-roi.min_col)/2.)*frame[0].pixel_microns+frame[0].pos_x,
+                                  center_y_mic=(roi.min_row+(roi.max_row-roi.min_row)/2.)*frame[0].pixel_microns+frame[0].pos_y,
+                                  center_z_mic=0,
+                                  file_name=out_file_name,
+                                  cell_roi=roi)
+                contour.save()
 
 
 
