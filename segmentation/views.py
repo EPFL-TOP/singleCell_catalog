@@ -734,12 +734,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_well.on_change('value', update_dropdown_pos)
 
 
-    dropdown_channel  = bokeh.models.Select(value='0', title='Channel', options=[])
+    channel_list=[]
+    for ch in range(len(ind_images_list)):channel_list.append(str(ch))
+    dropdown_channel  = bokeh.models.Select(value='0', title='Channel', options=channel_list)
     #___________________________________________________________________________________________
     def update_dropdown_channel(attr, old, new):
         print('****************************  update_dropdown_channel ****************************')
         ch_list=[]
-        for ch in range(len(source_img_ch.data)):
+        for ch in range(len(source_img_ch.data['img'])):
             ch_list.append(str(ch))
         dropdown_channel.options = ch_list
         dropdown_channel.value = ch_list[0]
