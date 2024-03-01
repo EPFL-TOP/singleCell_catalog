@@ -945,7 +945,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if not roi_exist:
                 print('save_roi_callback saving ',frame[0])
                 roi = CellROI(min_col=math.floor(source_roi.data['left'][i]), max_col=math.ceil(source_roi.data['right'][i]), 
-                              min_row=math.floor(source_roi.data['top'][i]),  max_row=math.ceil(source_roi.data['bottom'][i]),
+                              min_row=math.floor(frame[0].height-source_roi.data['top'][i]),  max_row=math.ceil(frame[0].height-source_roi.data['bottom'][i]),
                               roi_number=i, frame=frame[0])
                 roi.save()
         height_labels, weight_labels, names_labels = update_source_labels()
