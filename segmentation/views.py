@@ -999,7 +999,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
         source_img.data = {'img':[norm]}
 
-        source_img_ch.data = {'img':[images[ch][0] for ch in range(len(images))]}
+        source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
 
         left_rois,right_rois,top_rois,bottom_rois=update_source_roi()
