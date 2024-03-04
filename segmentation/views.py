@@ -1260,7 +1260,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_inspect, button_build_cells),
                                      text)
     
-    norm_layout = bokeh.layouts.row(left_col, plot_image, right_col, plot_intensity)
+    right_col_int = bokeh.layouts.column(bokeh.layouts.row(dropdown_cell))
+    norm_layout = bokeh.layouts.row(left_col, plot_image, right_col, plot_intensity, right_col_int)
     doc.add_root(norm_layout)
 
 
