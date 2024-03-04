@@ -755,7 +755,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print("new=",new)
         print("old=",old)
         print("attr=",attr)
-        
+        print('source_img_ch.data=',source_img_ch.data)
         new_image = source_img_ch.data['img'][int(new)]
         x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
 
