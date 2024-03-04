@@ -812,7 +812,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         print('dropdown_cell.value = ',dropdown_cell.value)
         print('dropdown_cell.options = ',dropdown_cell.options)
-
+        if dropdown_cell.value=='':dropdown_cell.value = dropdown_cell.options[0]
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
     #___________________________________________________________________________________________
