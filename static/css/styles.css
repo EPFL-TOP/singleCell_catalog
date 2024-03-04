@@ -107,15 +107,15 @@
   /* Sidebar/left column */
   .side {
     -ms-flex: 2.5%; /* IE10 */
-    flex: 5.5%;
+    flex: 2.5%;
     background-color: #f1f1f1;
     padding: 20px;
   }
   
   /* Main column */
   .main {   
-    -ms-flex: 85%; /* IE10 */
-    flex: 85%;
+    -ms-flex: 95%; /* IE10 */
+    flex: 95%;
     background-color: white;
     padding: 20px;
   }
