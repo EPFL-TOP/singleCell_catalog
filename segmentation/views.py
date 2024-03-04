@@ -752,6 +752,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             ch_list.append(str(ch))
         dropdown_channel.options = ch_list
         dropdown_channel.value = new
+        print("new=",new)
+        print("old=",old)
+        print("attr=",attr)
         
         new_image = source_img_ch.data['img'][int(new)]
         x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
