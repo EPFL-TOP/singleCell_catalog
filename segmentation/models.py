@@ -159,25 +159,25 @@ class Contour(models.Model):
     center_y_mic     = models.FloatField(default=-9999, help_text="Contour center y position in microns")
     center_z_mic     = models.FloatField(default=-9999, help_text="Contour center z position in microns")
 
-    intensity_mean   = models.FloatField(default=-9999, help_text="Contour mean intensity")
-    intensity_std    = models.FloatField(default=-9999, help_text="Contour std intensity")
-    intensity_sum    = models.FloatField(default=-9999, help_text="Contour sum intensity")
+    intensity_mean   = models.JSONField(default='', help_text="Contour mean intensity")
+    intensity_std    = models.JSONField(default='', help_text="Contour std intensity")
+    intensity_sum    = models.JSONField(default='', help_text="Contour sum intensity")
     number_of_pixels = models.PositiveSmallIntegerField(default=-9999, help_text="Contour number of pixels")
 
     file_name        = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
     type             = models.CharField(max_length=200, choices=TYPE, help_text="contour type", default='auto')
     mode             = models.CharField(max_length=200, choices=MODE, help_text="contour type", default='cell_ROI')
     cell_roi         = models.OneToOneField(CellROI, default='', null=True,on_delete=models.CASCADE, related_name="contour_cellroi")
-    
+
 #    pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
 #    pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
 #    segmentation_channel = models.ForeignKey(SegmentationChannel, default='', on_delete=models.CASCADE)
 
     def __str__(self):
         if self.cell_roi.cell_id != None:
-            return 'type={0}, mode={1}, file={2}, frame={3}, roi={4}, cell={5}, contour={6}'.format(self.cell_roi.frame.sample.file_name, self.cell_roi.frame.number, self.cell_roi.roi_number, self.cell_roi.cell_id.name, self.file_name)
+            return 'type={0}, mode={1}, file={2}, frame={3}, roi={4}, cell={5}, contour={6}'.format(self.type, self.mode, self.cell_roi.frame.sample.file_name, self.cell_roi.frame.number, self.cell_roi.roi_number, self.cell_roi.cell_id.name, self.file_name)
         else:
-            return 'type={0}, mode={1}, file={2}, frame={3}, roi={4}, cell={5}, contour={6}'.format(self.cell_roi.frame.sample.file_name, self.cell_roi.frame.number, self.cell_roi.roi_number, self.cell_roi.cell_id, self.file_name)
+            return 'type={0}, mode={1}, file={2}, frame={3}, roi={4}, cell={5}, contour={6}'.format(self.type, self.mode, self.cell_roi.frame.sample.file_name, self.cell_roi.frame.number, self.cell_roi.roi_number, self.cell_roi.cell_id, self.file_name)
 
 #############################################################################################
 
