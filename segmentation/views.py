@@ -704,7 +704,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     initial_time_point = 0
     slider         = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point")
     plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
-    plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time', y_axis_label='Intensity', aspect_ratio=2)
+    plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time', y_axis_label='Intensity',sizing_mode="stretch_width", max_width=500, height=250)
 
 
     # Function to update the well depending on the experiment
@@ -1319,11 +1319,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi ),
-                                     bokeh.layouts.row(button_inspect, button_build_cells),
+                                     bokeh.layouts.row(button_inspect, button_build_cells, dropdown_cell),
                                      text)
     
-    right_col_int = bokeh.layouts.column(bokeh.layouts.row(dropdown_cell))
-    norm_layout = bokeh.layouts.row(left_col, plot_image, right_col, plot_intensity, right_col_int)
+    norm_layout = bokeh.layouts.row(left_col, plot_image, right_col, plot_intensity)
     doc.add_root(norm_layout)
 
 
