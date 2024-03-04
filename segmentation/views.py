@@ -693,8 +693,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data_imgs={'images':ind_images_list}
     source_imgs = bokeh.models.ColumnDataSource(data=data_imgs)
 
-    data_intensity={'time':[], 'intensity':[]}
-    source_intensity = bokeh.models.ColumnDataSource(data=data_intensity)
+    data_intensity_ch0={'time':[], 'intensity':[]}
+    source_intensity_ch0 = bokeh.models.ColumnDataSource(data=data_intensity_ch0)
+    data_intensity_ch1={'time':[], 'intensity':[]}
+    source_intensity_ch1 = bokeh.models.ColumnDataSource(data=data_intensity_ch1)
+    data_intensity_ch2={'time':[], 'intensity':[]}
+    source_intensity_ch2 = bokeh.models.ColumnDataSource(data=data_intensity_ch2)
 
     # Create a Slider widget
     initial_time_point = 0
@@ -796,8 +800,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         intensity_list[ch]=[]
                     time_list[ch].append((roi.frame.time/60000))
                     intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
-            for ch in time_list:
-                source_intensity.data={'time':time_list[ch], 'intensity':intensity_list[ch]}
+            for ch in range(len(time_list)):
+                if ch==0:
+                    source_intensity_ch0.data={'time':time_list[time_list[ch]], 'intensity':intensity_list[time_list[ch]]}
+                if ch==1:
+                    source_intensity_ch1.data={'time':time_list[time_list[ch]], 'intensity':intensity_list[time_list[ch]]}
+                if ch==2:
+                    source_intensity_ch2.data={'time':time_list[time_list[ch]], 'intensity':intensity_list[time_list[ch]]}
 
     dropdown_cell  = bokeh.models.Select(value='0', title='Cell', options=['0','1'])   
     dropdown_cell.on_change('value', update_dropdown_cell)
@@ -1277,11 +1286,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     intensity_list[ch]=[]
                 time_list[ch].append((roi.frame.time/60000))
                 intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
-    for ch in time_list:
-        source_intensity.data={'time':time_list[ch], 'intensity':intensity_list[ch]}
+    for ch in range(len(time_list)):
+        if ch==0:
+            source_intensity_ch0.data={'time':time_list[time_list[ch]], 'intensity':intensity_list[time_list[ch]]}
+        if ch==1:
+            source_intensity_ch1.data={'time':time_list[time_list[ch]], 'intensity':intensity_list[time_list[ch]]}
+        if ch==2:
+            source_intensity_ch2.data={'time':time_list[time_list[ch]], 'intensity':intensity_list[time_list[ch]]}
 
-    plot_intensity.line('time', 'intensity', source=source_intensity, legend_label='test')
-    plot_intensity.circle('time', 'intensity', fill_color="white", size=8)
+
+    plot_intensity.line('time', 'intensity', source=source_intensity_ch1, legend_label=time_list[1])
+    plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8)
+    plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2')
+    plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8)
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
     plot_image.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
