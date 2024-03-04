@@ -693,7 +693,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data_imgs={'images':ind_images_list}
     source_imgs = bokeh.models.ColumnDataSource(data=data_imgs)
 
-    data_intensity={'time':[1,2,3,4,5,6,7,8,9,10], 'intensity':[1,5,10,5,1,10,5,1,10,5]}
+    data_intensity={'time':[], 'intensity':[]}
     source_intensity = bokeh.models.ColumnDataSource(data=data_intensity)
 
     # Create a Slider widget
@@ -1249,6 +1249,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, palette='Greys256')
     plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
+
+    time_list=[]
+    intensity_list=[]
+    current_file=get_current_file()
+    sample = Sample.objects.get(file_name=current_file)
+    cellIDs = CellID.objects.select_related().filter(sample=sample)
+    if len(cellIDs)>0:
+        ROIs = CellROI.objects.select_related().filter(cell_id=cellIDs[0])
+        for roi in ROIs:
+            time_list.append((roi.frame.time/60000))
+            intensity_list.append(roi.contour_cellroi.intensity_sum/roi.contour_cellroi.number_of_pixels)
+    source_intensity.data={'time':time_list, 'intensity':intensity_list}
+
     plot_intensity.line('time', 'intensity', source=source_intensity)
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
