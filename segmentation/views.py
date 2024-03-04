@@ -860,7 +860,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('in the else prepare_pos')
             slider.value = 0
         print('prepare_pos after slider')
-        update_dropdown_cell()
+        update_dropdown_cell('','','')
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
 
