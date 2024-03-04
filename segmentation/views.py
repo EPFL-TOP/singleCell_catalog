@@ -798,14 +798,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         intensity_list[ch]=[]
                     time_list[ch].append((roi.frame.time/60000))
                     intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
-        #    for ch in range(len(time_list)):
             for index, key in enumerate(time_list):
                 if index==0:
-                    source_intensity_ch0.data={'time':time_list[key], 'intensity':intensity_list[key]}
+                    sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
+                    time_sorted, intensity_sorted = zip(*sorted_lists) 
+                    source_intensity_ch0.data={'time':time_sorted, 'intensity':intensity_sorted}
                 if index==1:
-                    source_intensity_ch1.data={'time':time_list[key], 'intensity':intensity_list[key]}
+                    sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
+                    time_sorted, intensity_sorted = zip(*sorted_lists) 
+                    source_intensity_ch1.data={'time':time_sorted, 'intensity':intensity_sorted}
                 if index==2:
-                    source_intensity_ch2.data={'time':time_list[key], 'intensity':intensity_list[key]}
+                    sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
+                    time_sorted, intensity_sorted = zip(*sorted_lists) 
+                    source_intensity_ch2.data={'time':time_sorted, 'intensity':intensity_sorted}
             print('time_list=',time_list)
             print('intensity_list=',intensity_list)
         dropdown_cell.options=cell_list
