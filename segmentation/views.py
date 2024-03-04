@@ -1278,9 +1278,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 time_list[ch].append((roi.frame.time/60000))
                 intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
     for ch in time_list:
-        source_intensity.data={'time':time_list[ch], 'intensity':intensity_list[ch], 'ch_name':ch}
+        source_intensity.data={'time':time_list[ch], 'intensity':intensity_list[ch]}
 
-    plot_intensity.line('time', 'intensity', source=source_intensity, legend_label=source_intensity.data['ch_name'])
+    plot_intensity.line('time', 'intensity', source=source_intensity, legend_label='test')
     plot_intensity.circle('time', 'intensity', fill_color="white", size=8)
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
