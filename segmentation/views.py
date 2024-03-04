@@ -998,6 +998,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         new_image = images[int(dropdown_channel.value)][time_point]
         norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
         source_img.data = {'img':[norm]}
+
+        source_img_ch.data = {'img':[images[ch][0] for ch in range(len(images))]}
+
+
         left_rois,right_rois,top_rois,bottom_rois=update_source_roi()
         height_labels, weight_labels, names_labels = update_source_labels_roi()
         height_cells, weight_cells, names_cells = update_source_labels_cells()
@@ -1153,7 +1157,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('update_image source_img_ch.data[ing] ',source_img_ch.data['img'])
         new_image = images[int(dropdown_channel.value)][current_index]
         x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
-
         source_img.data = {'img':[x_norm]}
         current_index = (current_index + 1*way) % len(images[0])
         if number>=0:
