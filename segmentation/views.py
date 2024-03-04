@@ -664,9 +664,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
             ind_images_list.append(ind_images)
         return ind_images_list
+    #___________________________________________________________________________________________
+
     ind_images_list = get_current_stack()
-
-
     print ('in segmentation_handler ind_images_list (channel)=',len(ind_images_list))
     print ('in segmentation_handler ind_images_list (timepoints)=',len(ind_images_list[0]))
     #current images (current index and list of channels)
@@ -779,7 +779,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     dropdown_cell  = bokeh.models.Select(value='0', title='Cell', options=['0'])   
     dropdown_cell.on_change('value', update_dropdown_cell)
-
+    update_dropdown_cell()
     #___________________________________________________________________________________________
     def update_dropdown_color(attr, old, new):
         print('****************************  update_dropdown_channel ****************************')
