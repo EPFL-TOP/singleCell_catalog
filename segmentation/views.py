@@ -1250,17 +1250,25 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, palette='Greys256')
     plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
 
-    time_list=[]
-    intensity_list=[]
+
     current_file=get_current_file()
     sample = Sample.objects.get(file_name=current_file)
     cellIDs = CellID.objects.select_related().filter(sample=sample)
     if len(cellIDs)>0:
+        time_list={}
+        intensity_list={}
         ROIs = CellROI.objects.select_related().filter(cell_id=cellIDs[0])
         for roi in ROIs:
-            time_list.append((roi.frame.time/60000))
-            intensity_list.append(roi.contour_cellroi.intensity_sum/roi.contour_cellroi.number_of_pixels)
-    source_intensity.data={'time':time_list, 'intensity':intensity_list}
+            for ch in roi.contour_cellroi.intensity_sum:
+                try:
+                    time_list[ch]
+                except KeyError:
+                    time_list[ch]=[]
+
+                time_list[ch].append((roi.frame.time/60000))
+                intensity_list[ch].append(roi.contour_cellroi.intensity_sum/roi.contour_cellroi.number_of_pixels)
+    for ch in time_list:
+        source_intensity.data={'time':time_list[ch], 'intensity':intensity_list[ch]}
 
     plot_intensity.line('time', 'intensity', source=source_intensity)
     # Add the rectangle glyph after adding the image
