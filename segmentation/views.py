@@ -777,18 +777,28 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_dropdown_cell(attr, old, new):
         print('****************************  update_dropdown_cell ****************************')
-        time_list=[]
-        intensity_list=[]
+
         current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
         #cellIDs = CellID.objects.select_related().filter(sample=sample, name='cell{}'.format(dropdown_cell.value))
         cellIDs = CellID.objects.select_related().filter(sample=sample, name='cell0')
         print('cellIDs=',cellIDs)
-        ROIs = CellROI.objects.select_related().filter(cell_id=cellIDs[0])
-        for roi in ROIs:
-            time_list.append((roi.frame.time/60000))
-            intensity_list.append(roi.contour_cellroi.intensity_sum/roi.contour_cellroi.number_of_pixels)
-        source_intensity.data={'time':time_list, 'intensity':intensity_list}
+        if len(cellIDs)>0:
+            time_list={}
+            intensity_list={}
+            ROIs = CellROI.objects.select_related().filter(cell_id=cellIDs[0])
+            for roi in ROIs:
+                for ch in roi.contour_cellroi.intensity_sum:
+                    try:
+                        time_list[ch]
+                    except KeyError:
+                        time_list[ch]=[]
+                        intensity_list[ch]=[]
+                    time_list[ch].append((roi.frame.time/60000))
+                    intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
+    for ch in time_list:
+        source_intensity.data={'time':time_list[ch], 'intensity':intensity_list[ch], 'ch_name':ch}
+
     dropdown_cell  = bokeh.models.Select(value='0', title='Cell', options=['0','1'])   
     dropdown_cell.on_change('value', update_dropdown_cell)
     #___________________________________________________________________________________________
@@ -1268,9 +1278,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 time_list[ch].append((roi.frame.time/60000))
                 intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
     for ch in time_list:
-        source_intensity.data={'time':time_list[ch], 'intensity':intensity_list[ch]}
+        source_intensity.data={'time':time_list[ch], 'intensity':intensity_list[ch], 'ch_name':ch}
 
-    plot_intensity.line('time', 'intensity', source=source_intensity)
+    plot_intensity.line('time', 'intensity', source=source_intensity, legend_label=source_intensity.data['ch_name'])
+    plot_intensity.circle('time', 'intensity', fill_color="white", size=8)
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
     plot_image.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
