@@ -770,7 +770,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         intensity_list=[]
         current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
-        cellIDs = CellID.objects.select_related().filter(sample=sample, name='cell{}'.format(dropdown_cell.value))
+        #cellIDs = CellID.objects.select_related().filter(sample=sample, name='cell{}'.format(dropdown_cell.value))
+        cellIDs = CellID.objects.select_related().filter(sample=sample, name='cell0')
         print('cellIDs=',cellIDs)
         ROIs = CellROI.objects.select_related().filter(cell_id=cellIDs[0])
         for roi in ROIs:
