@@ -751,6 +751,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_dropdown_channel(attr, old, new):
         print('****************************  update_dropdown_channel ****************************')
+        print('source_img_ch.data[img]----- ',source_img_ch.data['img'])
         ch_list=[]
         for ch in range(len(source_img_ch.data['img'])):
             ch_list.append(str(ch))
