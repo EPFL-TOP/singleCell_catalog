@@ -1216,7 +1216,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, palette='Greys256')
     im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
-
+    int = plot_intensity.line('time', 'intensity', source=source_intensity)
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
     plot_image.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
