@@ -782,6 +782,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_dropdown_cell(attr, old, new):
         print('****************************  update_dropdown_cell ****************************')
+        source_intensity_ch0.data={'time':[], 'intensity':[]}
+        source_intensity_ch1.data={'time':[], 'intensity':[]}
+        source_intensity_ch2.data={'time':[], 'intensity':[]}
 
         current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
