@@ -554,9 +554,9 @@ def build_ROIs():
                                         'shape':[cropped_img.shape[1], cropped_img.shape[2]],
                                         'shift':[ROIs[r][0], ROIs[r][1]]}
                         for ch in range(len(channels)): 
-                            cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))]={'intensity_sum':np.sum(cropped_img[ch]),
-                                                                                               'intensity_mean':np.mean(cropped_img[ch]), 
-                                                                                               'intensity_std':np.std(cropped_img[ch]) }
+                            cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))]={'intensity_sum':float(np.sum(cropped_img[ch])),
+                                                                                               'intensity_mean':float(np.mean(cropped_img[ch])), 
+                                                                                               'intensity_std':float(np.std(cropped_img[ch])) }
                         out_file = open(out_file_name, "w") 
                         json.dump(cropped_dict, out_file) 
                         out_file.close() 
