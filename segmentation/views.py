@@ -1266,7 +1266,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     time_list[ch]=[]
                     intensity_list[ch]=[]
                 time_list[ch].append((roi.frame.time/60000))
-                intensity_list[ch].append(roi.contour_cellroi.intensity_sum/roi.contour_cellroi.number_of_pixels)
+                intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
     for ch in time_list:
         source_intensity.data={'time':time_list[ch], 'intensity':intensity_list[ch]}
 
