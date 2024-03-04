@@ -682,7 +682,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data_imgs={'images':ind_images_list}
     source_imgs = bokeh.models.ColumnDataSource(data=data_imgs)
 
-    data_intensity={'time':{}, 'intensity':{}}
+    data_intensity={'time':[], 'intensity':[]}
     source_intensity = bokeh.models.ColumnDataSource(data=data_intensity)
 
     # Create a Slider widget
