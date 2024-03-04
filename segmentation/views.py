@@ -531,19 +531,32 @@ def build_ROIs():
                                       max_row = ROIs[r][2], max_col = ROIs[r][3], 
                                       frame = frame, roi_number=r)
                         roi.save()
-                        cropped_dict = {'npixels':0, 'shape_original':BF_images[frame.number].shape}
+
+
+                        cropped_dict = {'shape_original':BF_images[frame.number].shape}
                         out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
-                        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, r))
+                        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_all.json".format(frame.number, r))
                         if not os.path.exists(out_dir_name):
                             os.makedirs(out_dir_name)
                         cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
                         cropped_dict['shape']=[cropped_img.shape[1], cropped_img.shape[2]]
                         cropped_dict['npixels']=cropped_img.shape[1]*cropped_img.shape[2]
-
                         for ch in range(len(channels)):
-                            cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = cropped_img[ch].tolist()
-                            
-                        print('out_file_name=',out_file_name)
+                            cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = cropped_img[ch].tolist()     
+                        out_file = open(out_file_name, "w") 
+                        json.dump(cropped_dict, out_file) 
+                        out_file.close() 
+
+
+                        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_summary.json".format(frame.number, r))
+                        cropped_dict = {'npixels':cropped_img.shape[1]*cropped_img.shape[2], 
+                                        'shape_original':BF_images[frame.number].shape, 
+                                        'shape':[cropped_img.shape[1], cropped_img.shape[2]],
+                                        'shift':[ROIs[r][0], ROIs[r][1]]}
+                        for ch in range(len(channels)): 
+                            cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))]={'intensity_sum':np.sum(cropped_img[ch]),
+                                                                                               'intensity_mean':np.mean(cropped_img[ch]), 
+                                                                                               'intensity_std':np.std(cropped_img[ch]) }
                         out_file = open(out_file_name, "w") 
                         json.dump(cropped_dict, out_file) 
                         out_file.close() 
@@ -554,9 +567,14 @@ def build_ROIs():
                                           center_x_mic=(ROIs[r][1]+(ROIs[r][3]-ROIs[r][1])/2.)*roi.frame.pixel_microns+roi.frame.pos_x,
                                           center_y_mic=(ROIs[r][0]+(ROIs[r][2]-ROIs[r][0])/2.)*roi.frame.pixel_microns+roi.frame.pos_y,
                                           center_z_mic=0,
+                                          intensity_mean=np.mean(cropped_img[ch]),
+                                          intensity_std=np.std(cropped_img[ch]),
+                                          intensity_sum=np.sum(cropped_img[ch]),
+                                          number_of_pixels=cropped_img.shape[1]*cropped_img.shape[2],
                                           file_name=out_file_name,
                                           cell_roi=roi,
-                                          type="auto")
+                                          type="cell_ROI",
+                                          mode="auto")
                         contour.save()
 
 
@@ -579,20 +597,6 @@ def with_request(f):
         return f(doc, doc.session_context.request)
     return wrapper
 
-@with_request
-def segmentation_handler_with_template(doc: bokeh.document.Document, request: Any) -> None:
-    print('segmentation_handler_with_template request : ',request)
-    print('segmentation_handler_with_template request doc: ',doc)
-    print('segmentation_handler_with_template request_request:   ',request._request)
-    print('segmentation_handler_with_template request_arguments: ',request._arguments)
-    print('segmentation_handler_with_template request_cookies:   ',request._cookies)
-    print('segmentation_handler_with_template request_headers:   ',request._headers)
-    segmentation_handler(doc)
-
-
-
-playing = False
-timerr = None
 
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document) -> None:
@@ -1008,7 +1012,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 images=source_img_ch.data['img']
                 images=np.array(images)
                 print('save_roi_callback images shape ', images.shape)
-                cropped_dict = {'npixels':0, 'shape_original':images[0].shape}
+                cropped_dict = {'shape_original':images[0].shape}
                 out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
                 out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame[0].number, i))
                 if not os.path.exists(out_dir_name):
@@ -1033,10 +1037,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 out_file.close() 
 
 
-                   #     roi = CellROI(min_row = ROIs[r][0], min_col = ROIs[r][1],
-                   #                   max_row = ROIs[r][2], max_col = ROIs[r][3], 
-                   #                   frame = frame, roi_number=r)
-                    
+                out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_summary.json".format(frame[0].number, i))
+                cropped_dict = {'npixels':cropped_img.shape[1]*cropped_img.shape[2], 
+                                'shape_original':images[0].shape, 
+                                'shape':[cropped_img.shape[1], cropped_img.shape[2]]}
+                for ch in range(len(channels)): 
+                    cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))]={'intensity_sum':np.sum(cropped_img[ch]),
+                                                                                        'intensity_mean':np.mean(cropped_img[ch]), 
+                                                                                        'intensity_std':np.std(cropped_img[ch]) }
+                out_file = open(out_file_name, "w") 
+                json.dump(cropped_dict, out_file) 
+                out_file.close()    
+
                 contour = Contour(center_x_pix=roi.min_col+(roi.max_col-roi.min_col)/2., 
                                   center_y_pix=roi.min_row+(roi.max_row-roi.min_row)/2.,
                                   center_z_pix=0, 
@@ -1045,7 +1057,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                   center_z_mic=0,
                                   file_name=out_file_name,
                                   cell_roi=roi,
-                                  type="manual")
+                                  type="cell_ROI",
+                                  mode="manual")
                 contour.save()
 
 
@@ -1096,21 +1109,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Create play/stop button
     def play_stop_callback():
         print('****************************  play_stop_callback ****************************')
-        #global playing
-        #global timerr
         refresh_time = int(dropdown_refresh_time.value)
-        #if not playing:
-        if    not play_state.playing:
+        if  not play_state.playing:
             button_play_stop.label = "Stop"
             timerr = doc.add_periodic_callback(update_image, refresh_time)  # Change the interval as needed
             play_state_id.state = timerr
-            #playing = True
             play_state.playing = True
         else:
             button_play_stop.label = "Play"
-            #doc.remove_periodic_callback(timerr)
             doc.remove_periodic_callback(play_state_id.state)
-            #playing = False
             play_state.playing = False
     button_play_stop = bokeh.models.Button(label="Play")
     button_play_stop.on_click(play_stop_callback)
