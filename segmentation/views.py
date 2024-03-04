@@ -542,6 +542,8 @@ def build_ROIs():
                         cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
                         cropped_dict['shape']=[cropped_img.shape[1], cropped_img.shape[2]]
                         cropped_dict['npixels']=cropped_img.shape[1]*cropped_img.shape[2]
+                        cropped_dict['shift']=[ROIs[r][0], ROIs[r][1]]
+
                         for ch in range(len(channels)):
                             cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = cropped_img[ch].tolist()     
                         out_file = open(out_file_name, "w") 
@@ -549,11 +551,6 @@ def build_ROIs():
                         out_file.close() 
 
 
-                        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_summary.json".format(frame.number, r))
-                        cropped_dict = {'npixels':cropped_img.shape[1]*cropped_img.shape[2], 
-                                        'shape_original':BF_images[frame.number].shape, 
-                                        'shape':[cropped_img.shape[1], cropped_img.shape[2]],
-                                        'shift':[ROIs[r][0], ROIs[r][1]]}
                         intensity_mean={}
                         intensity_std={}
                         intensity_sum={}
@@ -562,17 +559,10 @@ def build_ROIs():
                             mean=float(np.mean(cropped_img[ch]))
                             std=float(np.std(cropped_img[ch]))
                             ch_name=channels[ch].replace(" ","")
-                            cropped_dict['intensity_{}'.format(ch_name)]={'intensity_sum':sum,
-                                                                                               'intensity_mean':mean, 
-                                                                                               'intensity_std':std }
                             intensity_mean[ch_name]=mean
                             intensity_std[ch_name]=std
                             intensity_sum[ch_name]=sum
-                            
-                        out_file = open(out_file_name, "w") 
-                        json.dump(cropped_dict, out_file) 
-                        out_file.close() 
-
+                        
                         contour = Contour(center_x_pix=ROIs[r][1]+(ROIs[r][3]-ROIs[r][1])/2., 
                                           center_y_pix=ROIs[r][0]+(ROIs[r][2]-ROIs[r][0])/2.,
                                           center_z_pix=0, 
@@ -1087,13 +1077,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     os.makedirs(out_dir_name)
                 print('roi.min_row, roi.max_row, roi.min_col,roi.max_col',roi.min_row, roi.max_row, roi.min_col,roi.max_col)
                 cropped_img = images[:, 512-roi.min_row:512-roi.max_row, roi.min_col:roi.max_col]
-                print('cropped_img ',cropped_img)
-                print('images ',images)
                 print('images shape ',images.shape)
                 print('images type ',type(images))
                 
                 cropped_dict['shape']=[cropped_img.shape[1],cropped_img.shape[2]]
                 cropped_dict['npixels']=cropped_img.shape[1]*cropped_img.shape[2]
+                cropped_dict['shift']=[roi.min_row, roi.min_col]
 
                 channels=exp.name_of_channels.split(',')
                 for ch in range(len(channels)):
@@ -1104,33 +1093,33 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 json.dump(cropped_dict, out_file) 
                 out_file.close() 
 
-
-                out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_summary.json".format(frame[0].number, i))
-                cropped_dict = {'npixels':cropped_img.shape[1]*cropped_img.shape[2], 
-                                'shape_original':images[0].shape, 
-                                'shape':[cropped_img.shape[1], cropped_img.shape[2]]}
+                intensity_mean={}
+                intensity_std={}
+                intensity_sum={}
                 for ch in range(len(channels)): 
-                    cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))]={'intensity_sum':np.sum(cropped_img[ch]),
-                                                                                        'intensity_mean':np.mean(cropped_img[ch]), 
-                                                                                        'intensity_std':np.std(cropped_img[ch]) }
-                out_file = open(out_file_name, "w") 
-                json.dump(cropped_dict, out_file) 
-                out_file.close()    
-
+                    sum=float(np.sum(cropped_img[ch]))
+                    mean=float(np.mean(cropped_img[ch]))
+                    std=float(np.std(cropped_img[ch]))
+                    ch_name=channels[ch]
+                    intensity_mean[ch_name]=mean
+                    intensity_std[ch_name]=std
+                    intensity_sum[ch_name]=sum
+                
                 contour = Contour(center_x_pix=roi.min_col+(roi.max_col-roi.min_col)/2., 
                                   center_y_pix=roi.min_row+(roi.max_row-roi.min_row)/2.,
                                   center_z_pix=0, 
                                   center_x_mic=(roi.min_col+(roi.max_col-roi.min_col)/2.)*frame[0].pixel_microns+frame[0].pos_x,
                                   center_y_mic=(roi.min_row+(roi.max_row-roi.min_row)/2.)*frame[0].pixel_microns+frame[0].pos_y,
                                   center_z_mic=0,
+                                  intensity_mean=intensity_mean,
+                                  intensity_std=intensity_std,
+                                  intensity_sum=intensity_sum,
+                                  number_of_pixels=cropped_img.shape[1]*cropped_img.shape[2],
                                   file_name=out_file_name,
                                   cell_roi=roi,
                                   type="cell_ROI",
                                   mode="manual")
                 contour.save()
-
-
-
 
         height_labels, weight_labels, names_labels = update_source_labels_roi()
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
