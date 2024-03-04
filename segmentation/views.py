@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.db import reset_queries
 from django.db import connection
 from django.http import HttpRequest, HttpResponse
+from django.contrib.auth.decorators import login_required, permission_required
 
 from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellROI
 
@@ -808,7 +809,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     source_intensity_ch1.data={'time':time_list[key], 'intensity':intensity_list[key]}
                 if index==2:
                     source_intensity_ch2.data={'time':time_list[key], 'intensity':intensity_list[key]}
-
+            print('time_list=',time_list)
+            print('intensity_list=',intensity_list)
     dropdown_cell  = bokeh.models.Select(value='0', title='Cell', options=['0','1'])   
     dropdown_cell.on_change('value', update_dropdown_cell)
     #___________________________________________________________________________________________
@@ -858,6 +860,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('in the else prepare_pos')
             slider.value = 0
         print('prepare_pos after slider')
+        update_dropdown_cell()
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
 
@@ -1328,6 +1331,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 #___________________________________________________________________________________________
+#@login_required
 def index(request: HttpRequest) -> HttpResponse:
 #def index(request):
 
