@@ -437,8 +437,8 @@ def build_cells(sample=None):
                 print('number of cell frames=',len(cell_roi_list))
                 if len(cell_roi_list)==0:continue
                 X = np.array(cell_roi_coord)
-                eps= ((cellroi.max_col-cellroi.min_col)/2. + (cellroi.max_row-cellroi.min_row)/2.)/4.
-                clustering = DBSCAN(eps=eps, min_samples=20).fit(X)
+                eps= ((cellroi.max_col-cellroi.min_col)/2. + (cellroi.max_row-cellroi.min_row)/2.)/1.
+                clustering = DBSCAN(eps=eps, min_samples=15).fit(X)
                 print(clustering.labels_)
 
                 #Create the cells ID according to existing clusters (one per cluster >=0)

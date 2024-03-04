@@ -159,12 +159,12 @@ class Contour(models.Model):
     center_y_mic     = models.FloatField(default=-9999, help_text="Contour center y position in microns")
     center_z_mic     = models.FloatField(default=-9999, help_text="Contour center z position in microns")
 
-    #intensity_mean   = models.JSONField(help_text="Contour mean intensity")
-    #intensity_std    = models.JSONField(help_text="Contour std intensity")
-    #intensity_sum    = models.JSONField(help_text="Contour sum intensity")
-    intensity_mean   = models.FloatField(default=-9999,help_text="Contour mean intensity")
-    intensity_std    = models.FloatField(default=-9999,help_text="Contour std intensity")
-    intensity_sum    = models.FloatField(default=-9999,help_text="Contour sum intensity")
+    intensity_mean   = models.JSONField(help_text="Contour mean intensity")
+    intensity_std    = models.JSONField(help_text="Contour std intensity")
+    intensity_sum    = models.JSONField(help_text="Contour sum intensity")
+    #intensity_mean   = models.FloatField(default=-9999,help_text="Contour mean intensity")
+    #intensity_std    = models.FloatField(default=-9999,help_text="Contour std intensity")
+    #intensity_sum    = models.FloatField(default=-9999,help_text="Contour sum intensity")
     number_of_pixels = models.PositiveSmallIntegerField(default=-9999, help_text="Contour number of pixels")
 
     file_name        = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
