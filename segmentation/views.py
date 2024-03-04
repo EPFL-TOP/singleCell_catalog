@@ -788,13 +788,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
-        #cellIDs = CellID.objects.select_related().filter(sample=sample, name='cell{}'.format(dropdown_cell.value))
-        cellIDs = CellID.objects.select_related().filter(sample=sample, name='cell0')
-        print('cellIDs=',cellIDs)
-        if len(cellIDs)>0:
+        cellIDs = CellID.objects.select_related().filter(sample=sample)
+
+
+        print('dropdown_cell.value = ',dropdown_cell.value)
+        cell_list=[]
+        for cid in cellIDs:
+            cell_list.append(cid.name)
+            if cid.name!=dropdown_cell.value:continue
             time_list={}
             intensity_list={}
-            ROIs = CellROI.objects.select_related().filter(cell_id=cellIDs[0])
+            ROIs = CellROI.objects.select_related().filter(cell_id=cid)
             for roi in ROIs:
                 for ch in roi.contour_cellroi.intensity_sum:
                     try:
@@ -814,7 +818,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     source_intensity_ch2.data={'time':time_list[key], 'intensity':intensity_list[key]}
             print('time_list=',time_list)
             print('intensity_list=',intensity_list)
-    dropdown_cell  = bokeh.models.Select(value='0', title='Cell', options=['0','1'])   
+        dropdown_cell.options=cell_list
+
+    dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
     #___________________________________________________________________________________________
 
@@ -1239,6 +1245,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         build_cells(sample=current_file)
         height_cells, weight_cells, names_cells = update_source_labels_cells()
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+        update_dropdown_cell('','','')
+
     button_build_cells = bokeh.models.Button(label="build cells")
     button_build_cells.on_click(build_cells_callback)
 
@@ -1280,6 +1288,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     current_file=get_current_file()
     sample = Sample.objects.get(file_name=current_file)
     cellIDs = CellID.objects.select_related().filter(sample=sample)
+    cell_list=[]
+    for cid in cellIDs:
+        cell_list.append(cid.name)
+    dropdown_cell.options=cell_list
     if len(cellIDs)>0:
         time_list={}
         intensity_list={}
