@@ -741,9 +741,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_well.on_change('value', update_dropdown_pos)
 
 
-    channel_list=[]
-    for ch in range(len(ind_images_list)):channel_list.append(str(ch))
-    dropdown_channel  = bokeh.models.Select(value='0', title='Channel', options=channel_list)
+ 
     #___________________________________________________________________________________________
     def update_dropdown_channel(attr, old, new):
         print('****************************  update_dropdown_channel ****************************')
@@ -752,30 +750,35 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             ch_list.append(str(ch))
         dropdown_channel.options = ch_list
         #dropdown_channel.value = dropdown_channel.value
-        print("new=",new)
-        print("type(new)=",type(new))
-        print("old=",old)
-        print("attr=",attr)
-        print('type(dropdown_channel.value)=',type(dropdown_channel.value))
-        print('dropdown_channel.value=',dropdown_channel.value)
-        print("int(dropdown_channel.value)=",int(dropdown_channel.value))
-
-        print('source_img_ch.data=',source_img_ch.data)
-        print('source_img_ch.data[img]]=',source_img_ch.data['img'])
-        print('len source_img_ch.data[img]]=',len(source_img_ch.data['img']))
         new_image = source_img_ch.data['img'][int(new)]
         x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
 
         source_img.data   = {'img':[x_norm]}
         print('update_dropdown_channel options: ',dropdown_channel.options)
         print('update_dropdown_channel value : ',dropdown_channel.value)
+
+    channel_list=[]
+    for ch in range(len(ind_images_list)):channel_list.append(str(ch))
+    dropdown_channel  = bokeh.models.Select(value='0', title='Channel', options=channel_list)   
     dropdown_channel.on_change('value', update_dropdown_channel)
+    #___________________________________________________________________________________________
 
-    colormaps = ['Greys256','Inferno256','Viridis256']
-    color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=0, high=1)
-    color_bar = bokeh.models.ColorBar(color_mapper=color_mapper, location=(0,0))
-
-    dropdown_color = bokeh.models.Select(title="Color Palette", value="Grey256",options=colormaps)
+    #___________________________________________________________________________________________
+    def update_dropdown_cell(attr, old, new):
+        print('****************************  update_dropdown_cell ****************************')
+        time_list=[]
+        intensity_list=[]
+        current_file=get_current_file()
+        sample = Sample.objects.get(file_name=current_file)
+        cellIDs = CellID.objects.select_related().filter(sample=sample, name='cell{}'.format(dropdown_cell.value))
+        ROIs = CellROI.objects.select_related().filter(cell_id=cellIDs[0])
+        for roi in ROIs:
+            time_list.append((roi.frame.time/60000))
+            intensity_list.append(roi.contour_cellroi.intensity_sum/roi.contour_cellroi.number_of_pixels)
+        source_intensity.data={'time':time_list, 'intensity':intensity_list}
+    #___________________________________________________________________________________________
+    dropdown_cell  = bokeh.models.Select(value='0', title='Cell', options=['0'])   
+    dropdown_cell.on_change('value', update_dropdown_cell)
 
     #___________________________________________________________________________________________
     def update_dropdown_color(attr, old, new):
@@ -784,7 +787,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         color_mapper.palette = palette
         #color_mapper.low=source_img.data['img'][0].min()
         #color_mapper.high=source_img.data['img'][0].max()
+
+    colormaps = ['Greys256','Inferno256','Viridis256']
+    color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=0, high=1)
+    color_bar = bokeh.models.ColorBar(color_mapper=color_mapper, location=(0,0))
+    dropdown_color = bokeh.models.Select(title="Color Palette", value="Grey256",options=colormaps)
     dropdown_color.on_change('value',update_dropdown_color)
+    #___________________________________________________________________________________________
+
 
     # Function to update the position
     #___________________________________________________________________________________________
@@ -816,6 +826,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             slider.value = 0
         print('prepare_pos after slider')
     dropdown_pos.on_change('value', prepare_pos)
+    #___________________________________________________________________________________________
 
     # Function to get the current index
     #___________________________________________________________________________________________
@@ -947,6 +958,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
     slider.on_change('value', callback_slider)
     
+
+
     #___________________________________________________________________________________________
     # Define a callback to update the ROI
     def select_roi_callback(event):
