@@ -1297,7 +1297,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_intensity_ch2.data={'time':time_list[key], 'intensity':intensity_list[key]}
 
 
-    plot_intensity.line('time', 'intensity', source=source_intensity_ch1, legend_label=time_list[1])
+    plot_intensity.line('time', 'intensity', source=source_intensity_ch1, legend_label='ch1')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8)
     plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8)
