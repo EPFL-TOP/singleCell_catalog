@@ -771,6 +771,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
         cellIDs = CellID.objects.select_related().filter(sample=sample, name='cell{}'.format(dropdown_cell.value))
+        print('cellIDs=',cellIDs)
         ROIs = CellROI.objects.select_related().filter(cell_id=cellIDs[0])
         for roi in ROIs:
             time_list.append((roi.frame.time/60000))
