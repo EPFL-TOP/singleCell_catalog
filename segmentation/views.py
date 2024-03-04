@@ -796,8 +796,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         intensity_list[ch]=[]
                     time_list[ch].append((roi.frame.time/60000))
                     intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
-    for ch in time_list:
-        source_intensity.data={'time':time_list[ch], 'intensity':intensity_list[ch], 'ch_name':ch}
+            for ch in time_list:
+                source_intensity.data={'time':time_list[ch], 'intensity':intensity_list[ch], 'ch_name':ch}
 
     dropdown_cell  = bokeh.models.Select(value='0', title='Cell', options=['0','1'])   
     dropdown_cell.on_change('value', update_dropdown_cell)
