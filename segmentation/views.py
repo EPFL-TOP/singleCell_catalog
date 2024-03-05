@@ -1315,9 +1315,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
     print(time_list)
 
-    plot_intensity_ch1=plot_intensity.line('time', 'intensity', source=source_intensity_ch1, legend_label='ch1')
+    plot_intensity_ch1=plot_intensity.line('time', 'intensity', source=source_intensity_ch1, legend_label='')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8)
-    plot_intensity_ch2=plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2')
+    plot_intensity_ch2=plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8)
     #for ch in range(len(time_list)):
     for index, key in enumerate(time_list):
@@ -1327,8 +1327,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_intensity_ch1.data={'time':time_list[key], 'intensity':intensity_list[key]}
             #plot_intensity_ch1.legend_label = key
             plot_intensity.legend.items[0].label = key
+            print('ttttttttttutututututuuttututututututututuuttu====',key)
         if index==2:
             source_intensity_ch2.data={'time':time_list[key], 'intensity':intensity_list[key]}
+            print('ttttttttttutututututuuttututututututututuuttu====',key)
             #plot_intensity_ch2.legend_label = key
             #leg_label.append(key)
             plot_intensity.legend.items[1].label = key
