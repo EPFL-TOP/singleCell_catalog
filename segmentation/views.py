@@ -1326,7 +1326,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if index==1:
             source_intensity_ch1.data={'time':time_list[key], 'intensity':intensity_list[key]}
             #plot_intensity_ch1.legend_label = key
-            plot_intensity.legend.items[0].label = str(key)
+            plot_intensity_ch1.glyph.legend_label = 'Updated Label'
+            #plot_intensity.legend.items[0].label = str(key)
             print('ttttttttttutututututuuttututututututututuuttu====',type(key))
         if index==2:
             source_intensity_ch2.data={'time':time_list[key], 'intensity':intensity_list[key]}
