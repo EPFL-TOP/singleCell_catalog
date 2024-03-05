@@ -1320,17 +1320,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity_ch2=plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8)
     #for ch in range(len(time_list)):
+    leg_label=[]
     for index, key in enumerate(time_list):
         if index==0:
             source_intensity_ch0.data={'time':time_list[key], 'intensity':intensity_list[key]}
-            #plot_intensity_ch0.legend_label = key
         if index==1:
             source_intensity_ch1.data={'time':time_list[key], 'intensity':intensity_list[key]}
-            plot_intensity_ch1.legend_label = key
+            #plot_intensity_ch1.legend_label = key
+            leg_label.append(key)
         if index==2:
             source_intensity_ch2.data={'time':time_list[key], 'intensity':intensity_list[key]}
-            plot_intensity_ch2.legend_label = key
+            #plot_intensity_ch2.legend_label = key
+            leg_label.append(key)
 
+    plot_intensity.legend.labels = leg_labels
 
 
     # Add the rectangle glyph after adding the image
