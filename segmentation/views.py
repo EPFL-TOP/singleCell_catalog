@@ -809,18 +809,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
                     time_sorted, intensity_sorted = zip(*sorted_lists) 
                     source_intensity_ch0.data={'time':time_sorted, 'intensity':intensity_sorted}
+                    #plot_intensity_ch0.legend_label = key
                 if index==1:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
                     time_sorted, intensity_sorted = zip(*sorted_lists) 
                     source_intensity_ch1.data={'time':time_sorted, 'intensity':intensity_sorted}
+                    plot_intensity_ch1.legend_label = key
                 if index==2:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
                     time_sorted, intensity_sorted = zip(*sorted_lists) 
                     source_intensity_ch2.data={'time':time_sorted, 'intensity':intensity_sorted}
+                    plot_intensity_ch2.legend_label = key
             print('time_list=',time_list)
             print('intensity_list=',intensity_list)
         dropdown_cell.options=cell_list
-
         print('dropdown_cell.value = ',dropdown_cell.value)
         print('dropdown_cell.options = ',dropdown_cell.options)
         if dropdown_cell.value=='':dropdown_cell.value = dropdown_cell.options[0]
@@ -1316,15 +1318,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     for index, key in enumerate(time_list):
         if index==0:
             source_intensity_ch0.data={'time':time_list[key], 'intensity':intensity_list[key]}
+            #plot_intensity_ch0.legend_label = key
         if index==1:
             source_intensity_ch1.data={'time':time_list[key], 'intensity':intensity_list[key]}
+            plot_intensity_ch1.legend_label = key
         if index==2:
             source_intensity_ch2.data={'time':time_list[key], 'intensity':intensity_list[key]}
+            plot_intensity_ch2.legend_label = key
 
 
-    plot_intensity.line('time', 'intensity', source=source_intensity_ch1, legend_label='ch1')
+    plot_intensity_ch1=plot_intensity.line('time', 'intensity', source=source_intensity_ch1, legend_label='ch1')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8)
-    plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2')
+    plot_intensity_ch2=plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8)
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
