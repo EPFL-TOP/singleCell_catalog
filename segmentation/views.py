@@ -1326,12 +1326,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if index==1:
             source_intensity_ch1.data={'time':time_list[key], 'intensity':intensity_list[key]}
             #plot_intensity_ch1.legend_label = key
-            plot_intensity.legend[0].label = key
+            plot_intensity.legend.items[0].label = key
         if index==2:
             source_intensity_ch2.data={'time':time_list[key], 'intensity':intensity_list[key]}
             #plot_intensity_ch2.legend_label = key
             #leg_label.append(key)
-            plot_intensity.legend[1].label = key
+            plot_intensity.legend.items[1].label = key
 
     #plot_intensity.legend.labels = leg_label
 
