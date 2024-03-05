@@ -1333,7 +1333,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             #plot_intensity_ch2.legend_label = key
             leg_label.append(key)
 
-    plot_intensity.legend.labels = leg_labels
+    plot_intensity.legend.labels = leg_label
 
 
     # Add the rectangle glyph after adding the image
