@@ -409,7 +409,7 @@ def segment():
                 print('gc collect 1: ',gc.collect())
 
 #___________________________________________________________________________________________
-def build_cells(sample=None):
+def build_cells_all_exp(sample=None):
     #loop over all experiments
     exp_list = Experiment.objects.all()
     for exp in exp_list:
@@ -439,7 +439,7 @@ def build_cells(sample=None):
                 if len(cell_roi_list)==0:continue
                 X = np.array(cell_roi_coord)
                 eps= ((cellroi.max_col-cellroi.min_col)/2. + (cellroi.max_row-cellroi.min_row)/2.)/1.
-                clustering = DBSCAN(eps=eps, min_samples=15).fit(X)
+                clustering = DBSCAN(eps=eps, min_samples=25).fit(X)
                 print(clustering.labels_)
 
                 #Create the cells ID according to existing clusters (one per cluster >=0)
@@ -457,46 +457,53 @@ def build_cells(sample=None):
                         cell_roi_list[cid].save()
 
 
-
 #___________________________________________________________________________________________
-def intensity(experiment='', well='', position=''):
-    exp_list = Experiment.objects.all()
-    for exp in exp_list:
-        if experiment!='' and experiment!=exp.name: continue
-        print('---- INTENSITY experiment name ',exp.name)
-        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-        for expds in experimentaldataset:
-            if well!='' and well!=expds.data_name: continue
-            print('    ---- INTENSITY experimentaldataset name ',expds.data_name, expds.data_type)
-            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-            for s in samples:
-                if position!='' and position!=s.file_name: continue
-                print('        ---- INTENSITY sample name ',s.file_name)
-                cellsid = CellID.objects.select_related().filter(sample = s)
-                cell_dict={}
-                for cid in cellsid:
-                    print('            ---- INTENSITY cellid name ',cid.name)
-                    cell_dict[cid.name]={'time':[],'npixels':[]}
-                    cell_frames = CellFrame.objects.select_related().filter(cell_id=cid)
-                    for cf in cell_frames:
-                        contours = Contour.objects.select_related().filter(cell_frame=cf)
-                        #NEED TO SELECT contours for a given segmentation properly
-                        for cont in contours:
-                            cell_dict[cid.name]['time'].append(cont.frame.time)
-                            cell_dict[cid.name]['npixels'].append(cont.pixels_data_inside.all_pixels['npixels'])
+def build_cells_sample(sample):
+ 
+    samples=None
+    if type(sample) == str:
+        samples = Sample.objects.get(file_name = sample)
+    else:
+        samples=sample
+    print('build_cells_sample ',samples)
+    for s in samples:
+        if sample!=None and sample!=s.file_name:continue
+        print('        ---- BUILD CELL sample name ',s.file_name)
+        cellsid = CellID.objects.select_related().filter(sample = s)
+        #delete the existing cellID
+        cellsid.delete()
 
-                            for ch in cont.pixels_data_inside.all_pixels['sum_intensity']:
-                                try:
-                                    cell_dict[cid.name]['intensity_{}'.format(ch.replace(' ',''))]
-                                except KeyError:
-                                    cell_dict[cid.name]['intensity_{}'.format(ch.replace(' ',''))]=[]
-                                cell_dict[cid.name]['intensity_{}'.format(ch.replace(' ',''))].append(cont.pixels_data_inside.all_pixels['sum_intensity'][ch])
-                            #print(cont.pixels_data_inside.all_pixels)
-                            #print('contour ID=',cont.id,'  center=',cont.center, ' seg channel ',cont.segmentation_channel.channel_name,', ',cont.segmentation_channel.channel_number\
-                            #      ,' seg name=',cont.segmentation_channel.segmentation.name,' seg type=',cont.segmentation_channel.segmentation.algorithm_type)
-                    print('   n cell_frames=',len(cell_frames))
-                print(cell_dict)
-                return cell_dict
+        frames = Frame.objects.select_related().filter(sample = s)
+        cell_roi_list=[]
+        cell_roi_coord=[]
+
+        for f in frames:
+            cellrois = CellROI.objects.select_related().filter(frame=f)
+            for cellroi in cellrois:
+                cell_roi_list.append(cellroi)
+                cell_roi_coord.append([cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., 
+                                        cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.])
+        print('number of cell frames=',len(cell_roi_list))
+        if len(cell_roi_list)==0:continue
+        X = np.array(cell_roi_coord)
+        eps= ((cellroi.max_col-cellroi.min_col)/2. + (cellroi.max_row-cellroi.min_row)/2.)/1.
+        clustering = DBSCAN(eps=eps, min_samples=25).fit(X)
+        print(clustering.labels_)
+
+        #Create the cells ID according to existing clusters (one per cluster >=0)
+        #Connect the cellFrames to cellID
+        createdcells=[]
+        cellid_dict={}
+        for cid in range(len(clustering.labels_)):
+            if clustering.labels_[cid] not in createdcells and clustering.labels_[cid]!=-1:
+                cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]))
+                cellid.save()
+                createdcells.append(clustering.labels_[cid])
+                cellid_dict['cell{}'.format(clustering.labels_[cid])]=cellid
+            if clustering.labels_[cid]!=-1:
+                cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
+                cell_roi_list[cid].save()
+
 
 #___________________________________________________________________________________________
 def build_ROIs():
@@ -527,12 +534,14 @@ def build_ROIs():
                     if len(rois)>0: continue
                     ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number])
 
+                    npixmin=10
                     for r in range(len(ROIs)):
+                        if ROIs[r][0]<npixmin or ROIs[r][1]<npixmin or ROIs[r][2]>frame.height-npixmin or ROIs[r][3]>frame.width-npixmin:
+                            continue
                         roi = CellROI(min_row = ROIs[r][0], min_col = ROIs[r][1],
                                       max_row = ROIs[r][2], max_col = ROIs[r][3], 
                                       frame = frame, roi_number=r)
                         roi.save()
-
 
                         cropped_dict = {'shape_original':BF_images[frame.number].shape}
                         out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
@@ -549,7 +558,6 @@ def build_ROIs():
                         out_file = open(out_file_name, "w") 
                         json.dump(cropped_dict, out_file) 
                         out_file.close() 
-
 
                         intensity_mean={}
                         intensity_std={}
@@ -582,7 +590,11 @@ def build_ROIs():
                                           type="cell_ROI",
                                           mode="auto")
                         contour.save()
+                build_cells_sample(s)
 
+
+#___________________________________________________________________________________________
+def removeROIs(sample=None):
 
 async def saveROI(request):
     #roi = sync_to_async(ROI)(min_row=1, max_row=1, roi_number=10000)
@@ -1262,7 +1274,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def build_cells_callback():
         print('****************************  build_cells_callback ****************************')
         current_file=get_current_file()
-        build_cells(sample=current_file)
+        build_cells_sample(sample=current_file)
         height_cells, weight_cells, names_cells = update_source_labels_cells()
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         update_dropdown_cell('','','')
@@ -1400,14 +1412,8 @@ def index(request: HttpRequest) -> HttpResponse:
         segment()
 
     if 'build_cells' in request.POST:
-        build_cells()
+        build_cells_all_exp()
 
-    if 'intensity' in request.POST:
-        intensity()
-    #if 'select_experiment' in request.POST and 'select_well' in request.POST and 'select_position' in request.POST:
-    #    cell_dict = intensity(experiment=request.POST.get('select_experiment'), 
-    #                          well=request.POST.get('select_well'), 
-    #                          position=request.POST.get('select_position'))
 
     #dictionary to provide possible selection choices
     select_dict={
