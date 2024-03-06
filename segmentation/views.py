@@ -595,7 +595,7 @@ def build_ROIs():
 
 #___________________________________________________________________________________________
 def removeROIs(sample=None):
-
+    return
 async def saveROI(request):
     #roi = sync_to_async(ROI)(min_row=1, max_row=1, roi_number=10000)
     samples = Sample.objects.all()
