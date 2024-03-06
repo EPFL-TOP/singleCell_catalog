@@ -53,7 +53,7 @@ class Sample(models.Model):
     keep_sample        = models.BooleanField(help_text="keep this sample flag")
 
     def __str__(self):
-        return self.file_name
+        return 'name={0}, quality={1}'.format(self.file_name, self.sample_quality)
 
     def get_absolute_url(self):
         return reverse('sample-detail', args=[str(self.id)])

@@ -460,49 +460,47 @@ def build_cells_all_exp(sample=None):
 #___________________________________________________________________________________________
 def build_cells_sample(sample):
  
-    samples=None
+    s=None
     if type(sample) == str:
-        samples = Sample.objects.get(file_name = sample)
+        s = Sample.objects.get(file_name = sample)
     else:
-        samples=sample
-    print('build_cells_sample ',samples)
-    for s in samples:
-        if sample!=None and sample!=s.file_name:continue
-        print('        ---- BUILD CELL sample name ',s.file_name)
-        cellsid = CellID.objects.select_related().filter(sample = s)
-        #delete the existing cellID
-        cellsid.delete()
+        s=sample
+    print('build_cells_sample ',s)
+    print('        ---- BUILD CELL sample name ',s.file_name)
+    cellsid = CellID.objects.select_related().filter(sample = s)
+    #delete the existing cellID
+    cellsid.delete()
 
-        frames = Frame.objects.select_related().filter(sample = s)
-        cell_roi_list=[]
-        cell_roi_coord=[]
+    frames = Frame.objects.select_related().filter(sample = s)
+    cell_roi_list=[]
+    cell_roi_coord=[]
 
-        for f in frames:
-            cellrois = CellROI.objects.select_related().filter(frame=f)
-            for cellroi in cellrois:
-                cell_roi_list.append(cellroi)
-                cell_roi_coord.append([cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., 
-                                        cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.])
-        print('number of cell frames=',len(cell_roi_list))
-        if len(cell_roi_list)==0:continue
-        X = np.array(cell_roi_coord)
-        eps= ((cellroi.max_col-cellroi.min_col)/2. + (cellroi.max_row-cellroi.min_row)/2.)/1.
-        clustering = DBSCAN(eps=eps, min_samples=25).fit(X)
-        print(clustering.labels_)
+    for f in frames:
+        cellrois = CellROI.objects.select_related().filter(frame=f)
+        for cellroi in cellrois:
+            cell_roi_list.append(cellroi)
+            cell_roi_coord.append([cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., 
+                                    cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.])
+    print('number of cell frames=',len(cell_roi_list))
+    if len(cell_roi_list)==0:return
+    X = np.array(cell_roi_coord)
+    eps= ((cellroi.max_col-cellroi.min_col)/2. + (cellroi.max_row-cellroi.min_row)/2.)/1.
+    clustering = DBSCAN(eps=eps, min_samples=25).fit(X)
+    print(clustering.labels_)
 
-        #Create the cells ID according to existing clusters (one per cluster >=0)
-        #Connect the cellFrames to cellID
-        createdcells=[]
-        cellid_dict={}
-        for cid in range(len(clustering.labels_)):
-            if clustering.labels_[cid] not in createdcells and clustering.labels_[cid]!=-1:
-                cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]))
-                cellid.save()
-                createdcells.append(clustering.labels_[cid])
-                cellid_dict['cell{}'.format(clustering.labels_[cid])]=cellid
-            if clustering.labels_[cid]!=-1:
-                cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
-                cell_roi_list[cid].save()
+    #Create the cells ID according to existing clusters (one per cluster >=0)
+    #Connect the cellFrames to cellID
+    createdcells=[]
+    cellid_dict={}
+    for cid in range(len(clustering.labels_)):
+        if clustering.labels_[cid] not in createdcells and clustering.labels_[cid]!=-1:
+            cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]))
+            cellid.save()
+            createdcells.append(clustering.labels_[cid])
+            cellid_dict['cell{}'.format(clustering.labels_[cid])]=cellid
+        if clustering.labels_[cid]!=-1:
+            cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
+            cell_roi_list[cid].save()
 
 
 #___________________________________________________________________________________________
