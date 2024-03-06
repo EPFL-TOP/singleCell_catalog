@@ -1076,10 +1076,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellrois = CellROI.objects.select_related().filter(frame=frame[0])
             roi_exist=False
             for cellroi in cellrois:
+                #if cellroi.min_col == math.floor(source_roi.data['left'][i]) and \
+                #    cellroi.min_row == math.floor(frame[0].height-source_roi.data['top'][i])  and \
+                #        cellroi.max_col == math.ceil(source_roi.data['right'][i]) and \
+                #            cellroi.max_row == math.ceil(frame[0].height-source_roi.data['bottom'][i]):
                 if cellroi.min_col == math.floor(source_roi.data['left'][i]) and \
-                    cellroi.min_row == math.floor(frame[0].height-source_roi.data['top'][i])  and \
+                    cellroi.min_row == math.floor(source_roi.data['top'][i])  and \
                         cellroi.max_col == math.ceil(source_roi.data['right'][i]) and \
-                            cellroi.max_row == math.ceil(frame[0].height-source_roi.data['bottom'][i]):
+                            cellroi.max_row == math.ceil(source_roi.data['bottom'][i]):
                         print('save_roi_callback already exist ',frame[0])
                         roi_exist=True
             if not roi_exist:
