@@ -1098,7 +1098,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if not os.path.exists(out_dir_name):
                     os.makedirs(out_dir_name)
                 print('roi.min_row, roi.max_row, roi.min_col,roi.max_col',roi.min_row, roi.max_row, roi.min_col,roi.max_col)
-                cropped_img = images[:, 512-roi.min_row:512-roi.max_row, roi.min_col:roi.max_col]
+                #cropped_img = images[:, 512-roi.min_row:512-roi.max_row, roi.min_col:roi.max_col]
+                cropped_img = images[:, roi.min_row:roi.max_row, roi.min_col:roi.max_col]
                 print('images shape ',images.shape)
                 print('images type ',type(images))
                 
