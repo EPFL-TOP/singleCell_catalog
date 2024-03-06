@@ -945,9 +945,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         height_labels=[]
         weight_labels=[]
         names_labels=[]
-        height_labels.clear()
-        weight_labels.clear()
-        names_labels.clear()
         current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
         current_index=get_current_index()
@@ -961,8 +958,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for roi in rois:
             weight_labels.append(roi.min_col)
             #back in bokeh coordinates for display
-            height_labels.append(frame[0].height-roi.max_row)
-            names_labels.append('ROI{0}'.format(roi.roi_number))
+            #height_labels.append(frame[0].height-roi.max_row)
+            height_labels.append(roi.max_row)
+            names_labels.append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
         print('ppppppp ',height_labels, weight_labels, names_labels)
         return height_labels, weight_labels, names_labels
 
@@ -987,7 +985,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if roi.cell_id == None: continue
             weight_cells.append(roi.min_col)
             #back in bokeh coordinates for display
-            height_cells.append(frame[0].height-roi.min_row)
+            #height_cells.append(frame[0].height-roi.min_row)
+            height_cells.append(roi.min_row)
             names_cells.append(roi.cell_id.name)
         print('ppppppp cells',height_cells, weight_cells, names_cells)
         return height_cells, weight_cells, names_cells
