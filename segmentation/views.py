@@ -554,14 +554,17 @@ def build_ROIs():
                         intensity_mean={}
                         intensity_std={}
                         intensity_sum={}
+                        intensity_max={}
                         for ch in range(len(channels)): 
                             sum=float(np.sum(cropped_img[ch]))
                             mean=float(np.mean(cropped_img[ch]))
                             std=float(np.std(cropped_img[ch]))
+                            max=float(np.max(cropped_img[ch]))
                             ch_name=channels[ch].replace(" ","")
                             intensity_mean[ch_name]=mean
                             intensity_std[ch_name]=std
                             intensity_sum[ch_name]=sum
+                            intensity_max[ch_name]=max
                         
                         contour = Contour(center_x_pix=ROIs[r][1]+(ROIs[r][3]-ROIs[r][1])/2., 
                                           center_y_pix=ROIs[r][0]+(ROIs[r][2]-ROIs[r][0])/2.,
@@ -572,6 +575,7 @@ def build_ROIs():
                                           intensity_mean=intensity_mean,
                                           intensity_std=intensity_std,
                                           intensity_sum=intensity_sum,
+                                          intensity_max=intensity_max,
                                           number_of_pixels=cropped_img.shape[1]*cropped_img.shape[2],
                                           file_name=out_file_name,
                                           cell_roi=roi,
@@ -969,9 +973,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         height_cells=[]
         weight_cells=[]
         names_cells=[]
-        height_cells.clear()
-        weight_cells.clear()
-        names_cells.clear()
         current_file=get_current_file()
         current_index=get_current_index()
         sample = Sample.objects.get(file_name=current_file)
@@ -1083,7 +1084,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if not roi_exist:
                 print('save_roi_callback saving ',frame[0])
                 roi = CellROI(min_col=math.floor(source_roi.data['left'][i]), max_col=math.ceil(source_roi.data['right'][i]), 
-                              min_row=math.floor(frame[0].height-source_roi.data['top'][i]),  max_row=math.ceil(frame[0].height-source_roi.data['bottom'][i]),
+#                              min_row=math.floor(frame[0].height-source_roi.data['top'][i]),  max_row=math.ceil(frame[0].height-source_roi.data['bottom'][i]),
+                              min_row=math.floor(source_roi.data['top'][i]),  max_row=math.ceil(source_roi.data['bottom'][i]),
                               roi_number=i, frame=frame[0])
                 roi.save()
 
@@ -1116,14 +1118,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 intensity_mean={}
                 intensity_std={}
                 intensity_sum={}
+                intensity_max={}
                 for ch in range(len(channels)): 
                     sum=float(np.sum(cropped_img[ch]))
                     mean=float(np.mean(cropped_img[ch]))
                     std=float(np.std(cropped_img[ch]))
+                    max=float(np.max(cropped_img[ch]))
                     ch_name=channels[ch]
                     intensity_mean[ch_name]=mean
                     intensity_std[ch_name]=std
                     intensity_sum[ch_name]=sum
+                    intensity_max[ch_name]=max
                 
                 contour = Contour(center_x_pix=roi.min_col+(roi.max_col-roi.min_col)/2., 
                                   center_y_pix=roi.min_row+(roi.max_row-roi.min_row)/2.,
@@ -1134,6 +1139,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                   intensity_mean=intensity_mean,
                                   intensity_std=intensity_std,
                                   intensity_sum=intensity_sum,
+                                  intensity_max=intensity_max,
                                   number_of_pixels=cropped_img.shape[1]*cropped_img.shape[2],
                                   file_name=out_file_name,
                                   cell_roi=roi,
