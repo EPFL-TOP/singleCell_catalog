@@ -931,8 +931,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             #convert databse ROIs im bokeh coordinates
             #top_rois.append(frame[0].height-roi.max_row)
             #bottom_rois.append(frame[0].height-roi.min_row)
-            top_rois.append(frame[0].height-roi.min_row)
-            bottom_rois.append(frame[0].height-roi.max_row)
+            #top_rois.append(frame[0].height-roi.min_row)
+            #bottom_rois.append(frame[0].height-roi.max_row)
+            top_rois.append(roi.min_row)
+            bottom_rois.append(roi.max_row)
         print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
         return left_rois,right_rois,top_rois,bottom_rois
