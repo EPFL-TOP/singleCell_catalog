@@ -162,7 +162,7 @@ class Contour(models.Model):
     intensity_mean   = models.JSONField(help_text="Contour mean intensity")
     intensity_std    = models.JSONField(help_text="Contour std intensity")
     intensity_sum    = models.JSONField(help_text="Contour sum intensity")
-    intensity_max    = models.JSONField(help_text="Contour max intensity")
+    intensity_max    = models.JSONField(help_text="Contour max intensity", default='')
     number_of_pixels = models.PositiveSmallIntegerField(default=-9999, help_text="Contour number of pixels")
 
     file_name        = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
