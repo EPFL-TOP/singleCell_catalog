@@ -1044,12 +1044,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if isinstance(event, bokeh.events.SelectionGeometry):
             #nrows = len(source_img.data['img'][0])
             data = dict(
-                left=source_roi.data['left'] + [event.geometry['x0']],
-                right=source_roi.data['right'] + [event.geometry['x1']],
+                left=source_roi_manual.data['left'] + [event.geometry['x0']],
+                right=source_roi_manual.data['right'] + [event.geometry['x1']],
                 #top=source_roi.data['top'] + [nrows-event.geometry['y0']],
                 #bottom=source_roi.data['bottom'] + [nrows-event.geometry['y1']]
-                top=source_roi.data['top'] + [event.geometry['y0']],
-                bottom=source_roi.data['bottom'] + [event.geometry['y1']]
+                top=source_roi_manual.data['top'] + [event.geometry['y0']],
+                bottom=source_roi_manual.data['bottom'] + [event.geometry['y1']]
                 )
             source_roi.data = data
             #print('select_roi_callback x0=left, x1=right, y0=top, y1=bottom',event.geometry['x0'], event.geometry['x1'],nrows-event.geometry['y0'],nrows-event.geometry['y1'])
@@ -1084,7 +1084,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Save ROI
     def save_roi_callback():
         print('****************************  save_roi_callback ****************************')
-        print('Saving ROI===================================',source_roi.data)
+        print('Saving ROI===================================',source_roi_manual.data)
         current_file=get_current_file()
         current_index=get_current_index()
 
@@ -1097,7 +1097,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('======sample: ',sample)
             for f in frame:
                 print('===============frame: ',f)
-        for i in range(len(source_roi.data['left'])):
+        for i in range(len(source_roi_manual.data['left'])):
             cellrois = CellROI.objects.select_related().filter(frame=frame[0])
             roi_exist=False
             for cellroi in cellrois:
@@ -1105,17 +1105,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 #    cellroi.min_row == math.floor(frame[0].height-source_roi.data['top'][i])  and \
                 #        cellroi.max_col == math.ceil(source_roi.data['right'][i]) and \
                 #            cellroi.max_row == math.ceil(frame[0].height-source_roi.data['bottom'][i]):
-                if cellroi.min_col == math.floor(source_roi.data['left'][i]) and \
-                    cellroi.min_row == math.floor(source_roi.data['top'][i])  and \
-                        cellroi.max_col == math.ceil(source_roi.data['right'][i]) and \
-                            cellroi.max_row == math.ceil(source_roi.data['bottom'][i]):
+                if cellroi.min_col == math.floor(source_roi_manual.data['left'][i]) and \
+                    cellroi.min_row == math.floor(source_roi_manual.data['top'][i])  and \
+                        cellroi.max_col == math.ceil(source_roi_manual.data['right'][i]) and \
+                            cellroi.max_row == math.ceil(source_roi_manual.data['bottom'][i]):
                         print('save_roi_callback already exist ',frame[0])
                         roi_exist=True
             if not roi_exist:
                 print('save_roi_callback saving ',frame[0])
-                roi = CellROI(min_col=math.floor(source_roi.data['left'][i]), max_col=math.ceil(source_roi.data['right'][i]), 
+                roi = CellROI(min_col=math.floor(source_roi_manual.data['left'][i]), max_col=math.ceil(source_roi_manual.data['right'][i]), 
 #                              min_row=math.floor(frame[0].height-source_roi.data['top'][i]),  max_row=math.ceil(frame[0].height-source_roi.data['bottom'][i]),
-                              min_row=math.floor(source_roi.data['top'][i]),  max_row=math.ceil(source_roi.data['bottom'][i]),
+                              min_row=math.floor(source_roi_manual.data['top'][i]),  max_row=math.ceil(source_roi_manual.data['bottom'][i]),
                               roi_number=i, frame=frame[0])
                 roi.save()
 
@@ -1312,6 +1312,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     left_rois, right_rois, top_rois, bottom_rois = update_source_roi()
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
+    source_roi_manual  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
 
     height_labels, weight_labels, names_labels = update_source_labels_roi()
     source_labels = bokeh.models.ColumnDataSource(data=dict(height=height_labels,weight=weight_labels,names=names_labels))
