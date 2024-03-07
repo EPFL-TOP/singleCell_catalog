@@ -563,6 +563,7 @@ def build_ROIs():
                         cropped_dict['shape']=[cropped_img.shape[1], cropped_img.shape[2]]
                         cropped_dict['npixels']=cropped_img.shape[1]*cropped_img.shape[2]
                         cropped_dict['shift']=[ROIs[r][0], ROIs[r][1]]
+                        cropped_dict['type']="auto"
 
                         for ch in range(len(channels)):
                             cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = cropped_img[ch].tolist()     
@@ -1105,6 +1106,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for i in range(len(source_roi_manual.data['left'])):
             cellrois = CellROI.objects.select_related().filter(frame=frame[0])
             roi_exist=False
+            roi_number=i+len(source_roi.data['left'])-len(source_roi_manual.data['left'])+1
+            print('roi_number=',roi_number)
+            print('source_roi=',len(source_roi.data['left']))
+            print('source_roi_manual=',len(source_roi_manual.data['left']))
+            print('i=',i)
             for cellroi in cellrois:
                 if cellroi.min_col == math.floor(source_roi_manual.data['left'][i]) and \
                     cellroi.min_row == math.floor(frame[0].height-source_roi_manual.data['bottom'][i])  and \
@@ -1116,7 +1122,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 print('save_roi_callback saving ',frame[0])
                 roi = CellROI(min_col=math.floor(source_roi_manual.data['left'][i]), max_col=math.ceil(source_roi_manual.data['right'][i]), 
                               min_row=math.floor(frame[0].height-source_roi_manual.data['bottom'][i]),  max_row=math.ceil(frame[0].height-source_roi_manual.data['top'][i]),
-                              roi_number=i+len(source_roi.data['left'])-len(source_roi_manual.data['left'])+1, 
+                              roi_number=roi_number, 
                               frame=frame[0])
                 roi.save()
 
@@ -1125,7 +1131,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 print('save_roi_callback images shape ', images.shape)
                 cropped_dict = {'shape_original':images[0].shape}
                 out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
-                out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame[0].number, i))
+                out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame[0].number, roi_number))
                 if not os.path.exists(out_dir_name):
                     os.makedirs(out_dir_name)
                 print('roi.min_row, roi.max_row, roi.min_col,roi.max_col',roi.min_row, roi.max_row, roi.min_col,roi.max_col)
@@ -1139,6 +1145,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 cropped_dict['shape']=[cropped_img.shape[1],cropped_img.shape[2]]
                 cropped_dict['npixels']=cropped_img.shape[1]*cropped_img.shape[2]
                 cropped_dict['shift']=[roi.min_row, roi.min_col]
+                cropped_dict['type']="manual"
 
                 channels=exp.name_of_channels.split(',')
                 for ch in range(len(channels)):
