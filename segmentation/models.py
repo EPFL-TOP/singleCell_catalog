@@ -113,6 +113,8 @@ class CellID(models.Model):
 #___________________________________________________________________________________________
 class CellROI(models.Model):
     #Coordinates according to skimage.measure.regionprops.bbox
+    #Bounding box (min_row, min_col, max_row, max_col). 
+
     min_row    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox min row ROI and bottom in bokeh")
     min_col    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox min col ROI and left in bokeh")
     max_row    = models.PositiveSmallIntegerField(default=0, help_text="skimage.measure.regionprops.bbox max row ROI and top in bokeh")

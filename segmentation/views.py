@@ -504,6 +504,18 @@ def build_cells_sample(sample):
 
 
 #___________________________________________________________________________________________
+def removeROIs(sample):
+    s=None
+    if type(sample) == str:
+        s = Sample.objects.get(file_name = sample)
+    else:
+        s=sample
+    print('removeROIs sample ',s)
+    cells = CellID.objects.select_related().filter(sample=s)
+    for c in cells:
+        return
+
+#___________________________________________________________________________________________
 def build_ROIs():
     exp_list = Experiment.objects.all()
     for exp in exp_list:
@@ -540,10 +552,11 @@ def build_ROIs():
                                       max_row = ROIs[r][2], max_col = ROIs[r][3], 
                                       frame = frame, roi_number=r)
                         roi.save()
+            #Bounding box (min_row, min_col, max_row, max_col). 
 
                         cropped_dict = {'shape_original':BF_images[frame.number].shape}
                         out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
-                        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_all.json".format(frame.number, r))
+                        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, r))
                         if not os.path.exists(out_dir_name):
                             os.makedirs(out_dir_name)
                         cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
@@ -591,9 +604,9 @@ def build_ROIs():
                 build_cells_sample(s)
 
 
-#___________________________________________________________________________________________
-def removeROIs(sample=None):
-    return
+
+
+
 async def saveROI(request):
     #roi = sync_to_async(ROI)(min_row=1, max_row=1, roi_number=10000)
     samples = Sample.objects.all()
@@ -912,18 +925,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    left_rois=[]
-    right_rois=[]
-    top_rois=[]
-    bottom_rois=[]
+
     #___________________________________________________________________________________________
     # update the source_roi
     def update_source_roi():
         print('****************************  update_source_roi ****************************')
-        left_rois.clear()
-        right_rois.clear()
-        top_rois.clear()
-        bottom_rois.clear()
+        left_rois=[]
+        right_rois=[]
+        top_rois=[]
+        bottom_rois=[]
+        #left_rois.clear()
+        #right_rois.clear()
+        #top_rois.clear()
+        #bottom_rois.clear()
         current_file=get_current_file()
         current_index=get_current_index()
         sample = Sample.objects.get(file_name=current_file)
@@ -1039,6 +1053,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 bottom=source_roi.data['bottom'] + [event.geometry['y1']]
                 )
             source_roi.data = data
+            print('select_roi_callback x0=left, x1=right, y0=top, y1=bottom',event.geometry['x0'], event.geometry['x1'],event.geometry['y0'],event.geometry['y1'])
     plot_image.on_event(bokeh.events.SelectionGeometry, select_roi_callback)
 
     #___________________________________________________________________________________________
@@ -1115,6 +1130,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 print('roi.min_row, roi.max_row, roi.min_col,roi.max_col',roi.min_row, roi.max_row, roi.min_col,roi.max_col)
                 #cropped_img = images[:, 512-roi.min_row:512-roi.max_row, roi.min_col:roi.max_col]
                 cropped_img = images[:, roi.min_row:roi.max_row, roi.min_col:roi.max_col]
+                #from build_roi cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
+
                 print('images shape ',images.shape)
                 print('images type ',type(images))
                 
