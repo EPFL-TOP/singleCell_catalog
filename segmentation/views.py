@@ -1051,7 +1051,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 top=source_roi_manual.data['top'] + [event.geometry['y0']],
                 bottom=source_roi_manual.data['bottom'] + [event.geometry['y1']]
                 )
-            source_roi.data = data
+            source_roi_manual.data = data
             #print('select_roi_callback x0=left, x1=right, y0=top, y1=bottom',event.geometry['x0'], event.geometry['x1'],nrows-event.geometry['y0'],nrows-event.geometry['y1'])
             print('select_roi_callback x0=left, x1=right, y0=top, y1=bottom',event.geometry['x0'], event.geometry['x1'],event.geometry['y0'],event.geometry['y1'])
     plot_image.on_event(bokeh.events.SelectionGeometry, select_roi_callback)
