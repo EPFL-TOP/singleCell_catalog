@@ -1115,17 +1115,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 #        cellroi.max_col == math.ceil(source_roi.data['right'][i]) and \
                 #            cellroi.max_row == math.ceil(frame[0].height-source_roi.data['bottom'][i]):
                 if cellroi.min_col == math.floor(source_roi_manual.data['left'][i]) and \
-                    cellroi.min_row == math.floor(source_roi_manual.data['top'][i])  and \
+                    cellroi.min_row == math.floor(frame[0].height-source_roi_manual.data['top'][i])  and \
                         cellroi.max_col == math.ceil(source_roi_manual.data['right'][i]) and \
-                            cellroi.max_row == math.ceil(source_roi_manual.data['bottom'][i]):
+                            cellroi.max_row == math.ceil(frame[0].height-source_roi_manual.data['bottom'][i]):
                         print('save_roi_callback already exist ',frame[0])
                         roi_exist=True
             if not roi_exist:
                 print('save_roi_callback saving ',frame[0])
                 roi = CellROI(min_col=math.floor(source_roi_manual.data['left'][i]), max_col=math.ceil(source_roi_manual.data['right'][i]), 
-#                              min_row=math.floor(frame[0].height-source_roi.data['top'][i]),  max_row=math.ceil(frame[0].height-source_roi.data['bottom'][i]),
-                              min_row=math.floor(source_roi_manual.data['top'][i]),  max_row=math.ceil(source_roi_manual.data['bottom'][i]),
-                              roi_number=i, frame=frame[0])
+                              min_row=math.floor(frame[0].height-source_roi_manual.data['top'][i]),  max_row=math.ceil(frame[0].height-source_roi_manual.data['bottom'][i]),
+#                              min_row=math.floor(source_roi_manual.data['top'][i]),  max_row=math.ceil(source_roi_manual.data['bottom'][i]),
+                              roi_number=i+len(source_roi.data['left'])-len(source_roi_manual.data['left'])+1, 
+                              frame=frame[0])
                 roi.save()
 
                 images=source_img_ch.data['img']
