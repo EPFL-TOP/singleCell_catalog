@@ -1042,14 +1042,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def select_roi_callback(event):
         print('****************************  select_roi_callback ****************************')
         if isinstance(event, bokeh.events.SelectionGeometry):
+            nrows = len(source_img.data['img'][0])
             data = dict(
                 left=source_roi.data['left'] + [event.geometry['x0']],
                 right=source_roi.data['right'] + [event.geometry['x1']],
-                top=source_roi.data['top'] + [len(source_img['img'][0])-event.geometry['y0']],
-                bottom=source_roi.data['bottom'] + [len(source_img['img'][0])-event.geometry['y1']]
+                top=source_roi.data['top'] + [nrows-event.geometry['y0']],
+                bottom=source_roi.data['bottom'] + [nrows-event.geometry['y1']]
                 )
             source_roi.data = data
-            print('select_roi_callback x0=left, x1=right, y0=top, y1=bottom',event.geometry['x0'], event.geometry['x1'],len(source_img['img'][0])-event.geometry['y0'],len(source_img['img'][0])-event.geometry['y1'])
+            print('select_roi_callback x0=left, x1=right, y0=top, y1=bottom',event.geometry['x0'], event.geometry['x1'],nrows-event.geometry['y0'],nrows-event.geometry['y1'])
     plot_image.on_event(bokeh.events.SelectionGeometry, select_roi_callback)
 
     #___________________________________________________________________________________________
