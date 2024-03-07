@@ -1106,7 +1106,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for i in range(len(source_roi_manual.data['left'])):
             cellrois = CellROI.objects.select_related().filter(frame=frame[0])
             roi_exist=False
-            roi_number=i+len(source_roi.data['left'])-len(source_roi_manual.data['left'])+1
+            roi_number=i+len(source_roi.data['left'])-len(source_roi_manual.data['left'])
             print('roi_number=',roi_number)
             print('source_roi=',len(source_roi.data['left']))
             print('source_roi_manual=',len(source_roi_manual.data['left']))
