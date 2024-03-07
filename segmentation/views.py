@@ -1049,8 +1049,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             data = dict(
                 left=source_roi.data['left'] + [event.geometry['x0']],
                 right=source_roi.data['right'] + [event.geometry['x1']],
-                top=source_roi.data['top'] + [event.geometry['y0']],
-                bottom=source_roi.data['bottom'] + [event.geometry['y1']]
+                top=source_roi.data['top'] + [512-event.geometry['y0']],
+                bottom=source_roi.data['bottom'] + [512-event.geometry['y1']]
                 )
             source_roi.data = data
             print('select_roi_callback x0=left, x1=right, y0=top, y1=bottom',event.geometry['x0'], event.geometry['x1'],event.geometry['y0'],event.geometry['y1'])
