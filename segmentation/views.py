@@ -953,8 +953,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             #bottom_rois.append(frame[0].height-roi.min_row)
             top_rois.append(frame[0].height-roi.min_row)
             bottom_rois.append(frame[0].height-roi.max_row)
-            #top_rois.append(roi.min_row)
-            #bottom_rois.append(roi.max_row)
         print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
         return left_rois,right_rois,top_rois,bottom_rois
@@ -981,7 +979,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             weight_labels.append(roi.min_col)
             #back in bokeh coordinates for display
             #height_labels.append(frame[0].height-roi.max_row)
-            height_labels.append(roi.max_row)
+            height_labels.append(frame[0].height-roi.min_row)
             names_labels.append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
         print('ppppppp ',height_labels, weight_labels, names_labels)
         return height_labels, weight_labels, names_labels
