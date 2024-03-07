@@ -1128,7 +1128,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
                 images=source_img_ch.data['img']
                 images=np.array(images)
-                np.flip(images)
+                images=np.flip(images)
                 print('save_roi_callback images shape ', images.shape)
                 cropped_dict = {'shape_original':images[0].shape}
                 out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
