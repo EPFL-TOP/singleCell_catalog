@@ -1140,7 +1140,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 #from build_roi cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
 
                 print('images shape ',images.shape)
-                print('images type ',type(images))
                 
                 cropped_dict['shape']=[cropped_img.shape[1],cropped_img.shape[2]]
                 cropped_dict['npixels']=cropped_img.shape[1]*cropped_img.shape[2]
