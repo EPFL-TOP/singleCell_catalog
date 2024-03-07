@@ -1115,9 +1115,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 #        cellroi.max_col == math.ceil(source_roi.data['right'][i]) and \
                 #            cellroi.max_row == math.ceil(frame[0].height-source_roi.data['bottom'][i]):
                 if cellroi.min_col == math.floor(source_roi_manual.data['left'][i]) and \
-                    cellroi.min_row == math.floor(frame[0].height-source_roi_manual.data['top'][i])  and \
+                    cellroi.min_row == math.floor(frame[0].height-source_roi_manual.data['bottom'][i])  and \
                         cellroi.max_col == math.ceil(source_roi_manual.data['right'][i]) and \
-                            cellroi.max_row == math.ceil(frame[0].height-source_roi_manual.data['bottom'][i]):
+                            cellroi.max_row == math.ceil(frame[0].height-source_roi_manual.data['top'][i]):
                         print('save_roi_callback already exist ',frame[0])
                         roi_exist=True
             if not roi_exist:
