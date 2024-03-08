@@ -1383,8 +1383,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Create a TapTool and attach the callback
     #tap_tool = bokeh.models.TapTool(callback=callback_tap)
     #tap_tool.callback = bokeh.models.CustomJS.from_py_func(callback_tap)
-    callback = bokeh.models.CustomJS.from_py_func(callback_tap)
-    tap_tool = bokeh.models.TapTool(callback=callback)
+    #callback = bokeh.models.CustomJS.from_py_func(callback_tap)
+    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(code=callback_tap2()))
     plot_intensity.add_tools(tap_tool)
 
 
