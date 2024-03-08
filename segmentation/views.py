@@ -470,42 +470,58 @@ def build_cells_sample(sample):
     print('build_cells_sample ',s)
     print('        ---- BUILD CELL sample name ',s.file_name)
     cellsid = CellID.objects.select_related().filter(sample = s)
-    #delete the existing cellID
-    cellsid.delete()
+    ##delete the existing cellID
+    #cellsid.delete()
 
     frames = Frame.objects.select_related().filter(sample = s)
+    cell_roi_id_list=[]
+    for cellid in cellsid:
+        cellrois_cellid = CellROI.objects.select_related().filter(cell_id=cellid)
+        for cellroi_cellid in cellrois_cellid:
+            cell_roi_id_list.append(cellroi_cellid.id)
     cell_roi_list=[]
     cell_roi_coord=[]
 
+    #do a first clustering using all ROIs
+    if len(cell_roi_id_list)==0:
+        eps=0
+        for f in frames:
+            cellrois_frame = CellROI.objects.select_related().filter(frame=f)
+            for cellroi_frame in cellrois_frame:
+
+                cell_roi_list.append(cellroi_frame)
+                cell_roi_coord.append([cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2., 
+                                        cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.])
+                eps+= ((cellroi_frame.max_col-cellroi_frame.min_col)/2. + (cellroi_frame.max_row-cellroi_frame.min_row)/2.)/2.
+
+        eps=eps/len(frames)
+        print('number of cell frames=',len(cell_roi_list))
+        if len(cell_roi_list)==0:return
+        X = np.array(cell_roi_coord)
+        clustering = DBSCAN(eps=eps, min_samples=20).fit(X)
+        print(clustering.labels_)
+
+        #Create the cells ID according to existing clusters (one per cluster >=0)
+        #Connect the cellFrames to cellID
+        createdcells=[]
+        cellid_dict={}
+        for cid in range(len(clustering.labels_)):
+            if clustering.labels_[cid] not in createdcells and clustering.labels_[cid]!=-1:
+                cellstatus = CellStatus()
+                cellstatus.save()
+                cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]), cell_status=cellstatus)
+                cellid.save()
+                createdcells.append(clustering.labels_[cid])
+                cellid_dict['cell{}'.format(clustering.labels_[cid])]=cellid
+            if clustering.labels_[cid]!=-1:
+                cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
+                cell_roi_list[cid].save()
+
+    #Then cluster remaining or new cells ROIs
     for f in frames:
-        cellrois = CellROI.objects.select_related().filter(frame=f)
-        for cellroi in cellrois:
-            cell_roi_list.append(cellroi)
-            cell_roi_coord.append([cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., 
-                                    cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.])
-    print('number of cell frames=',len(cell_roi_list))
-    if len(cell_roi_list)==0:return
-    X = np.array(cell_roi_coord)
-    eps= ((cellroi.max_col-cellroi.min_col)/2. + (cellroi.max_row-cellroi.min_row)/2.)/1.
-    clustering = DBSCAN(eps=eps, min_samples=25).fit(X)
-    print(clustering.labels_)
-
-    #Create the cells ID according to existing clusters (one per cluster >=0)
-    #Connect the cellFrames to cellID
-    createdcells=[]
-    cellid_dict={}
-    for cid in range(len(clustering.labels_)):
-        if clustering.labels_[cid] not in createdcells and clustering.labels_[cid]!=-1:
-            cellstatus = CellStatus()
-            cellstatus.save()
-            cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]), cell_status=cellstatus)
-            cellid.save()
-            createdcells.append(clustering.labels_[cid])
-            cellid_dict['cell{}'.format(clustering.labels_[cid])]=cellid
-        if clustering.labels_[cid]!=-1:
-            cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
-            cell_roi_list[cid].save()
-
+        cellrois_frame = CellROI.objects.select_related().filter(frame=f)
+        for cellroi_frame in cellrois_frame:
+            if cellroi_frame.id in cell_roi_id_list: continue
 
 #___________________________________________________________________________________________
 def removeROIs(sample):
@@ -763,7 +779,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             slider.value = 0
         slider.end=len(source_imgs.data['images'][0]) - 1
         line_position.location = source_intensity_ch1.data["time"][0]
-
+        source_varea_death.data['x']  = []
+        source_varea_death.data['y1']  = []
+        source_varea_death.data['y2']  = []
     dropdown_exp.on_change('value', update_dropdown_well)
     #___________________________________________________________________________________________
 
@@ -787,7 +805,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('in the else update_dropdown_pos')
             slider.value = 0
         line_position.location = source_intensity_ch1.data["time"][0]
-
+        source_varea_death.data['x']  = []
+        source_varea_death.data['y1']  = []
+        source_varea_death.data['y2']  = []
     dropdown_well.on_change('value', update_dropdown_pos)
     #___________________________________________________________________________________________
 
@@ -1500,7 +1520,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 #time_list[ch].append((roi.frame.time/60000))
                 #intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
                 intensity_list[ch][roi.frame.number]= roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels
-    print(time_list)
+        print(time_list)
 
 
 
