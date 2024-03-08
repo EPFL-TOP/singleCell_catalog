@@ -510,6 +510,7 @@ def removeROIs(sample):
         s = Sample.objects.get(file_name = sample)
     else:
         s=sample
+    #frames = 
     print('removeROIs sample ',s)
     cells = CellID.objects.select_related().filter(sample=s)
     for c in cells:
@@ -1339,14 +1340,22 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
-    # Go to next frame with possible issue
-    def set_cell_callback():
-        height_cells, weight_cells, names_cells = update_source_labels_cells()
-        source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
-    button_build_cells = bokeh.models.Button(label="build cells")
-    button_build_cells.on_click(build_cells_callback)
+    # Set the start of oscillation
+    def start_oscillation_callback():
+        current_index=get_current_index()
+        start_oscillation_position.location = source_intensity_ch1.data["time"][current_index]
+    button_start_oscillation = bokeh.models.Button(label="Osc. Start")
+    button_start_oscillation.on_click(start_oscillation_callback)
     #___________________________________________________________________________________________
 
+    #___________________________________________________________________________________________
+    # Set the end of oscillation
+    def end_oscillation_callback():
+        current_index=get_current_index()
+        end_oscillation_position.location = source_intensity_ch1.data["time"][current_index]
+    button_end_oscillation = bokeh.models.Button(label="Osc. Start")
+    button_end_oscillation.on_click(end_oscillation_callback)
+    #___________________________________________________________________________________________
 
 
     # Create a Div widget with some text
@@ -1403,6 +1412,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8, line_color='blue')
     plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2', line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8, line_color='black')
+    plot_intensity.y_range.start=0
+
     #for ch in range(len(time_list)):
     for index, key in enumerate(time_list):
         if index==0:
@@ -1415,7 +1426,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     initial_position = source_intensity_ch1.data["time"][0]
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
     plot_intensity.add_layout(line_position)
-    plot_intensity.y_range.start=0
+
+    start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='black', line_width=2)
+    plot_intensity.add_layout(start_oscillation_position)
+    end_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='black', line_width=2)
+    plot_intensity.add_layout(end_oscillation_position)
 
     source_varea = bokeh.models.ColumnDataSource(data=dict(x=source_intensity_ch1.data["time"], y1=source_intensity_ch1.data["intensity"], y2=[0 for i in source_intensity_ch1.data["intensity"]]))
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='blue', source=source_varea)
@@ -1440,6 +1455,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi ),
                                      bokeh.layouts.row(button_inspect, button_build_cells, dropdown_cell),
+                                     bokeh.layouts.row(button_start_oscillation,button_end_oscillation),
                                      text)
     
     norm_layout = bokeh.layouts.row(left_col, plot_image, right_col, plot_intensity)
