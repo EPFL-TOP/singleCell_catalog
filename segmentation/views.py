@@ -1531,7 +1531,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8, line_color='black')
     plot_intensity.y_range.start=0
     plot_intensity.x_range.start=-10
-    print('------------------------fdsdfsdfsdfdfsdfsdfdsfdsfdf -,'source_intensity_ch1.data["time"])
+    print('------------------------fdsdfsdfsdfdfsdfsdfdsfdsfdf -,',source_intensity_ch1.data["time"])
     #for ch in range(len(time_list)):
     for index, key in enumerate(time_list):
         if index==0:
