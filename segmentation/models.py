@@ -112,7 +112,7 @@ class Data(models.Model):
 #___________________________________________________________________________________________
 class CellStatus(models.Model):
 
-    status = models.JSONField(default=dict, help_text="json to store the cell status", blank=True)
+    peaks = models.JSONField(default=dict, help_text="json to store the cell peaks intensities", blank=True)
 
     time_of_death           = models.FloatField(default=-9999, help_text="Cell time of death in minutes", blank=True)
     start_oscillation       = models.FloatField(default=-9999, help_text="Cell time start of oscillation in minutes", blank=True)

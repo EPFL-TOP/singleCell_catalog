@@ -1501,7 +1501,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def find_peaks_callback():
-
+        current_index=get_current_index()
         int_array = np.array(source_intensity_ch1.data["intensity"])
         for int in range(len(int_array)):
             if source_intensity_ch1.data["time"][int]<start_oscillation_position.location:
@@ -1524,11 +1524,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for p in peaksmin:
             time.append(source_intensity_ch1.data["time"][p])
             int.append(source_intensity_ch1.data["intensity"][p])
-        source_intensity_min.data={'time':time, 'intensity':int}  
-        print('peaksmax ',peaksmax)
-        print('peaksmin ',peaksmin)
-        
-       
+        source_intensity_min.data={'time':time, 'intensity':int}
+
+        sample = Sample.objects.get(file_name=get_current_file())
+        cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+        cellstatus = cellsid[0].cell_status
+        cellstatus.peaks={'min':peaksmax.totist(), 'min':peaksmin.tolist()}
+        cellstatus.save()
+
     button_find_peaks = bokeh.models.Button(label="Find Peaks")
     button_find_peaks.on_click(find_peaks_callback)
     #___________________________________________________________________________________________
@@ -1626,8 +1629,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8, line_color='blue')
     plot_intensity.line('time', 'intensity', source=source_intensity_ch2, line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8, line_color='black')
-    plot_intensity.inverted_triangle('time', 'intensity', source=source_intensity_max, fill_color="green", size=8, line_color='green')
-    plot_intensity.triangle('time', 'intensity', source=source_intensity_min, fill_color="green", size=8, line_color='green')
+    plot_intensity.circle('time', 'intensity', source=source_intensity_max, fill_color="red", size=8, line_color='red')
+    plot_intensity.circle('time', 'intensity', source=source_intensity_min, fill_color="green", size=8, line_color='green')
 
     plot_intensity.y_range.start=0
     plot_intensity.x_range.start=-10
