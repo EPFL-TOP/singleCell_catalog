@@ -1399,28 +1399,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    plot_intensity_ch1=plot_intensity.line('time', 'intensity', source=source_intensity_ch1, legend_label='ch1')
-    plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8)
-    plot_intensity_ch2=plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2')
-    plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8)
+    plot_intensity.line('time', 'intensity', source=source_intensity_ch1, legend_label='ch1', line_color='blue')
+    plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8, line_color='blue')
+    plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2', line_color='black')
+    plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8, line_color='black')
     #for ch in range(len(time_list)):
     for index, key in enumerate(time_list):
         if index==0:
             source_intensity_ch0.data={'time':time_list[key], 'intensity':intensity_list[key]}
         if index==1:
             source_intensity_ch1.data={'time':time_list[key], 'intensity':intensity_list[key]}
-            #plot_intensity_ch1.legend_label = key
-            #plot_intensity_ch1.glyph.legend_label = 'Updated Label'
-            #plot_intensity.legend.items[0].label = str(key)
-            #print('ttttttttttutututututuuttututututututututuuttu====',type(key))
         if index==2:
             source_intensity_ch2.data={'time':time_list[key], 'intensity':intensity_list[key]}
-            #print('ttttttttttutututututuuttututututututututuuttu====',key)
-            #plot_intensity_ch2.legend_label = key
-            #leg_label.append(key)
-            #plot_intensity.legend.items[1].label = str(key)
-
-    #plot_intensity.legend.labels = leg_label
 
     initial_position = source_intensity_ch1.data["time"][0]
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
@@ -1428,10 +1418,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.y_range.start=0
 
     source_varea = bokeh.models.ColumnDataSource(data=dict(x=source_intensity_ch1.data["time"], y1=source_intensity_ch1.data["intensity"], y2=[0 for i in source_intensity_ch1.data["intensity"]]))
-    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.15, fill_color='blue', source=source_varea)
-    #band = bokeh.models.Band(base='time', upper='intensity', source=source_intensity_ch1, level='underlay',
-    #        fill_alpha=0.2, fill_color='#55FF88')
-    #plot_intensity.add_layout(band)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='blue', source=source_varea)
+
 
 
     # Add the rectangle glyph after adding the image
