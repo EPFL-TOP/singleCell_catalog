@@ -1363,16 +1363,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def callback_tap():
         return """
         const indices = cb_data.source.selected.indices;
-        console.log("indices=" + indices );  
-
-
         if (indices.length > 0) {
             const index = indices[0];
-            console.log("index=" + index );    
             other_source.data = {'index': [index]};
             other_source.change.emit();  
         }
-
         """
     # Create a TapTool and attach the callback
     tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=other_source),code=callback_tap()))
@@ -1384,10 +1379,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         new_image = images[int(dropdown_channel.value)][index]
         norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
         source_img.data = {'img':[norm]}
-
         source_img_ch.data = {'img':[images[ch][index] for ch in range(len(images))]}
 
-
+        slider.value=index
 
 
     other_source.on_change('data', python_callback)
