@@ -1375,7 +1375,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if (indices.length > 0) {
             const index = indices[0];
             console.log("index=" + index );      
+            const source = cb_data.source_imgs;
+            const channel = cb_data.dropdown_channel.value
+            console.log("channel=" + channel );      
 
+            source.change.emit(); // Trigger the change event to update the plot
         }
 
         """
