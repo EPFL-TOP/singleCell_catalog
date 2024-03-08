@@ -1357,10 +1357,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_end_oscillation.on_click(end_oscillation_callback)
     #___________________________________________________________________________________________
 
+    #___________________________________________________________________________________________
+    # Set cell time of death
+    def time_of_death_callback():
+        current_index=get_current_index()
+        time_of_death_position.location = source_intensity_ch1.data["time"][current_index]
+    button_time_of_death = bokeh.models.Button(label="Dead")
+    button_time_of_death.on_click(time_of_death_callback)
+    #___________________________________________________________________________________________
 
-    other_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
 
-    def callback_tap():
+
+    #___________________________________________________________________________________________
+    # Select image from click
+    def select_tap_callback():
         return """
         const indices = cb_data.source.selected.indices;
         if (indices.length > 0) {
@@ -1369,22 +1379,28 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             other_source.change.emit();  
         }
         """
-    # Create a TapTool and attach the callback
-    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=other_source),code=callback_tap()))
-    plot_intensity.add_tools(tap_tool)
-    # Define a Python callback function to update the image based on the index
-    def python_callback(attr, old, new):
+    #___________________________________________________________________________________________
+
+    #___________________________________________________________________________________________
+    def update_image_tap_callback(attr, old, new):
         index = new['index'][0]
         images=source_imgs.data['images']
         new_image = images[int(dropdown_channel.value)][index]
         norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
         source_img.data = {'img':[norm]}
         source_img_ch.data = {'img':[images[ch][index] for ch in range(len(images))]}
-
         slider.value=index
 
+    #___________________________________________________________________________________________
 
-    other_source.on_change('data', python_callback)
+
+    index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
+
+    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()))
+    plot_intensity.add_tools(tap_tool)
+    # Define a Python callback function to update the image based on the index
+
+    index_source.on_change('data', update_image_tap_callback)
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
@@ -1441,6 +1457,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2', line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8, line_color='black')
     plot_intensity.y_range.start=0
+    plot_intensity.x_range.start=0
 
     #for ch in range(len(time_list)):
     for index, key in enumerate(time_list):
@@ -1452,15 +1469,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_intensity_ch2.data={'time':time_list[key], 'intensity':intensity_list[key]}
 
     initial_position = source_intensity_ch1.data["time"][0]
+    initial_position = -9999
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
     plot_intensity.add_layout(line_position)
 
-    start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='black', line_width=2)
+    start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
     plot_intensity.add_layout(start_oscillation_position)
-    end_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='black', line_width=2)
+    end_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
     plot_intensity.add_layout(end_oscillation_position)
+    time_of_death_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='black', line_width=2)
+    plot_intensity.add_layout(time_of_death_position)
 
-    source_varea = bokeh.models.ColumnDataSource(data=dict(x=source_intensity_ch1.data["time"], y1=source_intensity_ch1.data["intensity"], y2=[0 for i in source_intensity_ch1.data["intensity"]]))
+    source_varea = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='blue', source=source_varea)
 
 
@@ -1483,7 +1503,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi ),
                                      bokeh.layouts.row(button_inspect, button_build_cells, dropdown_cell),
-                                     bokeh.layouts.row(button_start_oscillation,button_end_oscillation),
+                                     bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
                                      text)
     
     norm_layout = bokeh.layouts.row(left_col, plot_image, right_col, plot_intensity)
