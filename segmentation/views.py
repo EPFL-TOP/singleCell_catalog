@@ -814,9 +814,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_death.data['x']  = []
                 source_varea_death.data['y1']  = []
                 source_varea_death.data['y2']  = []
-            #add json file to DB
-            source_intensity_max.data={'time':[], 'intensity':[]}
-            source_intensity_min.data={'time':[], 'intensity':[]}
+
+            if len(cellids[0].peaks["min"])>0:
+                source_intensity_max.data={'time':cellids[0].peaks["max_time"], 'intensity':cellids[0].peaks["max_intensity"]}
+                source_intensity_min.data={'time':cellids[0].peaks["min_time"], 'intensity':cellids[0].peaks["min_intensity"]}
+            else:
+                source_intensity_max.data={'time':[], 'intensity':[]}
+                source_intensity_min.data={'time':[], 'intensity':[]}
 
         line_position.location = 0
         if len(source_intensity_ch1.data["time"])!=0:
@@ -1501,7 +1505,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def find_peaks_callback():
-        current_index=get_current_index()
         int_array = np.array(source_intensity_ch1.data["intensity"])
         for int in range(len(int_array)):
             if source_intensity_ch1.data["time"][int]<start_oscillation_position.location:
@@ -1513,23 +1516,26 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         peaksmax, _ = find_peaks(np.array(int_array),  prominence=40)
         peaksmin, _ = find_peaks(-np.array(int_array), prominence=40)
 
-        int=[]
-        time=[]
+        int_max=[]
+        time_max=[]
         for p in peaksmax:
             time.append(source_intensity_ch1.data["time"][p])
             int.append(source_intensity_ch1.data["intensity"][p])
-        source_intensity_max.data={'time':time, 'intensity':int}  
-        int=[]
-        time=[]
+        source_intensity_max.data={'time':time_max, 'intensity':int_max}  
+
+        int_min=[]
+        time_min=[]
         for p in peaksmin:
             time.append(source_intensity_ch1.data["time"][p])
             int.append(source_intensity_ch1.data["intensity"][p])
-        source_intensity_min.data={'time':time, 'intensity':int}
+        source_intensity_min.data={'time':time_min, 'intensity':int_min}
 
         sample = Sample.objects.get(file_name=get_current_file())
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
         cellstatus = cellsid[0].cell_status
-        cellstatus.peaks={'min':peaksmax.tolist(), 'min':peaksmin.tolist()}
+        cellstatus.peaks={'min_frame':peaksmax.tolist(), 'max_frame':peaksmin.tolist(), 
+                          'min_int':int_min, 'max_int':int_max,
+                          'min_time':time_min, 'max_time':time_max}
         cellstatus.save()
 
     button_find_peaks = bokeh.models.Button(label="Find Peaks")
