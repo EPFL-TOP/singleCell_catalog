@@ -1358,22 +1358,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    # Define a CustomJS callback to display the image corresponding to the clicked point
-    callback_tap3 = bokeh.models.CustomJS(args=dict(source=source_imgs), code="""
-        // Get the index of the clicked point
-        const indices = cb_data.source.selected.indices;
-        console.log("indices=" + indices );  
-        if (indices.length > 0) {
-            const index = indices[0];
-            console.log("index=" + index );   
-                                                      console.log("source"+source)
-  
-        }   
-        // Update the ImageRGBA glyph to display the clicked image
-        source.selected.indices = [index];
-        source.change.emit(); // Trigger the change event to update the plot
-    """)
-
     # Define a Python callback to display the image corresponding to the clicked point
     def callback_tap(event):
         if len(event.indices) > 0:
@@ -1388,6 +1372,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         return """
         const indices = cb_data.source.selected.indices;
         console.log("indices=" + indices );      
+        console.log("cb_data=" + cb_data );      
         if (indices.length > 0) {
             const index = indices[0];
             console.log("index=" + index );      
@@ -1401,10 +1386,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         """
     # Create a TapTool and attach the callback
-    #tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(code=callback_tap2()))
-    #plot_intensity.add_tools(tap_tool)
+    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(code=callback_tap2()))
+    plot_intensity.add_tools(tap_tool)
 
-    plot_intensity.js_on_event('tap', callback_tap3)
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
