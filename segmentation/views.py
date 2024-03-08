@@ -1368,9 +1368,21 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             #source.data['images'] = [image_rgba]
             #source.change.emit()  # Trigger the change event to update the plot
 
+    def callback_tap2():
+        return """
+        const index = cb_obj.indices[0];
+        const source = cb_obj.source_imgs;
+        const ch = cb_obj.dropdown_channel.value
+        const source_img = cb_obj.source_img;
+        if (index !== undefined) {
+            const imageUrl = source.data['images'][ch][index];
+            source.data['images'] = [imageUrl];
+            source.change.emit(); // Trigger the change event to update the plot
+        }
+        """
     # Create a TapTool and attach the callback
-    tap_tool = bokeh.models.TapTool()
-    tap_tool.callback = bokeh.models.CustomJS.from_py_func(callback_tap)
+    tap_tool = bokeh.models.TapTool(callback=callback_tap)
+    #tap_tool.callback = bokeh.models.CustomJS.from_py_func(callback_tap)
     plot_intensity.add_tools(tap_tool)
 
 
