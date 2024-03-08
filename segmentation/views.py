@@ -4,7 +4,7 @@ from django.db import connection
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
 
-from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellROI
+from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellROI, CellStatus, CellFlag
 
 import os, sys, json, glob, gc
 import time
@@ -448,7 +448,9 @@ def build_cells_all_exp(sample=None):
                 cellid_dict={}
                 for cid in range(len(clustering.labels_)):
                     if clustering.labels_[cid] not in createdcells and clustering.labels_[cid]!=-1:
-                        cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]))
+                        cellstatus = CellStatus()
+                        cellstatus.save()
+                        cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]), cell_status=cellstatus)
                         cellid.save()
                         createdcells.append(clustering.labels_[cid])
                         cellid_dict['cell{}'.format(clustering.labels_[cid])]=cellid
@@ -494,7 +496,9 @@ def build_cells_sample(sample):
     cellid_dict={}
     for cid in range(len(clustering.labels_)):
         if clustering.labels_[cid] not in createdcells and clustering.labels_[cid]!=-1:
-            cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]))
+            cellstatus = CellStatus()
+            cellstatus.save()
+            cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]), cell_status=cellstatus)
             cellid.save()
             createdcells.append(clustering.labels_[cid])
             cellid_dict['cell{}'.format(clustering.labels_[cid])]=cellid
@@ -1356,6 +1360,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_varea_death.data['x']  = [source_intensity_ch1.data["time"][t] for t in range(current_index, len(source_intensity_ch1.data["time"])) ]
         source_varea_death.data['y1'] = [source_intensity_ch1.data["intensity"][t] for t in range(current_index, len(source_intensity_ch1.data["intensity"])) ]
         source_varea_death.data['y2'] = [0 for i in range(len(source_varea_death.data['y1']))]
+
+        cellstatus = CellStatus()
+
     button_time_of_death = bokeh.models.Button(label="Dead")
     button_time_of_death.on_click(time_of_death_callback)
     #___________________________________________________________________________________________

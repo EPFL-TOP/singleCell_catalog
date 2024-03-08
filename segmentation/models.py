@@ -104,11 +104,30 @@ class Data(models.Model):
     single_pixels = models.JSONField(default=dict, help_text="Pixels individual coordinates and intensities")
 
 
+
+
+
+
+
+#___________________________________________________________________________________________
+class CellStatus(models.Model):
+
+    status = models.JSONField(default=dict, help_text="json to store the cell status")
+
+    time_of_death           = models.FloatField(default=-9999, help_text="Cell time of death in minutes")
+    start_oscillation       = models.FloatField(default=-9999, help_text="Cell time start of oscillation in minutes")
+    end_oscillation         = models.FloatField(default=-9999, help_text="Cell time end of oscillation in minutes")
+
+    time_of_death_frame     = models.PositiveSmallIntegerField(default=-9999, help_text="Cell frame of death")
+    start_oscillation_frame = models.PositiveSmallIntegerField(default=-9999, help_text="Cell frame start of oscillation")
+    end_oscillation_frame   = models.PositiveSmallIntegerField(default=-9999, help_text="Cell frame end of oscillation")
+
+
 #___________________________________________________________________________________________
 class CellID(models.Model):
     name   = models.CharField(default='', max_length=20, help_text="cell name")
     sample = models.ForeignKey(Sample, default='', on_delete=models.SET_DEFAULT)
-
+    cell_status  = models.OneToOneField(CellStatus, default='', null=True, on_delete=models.CASCADE)
 
 #___________________________________________________________________________________________
 class CellROI(models.Model):
@@ -181,9 +200,6 @@ class Contour(models.Model):
         else:
             return 'type={0}, mode={1}, file={2}, frame={3}, roi={4}, cell={5}, contour={6}'.format(self.type, self.mode, self.cell_roi.frame.sample.file_name, self.cell_roi.frame.number, self.cell_roi.roi_number, self.cell_roi.cell_id, self.file_name)
 
-#############################################################################################
-
-
 
 #local status for
 #___________________________________________________________________________________________
@@ -205,20 +221,3 @@ class CellFlag(models.Model):
     class Meta:
         verbose_name = 'Cell flags'
         verbose_name_plural = 'Cell flags'
-
-
-
-#___________________________________________________________________________________________
-class CellStatus(models.Model):
-
-    status = models.JSONField(default=dict, help_text="json to store the cell status")
-
-    time_of_death           = models.FloatField(default=-9999, help_text="Cell time of death in minutes")
-    start_oscillation       = models.FloatField(default=-9999, help_text="Cell time start of oscillation in minutes")
-    end_oscillation         = models.FloatField(default=-9999, help_text="Cell time end of oscillation in minutes")
-
-    time_of_death_frame     = models.PositiveSmallIntegerField(default=-9999, help_text="Cell frame of death")
-    start_oscillation_frame = models.PositiveSmallIntegerField(default=-9999, help_text="Cell frame start of oscillation")
-    end_oscillation_frame   = models.PositiveSmallIntegerField(default=-9999, help_text="Cell frame end of oscillation")
-
-    cell_id       = models.OneToOneField(CellID, default='', null=True, on_delete=models.CASCADE, related_name="cellstatus_cellid")
