@@ -522,7 +522,7 @@ def build_cells_sample(sample):
     #Then cluster remaining or new cells ROIs
     cell_pos_dict={}
     cell_id_dict={}
-    cellsid = CellID.objects.select_related().filter(sample = sample)
+    cellsid = CellID.objects.select_related().filter(sample = s)
     for cellid in cellsid:
         cell_pos_dict[cellid.name]=[]
         cell_id_dict[cellid.name]=cellid
