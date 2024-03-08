@@ -1358,17 +1358,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    # Define a Python callback to display the image corresponding to the clicked point
-    def callback_tap(event):
-        if len(event.indices) > 0:
-            index = event.indices[0]
-            print('====================callback_tap=====================',index,'----------',event.indices)
-            #image_data = source.data['images'][index]
-            #image_rgba = np.dstack([image_data.astype(np.uint8)] * 4)
-            #source.data['images'] = [image_rgba]
-            #source.change.emit()  # Trigger the change event to update the plot
 
-    def callback_tap2():
+
+    def callback_tap():
         return """
         const indices = cb_data.source.selected.indices;
         console.log("indices=" + indices );      
@@ -1376,7 +1368,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         console.log("cb_data.source=" + cb_data.source );      
         console.log("cb_data.source.selected=" + cb_data.source.selected );      
         console.log("source_img.data=" + source_img.data );      
-        const channel = dropdown_channel.value;
+        const channel = channel.value;
         console.log("channel=" + channel );      
 
         if (indices.length > 0) {
@@ -1392,7 +1384,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         """
     # Create a TapTool and attach the callback
-    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(source_img=source_img),code=callback_tap2()))
+    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(source_imgs=source_imgs, channel=dropdown_channel),code=callback_tap()))
     plot_intensity.add_tools(tap_tool)
 
 
