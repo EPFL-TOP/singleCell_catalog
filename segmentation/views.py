@@ -1382,7 +1382,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if (indices.length > 0) {
             const index = indices[0];
             console.log("index=" + index );      
-            const source = cb_data.source_imgs;
+            const source = cb_data.source_img;
             console.log("source"+source)
             const channel = cb_data.dropdown_channel.value
             console.log("channel=" + channel );      
@@ -1392,7 +1392,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         """
     # Create a TapTool and attach the callback
-    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(source_imgs=source_imgs),code=callback_tap2()))
+    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(source_img=source_img),code=callback_tap2()))
     plot_intensity.add_tools(tap_tool)
 
 
