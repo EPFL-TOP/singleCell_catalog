@@ -665,6 +665,22 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_pos  = bokeh.models.Select(value=positions['{0}_{1}'.format(experiments[0], wells[experiments[0]][0])][0],title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
 
 
+    #___________________________________________________________________________________________
+    # Function to get the image stack
+    def get_current_stack():
+        print('****************************  get_current_stack ****************************')
+        current_file=get_current_file()
+        time_lapse_path = Path(current_file)
+        time_lapse = nd2.imread(time_lapse_path.as_posix())
+        ind_images_list=[]
+        for nch in range(time_lapse.shape[1]):
+            time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
+            time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
+            ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
+            ind_images_list.append(ind_images)
+        return ind_images_list
+    #___________________________________________________________________________________________
+
     ind_images_list = get_current_stack()
     print ('in segmentation_handler ind_images_list (channel)=',len(ind_images_list))
     print ('in segmentation_handler ind_images_list (timepoints)=',len(ind_images_list[0]))
@@ -712,21 +728,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    #___________________________________________________________________________________________
-    # Function to get the image stack
-    def get_current_stack():
-        print('****************************  get_current_stack ****************************')
-        current_file=get_current_file()
-        time_lapse_path = Path(current_file)
-        time_lapse = nd2.imread(time_lapse_path.as_posix())
-        ind_images_list=[]
-        for nch in range(time_lapse.shape[1]):
-            time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
-            time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
-            ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
-            ind_images_list.append(ind_images)
-        return ind_images_list
-    #___________________________________________________________________________________________
+
 
 
     #___________________________________________________________________________________________
