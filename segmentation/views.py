@@ -1529,7 +1529,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         sample = Sample.objects.get(file_name=get_current_file())
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
         cellstatus = cellsid[0].cell_status
-        cellstatus.peaks={'min':peaksmax.totist(), 'min':peaksmin.tolist()}
+        cellstatus.peaks={'min':peaksmax.tolist(), 'min':peaksmin.tolist()}
         cellstatus.save()
 
     button_find_peaks = bokeh.models.Button(label="Find Peaks")
