@@ -42,15 +42,15 @@
 
     <br><br>
     <input type="submit" value="Submit" name="submit_data">
-
+    <form method="POST">
+      {% csrf_token %}
+      <input type="submit" name="reset" value="Reset">
+    </form>
   </form>
 
   <br>
 
-  <form method="POST">
-    {% csrf_token %}
-    <input type="submit" name="reset" value="Reset">
-  </form>
+
 
 
 
