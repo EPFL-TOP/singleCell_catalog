@@ -808,7 +808,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('in the else update_dropdown_well')
             slider.value = 0
         slider.end=len(source_imgs.data['images'][0]) - 1
-        line_position.location = source_intensity_ch1.data["time"][0]
+        line_position.location = 0
+        if len(source_intensity_ch1.data["time"])!=0:
+            line_position.location = source_intensity_ch1.data["time"][0]
         source_varea_death.data['x']  = []
         source_varea_death.data['y1']  = []
         source_varea_death.data['y2']  = []
@@ -834,7 +836,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         else:
             print('in the else update_dropdown_pos')
             slider.value = 0
-        line_position.location = source_intensity_ch1.data["time"][0]
+        line_position.location = 0
+        if len(source_intensity_ch1.data["time"])!=0:
+            line_position.location = source_intensity_ch1.data["time"][0]
         source_varea_death.data['x']  = []
         source_varea_death.data['y1']  = []
         source_varea_death.data['y2']  = []
