@@ -820,9 +820,25 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if len(cellids[0].cell_status.peaks)==6:
                 source_intensity_max.data={'time':cellids[0].cell_status.peaks["max_time"], 'intensity':cellids[0].cell_status.peaks["max_int"]}
                 source_intensity_min.data={'time':cellids[0].cell_status.peaks["min_time"], 'intensity':cellids[0].cell_status.peaks["min_int"]}
+                source_varea_rising.data['x']  = [source_intensity_ch1.data["time"][t] for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
+                source_varea_rising.data['y1']  = []
+                for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame):
+                    if t in cellids[0].cell_status.peaks["min_frame"]:
+                        source_varea_rising.data['y1'].append(0)
+                        continue
+                    if t in cellids[0].cell_status.peaks["max_frame"]:
+                        source_varea_rising.data['y1'].append(0)
+                        continue
+                    source_varea_rising.data['y1'].append(source_intensity_ch1.data["time"][t])
+                    
+                source_varea_rising.data['y2']  = [0 for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
+
             else:
                 source_intensity_max.data={'time':[], 'intensity':[]}
                 source_intensity_min.data={'time':[], 'intensity':[]}
+                source_varea_rising.data['x']  = []
+                source_varea_rising.data['y1']  = []
+                source_varea_rising.data['y2']  = []
         line_position.location = 0
         if len(source_intensity_ch1.data["time"])!=0:
             line_position.location = source_intensity_ch1.data["time"][0]
@@ -1668,6 +1684,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_varea_death = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
 
+    source_varea_rising = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_rising)
 
 
     # Add the rectangle glyph after adding the image
