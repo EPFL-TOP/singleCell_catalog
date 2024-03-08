@@ -1360,9 +1360,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_varea_death.data['x']  = [source_intensity_ch1.data["time"][t] for t in range(current_index, len(source_intensity_ch1.data["time"])) ]
         source_varea_death.data['y1'] = [source_intensity_ch1.data["intensity"][t] for t in range(current_index, len(source_intensity_ch1.data["intensity"])) ]
         source_varea_death.data['y2'] = [0 for i in range(len(source_varea_death.data['y1']))]
-
-        cellstatus = CellStatus()
-
+        sample = Sample.objects.get(file_name=get_current_file())
+        cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+        cellstatus = cellsid[0].cell_status
+        cellstatus.time_of_death_frame = current_index
+        frame = Frame.objects.select_related().filter(sample=sample, number=current_index)
+        cellstatus.time_of_death = frame[0].time/60000.
+        cellstatus.save()
     button_time_of_death = bokeh.models.Button(label="Dead")
     button_time_of_death.on_click(time_of_death_callback)
     #___________________________________________________________________________________________
@@ -1420,7 +1424,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     height_cells, weight_cells, names_cells = update_source_labels_cells()
     source_cells = bokeh.models.ColumnDataSource(data=dict(height=height_cells,weight=weight_cells,names=names_cells))
     labels_cells = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
-                  x_offset=0, y_offset=-15, source=source_cells, text_color='white', text_font_size="11pt")
+                                         x_offset=0, y_offset=-15, source=source_cells, text_color='white', text_font_size="11pt")
 
     plot_image.add_layout(labels_cells)
     #plot_image.add_layout(color_bar, 'right')

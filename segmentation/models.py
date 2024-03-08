@@ -128,10 +128,13 @@ class CellStatus(models.Model):
 
 #___________________________________________________________________________________________
 class CellID(models.Model):
-    name   = models.CharField(default='', max_length=20, help_text="cell name")
-    sample = models.ForeignKey(Sample, default='', on_delete=models.SET_DEFAULT)
-    cell_status  = models.OneToOneField(CellStatus, default='', null=True, on_delete=models.CASCADE, related_name="cellid_cellstatus")
+    name        = models.CharField(default='', max_length=20, help_text="cell name")
+    sample      = models.ForeignKey(Sample, default='', on_delete=models.SET_DEFAULT)
+    cell_status = models.OneToOneField(CellStatus, default='', null=True, on_delete=models.CASCADE, related_name="cellid_cellstatus")
 
+    def __str__(self):
+        return 'cell={0}, sample={1}'.format(self.name, self.sample.file_name)
+    
 #___________________________________________________________________________________________
 class CellROI(models.Model):
     #Coordinates according to skimage.measure.regionprops.bbox
