@@ -1518,13 +1518,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for p in peaksmax:
             time.append(source_intensity_ch1.data["time"][p])
             int.append(source_intensity_ch1.data["intensity"][p])
-        source_intensity_max.data={'time':int, 'intensity':time}  
+        source_intensity_max.data={'time':time, 'intensity':int}  
         int=[]
         time=[]
         for p in peaksmin:
             time.append(source_intensity_ch1.data["time"][p])
             int.append(source_intensity_ch1.data["intensity"][p])
-        source_intensity_min.data={'time':int, 'intensity':time}  
+        source_intensity_min.data={'time':time, 'intensity':int}  
         print('peaksmax ',peaksmax)
         print('peaksmin ',peaksmin)
         
