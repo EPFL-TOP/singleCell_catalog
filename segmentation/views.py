@@ -1425,6 +1425,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     x_area = source_intensity_ch1.data["time"] + source_intensity_ch1.data["time"][::-1]
     y_area = [0] + source_intensity_ch1.data["intensity"] + [0]
     #plot_intensity.varea(x=x_area, y1=y_area, y2=[0] * len(x_area), fill_alpha=0.2, fill_color='blue')
+    band = bokeh.models.Band(base='time', upper='intensity', source=source_intensity_ch1, level='underlay',
+            fill_alpha=0.2, fill_color='#55FF88')
+    plot_intensity.add_layout(band)
+
 
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
