@@ -123,6 +123,9 @@ class CellStatus(models.Model):
     end_oscillation_frame   = models.PositiveSmallIntegerField(default=0, help_text="Cell frame end of oscillation", blank=True)
 
 
+    def __str__(self):
+        return 'cell={0}'.format(self.cell_status.name)
+
 #___________________________________________________________________________________________
 class CellID(models.Model):
     name   = models.CharField(default='', max_length=20, help_text="cell name")
