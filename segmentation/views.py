@@ -1358,7 +1358,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    other_source = bokeh.models.ColumnDataSource(data=dict(index=''))  # Data source for the image
+    other_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
 
     def callback_tap():
         return """
