@@ -1423,7 +1423,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.add_layout(line_position)
     x_area = source_intensity_ch1.data["time"] + source_intensity_ch1.data["time"][::-1]
     y_area = [0] + source_intensity_ch1.data["intensity"] + [0]
-    plot_intensity.varea(x=source_intensity_ch1.data["time"], y1=source_intensity_ch1.data["intensity"], y2=source_intensity_ch1.data["time"]*0.8, fill_alpha=0.2, fill_color='blue')
+    plot_intensity.varea(x=source_intensity_ch1.data["time"], y1=source_intensity_ch1.data["intensity"], y2=[i*0.8 for i in source_intensity_ch1.data["intensity"]], fill_alpha=0.2, fill_color='blue')
     #band = bokeh.models.Band(base='time', upper='intensity', source=source_intensity_ch1, level='underlay',
     #        fill_alpha=0.2, fill_color='#55FF88')
     #plot_intensity.add_layout(band)
