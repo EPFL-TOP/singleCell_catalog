@@ -124,7 +124,9 @@ class CellStatus(models.Model):
 
 
     def __str__(self):
-        return 'cell={0}, sample={1}'.format(self.cellid_cellstatus.name, self.cellid_cellstatus.sample.file_name)
+        if  hasattr(self, 'cellid_cellstatus'):
+            return 'cell={0}, sample={1}'.format(self.cellid_cellstatus.name, self.cellid_cellstatus.sample.file_name)
+        else: return 'bad status...'
 
 #___________________________________________________________________________________________
 class CellID(models.Model):

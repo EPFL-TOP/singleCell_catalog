@@ -1533,7 +1533,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.add_layout(time_of_death_position)
 
     source_varea_death = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='blue', source=source_varea_death)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
 
 
 
