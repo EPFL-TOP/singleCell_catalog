@@ -1502,9 +1502,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     for cid in cellIDs:
         cell_list.append(cid.name)
     dropdown_cell.options=cell_list
+    time_list={}
+    intensity_list={}
     if len(cellIDs)>0:
-        time_list={}
-        intensity_list={}
+
         ROIs = CellROI.objects.select_related().filter(cell_id=cellIDs[0])
         for roi in ROIs:
             for ch in roi.contour_cellroi.intensity_sum:
