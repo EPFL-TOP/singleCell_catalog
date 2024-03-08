@@ -1358,37 +1358,39 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-
+    other_source = bokeh.models.ColumnDataSource(data=dict(index=''))  # Data source for the image
 
     def callback_tap():
         return """
         const indices = cb_data.source.selected.indices;
-        const index2 = cb_data.index.indices[0];
-        console.log("indices=" + indices );      
-        console.log("index2=" + index2 );      
-        console.log("cb_data=" + cb_data );      
-        console.log("cb_data.source=" + cb_data.source );      
-        console.log("cb_data.source.selected=" + cb_data.source.selected );      
-        console.log("source_imgs.data=" + source_imgs.data );      
-        const channel_loc = channel.value;
-        console.log("channel_loc=" + channel_loc );      
+        console.log("indices=" + indices );  
+
 
         if (indices.length > 0) {
             const index = indices[0];
-            console.log("index=" + index );      
-            const source = cb_data.source_img;
-            console.log("source"+source)
-            const channel = cb_data.dropdown_channel.value
-            console.log("channel=" + channel );      
-
-            source.change.emit(); // Trigger the change event to update the plot
+            console.log("index=" + index );    
+            other_source.data = {'index': [index]};
+            other_source.change.emit();  
         }
 
         """
     # Create a TapTool and attach the callback
-    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(source_imgs=source_imgs, channel=dropdown_channel),code=callback_tap()))
+    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=other_source),code=callback_tap()))
     plot_intensity.add_tools(tap_tool)
+    # Define a Python callback function to update the image based on the index
+    def python_callback(attr, old, new):
+        index = new['index'][0]
+        images=source_imgs.data['images']
+        new_image = images[int(dropdown_channel.value)][index]
+        norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
+        source_img.data = {'img':[norm]}
 
+        source_img_ch.data = {'img':[images[ch][index] for ch in range(len(images))]}
+
+
+
+
+    other_source.on_change('data', python_callback)
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
