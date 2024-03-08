@@ -1228,6 +1228,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         height_cells, weight_cells, names_cells = update_source_labels_cells()
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         
+        source_roi_manual.data['left']=[]
+        source_roi_manual.data['right']=[]
+        source_roi_manual.data['top']=[]
+        source_roi_manual.data['bottom']=[]
+
     button_save_roi = bokeh.models.Button(label="Save ROI")
     button_save_roi.on_click(save_roi_callback)
     #___________________________________________________________________________________________
@@ -1499,6 +1504,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
     plot_intensity.add_layout(line_position)
 
+    initial_position=-9999
     start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
     plot_intensity.add_layout(start_oscillation_position)
     end_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
