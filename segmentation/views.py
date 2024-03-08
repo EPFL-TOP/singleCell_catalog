@@ -1392,6 +1392,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     print(time_list)
 
 
+    print("source_intensity_ch1.data[time] ",source_intensity_ch1.data["time"])
     initial_position = source_intensity_ch1.data["time"][0]
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
     plot_intensity.add_layout(line_position)
