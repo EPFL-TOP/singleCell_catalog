@@ -1508,6 +1508,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         peaksmax, _ = find_peaks(np.array(int_array),  prominence=40)
         peaksmin, _ = find_peaks(-np.array(int_array), prominence=40)
 
+        print('peaksmax ',peaksmax)
+        print('peaksmin ',peaksmin)
+        
         peaksmax_list=[]
         peaksmin_list=[]
         if len(peaksmax)>0:peaksmax_list.append(int(peaksmax[0]))
