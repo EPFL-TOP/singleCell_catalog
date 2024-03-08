@@ -799,7 +799,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if cellids[0].cell_status.end_oscillation>0: end_oscillation_position.location   = cellids[0].cell_status.end_oscillation_frame
             else: end_oscillation_position.location   = -999
 
-            if cellids[0].time_of_death>0:
+            if cellids[0].cell_status.time_of_death>0:
                 time_of_death_position.location     = cellids[0].cell_status.time_of_death_frame
                 source_varea_death.data['x']  = [source_intensity_ch1.data["time"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["time"])) ]
                 source_varea_death.data['y1']  = [source_intensity_ch1.data["intensity"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["intensity"]))]
