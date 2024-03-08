@@ -793,6 +793,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to prepare the intensity plot
     def prepare_intensity():
+        print('----------------prepare_intensity--------------------')
         current_file=get_current_file()
         if dropdown_cell.value!='':
             sample = Sample.objects.get(file_name=current_file)
@@ -815,6 +816,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_death.data['y1']  = []
                 source_varea_death.data['y2']  = []
 
+            print('len(cellids[0].cell_status.peaks) ',len(cellids[0].cell_status.peaks))
             if len(cellids[0].cell_status.peaks)==4:
                 source_intensity_max.data={'time':cellids[0].cell_status.peaks["max_time"], 'intensity':cellids[0].cell_status.peaks["max_intensity"]}
                 source_intensity_min.data={'time':cellids[0].cell_status.peaks["min_time"], 'intensity':cellids[0].cell_status.peaks["min_intensity"]}
