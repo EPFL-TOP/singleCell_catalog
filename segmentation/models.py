@@ -123,7 +123,6 @@ class CellROI(models.Model):
 
     frame      = models.ForeignKey(Frame, default='',on_delete=models.CASCADE)
     cell_id    = models.ForeignKey(CellID, blank=True, null=True, default='', on_delete=models.SET_NULL)
-
     #contour     = models.OneToOneField("Contour", default='', null=True,on_delete=models.SET_DEFAULT)
 
     def __str__(self):
@@ -170,7 +169,7 @@ class Contour(models.Model):
     file_name        = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
     type             = models.CharField(max_length=200, choices=TYPE, help_text="contour type", default='auto')
     mode             = models.CharField(max_length=200, choices=MODE, help_text="contour type", default='cell_ROI')
-    cell_roi         = models.OneToOneField(CellROI, default='', null=True,on_delete=models.CASCADE, related_name="contour_cellroi")
+    cell_roi         = models.OneToOneField(CellROI, default='', null=True, on_delete=models.CASCADE, related_name="contour_cellroi")
 
 #    pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
 #    pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
@@ -186,30 +185,34 @@ class Contour(models.Model):
 
 
 
+#local status for
+#___________________________________________________________________________________________
+class CellFlag(models.Model):
+
+    oscillating    = models.BooleanField(help_text="cell oscillation flag", default=True, blank=True)
+    alive          = models.BooleanField(help_text="alive cell flag", default=True, blank=True)
+    dividing       = models.BooleanField(help_text="dividing cell flag", default=True, blank=True)
+    double_nuclei  = models.BooleanField(help_text="double nuclei cell flag", default=True, blank=True)
+    multiple_cells = models.BooleanField(help_text="multiple cells flag", default=True, blank=True)
+    pair_cell      = models.BooleanField(help_text="pair cell flag", default=True, blank=True)
+    maximum        = models.BooleanField(help_text="maximum oscillation signal cell flag", default=True, blank=True)
+    minimum        = models.BooleanField(help_text="minimum oscillation signal cell flag", default=True, blank=True)
+    rising         = models.BooleanField(help_text="rising oscillation signal cell flag", default=True, blank=True)
+    falling        = models.BooleanField(help_text="falling oscillation signal cell flag", default=True, blank=True)
+
+    cell_roi       = models.OneToOneField(CellROI, default='', null=True, on_delete=models.CASCADE, related_name="cellflag_cellroi")
+
+    class Meta:
+        verbose_name = 'Cell flags'
+        verbose_name_plural = 'Cell flags'
+
+
 
 #___________________________________________________________________________________________
 class CellStatus(models.Model):
+    
+    status = models.JSONField(default=dict, help_text="json to store the cell status")
 
-    STATUS = (
-    ('doublenuclei', 'double nuclei'), 
-    ('multiplecells','multiple cells'),
-    ('pair', 'pair'),
-    )
+    time_of_death = models.FloatField(default=-9999, help_text="Cell time of death in minutes")
 
-    alive    = models.BooleanField(help_text="alive cell flag")
-    dividing = models.BooleanField(help_text="alive cell flag")
-    keep     = models.BooleanField(help_text="keep cell flag")
-    status   = models.CharField(max_length=200, choices=STATUS, help_text="cell status")
-
-
-    class Meta:
-        verbose_name = 'Cell status'
-        verbose_name_plural = 'Cell statuses'
-
-#___________________________________________________________________________________________
-class Cell(models.Model):
-    name   = models.CharField(max_length=10, help_text="cell name id")
-    status = models.OneToOneField(CellStatus, on_delete=models.CASCADE)
-    #sample = models.ForeignKey(Sample, default='', on_delete=models.CASCADE)
-
-
+    cell_id       = models.OneToOneField(CellID, default='', null=True, on_delete=models.CASCADE, related_name="cellstatus_cellid")

@@ -1582,10 +1582,19 @@ def index(request: HttpRequest) -> HttpResponse:
         'injection_dict':injection_dict,
         'instrumental_dict':instrumental_dict,
         'sample_dict':sample_dict,
-        'script': script
+        #'script': script
     }
 
     return render(request, 'segmentation/index.html', context=context)
 
     
 
+#___________________________________________________________________________________________
+#@login_required
+def bokeh_dashboard(request: HttpRequest) -> HttpResponse:
+
+    script = bokeh.embed.server_document(request.build_absolute_uri())
+    print("request.build_absolute_uri() ",request.build_absolute_uri())
+    context = {'script': script}
+
+    return render(request, 'segmentation/bokeh_dashboard.html', context=context)
