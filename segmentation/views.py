@@ -1367,6 +1367,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def start_oscillation_callback():
         current_index=get_current_index()
         start_oscillation_position.location = source_intensity_ch1.data["time"][current_index]
+        sample = Sample.objects.get(file_name=get_current_file())
+        cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+        cellstatus = cellsid[0].cell_status
+        cellstatus.start_oscillation_frame = current_index
+        frame = Frame.objects.select_related().filter(sample=sample, number=current_index)
+        cellstatus.start_oscillation = frame[0].time/60000.
+        cellstatus.save()
     button_start_oscillation = bokeh.models.Button(label="Osc. Start")
     button_start_oscillation.on_click(start_oscillation_callback)
     #___________________________________________________________________________________________
@@ -1376,6 +1383,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def end_oscillation_callback():
         current_index=get_current_index()
         end_oscillation_position.location = source_intensity_ch1.data["time"][current_index]
+        sample = Sample.objects.get(file_name=get_current_file())
+        cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+        cellstatus = cellsid[0].cell_status
+        cellstatus.end_oscillation_frame = current_index
+        frame = Frame.objects.select_related().filter(sample=sample, number=current_index)
+        cellstatus.end_oscillation = frame[0].time/60000.
+        cellstatus.save()
     button_end_oscillation = bokeh.models.Button(label="Osc. End")
     button_end_oscillation.on_click(end_oscillation_callback)
     #___________________________________________________________________________________________
