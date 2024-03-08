@@ -792,15 +792,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if dropdown_cell.value!='':
             sample = Sample.objects.get(file_name=current_file)
             cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
-
-            if cellids[0].cell_status.start_oscillation>0: start_oscillation_position.location = cellids[0].cell_status.start_oscillation_frame
+            if cellids[0].cell_status.start_oscillation>0: start_oscillation_position.location = source_intensity_ch1.data["time"][cellids[0].cell_status.start_oscillation_frame]
             else: start_oscillation_position.location = -999
 
-            if cellids[0].cell_status.end_oscillation>0: end_oscillation_position.location   = cellids[0].cell_status.end_oscillation_frame
+            if cellids[0].cell_status.end_oscillation>0: end_oscillation_position.location   = source_intensity_ch1.data["time"][cellids[0].cell_status.end_oscillation_frame]
             else: end_oscillation_position.location   = -999
 
             if cellids[0].cell_status.time_of_death>0:
-                time_of_death_position.location     = cellids[0].cell_status.time_of_death_frame
+                time_of_death_position.location     = source_intensity_ch1.data["time"][cellids[0].cell_status.time_of_death_frame]
                 source_varea_death.data['x']  = [source_intensity_ch1.data["time"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["time"])) ]
                 source_varea_death.data['y1']  = [source_intensity_ch1.data["intensity"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["intensity"]))]
                 source_varea_death.data['y2']  = [0 for i in range(len(source_varea_death.data['y1']))]
