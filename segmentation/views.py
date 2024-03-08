@@ -1374,6 +1374,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         console.log("indices=" + indices );      
         console.log("cb_data=" + cb_data );      
         console.log("cb_data.source=" + cb_data.source );      
+        console.log("cb_data.source.selected=" + cb_data.source.selected );      
         if (indices.length > 0) {
             const index = indices[0];
             console.log("index=" + index );      
