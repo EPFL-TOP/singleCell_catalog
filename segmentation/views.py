@@ -762,6 +762,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('in the else update_dropdown_well')
             slider.value = 0
         slider.end=len(source_imgs.data['images'][0]) - 1
+        line_position.location = source_intensity_ch1.data["time"][0]
+
     dropdown_exp.on_change('value', update_dropdown_well)
     #___________________________________________________________________________________________
 
@@ -784,6 +786,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         else:
             print('in the else update_dropdown_pos')
             slider.value = 0
+        line_position.location = source_intensity_ch1.data["time"][0]
+
     dropdown_well.on_change('value', update_dropdown_pos)
     #___________________________________________________________________________________________
 
@@ -874,6 +878,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('dropdown_cell.value = ',dropdown_cell.value)
         print('dropdown_cell.options = ',dropdown_cell.options)
         if dropdown_cell.value=='':dropdown_cell.value = dropdown_cell.options[0]
+
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
     #___________________________________________________________________________________________
