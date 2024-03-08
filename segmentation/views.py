@@ -912,9 +912,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     intensity_list[ch][roi.frame.number]= roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels
 
 
-
-
-
             for index, key in enumerate(time_list):
                 if index==0:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
@@ -931,7 +928,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_cell.options=cell_list
         print('dropdown_cell.value = ',dropdown_cell.value)
         print('dropdown_cell.options = ',dropdown_cell.options)
-        if dropdown_cell.value=='':dropdown_cell.value = dropdown_cell.options[0]
+        if dropdown_cell.value=='':
+            if len(dropdown_cell.options)>0:
+                dropdown_cell.value = dropdown_cell.options[0]
+            else:
+                dropdown_cell.value = []
 
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
