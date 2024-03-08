@@ -124,13 +124,13 @@ class CellStatus(models.Model):
 
 
     def __str__(self):
-        return 'cell={0}'.format(self.cell_status.name)
+        return 'cell={0}'.format(self.cellid_cellstatus)
 
 #___________________________________________________________________________________________
 class CellID(models.Model):
     name   = models.CharField(default='', max_length=20, help_text="cell name")
     sample = models.ForeignKey(Sample, default='', on_delete=models.SET_DEFAULT)
-    cell_status  = models.OneToOneField(CellStatus, default='', null=True, on_delete=models.CASCADE)
+    cell_status  = models.OneToOneField(CellStatus, default='', null=True, on_delete=models.CASCADE, related_name="cellid_cellstatus")
 
 #___________________________________________________________________________________________
 class CellROI(models.Model):
