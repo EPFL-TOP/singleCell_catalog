@@ -849,6 +849,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
                     time_sorted, intensity_sorted = zip(*sorted_lists) 
                     source_intensity_ch1.data={'time':time_sorted, 'intensity':intensity_sorted}
+
+                    source_varea.data['y1'] = intensity_sorted
                     #plot_intensity_ch1.legend_label = key
                 if index==2:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
@@ -1421,9 +1423,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     initial_position = source_intensity_ch1.data["time"][0]
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
     plot_intensity.add_layout(line_position)
-    x_area = source_intensity_ch1.data["time"] + source_intensity_ch1.data["time"][::-1]
-    y_area = [0] + source_intensity_ch1.data["intensity"] + [0]
-    plot_intensity.varea(x=source_intensity_ch1.data["time"], y1=source_intensity_ch1.data["intensity"], y2=[0 for i in source_intensity_ch1.data["intensity"]], fill_alpha=0.2, fill_color='blue')
+    plot_intensity.y_range.start=0
+
+    source_varea = bokeh.models.ColumnDataSource(data=dict(x=source_intensity_ch1.data["time"], y1=source_intensity_ch1.data["intensity"], y2=[0 for i in source_intensity_ch1.data["intensity"]]))
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.4, fill_color='blue', source=source_varea)
     #band = bokeh.models.Band(base='time', upper='intensity', source=source_intensity_ch1, level='underlay',
     #        fill_alpha=0.2, fill_color='#55FF88')
     #plot_intensity.add_layout(band)
