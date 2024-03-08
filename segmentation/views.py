@@ -665,37 +665,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_pos  = bokeh.models.Select(value=positions['{0}_{1}'.format(experiments[0], wells[experiments[0]][0])][0],title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
 
 
-    # Function to get the current file
-    #___________________________________________________________________________________________
-    def get_current_file():
-        print('****************************  get_current_file ****************************')
-        print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   dropdown_well.value',dropdown_well.value, '  dropdown_pos.value',dropdown_pos.value)
-
-        current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
-        current_file = ''
-        for f in current_files:
-            if dropdown_pos.value in f:
-                current_file = f
-        print('--------------- get_current_file() current file  ',current_file)
-        return current_file
-
-
-    # Function to get the image stack
-    #___________________________________________________________________________________________
-    def get_current_stack():
-        print('****************************  get_current_stack ****************************')
-        current_file=get_current_file()
-        time_lapse_path = Path(current_file)
-        time_lapse = nd2.imread(time_lapse_path.as_posix())
-        ind_images_list=[]
-        for nch in range(time_lapse.shape[1]):
-            time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
-            time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
-            ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
-            ind_images_list.append(ind_images)
-        return ind_images_list
-    #___________________________________________________________________________________________
-
     ind_images_list = get_current_stack()
     print ('in segmentation_handler ind_images_list (channel)=',len(ind_images_list))
     print ('in segmentation_handler ind_images_list (timepoints)=',len(ind_images_list[0]))
@@ -723,11 +692,45 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     initial_time_point = 0
     slider         = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point")
     plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
-    plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time', y_axis_label='Intensity',width=1000, height=500)
+    plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500)
 
 
-    # Function to update the well depending on the experiment
+
     #___________________________________________________________________________________________
+    # Function to get the current file
+    def get_current_file():
+        print('****************************  get_current_file ****************************')
+        print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   dropdown_well.value',dropdown_well.value, '  dropdown_pos.value',dropdown_pos.value)
+
+        current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        current_file = ''
+        for f in current_files:
+            if dropdown_pos.value in f:
+                current_file = f
+        print('--------------- get_current_file() current file  ',current_file)
+        return current_file
+    #___________________________________________________________________________________________
+
+
+    #___________________________________________________________________________________________
+    # Function to get the image stack
+    def get_current_stack():
+        print('****************************  get_current_stack ****************************')
+        current_file=get_current_file()
+        time_lapse_path = Path(current_file)
+        time_lapse = nd2.imread(time_lapse_path.as_posix())
+        ind_images_list=[]
+        for nch in range(time_lapse.shape[1]):
+            time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
+            time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
+            ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
+            ind_images_list.append(ind_images)
+        return ind_images_list
+    #___________________________________________________________________________________________
+
+
+    #___________________________________________________________________________________________
+    # Function to update the well depending on the experiment
     def update_dropdown_well(attr, old, new):
         print('****************************  update_dropdown_well ****************************')
         dropdown_well.options = wells[dropdown_exp.value]
@@ -750,11 +753,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('in the else update_dropdown_well')
             slider.value = 0
         slider.end=len(source_imgs.data['images'][0]) - 1
-
     dropdown_exp.on_change('value', update_dropdown_well)
-
-    # Function to update the position depending on the experiment and the well
     #___________________________________________________________________________________________
+
+    #___________________________________________________________________________________________
+    # Function to update the position depending on the experiment and the well
     def update_dropdown_pos(attr, old, new):
         print('****************************  update_dropdown_pos ****************************')
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
@@ -773,9 +776,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('in the else update_dropdown_pos')
             slider.value = 0
     dropdown_well.on_change('value', update_dropdown_pos)
+    #___________________________________________________________________________________________
 
 
- 
     #___________________________________________________________________________________________
     def update_dropdown_channel(attr, old, new):
         print('****************************  update_dropdown_channel ****************************')
@@ -907,8 +910,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
 
-    # Function to get the current index
     #___________________________________________________________________________________________
+    # Function to get the current index
     def get_current_index():
         print('****************************  get_current_index ****************************')
         return slider.value
@@ -923,6 +926,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         play_stop_callback()
         play_stop_callback()
     dropdown_refresh_time.on_change('value',refresh_time_callback)
+    #___________________________________________________________________________________________
 
 
 
@@ -957,6 +961,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
         return left_rois,right_rois,top_rois,bottom_rois
+    #___________________________________________________________________________________________
 
 
     #___________________________________________________________________________________________
@@ -983,6 +988,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             names_labels.append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
         print('ppppppp ',height_labels, weight_labels, names_labels)
         return height_labels, weight_labels, names_labels
+    #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     # update the source_labels
@@ -1009,6 +1015,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             names_cells.append(roi.cell_id.name)
         print('ppppppp cells',height_cells, weight_cells, names_cells)
         return height_cells, weight_cells, names_cells
+    #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     # Define a callback to update bf_display with slider
@@ -1031,6 +1038,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
     slider.on_change('value', callback_slider)
+    #___________________________________________________________________________________________
     
 
 
@@ -1061,6 +1069,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             #print('select_roi_callback x0=left, x1=right, y0=top, y1=bottom',event.geometry['x0'], event.geometry['x1'],nrows-event.geometry['y0'],nrows-event.geometry['y1'])
             print('select_roi_callback x0=left, x1=right, y0=top, y1=bottom',event.geometry['x0'], event.geometry['x1'],event.geometry['y0'],event.geometry['y1'])
     plot_image.on_event(bokeh.events.SelectionGeometry, select_roi_callback)
+    #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     # Define a callback to delete the ROI
@@ -1085,6 +1094,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             roi.delete()
     button_delete_roi = bokeh.models.Button(label="Delete ROI")
     button_delete_roi.on_click(delete_roi_callback)
+    #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     # Save ROI
@@ -1197,6 +1207,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         
     button_save_roi = bokeh.models.Button(label="Save ROI")
     button_save_roi.on_click(save_roi_callback)
+    #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     # Function to update the image displayed
@@ -1215,17 +1226,22 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         slider.value = current_index
 
         print('update_image index=',current_index)
+    #___________________________________________________________________________________________
 
 
+    #___________________________________________________________________________________________
     class PlaybackState:
         def __init__(self):
             self.playing = False
     play_state = PlaybackState()
+    #___________________________________________________________________________________________
 
+    #___________________________________________________________________________________________
     class PlaybackID:
         def __init__(self) -> None:
             self.state = None
     play_state_id = PlaybackID()
+    #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     # Create play/stop button
@@ -1243,6 +1259,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             play_state.playing = False
     button_play_stop = bokeh.models.Button(label="Play")
     button_play_stop.on_click(play_stop_callback)
+    #___________________________________________________________________________________________
 
 
     #___________________________________________________________________________________________
@@ -1252,6 +1269,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         update_image()
     button_next = bokeh.models.Button(label="Next")
     button_next.on_click(next_callback)
+    #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     # Create next button
@@ -1260,6 +1278,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         update_image(-1)
     button_prev = bokeh.models.Button(label="Prev")
     button_prev.on_click(prev_callback)
+    #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     # Go to next frame with possible issue
@@ -1293,6 +1312,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 break
     button_inspect = bokeh.models.Button(label="Inspect")
     button_inspect.on_click(inspect_cells_callback)
+    #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     # Go to next frame with possible issue
@@ -1306,6 +1326,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     button_build_cells = bokeh.models.Button(label="build cells")
     button_build_cells.on_click(build_cells_callback)
+    #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     # Go to next frame with possible issue
@@ -1314,6 +1335,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
     button_build_cells = bokeh.models.Button(label="build cells")
     button_build_cells.on_click(build_cells_callback)
+    #___________________________________________________________________________________________
 
 
 
@@ -1365,6 +1387,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
     print(time_list)
 
+
+    initial_position = source_intensity_ch1.data["time"][0]
+    line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
+    plot_intensity.add_layout(line_position)
     plot_intensity_ch1=plot_intensity.line('time', 'intensity', source=source_intensity_ch1, legend_label='ch1')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8)
     plot_intensity_ch2=plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2')
