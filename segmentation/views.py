@@ -840,6 +840,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_rising.data['y1']  = []
                 source_varea_rising.data['y2']  = []
         line_position.location = 0
+        print('---------- === = = == source_varea_rising ',source_varea_rising.data)
         if len(source_intensity_ch1.data["time"])!=0:
             line_position.location = source_intensity_ch1.data["time"][0]
 
