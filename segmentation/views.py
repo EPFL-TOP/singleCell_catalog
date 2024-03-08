@@ -817,8 +817,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if len(source_intensity_ch1.data["time"])!=0:
             line_position.location = source_intensity_ch1.data["time"][0]
 
-
-
+        print('Prepare_intensity-----------------------------------')
+        print('start_oscillation_position.location=',start_oscillation_position.location, '  end_oscillation_position.location=',end_oscillation_position.location,'  time_of_death_position.location=',time_of_death_position.location)
     #___________________________________________________________________________________________
     # Function to update the well depending on the experiment
     def update_dropdown_well(attr, old, new):
