@@ -785,6 +785,37 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500)
 
 
+    #___________________________________________________________________________________________
+    # Function to prepare the intensity plot
+    def prepare_intensity():
+        current_file=get_current_file()
+        if dropdown_cell.value!='':
+            sample = Sample.objects.get(file_name=current_file)
+            cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+
+            if cellids[0].cell_status.start_oscillation>0: start_oscillation_position.location = cellids[0].cell_status.start_oscillation_frame
+            else: start_oscillation_position.location = -999
+
+            if cellids[0].cell_status.end_oscillation>0: end_oscillation_position.location   = cellids[0].cell_status.end_oscillation_frame
+            else: end_oscillation_position.location   = -999
+
+            if cellids[0].time_of_death>0:
+                time_of_death_position.location     = cellids[0].cell_status.time_of_death_frame
+                source_varea_death.data['x']  = [source_intensity_ch1.data["time"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["time"])) ]
+                source_varea_death.data['y1']  = [source_intensity_ch1.data["intensity"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["intensity"]))]
+                source_varea_death.data['y2']  = [0 for i in range(len(source_varea_death.data['y1']))]
+
+
+
+            else:
+                time_of_death_position.location     = -999
+                source_varea_death.data['x']  = []
+                source_varea_death.data['y1']  = []
+                source_varea_death.data['y2']  = []
+
+        line_position.location = 0
+        if len(source_intensity_ch1.data["time"])!=0:
+            line_position.location = source_intensity_ch1.data["time"][0]
 
 
 
@@ -812,12 +843,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('in the else update_dropdown_well')
             slider.value = 0
         slider.end=len(source_imgs.data['images'][0]) - 1
-        line_position.location = 0
-        if len(source_intensity_ch1.data["time"])!=0:
-            line_position.location = source_intensity_ch1.data["time"][0]
-        source_varea_death.data['x']  = []
-        source_varea_death.data['y1']  = []
-        source_varea_death.data['y2']  = []
+
+        prepare_intensity()
     dropdown_exp.on_change('value', update_dropdown_well)
     #___________________________________________________________________________________________
 
@@ -840,12 +867,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         else:
             print('in the else update_dropdown_pos')
             slider.value = 0
-        line_position.location = 0
-        if len(source_intensity_ch1.data["time"])!=0:
-            line_position.location = source_intensity_ch1.data["time"][0]
-        source_varea_death.data['x']  = []
-        source_varea_death.data['y1']  = []
-        source_varea_death.data['y2']  = []
+        prepare_intensity()
+
     dropdown_well.on_change('value', update_dropdown_pos)
     #___________________________________________________________________________________________
 
