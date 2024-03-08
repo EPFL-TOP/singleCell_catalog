@@ -516,12 +516,36 @@ def build_cells_sample(sample):
             if clustering.labels_[cid]!=-1:
                 cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
                 cell_roi_list[cid].save()
+                cell_roi_id_list.append(cell_roi_list[cid].id)
 
+    print('cell_roi_id_list afgter DBSCAN ',cell_roi_id_list)
     #Then cluster remaining or new cells ROIs
+    cell_pos_dict={}
+    cellsid = CellID.objects.select_related().filter(sample = s)
+    for cellid in cellsid:
+        cell_pos_dict[cellid.name]=[]
+        cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
+        for cellroi in cellrois:
+            cell_pos_dict[cellid.name].append([cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., 
+                                               cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.])
+            
     for f in frames:
         cellrois_frame = CellROI.objects.select_related().filter(frame=f)
         for cellroi_frame in cellrois_frame:
             if cellroi_frame.id in cell_roi_id_list: continue
+            min_dr_name=''
+            min_dr_val=1000000000000000.
+            tmp_val=0
+            for cell in cell_pos_dict:
+                for pos in cell_pos_dict[cell]:
+                    tmp_val+=math.sqrt(math.pow(pos[0]-cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.,2) + 
+                                       math.pow(pos[1]-cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.,2))
+                if tmp_val<min_dr_val:
+                    min_dr_val=tmp_val
+                    min_dr_name=cell
+            cellroi_frame.cell_id=min_dr_name
+            cellroi_frame.save()
+                
 
 #___________________________________________________________________________________________
 def removeROIs(sample):
