@@ -544,7 +544,11 @@ def build_cells_sample(sample):
                 for pos in cell_pos_dict[cell]:
                     tmp_val+=math.sqrt(math.pow(pos[0]-cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.,2) + 
                                        math.pow(pos[1]-cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.,2))
-                if tmp_val/len(frames)<min_dr_val and tmp_val/len(frames)<max_dr_val:
+                    print('dr= ',math.sqrt(math.pow(pos[0]-cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.,2) + 
+                                           math.pow(pos[1]-cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.,2)),
+                                           ' n pos=',len(cell_pos_dict[cell]))
+                          
+                if tmp_val/len(cell_pos_dict[cell])<min_dr_val and tmp_val/len(cell_pos_dict[cell])<max_dr_val:
                     min_dr_val=tmp_val
                     min_dr_name=cell
             print('frame=',f, '   cellroi_frame=',cellroi_frame,'  min_dr_val=',min_dr_val, '  min_dr_name=',min_dr_name)
