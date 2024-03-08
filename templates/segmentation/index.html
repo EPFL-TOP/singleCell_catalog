@@ -20,9 +20,6 @@
             {% if selected_dict.experiment == experiment %}<option selected="selected" value="{{ experiment }}">{{ experiment }}</option>{% endif %}
         {% endfor %}
     </select>
-  </form>
-
-  <form method="post" id="updateForm" action="{% url 'index' %}">
 
     {% if select_dict.well_list  %}
     <select id="select_well" name="select_well" class="select_well">
@@ -173,11 +170,9 @@
 </form>
 
 <script>
-  document.getElementById("select_experiment").addEventListener("change", function() {
+  document.getElementById("select_position").addEventListener("change", function() {
       document.getElementById("updateForm").submit();
   });
-  document.getElementById("select_well").addEventListener("change", function() {
-      document.getElementById("updateForm").submit();
-  });
+
 </script>
 {% endblock %}
