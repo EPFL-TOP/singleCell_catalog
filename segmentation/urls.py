@@ -19,7 +19,7 @@ urlpatterns = [
 
 
 
-urlpatterns += [
-    path('', image_view, name='image_view'),
-    path('save-selected-region/', save_selected_region, name='save_selected_region'),
-]
+#urlpatterns += [
+#    path('', image_view, name='image_view'),
+#    path('save-selected-region/', save_selected_region, name='save_selected_region'),
+#]

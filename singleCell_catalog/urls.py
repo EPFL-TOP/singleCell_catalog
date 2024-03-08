@@ -36,5 +36,5 @@ urlpatterns = [
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 bokeh_apps = [
-    autoload("segmentation/", views.segmentation_handler),
+    autoload("segmentation/bokeh_dashboard", views.segmentation_handler),
 ]
