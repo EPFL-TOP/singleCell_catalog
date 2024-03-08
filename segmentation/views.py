@@ -517,12 +517,12 @@ def build_cells_sample(sample):
                 cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
                 cell_roi_list[cid].save()
                 cell_roi_id_list.append(cell_roi_list[cid].id)
-
     print('cell_roi_id_list afgter DBSCAN ',cell_roi_id_list)
+
     #Then cluster remaining or new cells ROIs
     cell_pos_dict={}
     cell_id_dict={}
-    cellsid = CellID.objects.select_related().filter(sample = s)
+    cellsid = CellID.objects.select_related().filter(sample = sample)
     for cellid in cellsid:
         cell_pos_dict[cellid.name]=[]
         cell_id_dict[cellid.name]=cellid
@@ -537,7 +537,7 @@ def build_cells_sample(sample):
             if cellroi_frame.id in cell_roi_id_list: continue
             min_dr_name=''
             min_dr_val=1000000000000000.
-            max_dr_val=((cellroi_frame.max_col-cellroi_frame.min_col)/2. + (cellroi_frame.max_row-cellroi_frame.min_row)/2.)/1.
+            max_dr_val=((cellroi_frame.max_col-cellroi_frame.min_col)/2. + (cellroi_frame.max_row-cellroi_frame.min_row)/2.)/0.5
             tmp_val=0
 
             for cell in cell_pos_dict:
@@ -551,7 +551,7 @@ def build_cells_sample(sample):
                 if tmp_val/len(cell_pos_dict[cell])<min_dr_val and tmp_val/len(cell_pos_dict[cell])<max_dr_val:
                     min_dr_val=tmp_val
                     min_dr_name=cell
-            print('frame=',f, '   cellroi_frame=',cellroi_frame,'  min_dr_val=',min_dr_val, '  min_dr_name=',min_dr_name)
+            print('frame=',f, '   cellroi_frame=',cellroi_frame,'  min_dr_val=',min_dr_val, '  min_dr_name=',min_dr_name, '  max_dr_val=',max_dr_val,'  tmp_val/len(cell_pos_dict[cell])=',tmp_val/len(cell_pos_dict[cell]))
             if min_dr_name!='':
                 cellroi_frame.cell_id=cell_id_dict[min_dr_name]
                 cellroi_frame.save()
