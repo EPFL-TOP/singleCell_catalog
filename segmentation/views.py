@@ -1499,9 +1499,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         int_array = np.array(source_intensity_ch1.data["intensity"])
         for int in range(len(int_array)):
-            if source_intensity_ch1.data["time"][int]<=start_oscillation_position.location:
+            if source_intensity_ch1.data["time"][int]<start_oscillation_position.location:
                 int_array[int]=0
-            if source_intensity_ch1.data["time"][int]>=end_oscillation_position.location:
+            if source_intensity_ch1.data["time"][int]>end_oscillation_position.location:
                 int_array[int]=0
         print('source_intensity_ch1 ',source_intensity_ch1.data["intensity"])
         print('int_array            ',int_array)
