@@ -124,7 +124,7 @@ class CellStatus(models.Model):
 
 
     def __str__(self):
-        return 'cell={0}'.format(self.cellid_cellstatus.name)
+        return 'cell={0}, sample={1}'.format(self.cellid_cellstatus.name, self.cellid_cellstatus.sample.file_name)
 
 #___________________________________________________________________________________________
 class CellID(models.Model):
