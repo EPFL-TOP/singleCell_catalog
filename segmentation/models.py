@@ -112,15 +112,15 @@ class Data(models.Model):
 #___________________________________________________________________________________________
 class CellStatus(models.Model):
 
-    status = models.JSONField(default=dict, help_text="json to store the cell status")
+    status = models.JSONField(default=dict, help_text="json to store the cell status", blank=True)
 
-    time_of_death           = models.FloatField(default=-9999, help_text="Cell time of death in minutes")
-    start_oscillation       = models.FloatField(default=-9999, help_text="Cell time start of oscillation in minutes")
-    end_oscillation         = models.FloatField(default=-9999, help_text="Cell time end of oscillation in minutes")
+    time_of_death           = models.FloatField(default=-9999, help_text="Cell time of death in minutes", blank=True)
+    start_oscillation       = models.FloatField(default=-9999, help_text="Cell time start of oscillation in minutes", blank=True)
+    end_oscillation         = models.FloatField(default=-9999, help_text="Cell time end of oscillation in minutes", blank=True)
 
-    time_of_death_frame     = models.PositiveSmallIntegerField(default=-9999, help_text="Cell frame of death")
-    start_oscillation_frame = models.PositiveSmallIntegerField(default=-9999, help_text="Cell frame start of oscillation")
-    end_oscillation_frame   = models.PositiveSmallIntegerField(default=-9999, help_text="Cell frame end of oscillation")
+    time_of_death_frame     = models.PositiveSmallIntegerField(default=0, help_text="Cell frame of death", blank=True)
+    start_oscillation_frame = models.PositiveSmallIntegerField(default=0, help_text="Cell frame start of oscillation", blank=True)
+    end_oscillation_frame   = models.PositiveSmallIntegerField(default=0, help_text="Cell frame end of oscillation", blank=True)
 
 
 #___________________________________________________________________________________________
