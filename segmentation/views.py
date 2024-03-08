@@ -840,10 +840,23 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     try:
                         time_list[ch]
                     except KeyError:
-                        time_list[ch]=[]
-                        intensity_list[ch]=[]
-                    time_list[ch].append((roi.frame.time/60000))
-                    intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
+                        #time_list[ch]=[]
+                        #intensity_list[ch]=[]
+                        #CHANGE WITH ssample.number_of_frames when available
+                        #nframes=sample.number_of_frames
+                        frames=Frame.objects.select_related().filter(sample=sample)
+                        nframes=len(frames)
+                        intensity_list[ch]=[0 for i in range(nframes)]
+                        time_list[ch]=[f.time/60000 for f in frames]
+                        #time_list[ch].append((roi.frame.time/60000))
+                        #intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
+
+                    intensity_list[ch][roi.frame.number]= roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels
+
+
+
+
+
             for index, key in enumerate(time_list):
                 if index==0:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
@@ -911,6 +924,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             slider.value = 0
         print('prepare_pos after slider')
         update_dropdown_cell('','','')
+        slider.end=len(source_imgs.data['images'][0]) - 1
+
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
 
@@ -1449,10 +1464,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 try:
                     time_list[ch]
                 except KeyError:
-                    time_list[ch]=[]
-                    intensity_list[ch]=[]
-                time_list[ch].append((roi.frame.time/60000))
-                intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
+                    #CHANGE WITH ssample.number_of_frames when available
+                    #nframes=sample.number_of_frames
+                    frames=Frame.objects.select_related().filter(sample=sample)
+                    nframes=len(frames)
+                    intensity_list[ch]=[0 for i in range(nframes)]
+                    time_list[ch]=[f.time/60000 for f in frames]
+                #time_list[ch].append((roi.frame.time/60000))
+                #intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
+                intensity_list[ch][roi.frame.number]= roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels
     print(time_list)
 
 
