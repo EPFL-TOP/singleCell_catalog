@@ -1371,16 +1371,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def callback_tap2():
         return """
         const indices = cb_data.source.selected.indices;
-console.log("Hello " + indices + "!");      
-        const index = cb_obj.indices[0];
-        const source = cb_obj.source_imgs;
-        const ch = cb_obj.dropdown_channel.value
-        const source_img = cb_obj.source_img;
-        if (index !== undefined) {
-            const imageUrl = source.data['images'][ch][index];
-            source.data['images'] = [imageUrl];
-            source.change.emit(); // Trigger the change event to update the plot
+        console.log("indices=" + indices );      
+        if (indices.length > 0) {
+            const index = indices[0];
+            console.log("index=" + index );      
+
         }
+
         """
     # Create a TapTool and attach the callback
     #tap_tool = bokeh.models.TapTool(callback=callback_tap)
