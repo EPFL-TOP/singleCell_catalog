@@ -817,13 +817,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_death.data['y2']  = []
 
             print('len(cellids[0].cell_status.peaks) ',len(cellids[0].cell_status.peaks))
-            if len(cellids[0].cell_status.peaks)==4:
+            if len(cellids[0].cell_status.peaks)==6:
                 source_intensity_max.data={'time':cellids[0].cell_status.peaks["max_time"], 'intensity':cellids[0].cell_status.peaks["max_intensity"]}
                 source_intensity_min.data={'time':cellids[0].cell_status.peaks["min_time"], 'intensity':cellids[0].cell_status.peaks["min_intensity"]}
             else:
                 source_intensity_max.data={'time':[], 'intensity':[]}
                 source_intensity_min.data={'time':[], 'intensity':[]}
-
+        print('source_intensity_max.data  ',source_intensity_max.data)
+        print('source_intensity_min.data  ',source_intensity_max.data)
         line_position.location = 0
         if len(source_intensity_ch1.data["time"])!=0:
             line_position.location = source_intensity_ch1.data["time"][0]
