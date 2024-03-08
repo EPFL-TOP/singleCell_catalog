@@ -1367,7 +1367,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         console.log("cb_data=" + cb_data );      
         console.log("cb_data.source=" + cb_data.source );      
         console.log("cb_data.source.selected=" + cb_data.source.selected );      
-        console.log("source_img.data=" + source_img.data );      
+        console.log("source_imgs.data=" + source_imgs.data );      
         const channel_loc = channel.value;
         console.log("channel_loc=" + channel_loc );      
 
