@@ -1370,6 +1370,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     def callback_tap2():
         return """
+        const indices = cb_data.source.selected.indices;
+        print("indices");
+        print(indices);
         const index = cb_obj.indices[0];
         const source = cb_obj.source_imgs;
         const ch = cb_obj.dropdown_channel.value
