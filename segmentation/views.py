@@ -1368,8 +1368,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         console.log("cb_data.source=" + cb_data.source );      
         console.log("cb_data.source.selected=" + cb_data.source.selected );      
         console.log("source_img.data=" + source_img.data );      
-        const channel = channel.value;
-        console.log("channel=" + channel );      
+        const channel_loc = channel.value;
+        console.log("channel_loc=" + channel_loc );      
 
         if (indices.length > 0) {
             const index = indices[0];
