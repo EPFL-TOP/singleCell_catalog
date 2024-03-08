@@ -548,8 +548,9 @@ def build_cells_sample(sample):
                     min_dr_val=tmp_val
                     min_dr_name=cell
             print('frame=',f, '   cellroi_frame=',cellroi_frame,'  min_dr_val=',min_dr_val, '  min_dr_name=',min_dr_name)
-            cellroi_frame.cell_id=cell_id_dict[min_dr_name]
-            cellroi_frame.save()
+            if min_dr_name!='':
+                cellroi_frame.cell_id=cell_id_dict[min_dr_name]
+                cellroi_frame.save()
                 
 
 #___________________________________________________________________________________________
