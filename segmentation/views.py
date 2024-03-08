@@ -12,6 +12,7 @@ import time
 from memory_profiler import profile
 from sklearn.cluster import DBSCAN
 import numpy as np
+from scipy.signal import find_peaks
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -816,8 +817,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if len(source_intensity_ch1.data["time"])!=0:
             line_position.location = source_intensity_ch1.data["time"][0]
 
-        print('Prepare_intensity-----------------------------------')
-        print('start_oscillation_position.location=',start_oscillation_position.location, '  end_oscillation_position.location=',end_oscillation_position.location,'  time_of_death_position.location=',time_of_death_position.location)
     #___________________________________________________________________________________________
     # Function to update the well depending on the experiment
     def update_dropdown_well(attr, old, new):
@@ -1495,6 +1494,27 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
+    #___________________________________________________________________________________________
+    def find_peaks_callback():
+
+        int_array = np.array(source_intensity_ch1.data["intensity"])
+        for int in range(len(int_array)):
+            if source_intensity_ch1.data["time"][int]<=start_oscillation_position.location:
+                int_array[int]=0
+            if source_intensity_ch1.data["time"][int]>=end_oscillation_position.location:
+                int_array[int]=0
+        print('source_intensity_ch1 ',source_intensity_ch1.data["intensity"])
+        print('int_array            ',int_array)
+        peaksmax, _ = find_peaks(np.array(int_array),  prominence=40)
+        peaksmin, _ = find_peaks(-np.array(int_array), prominence=40)
+
+        peaksmax_list=[]
+        peaksmin_list=[]
+        if len(peaksmax)>0:peaksmax_list.append(int(peaksmax[0]))
+        if len(peaksmin)>0:peaksmin_list.append(int(peaksmin[0]))
+    button_find_peaks = bokeh.models.Button(label="Find Peaks")
+    button_find_peaks.on_click(find_peaks_callback)
+    #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     # Select image from click
@@ -1518,7 +1538,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img.data = {'img':[norm]}
         source_img_ch.data = {'img':[images[ch][index] for ch in range(len(images))]}
         slider.value=index
-
     #___________________________________________________________________________________________
 
 
@@ -1640,6 +1659,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_delete_roi, button_save_roi ),
                                      bokeh.layouts.row(button_inspect, button_build_cells, dropdown_cell),
                                      bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
+                                     bokeh.layouts.row(button_find_peaks),
                                      text)
     
     norm_layout = bokeh.layouts.row(left_col, plot_image, right_col, plot_intensity)
