@@ -845,23 +845,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
                     time_sorted, intensity_sorted = zip(*sorted_lists) 
                     source_intensity_ch0.data={'time':time_sorted, 'intensity':intensity_sorted}
-                    #plot_intensity_ch0.legend_label = key
                 if index==1:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
                     time_sorted, intensity_sorted = zip(*sorted_lists) 
-                    source_intensity_ch1.data={'time':time_sorted, 'intensity':intensity_sorted}
-                    source_varea.data['x'] = time_sorted
-                    source_varea.data['y1'] = intensity_sorted
-                    source_varea.data['y2'] = [0 for i in range(len(intensity_sorted))]
-                    
-                    #plot_intensity_ch1.legend_label = key
+                    source_intensity_ch1.data={'time':time_sorted, 'intensity':intensity_sorted}    
                 if index==2:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
                     time_sorted, intensity_sorted = zip(*sorted_lists) 
                     source_intensity_ch2.data={'time':time_sorted, 'intensity':intensity_sorted}
-                    #plot_intensity_ch2.legend_label = key
-            print('time_list=',time_list)
-            print('intensity_list=',intensity_list)
         dropdown_cell.options=cell_list
         print('dropdown_cell.value = ',dropdown_cell.value)
         print('dropdown_cell.options = ',dropdown_cell.options)
@@ -1362,6 +1353,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def time_of_death_callback():
         current_index=get_current_index()
         time_of_death_position.location = source_intensity_ch1.data["time"][current_index]
+        source_varea_death.data['x']  = [source_intensity_ch1.data["time"][t] for t in range(current_index, len(source_intensity_ch1.data["time"])) ]
+        source_varea_death.data['y1'] = [source_intensity_ch1.data["intensity"][t] for t in range(current_index, len(source_intensity_ch1.data["intensity"])) ]
+        source_varea_death.data['y2'] = [0 for i in range(len(source_varea_death.data['y1']))]
     button_time_of_death = bokeh.models.Button(label="Dead")
     button_time_of_death.on_click(time_of_death_callback)
     #___________________________________________________________________________________________
@@ -1452,12 +1446,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    plot_intensity.line('time', 'intensity', source=source_intensity_ch1, legend_label='ch1', line_color='blue')
+    plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8, line_color='blue')
-    plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2', line_color='black')
+    plot_intensity.line('time', 'intensity', source=source_intensity_ch2, line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8, line_color='black')
     plot_intensity.y_range.start=0
-    plot_intensity.x_range.start=0
+    plot_intensity.x_range.start=-10
 
     #for ch in range(len(time_list)):
     for index, key in enumerate(time_list):
@@ -1480,8 +1474,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     time_of_death_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='black', line_width=2)
     plot_intensity.add_layout(time_of_death_position)
 
-    source_varea = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='blue', source=source_varea)
+    source_varea_death = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='blue', source=source_varea_death)
 
 
 
