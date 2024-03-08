@@ -521,9 +521,11 @@ def build_cells_sample(sample):
     print('cell_roi_id_list afgter DBSCAN ',cell_roi_id_list)
     #Then cluster remaining or new cells ROIs
     cell_pos_dict={}
+    cell_id_dict={}
     cellsid = CellID.objects.select_related().filter(sample = s)
     for cellid in cellsid:
         cell_pos_dict[cellid.name]=[]
+        cell_id_dict[cellid.name]=cellid
         cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
         for cellroi in cellrois:
             cell_pos_dict[cellid.name].append([cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., 
@@ -543,7 +545,7 @@ def build_cells_sample(sample):
                 if tmp_val<min_dr_val:
                     min_dr_val=tmp_val
                     min_dr_name=cell
-            cellroi_frame.cell_id=min_dr_name
+            cellroi_frame.cell_id=cell_id_dict[min_dr_name]
             cellroi_frame.save()
                 
 
