@@ -9,11 +9,10 @@
   <div class="result"></div>
 
 
-  <label for="experiment-select">Select an experiment:</label>
   <!--form method="POST"-->
   <form method="post" id="updateForm" action="{% url 'index' %}">
     {% csrf_token %}
-    <select  id="select_experiment_test" name="select_experiment" class="select_experiment">
+    <select  id="select_experiment" name="select_experiment" class="select_experiment">
         <option value="">--Choose an experiment--</option>
         {% for experiment in select_dict.experiment_list %}
             {% if selected_dict.experiment != experiment %}<option value="{{ experiment }}">{{ experiment }}</option>{% endif %}
@@ -170,7 +169,7 @@
 </form>
 
 <script>
-  document.getElementById("select_position").addEventListener("change", function() {
+  document.getElementById("select_experiment").addEventListener("change", function() {
       document.getElementById("updateForm").submit();
   });
 
