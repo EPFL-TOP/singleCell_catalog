@@ -1401,12 +1401,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         """
     # Create a TapTool and attach the callback
-    #tap_tool = bokeh.models.TapTool(callback=callback_tap)
-    #tap_tool.callback = bokeh.models.CustomJS.from_py_func(callback_tap)
-    #callback = bokeh.models.CustomJS.from_py_func(callback_tap)
-    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(code=callback_tap2()))
-    plot_intensity.add_tools(tap_tool)
+    #tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(code=callback_tap2()))
+    #plot_intensity.add_tools(tap_tool)
 
+    plot_intensity.js_on_event('tap', callback_tap3)
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
