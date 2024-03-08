@@ -1353,9 +1353,25 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def end_oscillation_callback():
         current_index=get_current_index()
         end_oscillation_position.location = source_intensity_ch1.data["time"][current_index]
-    button_end_oscillation = bokeh.models.Button(label="Osc. Start")
+    button_end_oscillation = bokeh.models.Button(label="Osc. End")
     button_end_oscillation.on_click(end_oscillation_callback)
     #___________________________________________________________________________________________
+
+
+    # Define a Python callback to display the image corresponding to the clicked point
+    def callback_tap(event):
+        if len(event.indices) > 0:
+            index = event.indices[0]
+            print('====================callback_tap=====================',index,'----------',event.indices)
+            #image_data = source.data['images'][index]
+            #image_rgba = np.dstack([image_data.astype(np.uint8)] * 4)
+            #source.data['images'] = [image_rgba]
+            #source.change.emit()  # Trigger the change event to update the plot
+
+    # Create a TapTool and attach the callback
+    tap_tool = bokeh.models.TapTool()
+    tap_tool.callback = bokeh.models.CustomJS.from_py_func(callback_tap)
+    plot_intensity.add_tools(tap_tool)
 
 
     # Create a Div widget with some text
