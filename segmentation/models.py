@@ -124,7 +124,7 @@ class CellStatus(models.Model):
 
 
     def __str__(self):
-        return 'cell={0}'.format(self.cellid_cellstatus)
+        return 'cell={0}'.format(self.cellid_cellstatus.name)
 
 #___________________________________________________________________________________________
 class CellID(models.Model):
