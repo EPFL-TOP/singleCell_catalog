@@ -1363,7 +1363,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def callback_tap():
         return """
         const indices = cb_data.source.selected.indices;
+        const index2 = cb_data.index.indices[0];
         console.log("indices=" + indices );      
+        console.log("index2=" + index2 );      
         console.log("cb_data=" + cb_data );      
         console.log("cb_data.source=" + cb_data.source );      
         console.log("cb_data.source.selected=" + cb_data.source.selected );      
