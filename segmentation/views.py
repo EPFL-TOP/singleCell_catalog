@@ -1041,6 +1041,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+        line_position.location = source_intensity_ch1.data["time"][time_point]
+
     slider.on_change('value', callback_slider)
     #___________________________________________________________________________________________
     
@@ -1228,7 +1230,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if number>=0:
             current_index = number
         slider.value = current_index
-
+        line_position.location = source_intensity_ch1.data["time"][current_index]
         print('update_image index=',current_index)
     #___________________________________________________________________________________________
 
@@ -1392,10 +1394,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     print(time_list)
 
 
-    print("source_intensity_ch1.data[time] ",source_intensity_ch1.data["time"])
-    initial_position = 0
-    line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
-    plot_intensity.add_layout(line_position)
+
     plot_intensity_ch1=plot_intensity.line('time', 'intensity', source=source_intensity_ch1, legend_label='ch1')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8)
     plot_intensity_ch2=plot_intensity.line('time', 'intensity', source=source_intensity_ch2, legend_label='ch2')
@@ -1419,6 +1418,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #plot_intensity.legend.labels = leg_label
 
+    print("source_intensity_ch1.data[time] ",source_intensity_ch1.data["time"])
+    initial_position = source_intensity_ch1.data["time"][0]
+    line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
+    plot_intensity.add_layout(line_position)
 
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
