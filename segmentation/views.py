@@ -681,6 +681,25 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         return ind_images_list
     #___________________________________________________________________________________________
 
+
+
+    #___________________________________________________________________________________________
+    # Function to get the current file
+    def get_current_file():
+        print('****************************  get_current_file ****************************')
+        print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   dropdown_well.value',dropdown_well.value, '  dropdown_pos.value',dropdown_pos.value)
+
+        current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        current_file = ''
+        for f in current_files:
+            if dropdown_pos.value in f:
+                current_file = f
+        print('--------------- get_current_file() current file  ',current_file)
+        return current_file
+    #___________________________________________________________________________________________
+
+
+
     ind_images_list = get_current_stack()
     print ('in segmentation_handler ind_images_list (channel)=',len(ind_images_list))
     print ('in segmentation_handler ind_images_list (timepoints)=',len(ind_images_list[0]))
@@ -709,23 +728,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     slider         = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point")
     plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500)
-
-
-
-    #___________________________________________________________________________________________
-    # Function to get the current file
-    def get_current_file():
-        print('****************************  get_current_file ****************************')
-        print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   dropdown_well.value',dropdown_well.value, '  dropdown_pos.value',dropdown_pos.value)
-
-        current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
-        current_file = ''
-        for f in current_files:
-            if dropdown_pos.value in f:
-                current_file = f
-        print('--------------- get_current_file() current file  ',current_file)
-        return current_file
-    #___________________________________________________________________________________________
 
 
 
