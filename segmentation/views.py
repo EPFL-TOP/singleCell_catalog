@@ -815,9 +815,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_death.data['y1']  = []
                 source_varea_death.data['y2']  = []
 
-            if len(cellids[0].peaks["min"])>0:
-                source_intensity_max.data={'time':cellids[0].peaks["max_time"], 'intensity':cellids[0].peaks["max_intensity"]}
-                source_intensity_min.data={'time':cellids[0].peaks["min_time"], 'intensity':cellids[0].peaks["min_intensity"]}
+            if len(cellids[0].cell_status.peaks["max_time"])>0:
+                source_intensity_max.data={'time':cellids[0].cell_status.peaks["max_time"], 'intensity':cellids[0].cell_status.peaks["max_intensity"]}
+                source_intensity_min.data={'time':cellids[0].cell_status.peaks["min_time"], 'intensity':cellids[0].cell_status.peaks["min_intensity"]}
             else:
                 source_intensity_max.data={'time':[], 'intensity':[]}
                 source_intensity_min.data={'time':[], 'intensity':[]}
