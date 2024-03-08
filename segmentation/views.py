@@ -1375,7 +1375,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         console.log("cb_data=" + cb_data );      
         console.log("cb_data.source=" + cb_data.source );      
         console.log("cb_data.source.selected=" + cb_data.source.selected );      
-        console.log("source_img=" + source_img );      
+        console.log("source_img.data=" + source_img.data );      
         const channel = dropdown_channel.value;
         console.log("channel=" + channel );      
 
