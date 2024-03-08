@@ -778,6 +778,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_intensity_ch1 = bokeh.models.ColumnDataSource(data=data_intensity_ch1)
     data_intensity_ch2={'time':[], 'intensity':[]}
     source_intensity_ch2 = bokeh.models.ColumnDataSource(data=data_intensity_ch2)
+    data_intensity_max={'time':[], 'intensity':[]}
+    source_intensity_max = bokeh.models.ColumnDataSource(data=data_intensity_max)
+    data_intensity_min={'time':[], 'intensity':[]}
+    source_intensity_min = bokeh.models.ColumnDataSource(data=data_intensity_min)
 
     # Create a Slider widget
     initial_time_point = 0
@@ -805,13 +809,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_death.data['y1']  = [source_intensity_ch1.data["intensity"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["intensity"]))]
                 source_varea_death.data['y2']  = [0 for i in range(len(source_varea_death.data['y1']))]
 
-
-
             else:
                 time_of_death_position.location     = -999
                 source_varea_death.data['x']  = []
                 source_varea_death.data['y1']  = []
                 source_varea_death.data['y2']  = []
+            #add json file to DB
+            source_intensity_max.data={'time':[], 'intensity':[]}
+            source_intensity_min.data={'time':[], 'intensity':[]}
 
         line_position.location = 0
         if len(source_intensity_ch1.data["time"])!=0:
@@ -1508,13 +1513,22 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         peaksmax, _ = find_peaks(np.array(int_array),  prominence=40)
         peaksmin, _ = find_peaks(-np.array(int_array), prominence=40)
 
+        int=[]
+        time=[]
+        for p in peaksmax:
+            time.append(source_intensity_ch1.data["time"][p])
+            int.append(source_intensity_ch1.data["intensity"][p])
+        source_intensity_max.data={'time':int, 'intensity':time}  
+        int=[]
+        time=[]
+        for p in peaksmin:
+            time.append(source_intensity_ch1.data["time"][p])
+            int.append(source_intensity_ch1.data["intensity"][p])
+        source_intensity_min.data={'time':int, 'intensity':time}  
         print('peaksmax ',peaksmax)
         print('peaksmin ',peaksmin)
         
-        peaksmax_list=[]
-        peaksmin_list=[]
-        if len(peaksmax)>0:peaksmax_list.append(int(peaksmax[0]))
-        if len(peaksmin)>0:peaksmin_list.append(int(peaksmin[0]))
+       
     button_find_peaks = bokeh.models.Button(label="Find Peaks")
     button_find_peaks.on_click(find_peaks_callback)
     #___________________________________________________________________________________________
@@ -1612,6 +1626,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8, line_color='blue')
     plot_intensity.line('time', 'intensity', source=source_intensity_ch2, line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8, line_color='black')
+    plot_intensity.inverted_triangle('time', 'intensity', source=source_intensity_max, fill_color="green", size=8, line_color='green')
+    plot_intensity.triangle('time', 'intensity', source=source_intensity_min, fill_color="green", size=8, line_color='green')
+
     plot_intensity.y_range.start=0
     plot_intensity.x_range.start=-10
     print('------------------------fdsdfsdfsdfdfsdfsdfdsfdsfdf -,',source_intensity_ch1.data["time"])
