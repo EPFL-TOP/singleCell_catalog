@@ -1152,7 +1152,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         print('save_roi_callback already exist ',frame[0])
                         roi_exist=True
             if not roi_exist:
-                print('save_roi_callback saving ',frame[0])
+                print('save_roi_callback saving frame=',frame[0], ' roi_number=',roi_number)
                 roi = CellROI(min_col=math.floor(source_roi_manual.data['left'][i]), max_col=math.ceil(source_roi_manual.data['right'][i]), 
                               min_row=math.floor(frame[0].height-source_roi_manual.data['bottom'][i]),  max_row=math.ceil(frame[0].height-source_roi_manual.data['top'][i]),
                               roi_number=roi_number, 
@@ -1496,7 +1496,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_intensity_ch2.data={'time':time_list[key], 'intensity':intensity_list[key]}
 
     initial_position = source_intensity_ch1.data["time"][0]
-    initial_position = -9999
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
     plot_intensity.add_layout(line_position)
 
