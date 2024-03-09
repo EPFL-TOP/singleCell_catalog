@@ -835,9 +835,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     #    source_varea_rising.data['y2'].append(0)
                     #    continue
                     #else: source_varea_rising.data['y2'].append(source_intensity_ch1.data["intensity"][t])
-                    source_varea_rising.data['y2'].append(source_intensity_ch1.data["intensity"][t])
-                    print('y2=',len(source_varea_rising.data['y2']))
-                source_varea_rising.data['y1']  = [0 for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
+                    source_varea_rising.data['y1'].append(source_intensity_ch1.data["intensity"][t])
+                    print('y1=',len(source_varea_rising.data['y1']))
+                source_varea_rising.data['y2']  = [0 for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
 
             else:
                 source_intensity_max.data={'time':[], 'intensity':[]}
@@ -1696,7 +1696,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
 
     source_varea_rising = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_rising)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
 
 
     # Add the rectangle glyph after adding the image
