@@ -1747,7 +1747,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                                                   x_3=[], y1_3=[], y2_3=[],
                                                                   x_4=[], y1_4=[], y2_4=[]))
 
-    plot_intensity.varea(x='x_0', y1='y1_0', y2='y2_0', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
+    source_varea_rising1 = bokeh.models.ColumnDataSource(data=dict(x_0=[10,100,200], y1_0=[200,300,400], y2_0=[0,0,0]))
+    source_varea_rising2 = bokeh.models.ColumnDataSource(data=dict( x_1=[300,400,500], y1_1=[150,300,400], y2_1=[0,0,0]))
+    plot_intensity.varea(x='x_0', y1='y1_0', y2='y2_0', fill_alpha=0.10, fill_color='black', source=source_varea_rising1)
+    plot_intensity.varea(x='x_1', y1='y1_1', y2='y2_1', fill_alpha=0.10, fill_color='black', source=source_varea_rising2)
     plot_intensity.varea(x='x_1', y1='y1_1', y2='y2_1', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
     #plot_intensity.varea(x='x_2', y1='y1_2', y2='y2_2', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
     #plot_intensity.varea(x='x_3', y1='y1_3', y2='y2_3', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
