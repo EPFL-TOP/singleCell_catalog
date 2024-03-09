@@ -878,7 +878,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             slider.value = 0
         slider.end=len(source_imgs.data['images'][0]) - 1
 
-        prepare_intensity()
+        #prepare_intensity()
     dropdown_exp.on_change('value', update_dropdown_well)
     #___________________________________________________________________________________________
 
