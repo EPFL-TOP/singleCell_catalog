@@ -824,14 +824,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_rising.data['y1']  = []
                 for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame):
                     if t in cellids[0].cell_status.peaks["min_frame"]:
-                        source_varea_rising.data['y1'].append(0)
+                        source_varea_rising.data['y2'].append(0)
                         continue
                     if t in cellids[0].cell_status.peaks["max_frame"]:
-                        source_varea_rising.data['y1'].append(0)
+                        source_varea_rising.data['y2'].append(0)
                         continue
-                    source_varea_rising.data['y1'].append(source_intensity_ch1.data["time"][t])
+                    source_varea_rising.data['y2'].append(source_intensity_ch1.data["intensity"][t])
                     
-                source_varea_rising.data['y2']  = [0 for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
+                source_varea_rising.data['y1']  = [0 for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
 
             else:
                 source_intensity_max.data={'time':[], 'intensity':[]}
@@ -841,6 +841,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_rising.data['y2']  = []
         line_position.location = 0
         print('---------- === = = == source_varea_rising ',source_varea_rising.data)
+        print('---------- === = = == source_varea_rising x ',len(source_varea_rising.data['x']))
+        print('---------- === = = == source_varea_rising y1 ',len(source_varea_rising.data['y1']))
+        print('---------- === = = == source_varea_rising y2 ',len(source_varea_rising.data['y2']))
+        
         if len(source_intensity_ch1.data["time"])!=0:
             line_position.location = source_intensity_ch1.data["time"][0]
 
