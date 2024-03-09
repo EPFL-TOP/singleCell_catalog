@@ -826,6 +826,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_intensity_min.data={'time':cellids[0].cell_status.peaks["min_time"], 'intensity':cellids[0].cell_status.peaks["min_int"]}
                 source_varea_rising.data['x']  = [source_intensity_ch1.data["time"][t] for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
                 source_varea_rising.data['y1']  = []
+                source_varea_rising.data['y2']  = []
                 for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame):
                     print('t=',t)
                     if t in cellids[0].cell_status.peaks["min_frame"]:
@@ -836,7 +837,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         continue
                     else: source_varea_rising.data['y2'].append(source_intensity_ch1.data["intensity"][t])
                     #source_varea_rising.data['y1'].append(source_intensity_ch1.data["intensity"][t])
-                    print('y1=',len(source_varea_rising.data['y1']))
+                    print('y2=',len(source_varea_rising.data['y2']))
                 source_varea_rising.data['y1']  = [0 for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
 
             else:
