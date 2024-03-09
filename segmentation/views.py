@@ -831,7 +831,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         source_varea_rising.data['y2'].append(0)
                         continue
                     else: source_varea_rising.data['y2'].append(source_intensity_ch1.data["intensity"][t])
-                    
+                    print('y2=',len(source_varea_rising.data['y2']))
                 source_varea_rising.data['y1']  = [0 for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
 
             else:
