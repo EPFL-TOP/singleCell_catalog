@@ -872,7 +872,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_rising.data['y1_4'] = []
                 source_varea_rising.data['y2_4'] = []
         line_position.location = 0
-        source_varea_rising.data = {'x_0':source_varea_rising.data['x_0'], 'y1_0':source_varea_rising.data['y1_0'], 'y2_0':source_varea_rising.data['y2_0'],
+        source_varea_rising.data = {#'x_0':source_varea_rising.data['x_0'], 'y1_0':source_varea_rising.data['y1_0'], 'y2_0':source_varea_rising.data['y2_0'],
+                                    'x_0':[40.01453547667265, 50.01442032667001, 60.01377847500245, 70.01465064667066, 80.01440943666697], 
+                                    'y1_0':[731.6374663072776, 740.2718832891246, 751.3581699346405, 800.0886792452831, 845.8388278388278], 
+                                    'y2_0':[0, 0, 0, 0, 0],
                                     'x_1':source_varea_rising.data['x_1'], 'y1_1':source_varea_rising.data['y1_1'], 'y2_1':source_varea_rising.data['y2_1'],
                                     'x_2':source_varea_rising.data['x_2'], 'y1_2':source_varea_rising.data['y1_2'], 'y2_2':source_varea_rising.data['y2_2'],
                                     'x_3':source_varea_rising.data['x_3'], 'y1_3':source_varea_rising.data['y1_3'], 'y2_3':source_varea_rising.data['y2_3'],
@@ -1738,8 +1741,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_varea_death = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
 
-    source_varea_rising = bokeh.models.ColumnDataSource(data=dict(x_0=[], y1_0=[], y2_0=[], 
-                                                                  x_1=[], y1_1=[], y2_1=[], 
+    source_varea_rising = bokeh.models.ColumnDataSource(data=dict(x_0=[10,100,200], y1_0=[200,300,400], y2_0=[0,0,0], 
+                                                                  x_1=[300,400,500], y1_1=[150,300,400], y2_1=[0,0,0], 
                                                                   x_2=[], y1_2=[], y2_2=[],
                                                                   x_3=[], y1_3=[], y2_3=[],
                                                                   x_4=[], y1_4=[], y2_4=[]))
