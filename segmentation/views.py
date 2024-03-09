@@ -846,6 +846,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_rising.data['y1']  = []
                 source_varea_rising.data['y2']  = []
         line_position.location = 0
+        source_varea_rising.data = {'x':[10, 100, 200], 'y1':[300, 350, 400], 'y2':[0,0,0]}
         print('---------- === = = == source_varea_rising ',source_varea_rising.data)
         print('---------- === = = == source_varea_rising x ',len(source_varea_rising.data['x']))
         print('---------- === = = == source_varea_rising y1 ',len(source_varea_rising.data['y1']))
@@ -1696,6 +1697,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
 
     source_varea_rising = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising.data = {'x':[10, 100, 200], 'y1':[300, 350, 400], 'y2':[0,0,0]}
+
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
 
 
