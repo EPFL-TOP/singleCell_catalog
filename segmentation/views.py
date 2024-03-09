@@ -824,38 +824,76 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if len(cellids[0].cell_status.peaks)==6:
                 source_intensity_max.data={'time':cellids[0].cell_status.peaks["max_time"], 'intensity':cellids[0].cell_status.peaks["max_int"]}
                 source_intensity_min.data={'time':cellids[0].cell_status.peaks["min_time"], 'intensity':cellids[0].cell_status.peaks["min_int"]}
-                source_varea_rising.data['x']  = [source_intensity_ch1.data["time"][t] for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
-                source_varea_rising.data['y1']  = []
-                source_varea_rising.data['y2']  = []
-                for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame):
-                    print('t=',t)
-                    if t in cellids[0].cell_status.peaks["min_frame"]:
-                        source_varea_rising.data['y2'].append(0)
-                        continue
-                    elif t in cellids[0].cell_status.peaks["max_frame"]:
-                        source_varea_rising.data['y2'].append(0)
-                        continue
-                    else: source_varea_rising.data['y2'].append(source_intensity_ch1.data["intensity"][t])
-                    #source_varea_rising.data['y1'].append(source_intensity_ch1.data["intensity"][t])
-                    print('y2=',len(source_varea_rising.data['y2']))
-                source_varea_rising.data['y1']  = [0 for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
+
+                for m in range(len(cellids[0].cell_status.peaks["max_frame"])):
+                    min=cellids[0].cell_status.start_oscillation_frame
+                    for n in range(len(cellids[0].cell_status.peaks["min_frame"])):
+                        if cellids[0].cell_status.peaks["min_frame"][n]<cellids[0].cell_status.peaks["max_frame"][m]: min=cellids[0].cell_status.peaks["min_frame"][n]
+                    for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame):
+
+                        if t<cellids[0].cell_status.peaks["max_frame"][m] and cellids[0].cell_status.peaks["max_frame"][m]>min:
+                            source_varea_rising.data['x_{}'.format(m)] .append(source_intensity_ch1.data["time"][t])
+                            source_varea_rising.data['y1_{}'.format(m)].append(0)
+                            source_varea_rising.data['y2_{}'.format(m)].append(source_intensity_ch1.data["intensity"][t])
+
+
+#                source_varea_rising.data['x']  = [source_intensity_ch1.data["time"][t] for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
+#                source_varea_rising.data['y1']  = []
+#                source_varea_rising.data['y2']  = []
+#                for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame):
+#                    print('t=',t)
+#                    if t in cellids[0].cell_status.peaks["min_frame"]:
+#                        source_varea_rising.data['y2'].append(0)
+#                        continue
+#                    elif t in cellids[0].cell_status.peaks["max_frame"]:
+#                        source_varea_rising.data['y2'].append(0)
+#                        continue
+#                    else: source_varea_rising.data['y2'].append(source_intensity_ch1.data["intensity"][t])
+#                    #source_varea_rising.data['y1'].append(source_intensity_ch1.data["intensity"][t])
+#                    print('y2=',len(source_varea_rising.data['y2']))
+#                source_varea_rising.data['y1']  = [0 for t in range(cellids[0].cell_status.start_oscillation_frame, cellids[0].cell_status.end_oscillation_frame) ]
 
             else:
                 source_intensity_max.data={'time':[], 'intensity':[]}
                 source_intensity_min.data={'time':[], 'intensity':[]}
-                source_varea_rising.data['x']  = []
-                source_varea_rising.data['y1']  = []
-                source_varea_rising.data['y2']  = []
+                source_varea_rising.data['x_0']  = []
+                source_varea_rising.data['y1_0'] = []
+                source_varea_rising.data['y2_0'] = []
+                source_varea_rising.data['x_1']  = []
+                source_varea_rising.data['y1_1'] = []
+                source_varea_rising.data['y2_1'] = []
+                source_varea_rising.data['x_2']  = []
+                source_varea_rising.data['y1_2'] = []
+                source_varea_rising.data['y2_2'] = []
+                source_varea_rising.data['x_3']  = []
+                source_varea_rising.data['y1_3'] = []
+                source_varea_rising.data['y2_3'] = []
+                source_varea_rising.data['x_4']  = []
+                source_varea_rising.data['y1_4'] = []
+                source_varea_rising.data['y2_4'] = []
         line_position.location = 0
-        y2=[731.6374663072776, 740.2718832891246, 751.3581699346405, 800.0886792452831, 845.8388278388278, 0, 845.7122807017544, 801.0716211012707, 787.4872912127814, 0, 853.2636363636364, 964.4960087082728, 0, 946.0149572649573, 898.5612535612536, 865.717254174397, 875.9644970414201, 852.7534965034965, 840.598664997914, 824.3316326530612, 795.375, 774.4934895833334, 775.3018707482993]
-        source_varea_rising.data['x'] = [40.01453547667265, 50.01442032667001, 60.01377847500245, 70.01465064667066, 80.01440943666697, 90.01396994333665, 100.01463459167083, 110.01401929500103, 120.01501783333619, 130.01397199333906, 140.01399883833727, 150.0148025450031, 160.01462224000295, 170.01464236667155, 180.01518820833763, 190.01429409666855, 200.0141983183384, 210.01409272833666, 220.0152830300013, 230.0138937333385, 240.01411955167055, 250.01400333166916, 260.0150289716681]
-        source_varea_rising.data['x'] = [40.01453547667265, 50.01442032667001, 60.01377847500245, 70.01465064667066, 70.01465064667066, 90.01396994333665, 100.01463459167083, 110.01401929500103, 120.01501783333619, 130.01397199333906, 140.01399883833727, 150.0148025450031, 160.01462224000295, 170.01464236667155, 180.01518820833763, 190.01429409666855, 200.0141983183384, 210.01409272833666, 220.0152830300013, 230.0138937333385, 240.01411955167055, 250.01400333166916, 260.0150289716681]
-        source_varea_rising.data = {'x':source_varea_rising.data['x'], 'y1':source_varea_rising.data['y1'], 'y2':source_varea_rising.data['y2']}
+        source_varea_rising.data = {'x_0':source_varea_rising.data['x_0'], 'y1_0':source_varea_rising.data['y1_0'], 'y2_0':source_varea_rising.data['y2_0'],
+                                    'x_1':source_varea_rising.data['x_1'], 'y1_1':source_varea_rising.data['y1_1'], 'y2_1':source_varea_rising.data['y2_1'],
+                                    'x_2':source_varea_rising.data['x_2'], 'y1_2':source_varea_rising.data['y1_2'], 'y2_2':source_varea_rising.data['y2_2'],
+                                    'x_3':source_varea_rising.data['x_3'], 'y1_3':source_varea_rising.data['y1_3'], 'y2_3':source_varea_rising.data['y2_3'],
+                                    'x_4':source_varea_rising.data['x_4'], 'y1_4':source_varea_rising.data['y1_4'], 'y2_4':source_varea_rising.data['y2_4']
+                                    }
         print('---------- === = = == source_varea_rising ',source_varea_rising.data)
-        print('---------- === = = == source_varea_rising x ',len(source_varea_rising.data['x']))
-        print('---------- === = = == source_varea_rising y1 ',len(source_varea_rising.data['y1']))
-        print('---------- === = = == source_varea_rising y2 ',len(source_varea_rising.data['y2']))
-        
+        print('---------- === = = == source_varea_rising x_0 ',len(source_varea_rising.data['x_0']))
+        print('---------- === = = == source_varea_rising y1_0 ',len(source_varea_rising.data['y1_0']))
+        print('---------- === = = == source_varea_rising y2_0 ',len(source_varea_rising.data['y2_0']))
+        print('---------- === = = == source_varea_rising x_1 ',len(source_varea_rising.data['x_1']))
+        print('---------- === = = == source_varea_rising y1_1 ',len(source_varea_rising.data['y1_1']))
+        print('---------- === = = == source_varea_rising y2_1 ',len(source_varea_rising.data['y2_1']))
+        print('---------- === = = == source_varea_rising x_2 ',len(source_varea_rising.data['x_2']))
+        print('---------- === = = == source_varea_rising y1_2 ',len(source_varea_rising.data['y1_2']))
+        print('---------- === = = == source_varea_rising y2_2 ',len(source_varea_rising.data['y2_2']))
+        print('---------- === = = == source_varea_rising x_3 ',len(source_varea_rising.data['x_3']))
+        print('---------- === = = == source_varea_rising y1_3 ',len(source_varea_rising.data['y1_3']))
+        print('---------- === = = == source_varea_rising y2_3 ',len(source_varea_rising.data['y2_3']))
+        print('---------- === = = == source_varea_rising x_4 ',len(source_varea_rising.data['x_4']))
+        print('---------- === = = == source_varea_rising y1_4 ',len(source_varea_rising.data['y1_4']))
+        print('---------- === = = == source_varea_rising y2_4 ',len(source_varea_rising.data['y2_4']))
         if len(source_intensity_ch1.data["time"])!=0:
             line_position.location = source_intensity_ch1.data["time"][0]
 
@@ -1566,7 +1604,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         sample = Sample.objects.get(file_name=get_current_file())
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
         cellstatus = cellsid[0].cell_status
-        cellstatus.peaks={'min_frame':peaksmax.tolist(), 'max_frame':peaksmin.tolist(), 
+        cellstatus.peaks={'min_frame':peaksmin.tolist(), 'max_frame':peaksmax.tolist(), 
                           'min_int':int_min, 'max_int':int_max,
                           'min_time':time_min, 'max_time':time_max}
         cellstatus.save()
@@ -1700,10 +1738,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_varea_death = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
 
-    source_varea_rising = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    source_varea_rising.data = {'x':[10, 100, 200], 'y1':[300, 350, 400], 'y2':[0,0,0]}
+    source_varea_rising = bokeh.models.ColumnDataSource(data=dict(x_0=[], y1_0=[], y2_0=[], 
+                                                                  x_1=[], y1_1=[], y2_1=[], 
+                                                                  x_2=[], y1_2=[], y2_2=[],
+                                                                  x_3=[], y1_3=[], y2_3=[],
+                                                                  x_4=[], y1_4=[], y2_4=[]))
 
-    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
+    plot_intensity.varea(x='x_0', y1='y1_0', y2='y2_0', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
+    plot_intensity.varea(x='x_1', y1='y1_1', y2='y2_1', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
+    plot_intensity.varea(x='x_2', y1='y1_2', y2='y2_2', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
+    plot_intensity.varea(x='x_3', y1='y1_3', y2='y2_3', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
+    plot_intensity.varea(x='x_4', y1='y1_4', y2='y2_4', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
 
 
     # Add the rectangle glyph after adding the image
