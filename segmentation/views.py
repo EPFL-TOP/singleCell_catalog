@@ -794,6 +794,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to prepare the intensity plot
     def prepare_intensity():
         print('----------------prepare_intensity--------------------')
+        print('BEG---------- === = = == source_varea_rising ',source_varea_rising.data)
+        print('BEG---------- === = = == source_varea_rising x ',len(source_varea_rising.data['x']))
+        print('BEG---------- === = = == source_varea_rising y1 ',len(source_varea_rising.data['y1']))
+        print('BEG---------- === = = == source_varea_rising y2 ',len(source_varea_rising.data['y2']))
         current_file=get_current_file()
         if dropdown_cell.value!='':
             sample = Sample.objects.get(file_name=current_file)
