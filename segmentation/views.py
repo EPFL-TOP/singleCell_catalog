@@ -846,7 +846,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_rising.data['y1']  = []
                 source_varea_rising.data['y2']  = []
         line_position.location = 0
-        source_varea_rising.data = {'x':[300, 400, 500], 'y1':[300, 350, 400], 'y2':[0,0,0]}
+        source_varea_rising.data = {'x':source_varea_rising.data['x'], 'y1':source_varea_rising.data['y1'], 'y2':source_varea_rising.data['y2']}
         print('---------- === = = == source_varea_rising ',source_varea_rising.data)
         print('---------- === = = == source_varea_rising x ',len(source_varea_rising.data['x']))
         print('---------- === = = == source_varea_rising y1 ',len(source_varea_rising.data['y1']))
