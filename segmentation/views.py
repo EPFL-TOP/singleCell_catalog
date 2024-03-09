@@ -1749,9 +1749,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     plot_intensity.varea(x='x_0', y1='y1_0', y2='y2_0', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
     plot_intensity.varea(x='x_1', y1='y1_1', y2='y2_1', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
-    plot_intensity.varea(x='x_2', y1='y1_2', y2='y2_2', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
-    plot_intensity.varea(x='x_3', y1='y1_3', y2='y2_3', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
-    plot_intensity.varea(x='x_4', y1='y1_4', y2='y2_4', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
+    #plot_intensity.varea(x='x_2', y1='y1_2', y2='y2_2', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
+    #plot_intensity.varea(x='x_3', y1='y1_3', y2='y2_3', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
+    #plot_intensity.varea(x='x_4', y1='y1_4', y2='y2_4', fill_alpha=0.10, fill_color='black', source=source_varea_rising)
 
 
     # Add the rectangle glyph after adding the image
