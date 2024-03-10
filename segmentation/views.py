@@ -865,7 +865,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
-    def set_rising_falling(max_list, min_list):
+    def set_rising_falling_local(max_list, min_list):
 
         arrays = {}
         for i in range(1,6):
@@ -1783,7 +1783,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             int_min.append(source_intensity_ch1.data["intensity"][p])
         source_intensity_min.data={'time':time_min, 'intensity':int_min}
         print('peaksmax=',peaksmax,'  peaksmin=',peaksmin)
-        set_rising_falling(peaksmax, peaksmin)
+        set_rising_falling_local(peaksmax, peaksmin)
     slider_find_peaks.on_change('value', find_peaks_slider_callback)
     #___________________________________________________________________________________________
 
