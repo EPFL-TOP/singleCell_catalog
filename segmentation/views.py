@@ -837,9 +837,22 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             set_rising_falling(cellids[0])
 
-        line_position.location = 0
-        if len(source_intensity_ch1.data["time"])!=0:
-            line_position.location = source_intensity_ch1.data["time"][0]
+        else:
+            line_position.location = 0
+            if len(source_intensity_ch1.data["time"])!=0:
+                start_oscillation_position.location = -999
+                end_oscillation_position.location   = -999
+
+                line_position.location = source_intensity_ch1.data["time"][0]
+                
+                source_varea_death.data['x']    = []
+                source_varea_death.data['y1']   = []
+                source_varea_death.data['y2']   = []
+    
+                source_intensity_max.data={'time':[], 'intensity':[]}
+                source_intensity_min.data={'time':[], 'intensity':[]}
+                set_rising_falling(None)
+
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
@@ -861,6 +874,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source[4]=source_varea_rising4
         source[5]=source_varea_rising5
 
+        if cellid==None: return
         if len(cellid.cell_status.peaks)==6:
 
             for m in range(len(cellid.cell_status.peaks["max_frame"])):
