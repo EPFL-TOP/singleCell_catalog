@@ -917,9 +917,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         arrays = {}
         for i in range(1,6):
-            array_x  = 'xr_{}'.format(i)
-            array_y1 = 'yr1_{}'.format(i)
-            array_y2 = 'yr2_{}'.format(i)
+            array_x  = 'xf_{}'.format(i)
+            array_y1 = 'yf1_{}'.format(i)
+            array_y2 = 'yf2_{}'.format(i)
             arrays[array_x]  = []
             arrays[array_y1] = []
             arrays[array_y2] = []
@@ -949,19 +949,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     if cellid.cell_status.peaks["max_frame"][m]<cellid.cell_status.peaks["min_frame"][n]:
                         min_val=cellid.cell_status.peaks["min_frame"][n]
                         break
-                for t in range(cellid.cell_status.start_oscillation_frame, cellid.cell_status.end_oscillation_frame):
+                for t in range(cellid.cell_status.start_oscillation_frame, cellid.cell_status.end_oscillation_frame+1):
 
                     if t>cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]<min_val and t<min_val:
-                        arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-                        arrays['yr1_{}'.format(m+1)].append(0)
-                        arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+                        arrays['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                        arrays['yf1_{}'.format(m+1)].append(0)
+                        arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
   
                     if t==cellid.cell_status.end_oscillation_frame:
-                        arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-                        arrays['yr1_{}'.format(m+1)].append(0)
-                        arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+                        arrays['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                        arrays['yf1_{}'.format(m+1)].append(0)
+                        arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
         for i in range(1,6):
-            source_falling[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
+            source_falling[i].data={'x':arrays['xf_{}'.format(i)], 'y1':arrays['yf1_{}'.format(i)], 'y2':arrays['yf2_{}'.format(i)]}
             print('i={},  source_falling={}'.format(i, source_falling[i].data))
     #___________________________________________________________________________________________
 
