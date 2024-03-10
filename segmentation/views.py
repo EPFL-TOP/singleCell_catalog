@@ -946,7 +946,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             for m in range(len(cellid.cell_status.peaks["max_frame"])):
                 min_val=cellid.cell_status.end_oscillation_frame
                 for n in range(len(cellid.cell_status.peaks["min_frame"])):
-                    if cellid.cell_status.peaks["max_frame"][n]<cellid.cell_status.peaks["min_frame"][m]: 
+                    if cellid.cell_status.peaks["max_frame"][m]<cellid.cell_status.peaks["min_frame"][n]:
                         min_val=cellid.cell_status.peaks["min_frame"][n]
                         break
                 for t in range(cellid.cell_status.start_oscillation_frame, cellid.cell_status.end_oscillation_frame):
@@ -956,7 +956,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 #                        arrays['yr1_{}'.format(m+1)].append(0)
 #                        arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
 
-                    if t<cellid.cell_status.peaks["min_frame"][m] and cellid.cell_status.peaks["min_frame"][m]>min_val and t>min_val:
+                    if t<cellid.cell_status.peaks["min_frame"][n] and cellid.cell_status.peaks["min_frame"][n]>min_val and t>min_val:
                         arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays['yr1_{}'.format(m+1)].append(0)
                         arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
