@@ -958,7 +958,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 #                        arrays['yr1_{}'.format(m+1)].append(0)
 #                        arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
                     print('t={}, cellid.cell_status.peaks["min_frame"][n]={},  cellid.cell_status.peaks["min_frame"][n]={}, min_val={}'.format(t,cellid.cell_status.peaks["min_frame"][n], cellid.cell_status.peaks["min_frame"][n],min_val))
-                    if t<cellid.cell_status.peaks["min_frame"][n] and cellid.cell_status.peaks["max_frame"][m]<min_val and t<min_val:
+                    if t<cellid.cell_status.peaks["min_frame"][n] and t>cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]<min_val and t<min_val:
                         arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays['yr1_{}'.format(m+1)].append(0)
                         arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
