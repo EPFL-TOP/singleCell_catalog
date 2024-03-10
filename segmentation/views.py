@@ -842,11 +842,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('in the else ----------------prepare_intensity-------------------- in the else')
 
             line_position.location = 0
-            #if len(source_intensity_ch1.data["time"])!=0:
+            if len(source_intensity_ch1.data["time"])!=0:
+                line_position.location = source_intensity_ch1.data["time"][0]
+            else:
+                line_position.location = -999
             start_oscillation_position.location = -999
             end_oscillation_position.location   = -999
 
-            line_position.location = source_intensity_ch1.data["time"][0]
             
             source_varea_death.data['x']    = []
             source_varea_death.data['y1']   = []
