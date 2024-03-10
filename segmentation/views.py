@@ -894,7 +894,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             return
         
 
-        for m in range(max_list):
+        for m in range(len(max_list)):
             min_val=source_intensity_ch1.data["time"].index(start_oscillation_position.location)
             for n in range(len(min_list)):
                 if min_list[n]<max_list[m]: 
