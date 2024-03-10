@@ -839,22 +839,22 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             set_rising_falling(cellids[0])
 
         else:
-            print('in the else ----------------prepare_intensity-------------------- in the if')
+            print('in the else ----------------prepare_intensity-------------------- in the else')
 
             line_position.location = 0
-            if len(source_intensity_ch1.data["time"])!=0:
-                start_oscillation_position.location = -999
-                end_oscillation_position.location   = -999
+            #if len(source_intensity_ch1.data["time"])!=0:
+            start_oscillation_position.location = -999
+            end_oscillation_position.location   = -999
 
-                line_position.location = source_intensity_ch1.data["time"][0]
-                
-                source_varea_death.data['x']    = []
-                source_varea_death.data['y1']   = []
-                source_varea_death.data['y2']   = []
-    
-                source_intensity_max.data={'time':[], 'intensity':[]}
-                source_intensity_min.data={'time':[], 'intensity':[]}
-                set_rising_falling(None)
+            line_position.location = source_intensity_ch1.data["time"][0]
+            
+            source_varea_death.data['x']    = []
+            source_varea_death.data['y1']   = []
+            source_varea_death.data['y2']   = []
+
+            source_intensity_max.data={'time':[], 'intensity':[]}
+            source_intensity_min.data={'time':[], 'intensity':[]}
+            set_rising_falling(None)
 
     #___________________________________________________________________________________________
 
