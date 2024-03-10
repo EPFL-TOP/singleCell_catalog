@@ -957,7 +957,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         arrays['yf1_{}'.format(m+1)].append(0)
                         arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
   
-                    if t==cellid.cell_status.end_oscillation_frame:
+                    if t==cellid.cell_status.end_oscillation_frame and min_val==cellid.cell_status.end_oscillation_frame:
                         arrays['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays['yf1_{}'.format(m+1)].append(0)
                         arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
