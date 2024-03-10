@@ -948,21 +948,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 for n in range(len(cellid.cell_status.peaks["min_frame"])):
                     if cellid.cell_status.peaks["max_frame"][m]<cellid.cell_status.peaks["min_frame"][n]:
                         min_val=cellid.cell_status.peaks["min_frame"][n]
-                        print('n={}'.format(n))
                         break
-                print('m={},  min_val={}'.format(m, min_val))
                 for t in range(cellid.cell_status.start_oscillation_frame, cellid.cell_status.end_oscillation_frame):
 
-#                    if t==min and cellid.cell_status.start_oscillation_frame==min and t<cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]>min:
-#                        arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-#                        arrays['yr1_{}'.format(m+1)].append(0)
-#                        arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
-                    print('t={}, cellid.cell_status.peaks["min_frame"][n]={},  cellid.cell_status.peaks["min_frame"][n]={}, min_val={}'.format(t,cellid.cell_status.peaks["min_frame"][n], cellid.cell_status.peaks["min_frame"][n],min_val))
                     if t>cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]<min_val and t<min_val:
                         arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays['yr1_{}'.format(m+1)].append(0)
                         arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
   
+                    if t==cellid.cell_status.end_oscillation_frame:
+                        arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                        arrays['yr1_{}'.format(m+1)].append(0)
+                        arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
         for i in range(1,6):
             source_falling[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
             print('i={},  source_falling={}'.format(i, source_falling[i].data))
