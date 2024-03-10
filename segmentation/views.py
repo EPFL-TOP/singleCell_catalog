@@ -793,7 +793,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to prepare the intensity plot
     def prepare_intensity():
-        print('----------------prepare_intensity--------------------')
+        print('----------------prepare_intensity--------------------dropdown_cell.value=',dropdown_cell.value)
         current_file=get_current_file()
         if dropdown_cell.value!='':
             
