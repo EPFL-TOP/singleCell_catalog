@@ -796,7 +796,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('----------------prepare_intensity--------------------dropdown_cell.value=',dropdown_cell.value)
         current_file=get_current_file()
         if dropdown_cell.value!='':
-            
+            print('----------------prepare_intensity-------------------- in the if')
+
             sample = Sample.objects.get(file_name=current_file)
             cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
 
@@ -838,6 +839,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             set_rising_falling(cellids[0])
 
         else:
+            print('in the else ----------------prepare_intensity-------------------- in the if')
+
             line_position.location = 0
             if len(source_intensity_ch1.data["time"])!=0:
                 start_oscillation_position.location = -999
