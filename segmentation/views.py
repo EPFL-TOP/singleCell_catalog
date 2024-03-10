@@ -879,6 +879,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source[3]=source_varea_rising3
         source[4]=source_varea_rising4
         source[5]=source_varea_rising5
+        source[6]=source_varea_rising6
+        source[7]=source_varea_rising7
+        source[8]=source_varea_rising8
+        source[9]=source_varea_rising9
+        source[10]=source_varea_rising10
 
         if cellid==None:
             for i in range(1,6):
@@ -900,6 +905,60 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
 
                     if t<cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]>min and t>min:
+                        arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                        arrays['yr1_{}'.format(m+1)].append(0)
+                        arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+  
+        for i in range(1,6):
+            source[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
+
+
+
+
+
+
+
+        arrays = {}
+        for i in range(1,6):
+            array_x  = 'xr_{}'.format(i)
+            array_y1 = 'yr1_{}'.format(i)
+            array_y2 = 'yr2_{}'.format(i)
+            arrays[array_x]  = []
+            arrays[array_y1] = []
+            arrays[array_y2] = []
+
+        source = {}
+        source[1]=source_varea_falling1
+        source[2]=source_varea_falling2
+        source[3]=source_varea_falling3
+        source[4]=source_varea_falling4
+        source[5]=source_varea_falling5
+        source[6]=source_varea_falling6
+        source[7]=source_varea_falling7
+        source[8]=source_varea_falling8
+        source[9]=source_varea_falling9
+        source[10]=source_varea_falling10
+
+        if cellid==None:
+            for i in range(1,6):
+                source[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
+            return
+        
+        if len(cellid.cell_status.peaks)==6:
+
+            for m in range(len(cellid.cell_status.peaks["min_frame"])):
+                max=cellid.cell_status.start_oscillation_frame
+                for n in range(len(cellid.cell_status.peaks["max_frame"])):
+                    if cellid.cell_status.peaks["max_frame"][n]<cellid.cell_status.peaks["min_frame"][m]: 
+                        max=cellid.cell_status.peaks["max_frame"][n]
+                for t in range(cellid.cell_status.start_oscillation_frame, cellid.cell_status.end_oscillation_frame):
+
+#                    if t==min and cellid.cell_status.start_oscillation_frame==min and t<cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]>min:
+#                        arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+#                        arrays['yr1_{}'.format(m+1)].append(0)
+#                        arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+
+                    if t<cellid.cell_status.peaks["min_frame"][m] and cellid.cell_status.peaks["min_frame"][m]>max and t>max:
                         arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays['yr1_{}'.format(m+1)].append(0)
                         arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
@@ -1762,27 +1821,48 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
 
 
-    source_varea_rising1 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    source_varea_rising2 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    source_varea_rising3 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    source_varea_rising4 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    source_varea_rising5 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising1  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising2  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising3  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising4  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising5  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising6  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising7  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising8  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising9  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising10 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_rising1)
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_rising2)
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_rising3)
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_rising4)
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_rising5)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_rising6)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_rising7)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_rising8)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_rising9)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_rising10)
 
-    source_varea_falling1 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    source_varea_falling2 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    source_varea_falling3 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    source_varea_falling4 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    source_varea_falling5 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_falling1)
-    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_falling2)
-    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_falling3)
-    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_falling4)
-    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='red', source=source_varea_falling5)
+    source_varea_falling1  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling2  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling3  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling4  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling5  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling6  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling7  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling8  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling9  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling10 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='green', source=source_varea_falling1)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='green', source=source_varea_falling2)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='green', source=source_varea_falling3)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='green', source=source_varea_falling4)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='green', source=source_varea_falling5)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='green', source=source_varea_falling6)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='green', source=source_varea_falling7)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='green', source=source_varea_falling8)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='green', source=source_varea_falling9)
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='green', source=source_varea_falling10)
 
 
     # Add the rectangle glyph after adding the image
