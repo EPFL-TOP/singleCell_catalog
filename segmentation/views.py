@@ -879,6 +879,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source[4]=source_varea_rising4
         source[5]=source_varea_rising5
 
+        if cellid==None:
+            for i in range(1,6):
+                source[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
+            return
+        
         if len(cellid.cell_status.peaks)==6:
 
             for m in range(len(cellid.cell_status.peaks["max_frame"])):
