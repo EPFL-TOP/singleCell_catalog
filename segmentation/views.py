@@ -1434,7 +1434,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if number>=0:
             current_index = number
         slider.value = current_index
-        line_position.location = source_intensity_ch1.data["time"][current_index]
+        if len(source_intensity_ch1.data["time"])==0:
+            line_position.location = -999
+        else:
+            line_position.location = source_intensity_ch1.data["time"][current_index]
+
         print('update_image index=',current_index)
     #___________________________________________________________________________________________
 
