@@ -1800,8 +1800,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 int_array[int]=0
         print('source_intensity_ch1 ',source_intensity_ch1.data["intensity"])
         print('int_array            ',int_array)
-        peaksmax, _ = find_peaks(np.array(int_array),  prominence=30)
-        peaksmin, _ = find_peaks(-np.array(int_array), prominence=30)
+        peaksmax, _ = find_peaks(np.array(int_array),  prominence=slider_find_peaks.value)
+        peaksmin, _ = find_peaks(-np.array(int_array), prominence=slider_find_peaks.value)
+        print('SAVE find_peaks_callback            ',slider_find_peaks.value)
 
         int_max=[]
         time_max=[]
@@ -1827,7 +1828,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         set_rising_falling(cellsid[0])
 
-    button_find_peaks = bokeh.models.Button(label="Find Peaks")
+    button_find_peaks = bokeh.models.Button(label="Save Peaks")
     button_find_peaks.on_click(find_peaks_callback)
     #___________________________________________________________________________________________
 
