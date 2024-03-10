@@ -1234,7 +1234,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
-        line_position.location = source_intensity_ch1.data["time"][time_point]
+        if len(source_intensity_ch1.data["time"])==0:
+            line_position.location = -999
+        else:
+            line_position.location = source_intensity_ch1.data["time"][time_point]
 
     slider.on_change('value', callback_slider)
     #___________________________________________________________________________________________
