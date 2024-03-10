@@ -873,21 +873,21 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             arrays[array_y1] = []
             arrays[array_y2] = []
 
-        source = {}
-        source[1]=source_varea_rising1
-        source[2]=source_varea_rising2
-        source[3]=source_varea_rising3
-        source[4]=source_varea_rising4
-        source[5]=source_varea_rising5
-        source[6]=source_varea_rising6
-        source[7]=source_varea_rising7
-        source[8]=source_varea_rising8
-        source[9]=source_varea_rising9
-        source[10]=source_varea_rising10
+        source_rising = {}
+        source_rising[1]=source_varea_rising1
+        source_rising[2]=source_varea_rising2
+        source_rising[3]=source_varea_rising3
+        source_rising[4]=source_varea_rising4
+        source_rising[5]=source_varea_rising5
+        source_rising[6]=source_varea_rising6
+        source_rising[7]=source_varea_rising7
+        source_rising[8]=source_varea_rising8
+        source_rising[9]=source_varea_rising9
+        source_rising[10]=source_varea_rising10
 
         if cellid==None:
             for i in range(1,6):
-                source[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
+                source_rising[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
             return
         
         if len(cellid.cell_status.peaks)==6:
@@ -910,7 +910,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
   
         for i in range(1,6):
-            source[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
+            source_rising[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
+            print('i={},  source_rising={}'.format(i, source_rising[i].data))
 
 
 
