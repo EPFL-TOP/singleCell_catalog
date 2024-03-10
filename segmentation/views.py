@@ -849,7 +849,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             start_oscillation_position.location = -999
             end_oscillation_position.location   = -999
 
-            
+            time_of_death_position.location = -999
+
             source_varea_death.data['x']    = []
             source_varea_death.data['y1']   = []
             source_varea_death.data['y2']   = []
