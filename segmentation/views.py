@@ -789,6 +789,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500)
 
+    slider_find_peaks  = bokeh.models.Slider(start=0, end=100, value=25, step=1, title="Peak prominence")
 
     #___________________________________________________________________________________________
     # Function to prepare the intensity plot
@@ -1653,6 +1654,37 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
+    def find_peaks_slider_callback(attr, old, new):
+        int_array = np.array(source_intensity_ch1.data["intensity"])
+        for int in range(len(int_array)):
+            if source_intensity_ch1.data["time"][int]<start_oscillation_position.location:
+                int_array[int]=0
+            if source_intensity_ch1.data["time"][int]>end_oscillation_position.location:
+                int_array[int]=0
+        print('source_intensity_ch1 ',source_intensity_ch1.data["intensity"])
+        print('int_array            ',int_array)
+        peaksmax, _ = find_peaks(np.array(int_array),  prominence=40)
+        peaksmin, _ = find_peaks(-np.array(int_array), prominence=40)
+
+        int_max=[]
+        time_max=[]
+        for p in peaksmax:
+            time_max.append(source_intensity_ch1.data["time"][p])
+            int_max.append(source_intensity_ch1.data["intensity"][p])
+        source_intensity_max.data={'time':time_max, 'intensity':int_max}  
+
+        int_min=[]
+        time_min=[]
+        for p in peaksmin:
+            time_min.append(source_intensity_ch1.data["time"][p])
+            int_min.append(source_intensity_ch1.data["intensity"][p])
+        source_intensity_min.data={'time':time_min, 'intensity':int_min}
+    slider_find_peaks.on_change('value', find_peaks_slider_callback)
+    #___________________________________________________________________________________________
+
+
+
+    #___________________________________________________________________________________________
     def find_peaks_callback():
         int_array = np.array(source_intensity_ch1.data["intensity"])
         for int in range(len(int_array)):
@@ -1883,6 +1915,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_inspect, button_build_cells, dropdown_cell),
                                      bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
                                      bokeh.layouts.row(button_find_peaks),
+                                     bokeh.layouts.row(slider_find_peaks),
                                      text)
     
     norm_layout = bokeh.layouts.row(left_col, plot_image, right_col, plot_intensity)
