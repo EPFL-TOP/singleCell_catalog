@@ -1019,14 +1019,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     time_sorted, intensity_sorted = zip(*sorted_lists) 
                     source_intensity_ch2.data={'time':time_sorted, 'intensity':intensity_sorted}
         dropdown_cell.options=cell_list
-        print('dropdown_cell.value = ',dropdown_cell.value)
-        print('dropdown_cell.options = ',dropdown_cell.options)
+
         if dropdown_cell.value=='':
             if len(dropdown_cell.options)>0:
                 dropdown_cell.value = dropdown_cell.options[0]
             else:
                 dropdown_cell.value = ''
-
+        if len(dropdown_cell.options)==0:
+            dropdown_cell.value = ''
+        print('dropdown_cell.value = ',dropdown_cell.value)
+        print('dropdown_cell.options = ',dropdown_cell.options)
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
     #___________________________________________________________________________________________
