@@ -789,7 +789,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500)
 
-    slider_find_peaks  = bokeh.models.Slider(start=0, end=100, value=25, step=1, title="Peak prominence")
+    slider_find_peaks  = bokeh.models.Slider(start=0, end=100, value=30, step=1, title="Peak prominence")
 
     #___________________________________________________________________________________________
     # Function to prepare the intensity plot
@@ -888,7 +888,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_rising[9]=source_varea_rising9
         source_rising[10]=source_varea_rising10
 
-        if end_oscillation_position.location  < 0:
+        if end_oscillation_position.location  < 0 or start_oscillation_position.location < 0:
             for i in range(1,6):
                 source_rising[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
             return
@@ -914,7 +914,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for i in range(1,6):
             source_rising[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
             print('i={},  source_rising={}'.format(i, source_rising[i].data))
-        return
+
+
         arrays = {}
         for i in range(1,6):
             array_x  = 'xf_{}'.format(i)
@@ -936,30 +937,30 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_falling[9]=source_varea_falling9
         source_falling[10]=source_varea_falling10
 
-        if cellid==None:
+        if end_oscillation_position.location  < 0 or start_oscillation_position.location < 0:
             for i in range(1,6):
                 source_falling[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
             return
         
-        if len(cellid.cell_status.peaks)==6:
 
-            for m in range(len(cellid.cell_status.peaks["max_frame"])):
-                min_val=cellid.cell_status.end_oscillation_frame
-                for n in range(len(cellid.cell_status.peaks["min_frame"])):
-                    if cellid.cell_status.peaks["max_frame"][m]<cellid.cell_status.peaks["min_frame"][n]:
-                        min_val=cellid.cell_status.peaks["min_frame"][n]
-                        break
-                for t in range(cellid.cell_status.start_oscillation_frame, cellid.cell_status.end_oscillation_frame+1):
+        for m in range(len(max_list)):
+            min_val=source_intensity_ch1.data["time"].index(end_oscillation_position.location)
+            for n in range(len(min_list)):
+                if max_list[m]<min_list[n]:
+                    min_val=min_list[n]
+                    break
+            for t in range(source_intensity_ch1.data["time"].index(start_oscillation_position.location), source_intensity_ch1.data["time"].index(end_oscillation_position.location)+1):
 
-                    if t>cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]<min_val and t<min_val:
-                        arrays['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-                        arrays['yf1_{}'.format(m+1)].append(0)
-                        arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
-  
-                    if t==cellid.cell_status.end_oscillation_frame and min_val==cellid.cell_status.end_oscillation_frame:
-                        arrays['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-                        arrays['yf1_{}'.format(m+1)].append(0)
-                        arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+                if t>max_list[m] and max_list[m]<min_val and t<min_val:
+                    arrays['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                    arrays['yf1_{}'.format(m+1)].append(0)
+                    arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+
+                if t==source_intensity_ch1.data["time"].index(end_oscillation_position.location) and min_val==source_intensity_ch1.data["time"].index(end_oscillation_position.location):
+                    arrays['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                    arrays['yf1_{}'.format(m+1)].append(0)
+                    arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+
         for i in range(1,6):
             source_falling[i].data={'x':arrays['xf_{}'.format(i)], 'y1':arrays['yf1_{}'.format(i)], 'y2':arrays['yf2_{}'.format(i)]}
             print('i={},  source_falling={}'.format(i, source_falling[i].data))
@@ -1119,7 +1120,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('in the else update_dropdown_pos')
             slider.value = 0
         prepare_intensity()
-
+        slider_find_peaks.value = 30
     dropdown_well.on_change('value', update_dropdown_pos)
     #___________________________________________________________________________________________
 
@@ -1799,8 +1800,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 int_array[int]=0
         print('source_intensity_ch1 ',source_intensity_ch1.data["intensity"])
         print('int_array            ',int_array)
-        peaksmax, _ = find_peaks(np.array(int_array),  prominence=40)
-        peaksmin, _ = find_peaks(-np.array(int_array), prominence=40)
+        peaksmax, _ = find_peaks(np.array(int_array),  prominence=30)
+        peaksmin, _ = find_peaks(-np.array(int_array), prominence=30)
 
         int_max=[]
         time_max=[]
