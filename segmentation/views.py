@@ -1663,8 +1663,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 int_array[int]=0
         print('source_intensity_ch1 ',source_intensity_ch1.data["intensity"])
         print('int_array            ',int_array)
-        peaksmax, _ = find_peaks(np.array(int_array),  prominence=40)
-        peaksmin, _ = find_peaks(-np.array(int_array), prominence=40)
+        peaksmax, _ = find_peaks(np.array(int_array),  prominence=new)
+        peaksmin, _ = find_peaks(-np.array(int_array), prominence=new)
 
         int_max=[]
         time_max=[]
