@@ -221,9 +221,16 @@ class CellFlag(models.Model):
     rising         = models.BooleanField(help_text="rising oscillation signal cell flag", default=False, blank=True)
     falling        = models.BooleanField(help_text="falling oscillation signal cell flag", default=False, blank=True)
     flat           = models.BooleanField(help_text="flat cell flag", default=False, blank=True)
-    
+
     cell_roi       = models.OneToOneField(CellROI, default='', null=True, on_delete=models.CASCADE, related_name="cellflag_cellroi")
 
     class Meta:
         verbose_name = 'Cell flags'
         verbose_name_plural = 'Cell flags'
+
+
+    def __str__(self):
+        if self.cell_roi.cell_id != None:
+            return 'file={0}, frame={1}, roi={2}, cell={3}'.format(self.cell_roi.frame.sample.file_name, self.cell_roi.frame.number, self.cell_roi.roi_number, self.cell_roi.cell_id.name)
+        else:
+            return 'file={0}, frame={1}, roi={2}, cell={3}'.format(self.cell_roi.frame.sample.file_name, self.cell_roi.frame.number, self.cell_roi.roi_number, self.cell_roi.cell_id)
