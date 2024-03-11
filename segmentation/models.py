@@ -114,7 +114,7 @@ class CellStatus(models.Model):
     start_oscillation_frame = models.PositiveSmallIntegerField(default=0, help_text="Cell frame start of oscillation", blank=True)
     end_oscillation_frame   = models.PositiveSmallIntegerField(default=0, help_text="Cell frame end of oscillation", blank=True)
 
-    n_oscillations          = models.PositiveSmallIntegerField(default=0, help_text="Cell number of oscillations", blank=True)
+    n_oscillations          = models.IntegerField(default=-999, help_text="Cell number of oscillations", blank=True)
 
     def __str__(self):
         if  hasattr(self, 'cellid_cellstatus'):

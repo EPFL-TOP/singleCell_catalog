@@ -1854,14 +1854,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def update_source_n_osc():
+        print('------------------------update_source_n_osc-------------------------')
         sample = Sample.objects.get(file_name=get_current_file())
         cellids = CellID.objects.select_related().filter(sample=sample)
         n_osc=[]
         for cellid in cellids:
-            n_osc.append(cellid.cell_status.n_oscillations)
+            tmp=cellid.cell_status.n_oscillations
+            print('cellid=',cellid,'  ',tmp)
+            if tmp>=0: n_osc.append(tmp)
 
         hist, edges = np.histogram(n_osc, bins=max(n_osc)+2)
         source_nosc.data={'x': edges[:-1], 'top': hist}
+        print('source_nosc = ',source_nosc.data)
     #___________________________________________________________________________________________
 
 
