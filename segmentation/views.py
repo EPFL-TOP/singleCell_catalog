@@ -1121,6 +1121,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('in the else update_dropdown_pos')
             slider.value = 0
         prepare_intensity()
+        update_source_n_osc()
+
         slider_find_peaks.value = 30
     dropdown_well.on_change('value', update_dropdown_pos)
     #___________________________________________________________________________________________
@@ -1268,6 +1270,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         update_dropdown_cell('','','')
         slider.end=len(source_imgs.data['images'][0]) - 1
         prepare_intensity()
+        update_source_n_osc()
 
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
@@ -2060,7 +2063,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     source_nosc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     update_source_n_osc()
-    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_nosc, alpha=0.5, color='black', line_color=None)
+    plot_nosc.vbar(x='x', top='top', width=0.5, source=source_nosc, alpha=0.5, color='black', line_color=None)
 
 
 
