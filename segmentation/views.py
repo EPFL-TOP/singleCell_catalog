@@ -2039,7 +2039,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_tod, alpha=0.5, color='black', line_color=None)
 
 
-    #plot_osc_tod
+    source_nosc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))    
+    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_nosc, alpha=0.5, color='black', line_color=None)
 
 
 
