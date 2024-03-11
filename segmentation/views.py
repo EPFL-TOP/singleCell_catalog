@@ -4,7 +4,7 @@ from django.db import connection
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
 
-from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Data, Segmentation, SegmentationChannel, CellID, CellROI, CellStatus, CellFlag
+from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Segmentation, SegmentationChannel, CellID, CellROI, CellStatus, CellFlag
 
 import os, sys, json, glob, gc
 import time
@@ -391,14 +391,14 @@ def segment():
 
                     print(' got ',len(contour_list),' contours')
                     for cont in contour_list:
-                        pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
-                        pixels_data_contour.save()
-                        pixels_data_inside   = Data(all_pixels=cont['all_pixels_inside'],  single_pixels=cont['single_pixels_inside'])
-                        pixels_data_inside.save()
+                        #pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
+                        #pixels_data_contour.save()
+                        #pixels_data_inside   = Data(all_pixels=cont['all_pixels_inside'],  single_pixels=cont['single_pixels_inside'])
+                        #pixels_data_inside.save()
                         print(cont['center'])
                         contour = Contour(frame=f,
-                                          pixels_data_contour=pixels_data_contour,
-                                          pixels_data_inside=pixels_data_inside,
+                        #                  pixels_data_contour=pixels_data_contour,
+                        #                  pixels_data_inside=pixels_data_inside,
                                           segmentation_channel=segmentation_channel,
                                           center=cont['center'])
                         contour.save()
@@ -580,7 +580,7 @@ def build_ROIs():
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             counter_samp=0
             for s in samples:
-                if counter_samp==1: 
+                if counter_samp==10: 
                     print('===================BREAK ROIS========================')
                     break
                 counter_samp+=1
@@ -589,12 +589,7 @@ def build_ROIs():
                 #images are t, c, x, y 
                 BF_images=images.transpose(1,0,2,3)
                 BF_images=BF_images[0]
-                counter_frame=0
                 for frame in frames:
-                    #if counter_frame==2: 
-                    #    print('===================BREAK Frame========================')
-                    #    break
-                    #counter_frame+=1
                     rois = CellROI.objects.select_related().filter(frame = frame)
                     #Just for now, should normally check that same ROI don't overlap
                     if len(rois)>0: continue
@@ -658,6 +653,10 @@ def build_ROIs():
                                           type="cell_ROI",
                                           mode="auto")
                         contour.save()
+
+                        cellflag = CellFlag(cell_roi=roi)
+                        cellflag.save()
+
                 build_cells_sample(s)
 
 
@@ -830,7 +829,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
             #Set maximums and mimimums if exists [] else
-            if len(cellids[0].cell_status.peaks)==6:
+            if len(cellids[0].cell_status.peaks)>=6:
                 source_intensity_max.data={'time':cellids[0].cell_status.peaks["max_time"], 'intensity':cellids[0].cell_status.peaks["max_int"]}
                 source_intensity_min.data={'time':cellids[0].cell_status.peaks["min_time"], 'intensity':cellids[0].cell_status.peaks["min_int"]}
             else:
@@ -1567,6 +1566,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                   type="cell_ROI",
                                   mode="manual")
                 contour.save()
+
+                cellflag = CellFlag(cell_roi=roi)
+                cellflag.save()
 
         height_labels, weight_labels, names_labels = update_source_labels_roi()
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}

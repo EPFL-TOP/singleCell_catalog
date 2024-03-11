@@ -49,8 +49,9 @@ class Sample(models.Model):
 #    name_of_channels       = models.CharField(max_length=500, default='', help_text="name of the channels")
 #    date                   = models.DateTimeField(blank=True, null=True)
     #USER specific
-    sample_quality     = models.CharField(max_length=200, choices=QUALITY, help_text="")
-    keep_sample        = models.BooleanField(help_text="keep this sample flag")
+    sample_quality     = models.CharField(max_length=200, choices=QUALITY, help_text="", default='High')
+    keep_sample        = models.BooleanField(help_text="keep this sample flag", default=True)
+    check_sample       = models.BooleanField(help_text="sample has been checked flag", default=False)
 
     def __str__(self):
         return 'name={0}, quality={1}'.format(self.file_name, self.sample_quality)
@@ -97,22 +98,13 @@ class SegmentationChannel(models.Model):
     def __str__(self):
         return '{0}, {1}, {2}, {3}'.format(self.channel_name, self.channel_number, self.segmentation.name, self.segmentation.algorithm_type, self.segmentation.algorithm_version, self.segmentation.algorithm_parameters)
 
-#___________________________________________________________________________________________
-class Data(models.Model):
-    #Only json files because the dimension correspond to the number of channels
-    all_pixels    = models.JSONField(default=dict, help_text="Variables calculated over all pixels")
-    single_pixels = models.JSONField(default=dict, help_text="Pixels individual coordinates and intensities")
-
-
-
-
-
 
 
 #___________________________________________________________________________________________
 class CellStatus(models.Model):
 
-    peaks = models.JSONField(default=dict, help_text="json to store the cell peaks intensities", blank=True)
+    peaks                   = models.JSONField(default=dict, help_text="json to store the cell peaks intensities", blank=True)
+    flags                   = models.JSONField(default=dict, help_text="json to store the cells flags (for each frame the cell exists)", blank=True)
 
     time_of_death           = models.FloatField(default=-9999, help_text="Cell time of death in minutes", blank=True)
     start_oscillation       = models.FloatField(default=-9999, help_text="Cell time start of oscillation in minutes", blank=True)
@@ -127,6 +119,10 @@ class CellStatus(models.Model):
         if  hasattr(self, 'cellid_cellstatus'):
             return 'cell={0}, sample={1}'.format(self.cellid_cellstatus.name, self.cellid_cellstatus.sample.file_name)
         else: return 'bad status...'
+
+    class Meta:
+        verbose_name = 'Cell status'
+        verbose_name_plural = 'Cell statuses'
 
 #___________________________________________________________________________________________
 class CellID(models.Model):
@@ -213,17 +209,19 @@ class Contour(models.Model):
 #___________________________________________________________________________________________
 class CellFlag(models.Model):
 
-    oscillating    = models.BooleanField(help_text="cell oscillation flag", default=True, blank=True)
     alive          = models.BooleanField(help_text="alive cell flag", default=True, blank=True)
-    dividing       = models.BooleanField(help_text="dividing cell flag", default=True, blank=True)
-    double_nuclei  = models.BooleanField(help_text="double nuclei cell flag", default=True, blank=True)
-    multiple_cells = models.BooleanField(help_text="multiple cells flag", default=True, blank=True)
-    pair_cell      = models.BooleanField(help_text="pair cell flag", default=True, blank=True)
-    maximum        = models.BooleanField(help_text="maximum oscillation signal cell flag", default=True, blank=True)
-    minimum        = models.BooleanField(help_text="minimum oscillation signal cell flag", default=True, blank=True)
-    rising         = models.BooleanField(help_text="rising oscillation signal cell flag", default=True, blank=True)
-    falling        = models.BooleanField(help_text="falling oscillation signal cell flag", default=True, blank=True)
-
+    keep           = models.BooleanField(help_text="keep cell flag", default=True, blank=True)
+    oscillating    = models.BooleanField(help_text="cell oscillation flag", default=False, blank=True)
+    dividing       = models.BooleanField(help_text="dividing cell flag", default=False, blank=True)
+    double_nuclei  = models.BooleanField(help_text="double nuclei cell flag", default=False, blank=True)
+    multiple_cells = models.BooleanField(help_text="multiple cells flag", default=False, blank=True)
+    pair_cell      = models.BooleanField(help_text="pair cell flag", default=False, blank=True)
+    maximum        = models.BooleanField(help_text="maximum oscillation signal cell flag", default=False, blank=True)
+    minimum        = models.BooleanField(help_text="minimum oscillation signal cell flag", default=False, blank=True)
+    rising         = models.BooleanField(help_text="rising oscillation signal cell flag", default=False, blank=True)
+    falling        = models.BooleanField(help_text="falling oscillation signal cell flag", default=False, blank=True)
+    flat           = models.BooleanField(help_text="flat cell flag", default=False, blank=True)
+    
     cell_roi       = models.OneToOneField(CellROI, default='', null=True, on_delete=models.CASCADE, related_name="cellflag_cellroi")
 
     class Meta:
