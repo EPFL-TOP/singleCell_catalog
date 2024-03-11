@@ -1462,7 +1462,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             for f in frame:
                 print('===============frame: ',f)
         rois   = CellROI.objects.select_related().filter(frame=frame[0])
+
+
         for roi in rois:
+            if os.path.isfile(roi.contour_cellroi.file_name):
+                os.remove(roi.contour_cellroi.file_name)
+            else:
+                print("Error: {} file not found".format(roi.contour_cellroi.file_name) )
             roi.delete()
     button_delete_roi = bokeh.models.Button(label="Delete ROI")
     button_delete_roi.on_click(delete_roi_callback)
@@ -2037,7 +2043,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(slider_find_peaks),
                                      text)
     
-    norm_layout = bokeh.layouts.row(left_col, plot_image, right_col, plot_intensity)
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(left_col, plot_image, right_col, plot_intensity),
+                                       bokeh.layouts.row(text, plot_nosc, plot_osc_tod))
+
     doc.add_root(norm_layout)
 
 
