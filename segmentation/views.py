@@ -2020,6 +2020,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.20, fill_color='green', source=source_varea_falling10)
 
 
+    source_osc_tod = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    #plot_osc_tod.vbar()
+    #plot_osc_tod
+
+
+
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_alpha=0.3, fill_color='#009933')
     plot_image.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
