@@ -1862,9 +1862,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('dropdown_exp.value=',dropdown_well.value)
         well = ExperimentalDataset.objects.get(data_name=dropdown_well.value)
         samples = Sample.objects.select_related().filter(experimental_dataset = well)
+        n_osc=[]
         for sample in samples:
             cellids = CellID.objects.select_related().filter(sample=sample)
-            n_osc=[]
             for cellid in cellids:
                 tmp=cellid.cell_status.n_oscillations
                 print('cellid=',cellid,'  ',tmp)
