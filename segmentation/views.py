@@ -891,7 +891,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_rising[10]=source_varea_rising10
 
         if end_oscillation_position.location  < 0 or start_oscillation_position.location < 0:
-            for i in range(1,6):
+            for i in range(1,11):
                 source_rising[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
             return
         
@@ -913,7 +913,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     arrays['yr1_{}'.format(m+1)].append(0)
                     arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
   
-        for i in range(1,6):
+        for i in range(1,11):
             source_rising[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
             print('i={},  source_rising={}'.format(i, source_rising[i].data))
 
@@ -940,7 +940,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_falling[10]=source_varea_falling10
 
         if end_oscillation_position.location  < 0 or start_oscillation_position.location < 0:
-            for i in range(1,6):
+            for i in range(1,11):
                 source_falling[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
             return
         
@@ -974,7 +974,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def set_rising_falling(cellid):
 
         arrays = {}
-        for i in range(1,6):
+        for i in range(1,11):
             array_x  = 'xr_{}'.format(i)
             array_y1 = 'yr1_{}'.format(i)
             array_y2 = 'yr2_{}'.format(i)
@@ -995,7 +995,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_rising[10]=source_varea_rising10
 
         if cellid==None:
-            for i in range(1,6):
+            for i in range(1,11):
                 source_rising[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
             return
         
@@ -1018,12 +1018,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         arrays['yr1_{}'.format(m+1)].append(0)
                         arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
   
-        for i in range(1,6):
+        for i in range(1,11):
             source_rising[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
             print('i={},  source_rising={}'.format(i, source_rising[i].data))
 
         arrays = {}
-        for i in range(1,6):
+        for i in range(1,11):
             array_x  = 'xf_{}'.format(i)
             array_y1 = 'yf1_{}'.format(i)
             array_y2 = 'yf2_{}'.format(i)
@@ -1044,7 +1044,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_falling[10]=source_varea_falling10
 
         if cellid==None:
-            for i in range(1,6):
+            for i in range(1,11):
                 source_falling[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
             return
         
@@ -1067,7 +1067,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         arrays['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays['yf1_{}'.format(m+1)].append(0)
                         arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
-        for i in range(1,6):
+        for i in range(1,11):
             source_falling[i].data={'x':arrays['xf_{}'.format(i)], 'y1':arrays['yf1_{}'.format(i)], 'y2':arrays['yf2_{}'.format(i)]}
             print('i={},  source_falling={}'.format(i, source_falling[i].data))
     #___________________________________________________________________________________________
