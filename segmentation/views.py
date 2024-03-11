@@ -2036,7 +2036,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data = np.random.normal(800, 40, 1000)
     hist, edges = np.histogram(data, bins=100)
     source_tod.data = {'x': edges[:-1], 'top': hist}
-    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_tod, fill_alpha=0.25, fill_color='black')
+    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_tod, alpha=0.25, color='black')
 
 
     #plot_osc_tod
