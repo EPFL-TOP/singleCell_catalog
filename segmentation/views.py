@@ -1859,7 +1859,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_source_n_osc():
         print('------------------------update_source_n_osc-------------------------')
-        print('dropdown_exp.value=',dropdown_exp.value)
+        print('dropdown_exp.value=',dropdown_well.value)
         well = ExperimentalDataset.objects.get(data_name=dropdown_exp.value)
         samples = Sample.objects.select_related().filter(experimental_dataset = well)
         for sample in samples:
