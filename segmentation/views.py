@@ -870,7 +870,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def set_rising_falling_local(max_list, min_list):
 
         arrays = {}
-        for i in range(1,6):
+        for i in range(1,11):
             array_x  = 'xr_{}'.format(i)
             array_y1 = 'yr1_{}'.format(i)
             array_y2 = 'yr2_{}'.format(i)
@@ -919,7 +919,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
         arrays = {}
-        for i in range(1,6):
+        for i in range(1,11):
             array_x  = 'xf_{}'.format(i)
             array_y1 = 'yf1_{}'.format(i)
             array_y2 = 'yf2_{}'.format(i)
