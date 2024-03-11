@@ -755,6 +755,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
+
     ind_images_list = get_current_stack()
     print ('in segmentation_handler ind_images_list (channel)=',len(ind_images_list))
     print ('in segmentation_handler ind_images_list (timepoints)=',len(ind_images_list[0]))
@@ -1858,13 +1859,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_source_n_osc():
         print('------------------------update_source_n_osc-------------------------')
-        sample = Sample.objects.get(file_name=get_current_file())
-        cellids = CellID.objects.select_related().filter(sample=sample)
-        n_osc=[]
-        for cellid in cellids:
-            tmp=cellid.cell_status.n_oscillations
-            print('cellid=',cellid,'  ',tmp)
-            if tmp>=0: n_osc.append(tmp)
+        well = ExperimentalDataset.objects.get(data_name=dropdown_exp.value)
+        samples = Sample.objects.select_related().filter(experimental_dataset = well)
+        for sample in samples:
+            cellids = CellID.objects.select_related().filter(sample=sample)
+            n_osc=[]
+            for cellid in cellids:
+                tmp=cellid.cell_status.n_oscillations
+                print('cellid=',cellid,'  ',tmp)
+                if tmp>=0: n_osc.append(tmp)
 
         hist, edges = np.histogram(n_osc, bins=max(n_osc)+2)
         source_nosc.data={'x': edges[:-1], 'top': hist}
