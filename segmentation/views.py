@@ -963,7 +963,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     arrays['yf1_{}'.format(m+1)].append(0)
                     arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
 
-        for i in range(1,6):
+        for i in range(1,11):
             source_falling[i].data={'x':arrays['xf_{}'.format(i)], 'y1':arrays['yf1_{}'.format(i)], 'y2':arrays['yf2_{}'.format(i)]}
             print('i={},  source_falling={}'.format(i, source_falling[i].data))
     #___________________________________________________________________________________________
