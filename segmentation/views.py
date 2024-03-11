@@ -2020,13 +2020,25 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.20, fill_color='green', source=source_varea_falling10)
 
 
-    source_osc_tod = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    data = np.random.normal(0, 1, 1000)
-    hist, edges = np.histogram(data, bins=20)
-    
-    # Update data source
-    source_osc_tod.data = {'x': edges[:-1], 'top': hist}
-    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_osc_tod)
+    source_start_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    data = np.random.normal(100, 20, 1000)
+    hist, edges = np.histogram(data, bins=100)
+    source_start_osc.data = {'x': edges[:-1], 'top': hist}
+    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_start_osc, fill_alpha=0.25, fill_color='green')
+
+    source_end_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    data = np.random.normal(500, 10, 1000)
+    hist, edges = np.histogram(data, bins=100)
+    source_end_osc.data = {'x': edges[:-1], 'top': hist}
+    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_end_osc, fill_alpha=0.25, fill_color='red')
+
+    source_tod = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    data = np.random.normal(800, 40, 1000)
+    hist, edges = np.histogram(data, bins=100)
+    source_tod.data = {'x': edges[:-1], 'top': hist}
+    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_tod, fill_alpha=0.25, fill_color='black')
+
+
     #plot_osc_tod
 
 
