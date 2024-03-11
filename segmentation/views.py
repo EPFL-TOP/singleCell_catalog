@@ -1234,8 +1234,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    # Function to update the position
     #___________________________________________________________________________________________
+    # Function to update the position
     def prepare_pos(attr, old, new):
         print('****************************  prepare_pos ****************************')
         images = get_current_stack()
@@ -1265,9 +1265,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('prepare_pos after slider')
         update_dropdown_cell('','','')
         slider.end=len(source_imgs.data['images'][0]) - 1
-
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
+
+
 
     #___________________________________________________________________________________________
     # Function to get the current index
@@ -1719,6 +1720,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         frame = Frame.objects.select_related().filter(sample=sample, number=current_index)
         cellstatus.start_oscillation = frame[0].time/60000.
         cellstatus.save()
+        if start_oscillation_position.location>=0 and end_oscillation_position.location>0:
+            find_peaks_slider_callback('','',30)
     button_start_oscillation = bokeh.models.Button(label="Osc. Start")
     button_start_oscillation.on_click(start_oscillation_callback)
     #___________________________________________________________________________________________
@@ -1735,6 +1738,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         frame = Frame.objects.select_related().filter(sample=sample, number=current_index)
         cellstatus.end_oscillation = frame[0].time/60000.
         cellstatus.save()
+        if start_oscillation_position.location>=0 and end_oscillation_position.location>0:
+            find_peaks_slider_callback('','',30)
     button_end_oscillation = bokeh.models.Button(label="Osc. End")
     button_end_oscillation.on_click(end_oscillation_callback)
     #___________________________________________________________________________________________
@@ -1761,6 +1766,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def find_peaks_slider_callback(attr, old, new):
+        print('=======================find_peaks_slider_callback=======================================')
         int_array = np.array(source_intensity_ch1.data["intensity"])
         for int in range(len(int_array)):
             if source_intensity_ch1.data["time"][int]<start_oscillation_position.location:
