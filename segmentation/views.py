@@ -1858,7 +1858,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellids = CellID.objects.select_related().filter(sample=sample)
         n_osc=[]
         for cellid in cellids:
-            n_osc.append(cellid.cellid_status.n_oscillations)
+            n_osc.append(cellid.cell_status.n_oscillations)
 
         hist, edges = np.histogram(n_osc, bins=max(n_osc)+2)
         source_nosc.data={'x': edges[:-1], 'top': hist}
