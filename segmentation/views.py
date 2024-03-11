@@ -2021,7 +2021,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     source_osc_tod = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    #plot_osc_tod.vbar()
+    data = np.random.normal(0, 1, 1000)
+    hist, edges = np.histogram(data, bins=20)
+    
+    # Update data source
+    source_osc_tod.data = {'x': edges[:-1], 'top': hist}
+    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_osc_tod)
     #plot_osc_tod
 
 
