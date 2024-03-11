@@ -2022,21 +2022,21 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     source_start_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     data = np.random.normal(100, 20, 1000)
-    hist, edges = np.histogram(data, bins=100)
+    hist, edges = np.histogram(data, bins=50)
     source_start_osc.data = {'x': edges[:-1], 'top': hist}
-    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_start_osc, alpha=0.25, color='green', line_color=None)
+    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_start_osc, alpha=0.5, color='green', line_color=None)
 
     source_end_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     data = np.random.normal(500, 10, 1000)
-    hist, edges = np.histogram(data, bins=100)
+    hist, edges = np.histogram(data, bins=50)
     source_end_osc.data = {'x': edges[:-1], 'top': hist}
-    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_end_osc, alpha=0.25, color='red', line_color=None)
+    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_end_osc, alpha=0.5, color='red', line_color=None)
 
     source_tod = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     data = np.random.normal(800, 40, 1000)
-    hist, edges = np.histogram(data, bins=100)
+    hist, edges = np.histogram(data, bins=50)
     source_tod.data = {'x': edges[:-1], 'top': hist}
-    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_tod, alpha=0.25, color='black', line_color=None)
+    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_tod, alpha=0.5, color='black', line_color=None)
 
 
     #plot_osc_tod
