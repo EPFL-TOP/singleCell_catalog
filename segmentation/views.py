@@ -1809,7 +1809,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
-    def find_peaks_callback():
+    def save_peaks_callback():
+        print('------------------------------------save_peaks_callback-------------------------------')
         int_array = np.array(source_intensity_ch1.data["intensity"])
         for int in range(len(int_array)):
             if source_intensity_ch1.data["time"][int]<start_oscillation_position.location:
@@ -1820,7 +1821,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('int_array            ',int_array)
         peaksmax, _ = find_peaks(np.array(int_array),  prominence=slider_find_peaks.value)
         peaksmin, _ = find_peaks(-np.array(int_array), prominence=slider_find_peaks.value)
-        print('SAVE find_peaks_callback            ',slider_find_peaks.value)
+        print('SAVE save_peaks_callback            ',slider_find_peaks.value)
 
         int_max=[]
         time_max=[]
@@ -1842,13 +1843,27 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellstatus.peaks={'min_frame':peaksmin.tolist(), 'max_frame':peaksmax.tolist(), 
                           'min_int':int_min, 'max_int':int_max,
                           'min_time':time_min, 'max_time':time_max}
+        cellstatus.n_oscillations = len(peaksmax.tolist())
         cellstatus.save()
 
         set_rising_falling(cellsid[0])
-
+        update_source_n_osc()
     button_find_peaks = bokeh.models.Button(label="Save Peaks")
-    button_find_peaks.on_click(find_peaks_callback)
+    button_find_peaks.on_click(save_peaks_callback)
     #___________________________________________________________________________________________
+
+    #___________________________________________________________________________________________
+    def update_source_n_osc():
+        sample = Sample.objects.get(file_name=get_current_file())
+        cellids = CellID.objects.select_related().filter(sample=sample)
+        n_osc=[]
+        for cellid in cellids:
+            n_osc.append(cellid.cellid_status.n_oscillations)
+
+        hist, edges = np.histogram(n_osc, bins=max(n_osc)+2)
+        source_nosc.data={'x': edges[:-1], 'top': hist}
+    #___________________________________________________________________________________________
+
 
     #___________________________________________________________________________________________
     # Select image from click
@@ -2039,7 +2054,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_tod, alpha=0.5, color='black', line_color=None)
 
 
-    source_nosc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))    
+    source_nosc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    update_source_n_osc()
     plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_nosc, alpha=0.5, color='black', line_color=None)
 
 
