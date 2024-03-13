@@ -779,8 +779,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data_imgs={'images':ind_images_list}
     source_imgs = bokeh.models.ColumnDataSource(data=data_imgs)
 
-    color_mapper.low  = 0
-    color_mapper.high = 2*2*2*2*2*2*2*2
+
 
     data_intensity_ch0={'time':[], 'intensity':[]}
     source_intensity_ch0 = bokeh.models.ColumnDataSource(data=data_intensity_ch0)
@@ -1237,7 +1236,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #color_mapper.high=source_img.data['img'][0].max()
 
     colormaps = ['Greys256','Inferno256','Viridis256']
-    color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=0, high=1)
+    color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=0, high=2*2*2*2*2*2*2*2-1)
     color_bar = bokeh.models.ColorBar(color_mapper=color_mapper, location=(0,0))
     dropdown_color = bokeh.models.Select(title="Color Palette", value="Grey256",options=colormaps)
     dropdown_color.on_change('value',update_dropdown_color)
