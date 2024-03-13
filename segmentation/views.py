@@ -740,7 +740,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 norm_list.append(x_norm)
             ind_images_list_norm.append(norm_list)
         print('shape  ',np.array(ind_images_list).shape, np.array(ind_images_list_norm).shape)
-        return np.array(ind_images_list), np.array(ind_images_list_norm)
+        #return np.array(ind_images_list), np.array(ind_images_list_norm)
+        return ind_images_list
     #___________________________________________________________________________________________
 
 
