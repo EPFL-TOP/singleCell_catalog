@@ -737,8 +737,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             norm_list=[]
             for t in range(len(ind_images)):
                 x_norm = (ind_images[t]-np.min(ind_images[t]))/(np.max(ind_images[t])-np.min(ind_images[t]))
-                norm_list.append(x_norm)
-            ind_images_list_norm.append(np.array(norm_list))
+                norm_list.append(np.array(x_norm))
+            ind_images_list_norm.append(norm_list)
         print('shape  ',np.array(ind_images_list).shape, np.array(ind_images_list_norm).shape)
         return ind_images_list, ind_images_list_norm
     #___________________________________________________________________________________________
@@ -768,7 +768,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     print('type(ind_images_list) ', type(ind_images_list_norm), '  type(ind_images_list[0]) ',type(ind_images_list_norm[0]), '  type(ind_images_list)[0][0] ',type(ind_images_list_norm[0][0]))
     print ('in segmentation_handler ind_images_list (timepoints)=',len(ind_images_list[0]))
     #current images (current index and list of channels)
-    data_img_ch={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
+    data_img_ch={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list_norm))]}
     source_img_ch = bokeh.models.ColumnDataSource(data=data_img_ch)
 
     #current image to be displayed
