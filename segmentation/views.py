@@ -729,20 +729,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         ind_images_list=[]
-        ind_images_list_norm=[]
         for nch in range(time_lapse.shape[1]):
             time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
             time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
             ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
             ind_images_list.append(ind_images)
-            norm_list=[]
-            for t in range(len(ind_images)):
-                x_norm = (ind_images[t]-np.min(ind_images[t]))/(np.max(ind_images[t])-np.min(ind_images[t]))
-                norm_list.append(np.array(x_norm))
-            ind_images_list_norm.append(norm_list)
-        print('shape  ',np.array(ind_images_list).shape, np.array(ind_images_list_norm).shape)
-        print('type  ',np.array(ind_images_list).dtype, np.array(ind_images_list_norm).dtype)
-        return ind_images_list, ind_images_list_norm
+        return ind_images_list
     #___________________________________________________________________________________________
 
 
@@ -765,15 +757,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    ind_images_list, ind_images_list_norm = get_current_stack()
+    ind_images_list = get_current_stack()
 
     #current images (current index and list of channels)
     data_img_ch={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
     source_img_ch = bokeh.models.ColumnDataSource(data=data_img_ch)
 
     #current image to be displayed
-    norm_img = (data_img_ch['img'][0]-np.min(data_img_ch['img'][0]))/(np.max(data_img_ch['img'][0])-np.min(data_img_ch['img'][0]))
-    data_img={'img':[norm_img]}
+    #norm_img = (data_img_ch['img'][0]-np.min(data_img_ch['img'][0]))/(np.max(data_img_ch['img'][0])-np.min(data_img_ch['img'][0]))
+    data_img={'img':[data_img_ch['img'][0]]}
     source_img = bokeh.models.ColumnDataSource(data=data_img)
 
     #list of all images for all channels
@@ -1247,7 +1239,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to update the position
     def prepare_pos(attr, old, new):
         print('****************************  prepare_pos ****************************')
-        images, images_norm = get_current_stack()
+        images = get_current_stack()
         source_imgs.data = {'images':images}
         source_img_ch.data = {'img':[images[ch][0] for ch in range(len(images))]}
 
