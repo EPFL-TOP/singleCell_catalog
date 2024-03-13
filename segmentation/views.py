@@ -1398,8 +1398,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         new_image = images[int(dropdown_channel.value)][time_point]
         #norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
         #source_img.data = {'img':[norm]}
+        color_mapper.low=new_image.min()
+        color_mapper.high=new_image.max()
+
         source_img.data = {'img':[new_image]}
-        
         source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
 
@@ -1611,11 +1613,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  update_image ****************************')
         current_index=get_current_index()
         images=source_imgs.data["images"]
-        source_img_ch.data = {'img':[images[ch][current_index] for ch in range(len(images))]}
-        new_image = images[int(dropdown_channel.value)][current_index]
+        #source_img_ch.data = {'img':[images[ch][current_index] for ch in range(len(images))]}
+        #new_image = images[int(dropdown_channel.value)][current_index]
         #x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
         #source_img.data = {'img':[x_norm]}
-        source_img.data = {'img':[new_image]}
+        #source_img.data = {'img':[new_image]}
         current_index = (current_index + 1*way) % len(images[0])
         if number>=0:
             current_index = number
@@ -1624,14 +1626,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             line_position.location = -999
         else:
             line_position.location = source_intensity_ch1.data["time"][current_index]
-
-
-        color_mapper.low=new_image.min()
-        color_mapper.high=new_image.max()
         print('update_image index=',current_index)
-        print(new_image)
-        print(new_image.shape)
-        print(new_image.dtype)
+
     #___________________________________________________________________________________________
 
 
