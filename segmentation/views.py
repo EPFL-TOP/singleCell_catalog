@@ -755,8 +755,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-
-
     ind_images_list = get_current_stack()
 
     #current images (current index and list of channels)
@@ -764,7 +762,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_img_ch = bokeh.models.ColumnDataSource(data=data_img_ch)
 
     #current image to be displayed
-    #norm_img = (data_img_ch['img'][0]-np.min(data_img_ch['img'][0]))/(np.max(data_img_ch['img'][0])-np.min(data_img_ch['img'][0]))
     data_img={'img':[data_img_ch['img'][0]]}
     source_img = bokeh.models.ColumnDataSource(data=data_img)
 
@@ -1141,6 +1138,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_channel.value   = dropdown_channel.value        
         
         new_image = source_img_ch.data['img'][int(dropdown_channel.value)]
+        color_mapper.low  = new_image.min()
+        color_mapper.high = new_image.max()
         #x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
 
         source_img.data   = {'img':[new_image]}
@@ -1390,8 +1389,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         new_image = images[int(dropdown_channel.value)][time_point]
 
         source_img.data = {'img':[new_image]}
-        color_mapper.low=new_image.min()
-        color_mapper.high=new_image.max()
+        img_min = new_image.min()
+        img_max = new_image.max()
+        color_mapper.low  = img_min
+        color_mapper.high = img_max
+        contrast_slider.value = (img_min, img_max)
         source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
 
