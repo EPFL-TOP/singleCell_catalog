@@ -1435,8 +1435,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img.data = {'img': [adjusted_image]}
         print('====================',source_img.data['img'][0])
         # Update the color mapper range
-        color_mapper.low = adjusted_image.min()
-        color_mapper.high = adjusted_image.max()
+        #color_mapper.low = adjusted_image.min()
+        #color_mapper.high = adjusted_image.max()
 
     # Create a slider to adjust contrast
     contrast_slider = bokeh.models.Slider(start=0.1, end=2.0, value=1.0, step=0.1, title="Contrast Adjustment")
