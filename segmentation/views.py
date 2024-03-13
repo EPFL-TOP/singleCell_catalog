@@ -779,6 +779,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data_imgs={'images':ind_images_list}
     source_imgs = bokeh.models.ColumnDataSource(data=data_imgs)
 
+    color_mapper.low  = 0
+    color_mapper.high = 2*2*2*2*2*2*2*2
+
     data_intensity_ch0={'time':[], 'intensity':[]}
     source_intensity_ch0 = bokeh.models.ColumnDataSource(data=data_intensity_ch0)
     data_intensity_ch1={'time':[], 'intensity':[]}
