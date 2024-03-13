@@ -1138,11 +1138,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_channel.value   = dropdown_channel.value        
         
         new_image = source_img_ch.data['img'][int(dropdown_channel.value)]
-        color_mapper.low  = new_image.min()
-        color_mapper.high = new_image.max()
         #x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
 
         source_img.data   = {'img':[new_image]}
+        color_mapper.low  = new_image.min()
+        color_mapper.high = new_image.max()
         print('update_dropdown_channel options: ',dropdown_channel.options)
         print('update_dropdown_channel value  : ',dropdown_channel.value)
 
@@ -1394,6 +1394,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         color_mapper.low  = img_min
         color_mapper.high = img_max
         contrast_slider.value = (img_min, img_max)
+        contrast_slider.start = img_min
+        contrast_slider.end = img_max
+        
         source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
 
