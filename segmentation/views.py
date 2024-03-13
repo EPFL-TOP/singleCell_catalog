@@ -1940,7 +1940,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.add_layout(labels_cells)
     #plot_image.add_layout(color_bar, 'right')
 
-    plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
+    plot_image.image(image='img', x=0, y=0, dw=ind_images_list_norm[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
 
        # Create a ColumnDataSource to store image data
     #source_url = bokeh.models.ColumnDataSource({'url': [''], 'x': [0], 'y': [0], 'dw': [0], 'dh': [0]})
@@ -1989,7 +1989,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     plot_intensity.y_range.start=0
     plot_intensity.x_range.start=-10
-    print('------------------------fdsdfsdfsdfdfsdfsdfdsfdsfdf -,',source_intensity_ch1.data["time"])
     #for ch in range(len(time_list)):
     for index, key in enumerate(time_list):
         if index==0:
