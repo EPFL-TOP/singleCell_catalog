@@ -1895,13 +1895,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         hist, edges = np.histogram(n_osc, bins=max(n_osc)+2, range=(0, max(n_osc)+2))
         source_nosc.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(tod, bins=frames*10, range=(0, frames*10))
+        hist, edges = np.histogram(tod, bins=nframes*10, range=(0, nframes*10))
         source_tod.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(start_osc, bins=frames*10, range=(0, frames*10))
+        hist, edges = np.histogram(start_osc, bins=nframes*10, range=(0, nframes*10))
         source_start_osc.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(end_osc, bins=frames*10, range=(0, frames*10))
+        hist, edges = np.histogram(end_osc, bins=nframes*10, range=(0, nframes*10))
         source_end_osc.data={'x': edges[:-1], 'top': hist}
 
         print('source_nosc = ',source_nosc.data)
