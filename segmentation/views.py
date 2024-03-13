@@ -1623,6 +1623,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             line_position.location = source_intensity_ch1.data["time"][current_index]
 
         print('update_image index=',current_index)
+        print(new_image)
+        print(new_image.shape)
     #___________________________________________________________________________________________
 
 
