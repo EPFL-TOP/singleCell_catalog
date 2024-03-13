@@ -1605,8 +1605,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img_ch.data = {'img':[images[ch][current_index] for ch in range(len(images))]}
         print('update_image source_img_ch.data[ing] ',source_img_ch.data['img'])
         new_image = images[int(dropdown_channel.value)][current_index]
-        x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
-        source_img.data = {'img':[x_norm]}
+        #x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
+        #source_img.data = {'img':[x_norm]}
+        source_img.data = {'img':[new_image]}
         current_index = (current_index + 1*way) % len(images[0])
         if number>=0:
             current_index = number
