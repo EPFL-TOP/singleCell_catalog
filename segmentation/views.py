@@ -1367,7 +1367,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             weight_cells.append(roi.min_col)
             height_cells.append(frame[0].height-roi.max_row)
-            names_cells.append(roi.cell_id.name)
+            if roi.cell_id !=None: names_cells.append(roi.cell_id.name)
+            else:names_cells.append("none")
         print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
         return left_rois,right_rois,top_rois,bottom_rois, height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells
