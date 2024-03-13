@@ -1625,6 +1625,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('update_image index=',current_index)
         print(new_image)
         print(new_image.shape)
+        print(new_image.type)
     #___________________________________________________________________________________________
 
 
