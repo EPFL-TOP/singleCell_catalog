@@ -1121,7 +1121,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('in the else update_dropdown_pos')
             slider.value = 0
         prepare_intensity()
-        update_source_n_osc()
+        update_source_osc_tod()
 
         slider_find_peaks.value = 30
     dropdown_well.on_change('value', update_dropdown_pos)
@@ -1138,14 +1138,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_channel.value   = dropdown_channel.value        
         
         new_image = source_img_ch.data['img'][int(dropdown_channel.value)]
-        #x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
 
         source_img.data   = {'img':[new_image]}
         img_min = new_image.min()
         img_max = new_image.max()
         color_mapper.low  = img_min
         color_mapper.high = img_max
-        
+
         contrast_slider.value = (img_min, img_max)
         contrast_slider.start = img_min
         contrast_slider.end = img_max
@@ -1272,7 +1271,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         update_dropdown_cell('','','')
         slider.end=len(source_imgs.data['images'][0]) - 1
         prepare_intensity()
-        update_source_n_osc()
+        update_source_osc_tod()
 
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
@@ -1867,29 +1866,47 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellstatus.save()
 
         set_rising_falling(cellsid[0])
-        update_source_n_osc()
+        update_source_osc_tod()
     button_find_peaks = bokeh.models.Button(label="Save Peaks")
     button_find_peaks.on_click(save_peaks_callback)
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
-    def update_source_n_osc():
-        print('------------------------update_source_n_osc-------------------------')
-        print('dropdown_exp.value=',dropdown_well.value)
+    def update_source_osc_tod():
+        print('------------------------update_source_osc_tod-------------------------')
         well = ExperimentalDataset.objects.get(data_name=dropdown_well.value)
         samples = Sample.objects.select_related().filter(experimental_dataset = well)
         n_osc=[]
+        tod=[]
+        start_osc=[]
+        end_osc=[]
+        nframes=-99
         for sample in samples:
             cellids = CellID.objects.select_related().filter(sample=sample)
+            #TOCHNAGE CLEMENT WITH numberof frame from sample
+            frames = Frame.objects.select_related().filter(sample=sample)
+            if len(frames)>nframes:nframes=len(frames)
             for cellid in cellids:
-                tmp=cellid.cell_status.n_oscillations
-                print('cellid=',cellid,'  ',tmp)
-                if tmp>=0: n_osc.append(tmp)
+                n_osc.append(cellid.cell_status.n_oscillations)
+                start_osc.append(cellid.cell_status.start_oscillation)
+                end_osc.append(cellid.cell_status.end_oscillation)
+                tod.append(cellid.cell_status.time_of_death)
 
-        hist, edges = np.histogram(n_osc, bins=max(n_osc)+2)
+        hist, edges = np.histogram(n_osc, bins=max(n_osc)+2, range=(0, max(n_osc)+2))
         source_nosc.data={'x': edges[:-1], 'top': hist}
+
+        hist, edges = np.histogram(tod, bins=frames*10, range=(0, frames*10))
+        source_tod.data={'x': edges[:-1], 'top': hist}
+
+        hist, edges = np.histogram(start_osc, bins=frames*10, range=(0, frames*10))
+        source_start_osc.data={'x': edges[:-1], 'top': hist}
+
+        hist, edges = np.histogram(end_osc, bins=frames*10, range=(0, frames*10))
+        source_end_osc.data={'x': edges[:-1], 'top': hist}
+
         print('source_nosc = ',source_nosc.data)
     #___________________________________________________________________________________________
+
 
 
     #___________________________________________________________________________________________
@@ -2059,28 +2076,21 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.20, fill_color='green', source=source_varea_falling10)
 
 
-    source_start_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    data = np.random.normal(100, 20, 1000)
-    hist, edges = np.histogram(data, bins=50)
-    source_start_osc.data = {'x': edges[:-1], 'top': hist}
-    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_start_osc, alpha=0.5, color='green', line_color=None)
-
-    source_end_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    data = np.random.normal(500, 10, 1000)
-    hist, edges = np.histogram(data, bins=100)
-    source_end_osc.data = {'x': edges[:-1], 'top': hist}
-    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_end_osc, alpha=0.5, color='red', line_color=None)
-
-    source_tod = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    data = np.random.normal(800, 40, 1000)
-    hist, edges = np.histogram(data, bins=200)
-    source_tod.data = {'x': edges[:-1], 'top': hist}
-    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_tod, alpha=0.5, color='black', line_color=None)
-
-
     source_nosc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    update_source_n_osc()
+    source_start_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_end_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_tod = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    update_source_osc_tod()
+    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_start_osc, alpha=0.5, color='green', line_color=None)
+    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_end_osc, alpha=0.5, color='red', line_color=None)
+    plot_osc_tod.vbar(x='x', top='top', width=0.5, source=source_tod, alpha=0.5, color='black', line_color=None)
     plot_nosc.vbar(x='x', top='top', width=0.5, source=source_nosc, alpha=0.5, color='black', line_color=None)
+
+    #data = np.random.normal(800, 40, 1000)
+    #hist, edges = np.histogram(data, bins=200)
+    #source_tod.data = {'x': edges[:-1], 'top': hist}
+
+
 
 
 
