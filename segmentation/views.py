@@ -966,7 +966,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         if end_oscillation_position.location  < 0 or start_oscillation_position.location < 0:
             for i in range(1,11):
-                source_falling[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
+                source_falling[i].data={'x':arrays['xf_{}'.format(i)], 'y1':arrays['yf1_{}'.format(i)], 'y2':arrays['yf2_{}'.format(i)]}
             return
         
 
@@ -1070,7 +1070,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         if cellid==None:
             for i in range(1,11):
-                source_falling[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
+                source_falling[i].data={'x':arrays['xf_{}'.format(i)], 'y1':arrays['yf1_{}'.format(i)], 'y2':arrays['yf2_{}'.format(i)]}
             return
         
         if len(cellid.cell_status.peaks)==6:
@@ -1111,9 +1111,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #dropdown_pos.value    = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0]
         if slider.value == 0:
             print('in the if update_dropdown_well')
-            left_rois,right_rois,top_rois,bottom_rois=update_source_roi()
-            height_labels, weight_labels, names_labels = update_source_labels_roi()
-            height_cells, weight_cells, names_cells = update_source_labels_cells()
+            left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
+            #height_labels, weight_labels, names_labels = update_source_labels_roi()
+            #height_cells, weight_cells, names_cells = update_source_labels_cells()
         
             source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
             source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
@@ -1284,9 +1284,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('prepare_pos before slider')
         if slider.value == 0:
             print('in the if prepare_pos')
-            left_rois,right_rois,top_rois,bottom_rois=update_source_roi()
-            height_labels, weight_labels, names_labels = update_source_labels_roi()
-            height_cells, weight_cells, names_cells = update_source_labels_cells()
+            left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
+            #height_labels, weight_labels, names_labels = update_source_labels_roi()
+            #height_cells, weight_cells, names_cells = update_source_labels_cells()
             source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
             source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
             source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
@@ -1327,12 +1327,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     # update the source_roi
-    def update_source_roi():
-        print('****************************  update_source_roi ****************************')
+    def update_source_roi_cell_labels():
+        print('****************************  update_source_roi_cell_labels ****************************')
         left_rois=[]
         right_rois=[]
         top_rois=[]
         bottom_rois=[]
+        height_labels=[]
+        weight_labels=[]
+        names_labels=[]
+        height_cells=[]
+        weight_cells=[]
+        names_cells=[]        
         current_file=get_current_file()
         current_index=get_current_index()
         sample = Sample.objects.get(file_name=current_file)
@@ -1347,14 +1353,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for roi in rois:
             left_rois.append(roi.min_col)
             right_rois.append(roi.max_col)
-            #convert databse ROIs im bokeh coordinates
-            #top_rois.append(frame[0].height-roi.max_row)
-            #bottom_rois.append(frame[0].height-roi.min_row)
             top_rois.append(frame[0].height-roi.min_row)
             bottom_rois.append(frame[0].height-roi.max_row)
+
+            weight_labels.append(roi.min_col)
+            height_labels.append(frame[0].height-roi.min_row)
+            names_labels.append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
+
+            weight_cells.append(roi.min_col)
+            height_cells.append(frame[0].height-roi.max_row)
+            names_cells.append(roi.cell_id.name)
         print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
-        return left_rois,right_rois,top_rois,bottom_rois
+        return left_rois,right_rois,top_rois,bottom_rois, height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells
     #___________________________________________________________________________________________
 
 
@@ -1438,9 +1449,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
 
-        left_rois,right_rois,top_rois,bottom_rois=update_source_roi()
-        height_labels, weight_labels, names_labels = update_source_labels_roi()
-        height_cells, weight_cells, names_cells = update_source_labels_cells()
+        left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
+        #height_labels, weight_labels, names_labels = update_source_labels_roi()
+        #height_cells, weight_cells, names_cells = update_source_labels_cells()
         
         source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
@@ -1974,18 +1985,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
 
-    left_rois, right_rois, top_rois, bottom_rois = update_source_roi()
+    left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
     source_roi_manual  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
 
-    height_labels, weight_labels, names_labels = update_source_labels_roi()
+    #height_labels, weight_labels, names_labels = update_source_labels_roi()
     source_labels = bokeh.models.ColumnDataSource(data=dict(height=height_labels,weight=weight_labels,names=names_labels))
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
                                    x_offset=0, y_offset=0, source=source_labels, text_color='white', text_font_size="10pt")
 
     plot_image.add_layout(labels)
 
-    height_cells, weight_cells, names_cells = update_source_labels_cells()
+    #height_cells, weight_cells, names_cells = update_source_labels_cells()
     source_cells = bokeh.models.ColumnDataSource(data=dict(height=height_cells,weight=weight_cells,names=names_cells))
     labels_cells = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
                                          x_offset=0, y_offset=-15, source=source_cells, text_color='white', text_font_size="11pt")
