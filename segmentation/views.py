@@ -1399,10 +1399,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         min_value = np.min(new_image)
         intensity_normalized = (new_image - min_value)/(max_value-min_value)*255
         intensity_normalized = intensity_normalized.astype(np.uint8)
+        new_image = intensity_normalized
 
+        source_img.data = {'img':[new_image]}
 
-        #source_img.data = {'img':[new_image]}
-        source_img.data = {'img':[intensity_normalized]}
         img_min = new_image.min()
         img_max = new_image.max()
         color_mapper.low  = img_min
