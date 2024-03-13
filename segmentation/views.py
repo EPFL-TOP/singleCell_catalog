@@ -11,6 +11,7 @@ import time
 
 from memory_profiler import profile
 from sklearn.cluster import DBSCAN
+from skimage import exposure
 import numpy as np
 from scipy.signal import find_peaks
 
@@ -1422,6 +1423,23 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     
 
+    # Define a callback function to update the contrast when the slider changes
+    def update_contrast(attr, old, new):
+        # Apply contrast adjustment based on slider value
+        adjusted_image = exposure.rescale_intensity(source_img.data['img'], in_range='image', out_range=(0, new))
+        
+        # Update the image data in the ColumnDataSource
+        source_img.data = {'img': [adjusted_image]}
+        
+        # Update the color mapper range
+        color_mapper.low = adjusted_image.min()
+        color_mapper.high = adjusted_image.max()
+
+    # Create a slider to adjust contrast
+    contrast_slider = bokeh.models.Slider(start=0.1, end=2.0, value=1.0, step=0.1, title="Contrast Adjustment")
+    contrast_slider.on_change('value', update_contrast)
+
+
 
     #___________________________________________________________________________________________
     # Define a callback to update the ROI
@@ -2095,7 +2113,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                     bokeh.layouts.row(dropdown_well),
                                     bokeh.layouts.row(dropdown_pos), 
                                     bokeh.layouts.row(dropdown_channel),
-                                    bokeh.layouts.row(dropdown_color))
+                                    bokeh.layouts.row(dropdown_color),
+                                    bokeh.layouts.row(contrast_slider))
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
