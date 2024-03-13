@@ -767,7 +767,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     ind_images_list, ind_images_list_norm = get_current_stack()
 
     #current images (current index and list of channels)
-    data_img_ch={'img':[ind_images_list_norm[ch][0] for ch in range(len(ind_images_list_norm))]}
+    data_img_ch={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
     source_img_ch = bokeh.models.ColumnDataSource(data=data_img_ch)
 
     #current image to be displayed
@@ -776,7 +776,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_img = bokeh.models.ColumnDataSource(data=data_img)
 
     #list of all images for all channels
-    data_imgs={'images':ind_images_list_norm}
+    data_imgs={'images':ind_images_list}
     source_imgs = bokeh.models.ColumnDataSource(data=data_imgs)
 
     data_intensity_ch0={'time':[], 'intensity':[]}
@@ -1941,8 +1941,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #plot_image.add_layout(color_bar, 'right')
 
     #im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, palette='Greys256')
-    plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
-    #plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img)
+    #plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
+    plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img)
 
 
     current_file=get_current_file()
