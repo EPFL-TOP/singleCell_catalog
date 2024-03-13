@@ -764,7 +764,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     ind_images_list, ind_images_list_norm = get_current_stack()
-    print ('in segmentation_handler ind_images_list (channel)=',len(ind_images_list))
+    print('type(ind_images_list) ', type(ind_images_list), '  type(ind_images_list[0]) ',type(ind_images_list[0]), '  type(ind_images_list)[0][0] ',type(ind_images_list[0][0]))
     print ('in segmentation_handler ind_images_list (timepoints)=',len(ind_images_list[0]))
     #current images (current index and list of channels)
     data_img_ch={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
