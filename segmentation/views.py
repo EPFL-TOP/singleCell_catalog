@@ -974,7 +974,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
   
         for i in range(1,11):
             source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
-            print('i={},  source_rising={}'.format(i, source_rising[i].data))
 
 
 
@@ -998,7 +997,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         for i in range(1,11):
             source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
-            print('i={},  source_falling={}'.format(i, source_falling[i].data))
     #___________________________________________________________________________________________
 
 
@@ -1165,17 +1163,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_channel.options = ch_list
         dropdown_channel.value   = dropdown_channel.value        
         
-        new_image = source_img_ch.data['img'][int(dropdown_channel.value)]
+        new_image = source_imgs_norm.data['images'][int(dropdown_channel.value)][slider.value]
 
-        source_img.data   = {'img':[new_image]}
-        img_min = new_image.min()
-        img_max = new_image.max()
-        color_mapper.low  = img_min
-        color_mapper.high = img_max
+        #source_img.data   = {'img':[new_image]}
+        #img_min = new_image.min()
+        #img_max = new_image.max()
+        #color_mapper.low  = img_min
+        #color_mapper.high = img_max
 
-        contrast_slider.value = (img_min, img_max)
-        contrast_slider.start = img_min
-        contrast_slider.end = img_max
+        #contrast_slider.value = (img_min, img_max)
+        #contrast_slider.start = img_min
+        #contrast_slider.end = img_max
         print('update_dropdown_channel options: ',dropdown_channel.options)
         print('update_dropdown_channel value  : ',dropdown_channel.value)
 
@@ -1382,20 +1380,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         source_img.data = {'img':[new_image]}
 
-        img_min = new_image.min()
-        img_max = new_image.max()
-        color_mapper.low  = img_min
-        color_mapper.high = img_max
-        contrast_slider.value = (img_min, img_max)
-        contrast_slider.start = img_min
-        contrast_slider.end = img_max
+        #img_min = new_image.min()
+        #img_max = new_image.max()
+        #color_mapper.low  = img_min
+        #color_mapper.high = img_max
+        #contrast_slider.value = (img_min, img_max)
+        #contrast_slider.start = img_min
+        #contrast_slider.end = img_max
         
         source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
 
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
-        #height_labels, weight_labels, names_labels = update_source_labels_roi()
-        #height_cells, weight_cells, names_cells = update_source_labels_cells()
+
         
         source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
@@ -1420,7 +1417,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     # Create a slider to adjust contrast
     print(']]][][][[[[[[[[[]]]]]]]]] ',source_img.data['img'][0].max(), source_img.data['img'][0].min())
-    contrast_slider = bokeh.models.RangeSlider(start=source_img.data['img'][0].min(), end=source_img.data['img'][0].max(), value=(source_img.data['img'][0].min(), source_img.data['img'][0].max()), step=1, title="Contrast Adjustment")
+    contrast_slider = bokeh.models.RangeSlider(start=0, end=255, value=(0, 255), step=1, title="Contrast Adjustment")
     contrast_slider.on_change('value', update_contrast)
 
 
