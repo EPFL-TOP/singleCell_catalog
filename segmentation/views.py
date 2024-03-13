@@ -732,14 +732,22 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         ind_images_list=[]
+        ind_images_list_norm=[]
         for nch in range(time_lapse.shape[1]):
             time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
             time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
             ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
-            
-            #ind_images_list.append(np.uint8(ind_images))
+            ind_images_norm = []
+            for im in ind_images:
+                max_value = np.max(im)
+                min_value = np.min(im)
+                intensity_normalized = (im - min_value)/(max_value-min_value)*255
+                intensity_normalized = intensity_normalized.astype(np.uint8)
+                ind_images_norm.append(intensity_normalized)
             ind_images_list.append(ind_images)
-        return ind_images_list
+            ind_images_list_norm.append(ind_images_norm)
+            
+        return ind_images_list, ind_images_list_norm
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
@@ -781,7 +789,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    ind_images_list = get_current_stack()
+    ind_images_list,  ind_images_list_norm = get_current_stack()
 
     #current images (current index and list of channels)
     data_img_ch={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
@@ -795,6 +803,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data_imgs={'images':ind_images_list}
     source_imgs = bokeh.models.ColumnDataSource(data=data_imgs)
 
+    #list of all images for all channels
+    data_imgs_norm={'images':ind_images_list_norm}
+    source_imgs_norm = bokeh.models.ColumnDataSource(data=data_imgs_norm)
 
 
     data_intensity_ch0={'time':[], 'intensity':[]}
@@ -894,14 +905,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def set_rising_falling_local(max_list, min_list):
 
-        arrays = {}
+        arrays_r = {}
         for i in range(1,11):
             array_x  = 'xr_{}'.format(i)
             array_y1 = 'yr1_{}'.format(i)
             array_y2 = 'yr2_{}'.format(i)
-            arrays[array_x]  = []
-            arrays[array_y1] = []
-            arrays[array_y2] = []
+            arrays_r[array_x]  = []
+            arrays_r[array_y1] = []
+            arrays_r[array_y2] = []
 
         source_rising = {}
         source_rising[1]=source_varea_rising1
@@ -915,42 +926,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_rising[9]=source_varea_rising9
         source_rising[10]=source_varea_rising10
 
-        if end_oscillation_position.location  < 0 or start_oscillation_position.location < 0:
-            for i in range(1,11):
-                source_rising[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
-            return
-        
-
-        for m in range(len(max_list)):
-            min_val=source_intensity_ch1.data["time"].index(start_oscillation_position.location)
-            for n in range(len(min_list)):
-                if min_list[n]<max_list[m]: 
-                    min_val=min_list[n]
-            for t in range(source_intensity_ch1.data["time"].index(start_oscillation_position.location), source_intensity_ch1.data["time"].index(end_oscillation_position.location)):
-
-                if t==min_val and source_intensity_ch1.data["time"].index(start_oscillation_position.location)==min_val and t<max_list[m] and max_list[m]>min_val:
-                    arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-                    arrays['yr1_{}'.format(m+1)].append(0)
-                    arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
-
-                if t<max_list[m] and max_list[m]>min_val and t>min_val:
-                    arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-                    arrays['yr1_{}'.format(m+1)].append(0)
-                    arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
-  
-        for i in range(1,11):
-            source_rising[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
-            print('i={},  source_rising={}'.format(i, source_rising[i].data))
-
-
-        arrays = {}
+        arrays_f = {}
         for i in range(1,11):
             array_x  = 'xf_{}'.format(i)
             array_y1 = 'yf1_{}'.format(i)
             array_y2 = 'yf2_{}'.format(i)
-            arrays[array_x]  = []
-            arrays[array_y1] = []
-            arrays[array_y2] = []
+            arrays_f[array_x]  = []
+            arrays_f[array_y1] = []
+            arrays_f[array_y2] = []
 
         source_falling = {}
         source_falling[1]=source_varea_falling1
@@ -964,11 +947,36 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_falling[9]=source_varea_falling9
         source_falling[10]=source_varea_falling10
 
+
         if end_oscillation_position.location  < 0 or start_oscillation_position.location < 0:
             for i in range(1,11):
-                source_falling[i].data={'x':arrays['xf_{}'.format(i)], 'y1':arrays['yf1_{}'.format(i)], 'y2':arrays['yf2_{}'.format(i)]}
+                source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
+                source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
             return
         
+
+        for m in range(len(max_list)):
+            min_val=source_intensity_ch1.data["time"].index(start_oscillation_position.location)
+            for n in range(len(min_list)):
+                if min_list[n]<max_list[m]: 
+                    min_val=min_list[n]
+            for t in range(source_intensity_ch1.data["time"].index(start_oscillation_position.location), source_intensity_ch1.data["time"].index(end_oscillation_position.location)):
+
+                if t==min_val and source_intensity_ch1.data["time"].index(start_oscillation_position.location)==min_val and t<max_list[m] and max_list[m]>min_val:
+                    arrays_r['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                    arrays_r['yr1_{}'.format(m+1)].append(0)
+                    arrays_r['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+
+                if t<max_list[m] and max_list[m]>min_val and t>min_val:
+                    arrays_r['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                    arrays_r['yr1_{}'.format(m+1)].append(0)
+                    arrays_r['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+  
+        for i in range(1,11):
+            source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
+            print('i={},  source_rising={}'.format(i, source_rising[i].data))
+
+
 
         for m in range(len(max_list)):
             min_val=source_intensity_ch1.data["time"].index(end_oscillation_position.location)
@@ -979,17 +987,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             for t in range(source_intensity_ch1.data["time"].index(start_oscillation_position.location), source_intensity_ch1.data["time"].index(end_oscillation_position.location)+1):
 
                 if t>max_list[m] and max_list[m]<min_val and t<min_val:
-                    arrays['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-                    arrays['yf1_{}'.format(m+1)].append(0)
-                    arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+                    arrays_f['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                    arrays_f['yf1_{}'.format(m+1)].append(0)
+                    arrays_f['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
 
                 if t==source_intensity_ch1.data["time"].index(end_oscillation_position.location) and min_val==source_intensity_ch1.data["time"].index(end_oscillation_position.location):
-                    arrays['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-                    arrays['yf1_{}'.format(m+1)].append(0)
-                    arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+                    arrays_f['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                    arrays_f['yf1_{}'.format(m+1)].append(0)
+                    arrays_f['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
 
         for i in range(1,11):
-            source_falling[i].data={'x':arrays['xf_{}'.format(i)], 'y1':arrays['yf1_{}'.format(i)], 'y2':arrays['yf2_{}'.format(i)]}
+            source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
             print('i={},  source_falling={}'.format(i, source_falling[i].data))
     #___________________________________________________________________________________________
 
@@ -998,14 +1006,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def set_rising_falling(cellid):
 
-        arrays = {}
+        arrays_r = {}
         for i in range(1,11):
             array_x  = 'xr_{}'.format(i)
             array_y1 = 'yr1_{}'.format(i)
             array_y2 = 'yr2_{}'.format(i)
-            arrays[array_x]  = []
-            arrays[array_y1] = []
-            arrays[array_y2] = []
+            arrays_r[array_x]  = []
+            arrays_r[array_y1] = []
+            arrays_r[array_y2] = []
 
         source_rising = {}
         source_rising[1]=source_varea_rising1
@@ -1019,9 +1027,31 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_rising[9]=source_varea_rising9
         source_rising[10]=source_varea_rising10
 
+
+        arrays_f = {}
+        for i in range(1,11):
+            array_x  = 'xf_{}'.format(i)
+            array_y1 = 'yf1_{}'.format(i)
+            array_y2 = 'yf2_{}'.format(i)
+            arrays_f[array_x]  = []
+            arrays_f[array_y1] = []
+            arrays_f[array_y2] = []
+
+        source_falling = {}
+        source_falling[1]=source_varea_falling1
+        source_falling[2]=source_varea_falling2
+        source_falling[3]=source_varea_falling3
+        source_falling[4]=source_varea_falling4
+        source_falling[5]=source_varea_falling5
+        source_falling[6]=source_varea_falling6
+        source_falling[7]=source_varea_falling7
+        source_falling[8]=source_varea_falling8
+        source_falling[9]=source_varea_falling9
+        source_falling[10]=source_varea_falling10
         if cellid==None:
             for i in range(1,11):
-                source_rising[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
+                source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
+                source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
             return
         
         if len(cellid.cell_status.peaks)==6:
@@ -1034,44 +1064,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 for t in range(cellid.cell_status.start_oscillation_frame, cellid.cell_status.end_oscillation_frame):
 
                     if t==min_val and cellid.cell_status.start_oscillation_frame==min_val and t<cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]>min_val:
-                        arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-                        arrays['yr1_{}'.format(m+1)].append(0)
-                        arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+                        arrays_r['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                        arrays_r['yr1_{}'.format(m+1)].append(0)
+                        arrays_r['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
 
                     if t<cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]>min_val and t>min_val:
-                        arrays['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-                        arrays['yr1_{}'.format(m+1)].append(0)
-                        arrays['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+                        arrays_r['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                        arrays_r['yr1_{}'.format(m+1)].append(0)
+                        arrays_r['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
   
         for i in range(1,11):
-            source_rising[i].data={'x':arrays['xr_{}'.format(i)], 'y1':arrays['yr1_{}'.format(i)], 'y2':arrays['yr2_{}'.format(i)]}
+            source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
             print('i={},  source_rising={}'.format(i, source_rising[i].data))
 
-        arrays = {}
-        for i in range(1,11):
-            array_x  = 'xf_{}'.format(i)
-            array_y1 = 'yf1_{}'.format(i)
-            array_y2 = 'yf2_{}'.format(i)
-            arrays[array_x]  = []
-            arrays[array_y1] = []
-            arrays[array_y2] = []
 
-        source_falling = {}
-        source_falling[1]=source_varea_falling1
-        source_falling[2]=source_varea_falling2
-        source_falling[3]=source_varea_falling3
-        source_falling[4]=source_varea_falling4
-        source_falling[5]=source_varea_falling5
-        source_falling[6]=source_varea_falling6
-        source_falling[7]=source_varea_falling7
-        source_falling[8]=source_varea_falling8
-        source_falling[9]=source_varea_falling9
-        source_falling[10]=source_varea_falling10
-
-        if cellid==None:
-            for i in range(1,11):
-                source_falling[i].data={'x':arrays['xf_{}'.format(i)], 'y1':arrays['yf1_{}'.format(i)], 'y2':arrays['yf2_{}'.format(i)]}
-            return
         
         if len(cellid.cell_status.peaks)==6:
 
@@ -1084,16 +1090,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 for t in range(cellid.cell_status.start_oscillation_frame, cellid.cell_status.end_oscillation_frame+1):
 
                     if t>cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]<min_val and t<min_val:
-                        arrays['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-                        arrays['yf1_{}'.format(m+1)].append(0)
-                        arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+                        arrays_f['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                        arrays_f['yf1_{}'.format(m+1)].append(0)
+                        arrays_f['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
   
                     if t==cellid.cell_status.end_oscillation_frame and min_val==cellid.cell_status.end_oscillation_frame:
-                        arrays['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
-                        arrays['yf1_{}'.format(m+1)].append(0)
-                        arrays['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+                        arrays_f['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
+                        arrays_f['yf1_{}'.format(m+1)].append(0)
+                        arrays_f['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
         for i in range(1,11):
-            source_falling[i].data={'x':arrays['xf_{}'.format(i)], 'y1':arrays['yf1_{}'.format(i)], 'y2':arrays['yf2_{}'.format(i)]}
+            source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
             print('i={},  source_falling={}'.format(i, source_falling[i].data))
     #___________________________________________________________________________________________
 
@@ -1269,13 +1275,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to update the position
     def prepare_pos(attr, old, new):
         print('****************************  prepare_pos ****************************')
-        images = get_current_stack()
+        images, images_norm = get_current_stack()
         source_imgs.data = {'images':images}
+        source_imgs_norm.data = {'images':images_norm}
         source_img_ch.data = {'img':[images[ch][0] for ch in range(len(images))]}
 
         new_image = images[int(dropdown_channel.value)][0]
-        #x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
-
         source_img.data = {'img':[new_image]}
         dropdown_channel.value = dropdown_channel.options[0]
         dropdown_color.value = dropdown_color.options[0]
@@ -1369,72 +1374,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    #___________________________________________________________________________________________
-    # update the source_labels
-    def update_source_labels_roi():
-        print('****************************  update_source_labels_roi ****************************')
-        height_labels=[]
-        weight_labels=[]
-        names_labels=[]
-        current_file=get_current_file()
-        sample = Sample.objects.get(file_name=current_file)
-        current_index=get_current_index()
-        frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
-        if len(frame)!=1:
-            print('NOT ONLY FRAME FOUND< PLEASE CHECKKKKKKKK')
-            print('======sample: ',sample)
-            for f in frame:
-                print('===============frame: ',f)
-        rois   = CellROI.objects.select_related().filter(frame=frame[0])
-        for roi in rois:
-            weight_labels.append(roi.min_col)
-            #back in bokeh coordinates for display
-            height_labels.append(frame[0].height-roi.min_row)
-            names_labels.append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
-        print('ppppppp ',height_labels, weight_labels, names_labels)
-        return height_labels, weight_labels, names_labels
-    #___________________________________________________________________________________________
 
-    #___________________________________________________________________________________________
-    # update the source_labels
-    def update_source_labels_cells():
-        print('****************************  update_source_labels_cells ****************************')
-        height_cells=[]
-        weight_cells=[]
-        names_cells=[]
-        current_file=get_current_file()
-        current_index=get_current_index()
-        sample = Sample.objects.get(file_name=current_file)
-        frame  = Frame.objects.select_related().filter(sample=sample, number=current_index)
-        if len(frame)!=1:
-            print('NOT ONLY FRAME FOUND< PLEASE CHECKKKKKKKK')
-            print('======sample: ',sample)
-            for f in frame:
-                print('===============frame: ',f)
-        rois = CellROI.objects.select_related().filter(frame=frame[0])
-        for roi in rois:
-            if roi.cell_id == None: continue
-            weight_cells.append(roi.min_col)
-            #back in bokeh coordinates for display
-            height_cells.append(frame[0].height-roi.max_row)
-            names_cells.append(roi.cell_id.name)
-        print('ppppppp cells',height_cells, weight_cells, names_cells)
-        return height_cells, weight_cells, names_cells
-    #___________________________________________________________________________________________
+
 
     #___________________________________________________________________________________________
     # Define a callback to update bf_display with slider
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         print('****************************  callback_slider ****************************')
         time_point = slider.value
-        images=source_imgs.data['images']
+        images=source_imgs_norm.data['images']
         new_image = images[int(dropdown_channel.value)][time_point]
-
-        max_value = np.max(new_image)
-        min_value = np.min(new_image)
-        intensity_normalized = (new_image - min_value)/(max_value-min_value)*255
-        intensity_normalized = intensity_normalized.astype(np.uint8)
-        new_image = intensity_normalized
 
         source_img.data = {'img':[new_image]}
 
