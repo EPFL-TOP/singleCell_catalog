@@ -1244,7 +1244,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to update the position
     def prepare_pos(attr, old, new):
         print('****************************  prepare_pos ****************************')
-        images = get_current_stack()
+        images, images_norm = get_current_stack()
         source_imgs.data = {'images':images}
         source_img_ch.data = {'img':[images[ch][0] for ch in range(len(images))]}
 
