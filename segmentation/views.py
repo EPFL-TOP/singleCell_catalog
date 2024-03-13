@@ -1073,7 +1073,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
   
         for i in range(1,11):
             source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
-            print('i={},  source_rising={}'.format(i, source_rising[i].data))
 
 
         
@@ -1098,7 +1097,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         arrays_f['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
         for i in range(1,11):
             source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
-            print('i={},  source_falling={}'.format(i, source_falling[i].data))
     #___________________________________________________________________________________________
 
  
