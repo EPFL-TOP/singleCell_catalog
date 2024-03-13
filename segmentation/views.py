@@ -1161,8 +1161,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_channel.value   = dropdown_channel.value        
         
         new_image = source_imgs_norm.data['images'][int(dropdown_channel.value)][slider.value]
+        source_img.data   = {'img':[new_image]}
 
-        #source_img.data   = {'img':[new_image]}
         #img_min = new_image.min()
         #img_max = new_image.max()
         #color_mapper.low  = img_min
