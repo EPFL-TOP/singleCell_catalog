@@ -733,7 +733,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
             time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
             ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
-            ind_images_list.append(ind_images)
+            
+            ind_images_list.append(np.uint8(ind_images))
         return ind_images_list
     #___________________________________________________________________________________________
 
