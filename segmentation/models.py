@@ -223,6 +223,10 @@ class CellFlag(models.Model):
     falling        = models.BooleanField(help_text="falling oscillation signal cell flag", default=False, blank=True)
     flat           = models.BooleanField(help_text="flat cell flag", default=False, blank=True)
 
+    #round 
+    #elongated
+    #migrating
+    #
     cell_roi       = models.OneToOneField(CellROI, default='', null=True, on_delete=models.CASCADE, related_name="cellflag_cellroi")
 
     class Meta:

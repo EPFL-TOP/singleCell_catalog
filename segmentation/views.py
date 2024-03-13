@@ -1132,16 +1132,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_dropdown_channel(attr, old, new):
         print('****************************  update_dropdown_channel ****************************')
-        print('source_img_ch.data[img]----- ',source_img_ch.data['img'])
         ch_list=[]
         for ch in range(len(source_img_ch.data['img'])):
             ch_list.append(str(ch))
         dropdown_channel.options = ch_list
-        dropdown_channel.value   = dropdown_channel.value
-        print('source_img_ch.data[img]----- ',source_img_ch.data['img'])
-        print('len source_img_ch.data[img]----- ',len(source_img_ch.data['img']))
-        print('shape source_img_ch.data[img][0]----- ',source_img_ch.data['img'][0].shape)
-        
+        dropdown_channel.value   = dropdown_channel.value        
         
         new_image = source_img_ch.data['img'][int(dropdown_channel.value)]
         x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
@@ -1392,9 +1387,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_point = slider.value
         images=source_imgs.data['images']
         new_image = images[int(dropdown_channel.value)][time_point]
-        #norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
-        #source_img.data = {'img':[norm]}
-        source_img.data = {'img':[new_image]}
+        norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
+        source_img.data = {'img':[norm]}
+        #source_img.data = {'img':[new_image]}
         
         source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
@@ -1499,6 +1494,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for i in range(len(source_roi_manual.data['left'])):
             cellrois = CellROI.objects.select_related().filter(frame=frame[0])
             roi_exist=False
+            #TOBECHANGED CLEMENT MAYBE ADD A DB CALL HERE TO CHEKC THE NUMBER OF EXISTING  ROIS
             roi_number=i+len(source_roi.data['left'])-len(source_roi_manual.data['left'])
             print('roi_number=',roi_number)
             print('source_roi=',len(source_roi.data['left']))
@@ -1933,8 +1929,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #plot_image.add_layout(color_bar, 'right')
 
     #im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, palette='Greys256')
-    #plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
-    plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img)
+    plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
+    #plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img)
 
 
     current_file=get_current_file()
