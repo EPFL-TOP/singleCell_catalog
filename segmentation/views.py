@@ -1993,17 +1993,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.add_layout(labels_cells)
     #plot_image.add_layout(color_bar, 'right')
 
-    #im = plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, palette='Greys256')
-    #plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
-    #plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img)
+    plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
 
        # Create a ColumnDataSource to store image data
-    source_url = bokeh.models.ColumnDataSource({'url': [''], 'x': [0], 'y': [0], 'dw': [0], 'dh': [0]})
-    ind_images_list_url = get_current_stack_url()
+    #source_url = bokeh.models.ColumnDataSource({'url': [''], 'x': [0], 'y': [0], 'dw': [0], 'dh': [0]})
+    #ind_images_list_url = get_current_stack_url()
 
-    source_url.data = {'url': [f'data:image/png;base64,{ind_images_list_url[0][0]}'], 'x': [0], 'y': [0], 'dw': [ind_images_list[0][0].shape[1]], 'dh': [ind_images_list[0][0].shape[0]]}
+    #source_url.data = {'url': [f'data:image/png;base64,{ind_images_list_url[0][0]}'], 'x': [0], 'y': [0], 'dw': [ind_images_list[0][0].shape[1]], 'dh': [ind_images_list[0][0].shape[0]]}
 
-    image_plot = plot_image.image_url(url='url', x='x', y='y', w='dw', h='dh', source=source_url)
+    #image_plot = plot_image.image_url(url='url', x='x', y='y', w='dw', h='dh', source=source_url)
 
     current_file=get_current_file()
     sample = Sample.objects.get(file_name=current_file)
