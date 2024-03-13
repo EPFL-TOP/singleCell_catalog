@@ -728,12 +728,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         ind_images_list=[]
+        ind_images_list_norm=[]
         for nch in range(time_lapse.shape[1]):
             time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
             time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
             ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
             ind_images_list.append(ind_images)
-        return ind_images_list
+            norm_list=[]
+            for t in range(len(ind_images)):
+                x_norm = (ind_images[t]-np.min(ind_images[t]))/(np.max(ind_images[t])-np.min(ind_images[t]))
+                norm_list.append(x_norm)
+            ind_images_list_norm.append(norm_list)
+        print('shape  ',ind_images_list.shape, ind_images_list_norm.shape)
+        return ind_images_list, ind_images_list_norm
     #___________________________________________________________________________________________
 
 
@@ -1888,13 +1895,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def update_image_tap_callback(attr, old, new):
+        print('****************************  update_image_tap_callback ****************************')
         index = new['index'][0]
-        images=source_imgs.data['images']
-        new_image = images[int(dropdown_channel.value)][index]
+        #images=source_imgs.data['images']
+        #new_image = images[int(dropdown_channel.value)][index]
         #norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
         #source_img.data = {'img':[norm]}
-        source_img.data = {'img':[new_image]}
-        source_img_ch.data = {'img':[images[ch][index] for ch in range(len(images))]}
+        #source_img.data = {'img':[new_image]}
+        #source_img_ch.data = {'img':[images[ch][index] for ch in range(len(images))]}
         slider.value=index
     #___________________________________________________________________________________________
 
