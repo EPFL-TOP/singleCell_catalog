@@ -1387,9 +1387,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_point = slider.value
         images=source_imgs.data['images']
         new_image = images[int(dropdown_channel.value)][time_point]
-        norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
-        source_img.data = {'img':[norm]}
-        #source_img.data = {'img':[new_image]}
+        #norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
+        #source_img.data = {'img':[norm]}
+        source_img.data = {'img':[new_image]}
         
         source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
