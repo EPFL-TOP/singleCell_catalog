@@ -27,6 +27,9 @@ from typing import Any
 
 import nd2
 from pathlib import Path
+from io import BytesIO
+import base64
+from PIL import Image
 
 LOCAL=True
 BASEPATH="/mnt/nas_rcp/raw_data"
@@ -739,7 +742,28 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         return ind_images_list
     #___________________________________________________________________________________________
 
-
+    #___________________________________________________________________________________________
+    # Function to get the image stack
+    def get_current_stack_url():
+        current_file=get_current_file()
+        time_lapse_path = Path(current_file)
+        time_lapse = nd2.imread(time_lapse_path.as_posix())
+        ind_images_list=[]
+        for nch in range(time_lapse.shape[1]):
+            time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
+            time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
+            ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
+            ind_images_url = []
+            for im in ind_images:
+                image_pil = Image.fromarray(im)
+                buffer = BytesIO()
+                image_pil.save(buffer, format='PNG')
+                image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+                ind_images_url.append(image_base64)
+            ind_images_list.append(ind_images_url)
+        return ind_images_list
+    #___________________________________________________________________________________________  
+ 
 
     #___________________________________________________________________________________________
     # Function to get the current file
@@ -1973,6 +1997,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
     #plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img)
 
+       # Create a ColumnDataSource to store image data
+    source_url = bokeh.models.ColumnDataSource({'url': [''], 'x': [0], 'y': [0], 'dw': [0], 'dh': [0]})
+    ind_images_list_url = get_current_stack_url()
+
+    source_url.data = {'url': [f'data:image/png;base64,{ind_images_list_url[0][0]}'], 'x': [0], 'y': [0], 'dw': [ind_images_list[0][0].shape[1]], 'dh': [ind_images_list[0][0].shape[0]]}
+
+    image_plot = plot_image.image_url(url='url', x='x', y='y', w='dw', h='dh', source=source_url)
 
     current_file=get_current_file()
     sample = Sample.objects.get(file_name=current_file)
