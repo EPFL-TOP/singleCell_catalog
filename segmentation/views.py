@@ -1149,11 +1149,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_channel.value   = dropdown_channel.value        
         
         new_image = source_img_ch.data['img'][int(dropdown_channel.value)]
-        x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
+        #x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
 
-        source_img.data   = {'img':[x_norm]}
+        source_img.data   = {'img':[new_image]}
         print('update_dropdown_channel options: ',dropdown_channel.options)
-        print('update_dropdown_channel value : ',dropdown_channel.value)
+        print('update_dropdown_channel value  : ',dropdown_channel.value)
 
     channel_list=[]
     for ch in range(len(ind_images_list)):channel_list.append(str(ch))
@@ -1233,8 +1233,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  update_dropdown_channel ****************************')
         palette = dropdown_color.value
         color_mapper.palette = palette
-        #color_mapper.low=source_img.data['img'][0].min()
-        #color_mapper.high=source_img.data['img'][0].max()
+
 
     colormaps = ['Greys256','Inferno256','Viridis256']
     color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=source_img.data['img'][0].min(), high=source_img.data['img'][0].max())
@@ -1253,9 +1252,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img_ch.data = {'img':[images[ch][0] for ch in range(len(images))]}
 
         new_image = images[int(dropdown_channel.value)][0]
-        x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
+        #x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
 
-        source_img.data = {'img':[x_norm]}
+        source_img.data = {'img':[new_image]}
         dropdown_channel.value = dropdown_channel.options[0]
         dropdown_color.value = dropdown_color.options[0]
         print('prepare_pos dropdown_channel.value ',dropdown_channel.value)
@@ -1397,9 +1396,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_point = slider.value
         images=source_imgs.data['images']
         new_image = images[int(dropdown_channel.value)][time_point]
-        #norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
-        #source_img.data = {'img':[norm]}
-
 
         source_img.data = {'img':[new_image]}
         color_mapper.low=new_image.min()
@@ -1425,7 +1421,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     # Define a callback function to update the contrast when the slider changes
     def update_contrast(attr, old, new):
-        image=source_img.data['img'][0]
         low, high = new 
         # Update the image data in the ColumnDataSource
         # Update the color mapper range
@@ -1445,12 +1440,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def select_roi_callback(event):
         print('****************************  select_roi_callback ****************************')
         if isinstance(event, bokeh.events.SelectionGeometry):
-            #nrows = len(source_img.data['img'][0])
             data_manual = dict(
                 left=source_roi_manual.data['left'] + [event.geometry['x0']],
                 right=source_roi_manual.data['right'] + [event.geometry['x1']],
-                #top=source_roi.data['top'] + [nrows-event.geometry['y0']],
-                #bottom=source_roi.data['bottom'] + [nrows-event.geometry['y1']]
                 top=source_roi_manual.data['top'] + [event.geometry['y0']],
                 bottom=source_roi_manual.data['bottom'] + [event.geometry['y1']]
                 )
@@ -1631,11 +1623,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  update_image ****************************')
         current_index=get_current_index()
         images=source_imgs.data["images"]
-        #source_img_ch.data = {'img':[images[ch][current_index] for ch in range(len(images))]}
-        #new_image = images[int(dropdown_channel.value)][current_index]
-        #x_norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
-        #source_img.data = {'img':[x_norm]}
-        #source_img.data = {'img':[new_image]}
         current_index = (current_index + 1*way) % len(images[0])
         if number>=0:
             current_index = number
@@ -1919,12 +1906,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_image_tap_callback(attr, old, new):
         print('****************************  update_image_tap_callback ****************************')
         index = new['index'][0]
-        #images=source_imgs.data['images']
-        #new_image = images[int(dropdown_channel.value)][index]
-        #norm = (new_image-np.min(new_image))/(np.max(new_image)-np.min(new_image))
-        #source_img.data = {'img':[norm]}
-        #source_img.data = {'img':[new_image]}
-        #source_img_ch.data = {'img':[images[ch][index] for ch in range(len(images))]}
         slider.value=index
     #___________________________________________________________________________________________
 
