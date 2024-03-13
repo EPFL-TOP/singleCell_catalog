@@ -1267,11 +1267,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def prepare_pos(attr, old, new):
         print('****************************  prepare_pos ****************************')
         images, images_norm = get_current_stack()
-        source_imgs.data = {'images':images}
+        source_imgs.data      = {'images':images}
         source_imgs_norm.data = {'images':images_norm}
-        source_img_ch.data = {'img':[images[ch][0] for ch in range(len(images))]}
+        source_img_ch.data    = {'img':[images[ch][0] for ch in range(len(images))]}
 
-        new_image = images[int(dropdown_channel.value)][0]
+        new_image = images_norm[int(dropdown_channel.value)][0]
         source_img.data = {'img':[new_image]}
         dropdown_channel.value = dropdown_channel.options[0]
         dropdown_color.value = dropdown_color.options[0]
@@ -1372,28 +1372,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         print('****************************  callback_slider ****************************')
         time_point = slider.value
-        images=source_imgs_norm.data['images']
-        new_image = images[int(dropdown_channel.value)][time_point]
-
+        images_norm=source_imgs_norm.data['images']
+        new_image = images_norm[int(dropdown_channel.value)][time_point]
         source_img.data = {'img':[new_image]}
 
-        #img_min = new_image.min()
-        #img_max = new_image.max()
-        #color_mapper.low  = img_min
-        #color_mapper.high = img_max
-        #contrast_slider.value = (img_min, img_max)
-        #contrast_slider.start = img_min
-        #contrast_slider.end = img_max
-        
+        images=source_imgs.data['images']
         source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
-
 
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
 
-        
-        source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
+        source_roi.data    = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
-        source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+        source_cells.data  = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         if len(source_intensity_ch1.data["time"])==0:
             line_position.location = -999
         else:
