@@ -380,7 +380,7 @@ def segment():
 
             counter_samp=0
             for s in samples:
-                if counter_samp==4: 
+                if counter_samp==2: 
                     print('===========================================')
                     break
                 counter_samp+=1
@@ -599,7 +599,12 @@ def build_ROIs():
                     #Just for now, should normally check that same ROI don't overlap
                     if len(rois)>0: continue
                     ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number])
-
+                    if len(ROIs)==0:
+                        ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2.8)
+                    if len(ROIs)==0:
+                        ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2.)
+                    if len(ROIs)==0:
+                        ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 1.5)
                     npixmin=10
                     for r in range(len(ROIs)):
                         if ROIs[r][0]<npixmin or ROIs[r][1]<npixmin or ROIs[r][2]>frame.height-npixmin or ROIs[r][3]>frame.width-npixmin:
