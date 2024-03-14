@@ -41,20 +41,14 @@ class Sample(models.Model):
         ('Medium', 'Medium'),
         ('Low',    'Low'),
     )
-    experimental_dataset   = models.ForeignKey(ExperimentalDataset, default='',on_delete=models.CASCADE)
-    file_name              = models.CharField(default='', max_length=500, help_text="name of the file (full path)")
-#    number_of_frames       = models.PositiveSmallIntegerField(default=0, help_text="Number of frames", blank=True)
-#    number_of_channels     = models.PositiveSmallIntegerField(default=0, help_text="Number of channels")
-#    experiment_description = models.CharField(max_length=500, default='', help_text="description of the experiment")
-#    name_of_channels       = models.CharField(max_length=500, default='', help_text="name of the channels")
-#    date                   = models.DateTimeField(blank=True, null=True)
-    #USER specific
-    sample_quality     = models.CharField(max_length=200, choices=QUALITY, help_text="", default='High')
-    keep_sample        = models.BooleanField(help_text="keep this sample flag", default=True)
-    check_sample       = models.BooleanField(help_text="sample has been checked flag", default=False)
+    experimental_dataset = models.ForeignKey(ExperimentalDataset, default='',on_delete=models.CASCADE)
+    file_name            = models.CharField(default='', max_length=500, help_text="name of the file (full path)")
+    sample_quality       = models.CharField(max_length=200, choices=QUALITY, help_text="", default='High')
+    keep_sample          = models.BooleanField(help_text="keep this sample flag", default=True)
+    check_sample         = models.BooleanField(help_text="sample has been checked flag", default=False)
 
     def __str__(self):
-        return 'name={0}, quality={1}'.format(self.file_name, self.sample_quality)
+        return 'position={0}'.format(self.file_name)
 
     def get_absolute_url(self):
         return reverse('sample-detail', args=[str(self.id)])

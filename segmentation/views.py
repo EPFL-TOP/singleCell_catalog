@@ -32,6 +32,7 @@ import base64
 from PIL import Image
 
 LOCAL=True
+DEBUG=False
 BASEPATH="/mnt/nas_rcp/raw_data"
 
 #MY macbook
@@ -294,7 +295,7 @@ def register_rawdataset():
                 metadata = read.nd2reader_getSampleMetadata(fname)
                 sample = Sample(file_name=fname, 
                                 experimental_dataset=expds,
-#                                number_of_frames=metadata['number_of_frames'], 
+                                number_of_frames=metadata['number_of_frames'], 
 #                                number_of_channels=metadata['number_of_channels'], 
 #                                name_of_channels=metadata['name_of_channels'], 
 #                                experiment_description=metadata['experiment_description'], 
@@ -549,14 +550,14 @@ def build_cells_sample(sample):
                 for pos in cell_pos_dict[cell]:
                     tmp_val+=math.sqrt(math.pow(pos[0]-cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.,2) + 
                                        math.pow(pos[1]-cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.,2))
-                    print('dr= ',math.sqrt(math.pow(pos[0]-cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.,2) + 
+                    if DEBUG: print('dr= ',math.sqrt(math.pow(pos[0]-cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.,2) + 
                                            math.pow(pos[1]-cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.,2)),
                                            ' n pos=',len(cell_pos_dict[cell]))
                           
                 if tmp_val/len(cell_pos_dict[cell])<min_dr_val and tmp_val/len(cell_pos_dict[cell])<max_dr_val:
                     min_dr_val=tmp_val
                     min_dr_name=cell
-                print('frame=',f, '   cellroi_frame=',cellroi_frame,'  min_dr_val=',min_dr_val, '  min_dr_name=',min_dr_name, '  max_dr_val=',max_dr_val,'  tmp_val/len(cell_pos_dict[cell])=',tmp_val/len(cell_pos_dict[cell]))
+                if DEBUG: print('frame=',f, '   cellroi_frame=',cellroi_frame,'  min_dr_val=',min_dr_val, '  min_dr_name=',min_dr_name, '  max_dr_val=',max_dr_val,'  tmp_val/len(cell_pos_dict[cell])=',tmp_val/len(cell_pos_dict[cell]))
             if min_dr_name!='':
                 cellroi_frame.cell_id=cell_id_dict[min_dr_name]
                 cellroi_frame.save()
@@ -1490,8 +1491,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for i in range(len(source_roi_manual.data['left'])):
             cellrois = CellROI.objects.select_related().filter(frame=frame[0])
             roi_exist=False
-            #TOBECHANGED CLEMENT MAYBE ADD A DB CALL HERE TO CHEKC THE NUMBER OF EXISTING  ROIS
-            roi_number=i+len(source_roi.data['left'])-len(source_roi_manual.data['left'])
+            #TOBECHANGED CLEMENT really need to save more than1 roi per frame
+            roi_number = len(cellrois)+1
+            #roi_number=i+len(source_roi.data['left'])-len(source_roi_manual.data['left'])
             print('roi_number=',roi_number)
             print('source_roi=',len(source_roi.data['left']))
             print('source_roi_manual=',len(source_roi_manual.data['left']))
@@ -1847,17 +1849,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_source_osc_tod():
         print('------------------------update_source_osc_tod-------------------------')
         well = ExperimentalDataset.objects.get(data_name=dropdown_well.value)
+        nframes = well.experiment.number_of_frames
         samples = Sample.objects.select_related().filter(experimental_dataset = well)
         n_osc=[]
         tod=[]
         start_osc=[]
         end_osc=[]
-        nframes=-99
         for sample in samples:
             cellids = CellID.objects.select_related().filter(sample=sample)
-            #TOCHNAGE CLEMENT WITH numberof frame from sample
-            frames = Frame.objects.select_related().filter(sample=sample)
-            if len(frames)>nframes:nframes=len(frames)
             for cellid in cellids:
                 n_osc.append(cellid.cell_status.n_oscillations)
                 start_osc.append(cellid.cell_status.start_oscillation)
