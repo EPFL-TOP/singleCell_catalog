@@ -295,7 +295,7 @@ def register_rawdataset():
                 metadata = read.nd2reader_getSampleMetadata(fname)
                 sample = Sample(file_name=fname, 
                                 experimental_dataset=expds,
-                                number_of_frames=metadata['number_of_frames'], 
+#                                number_of_frames=metadata['number_of_frames'], 
 #                                number_of_channels=metadata['number_of_channels'], 
 #                                name_of_channels=metadata['name_of_channels'], 
 #                                experiment_description=metadata['experiment_description'], 
