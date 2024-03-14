@@ -1867,7 +1867,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 start_osc.append(cellid.cell_status.start_oscillation)
                 end_osc.append(cellid.cell_status.end_oscillation)
                 tod.append(cellid.cell_status.time_of_death)
-        hist=[0,0], edges[0,1]
+        hist=[0,0], edges=[0,1]
         if len(n_osc)>0:
             hist, edges = np.histogram(n_osc, bins=max(n_osc, default=0)+2, range=(0, max(n_osc, default=0)+2))
 
