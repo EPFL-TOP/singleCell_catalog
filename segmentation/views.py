@@ -542,8 +542,8 @@ def build_cells_sample(sample):
         for cellroi_frame in cellrois_frame:
             if cellroi_frame.id in cell_roi_id_list: continue
             min_dr_name=''
-            min_dr_val=1000000000000000.
-            max_dr_val=((cellroi_frame.max_col-cellroi_frame.min_col)/2. + (cellroi_frame.max_row-cellroi_frame.min_row)/2.)/0.5
+            min_dr_val=10000000000.
+            max_dr_val=((cellroi_frame.max_col-cellroi_frame.min_col)/2. + (cellroi_frame.max_row-cellroi_frame.min_row)/2.)/2.
             tmp_val=0
 
             for cell in cell_pos_dict:
@@ -823,6 +823,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_intensity_max = bokeh.models.ColumnDataSource(data=data_intensity_max)
     data_intensity_min={'time':[], 'intensity':[]}
     source_intensity_min = bokeh.models.ColumnDataSource(data=data_intensity_min)
+    data_mask={'time':[], 'intensity':[]}
+    source_mask = bokeh.models.ColumnDataSource(data=data_mask)
 
     # Create a Slider widget
     initial_time_point = 0
@@ -879,7 +881,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             else:
                 source_intensity_max.data={'time':[], 'intensity':[]}
                 source_intensity_min.data={'time':[], 'intensity':[]}
-
+                source_mask.data={'time':[], 'intensity':[]}
             set_rising_falling(cellids[0])
 
         else:
@@ -1058,8 +1060,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_falling[i].data = {'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
             return
         
-        osc_dict={'rising_frame':[], 'falling_frame':[],
-                  'rising_time':[], 'falling_time':[]}
+        osc_dict={'rising_frame':[], 'falling_frame':[], 'mask_frame':[],
+                  'rising_time':[],  'falling_time':[],  'mask_time':[]}
+        
         if len(cellid.cell_status.peaks)==6:
 
             for m in range(len(cellid.cell_status.peaks["max_frame"])):
@@ -1985,6 +1988,22 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Define a function to reset TapTool's selection
     def mask_cells_callback():
         print('mask cells call=',source_intensity_ch1.selected.indices)
+        sample = Sample.objects.get(file_name=get_current_file())
+        cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+        cellrois = CellROI.objects.select_related().filter(cell_id=cellsid[0])
+        data_mask={'time':[], 'intensity':[]}
+
+        for cellroi in cellrois:
+            framenumber = cellroi.frame.number
+            cellflag = cellroi.cellflag_cellroi
+            if framenumber in source_intensity_ch1.selected.indices:
+                data_mask['time'].append(source_intensity_ch1.data["time"][framenumber])
+                data_mask['intensity'].append(source_intensity_ch1.data["intensity"][framenumber])
+                cellflag.mask = True
+            else:
+                cellflag.mask = False
+            cellflag.save()
+        source_mask.data = data_mask
     button_mask_cells = bokeh.models.Button(label="Mask")
     button_mask_cells.on_click(mask_cells_callback)
     #___________________________________________________________________________________________
@@ -2054,6 +2073,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     int_ch2 = plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=10, line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_max, fill_color="red", size=10, line_color='red')
     plot_intensity.circle('time', 'intensity', source=source_intensity_min, fill_color="green", size=10, line_color='green')
+    plot_intensity.circle('time', 'intensity', source=source_mask, fill_color="black", size=10, line_color='black')
 
     index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
     tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()))
