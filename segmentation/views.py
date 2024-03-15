@@ -1113,7 +1113,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
 
         if save and cellid!=None:
-            maxf=cellid.cell_status.peaks["max_frame"]
+            print('cellid=',cellid)
             cellrois = CellID.objects.select_related().filter(cell_id=cellid)
             for cellroi in cellrois:
                 framenumber = cellroi.frame.number
