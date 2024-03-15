@@ -110,6 +110,10 @@ class CellStatus(models.Model):
 
     n_oscillations          = models.IntegerField(default=-999, help_text="Cell number of oscillations", blank=True)
 
+    migrating               = models.BooleanField(help_text="migrating cell flag", default=False, blank=True)
+    mask                    = models.BooleanField(help_text="mask cell flag", default=False, blank=True)
+
+
     def __str__(self):
         if  hasattr(self, 'cellid_cellstatus'):
             return 'cell={0}, sample={1}'.format(self.cellid_cellstatus.name, self.cellid_cellstatus.sample.file_name)
@@ -205,22 +209,21 @@ class Contour(models.Model):
 class CellFlag(models.Model):
 
     alive          = models.BooleanField(help_text="alive cell flag", default=True, blank=True)
-    keep           = models.BooleanField(help_text="keep cell flag", default=True, blank=True)
     oscillating    = models.BooleanField(help_text="cell oscillation flag", default=False, blank=True)
+    maximum        = models.BooleanField(help_text="maximum oscillation signal cell flag", default=False, blank=True)
+    minimum        = models.BooleanField(help_text="minimum oscillation signal cell flag", default=False, blank=True)
+    falling        = models.BooleanField(help_text="falling oscillation signal cell flag", default=False, blank=True)
+    rising         = models.BooleanField(help_text="rising oscillation signal cell flag", default=False, blank=True)
+
+    mask           = models.BooleanField(help_text="mask cell flag", default=False, blank=True)
     dividing       = models.BooleanField(help_text="dividing cell flag", default=False, blank=True)
     double_nuclei  = models.BooleanField(help_text="double nuclei cell flag", default=False, blank=True)
     multiple_cells = models.BooleanField(help_text="multiple cells flag", default=False, blank=True)
     pair_cell      = models.BooleanField(help_text="pair cell flag", default=False, blank=True)
-    maximum        = models.BooleanField(help_text="maximum oscillation signal cell flag", default=False, blank=True)
-    minimum        = models.BooleanField(help_text="minimum oscillation signal cell flag", default=False, blank=True)
-    rising         = models.BooleanField(help_text="rising oscillation signal cell flag", default=False, blank=True)
-    falling        = models.BooleanField(help_text="falling oscillation signal cell flag", default=False, blank=True)
     flat           = models.BooleanField(help_text="flat cell flag", default=False, blank=True)
-
-    #round 
-    #elongated
-    #migrating
-    #
+    round          = models.BooleanField(help_text="round cell flag", default=False, blank=True)
+    elongated      = models.BooleanField(help_text="round cell flag", default=False, blank=True)
+    
     cell_roi       = models.OneToOneField(CellROI, default='', null=True, on_delete=models.CASCADE, related_name="cellflag_cellroi")
 
     class Meta:

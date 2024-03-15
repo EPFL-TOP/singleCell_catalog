@@ -1008,7 +1008,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
-    def set_rising_falling(cellid):
+    def set_rising_falling(cellid, save=False):
 
         arrays_r = {}
         for i in range(1,11):
@@ -1054,10 +1054,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_falling[10]=source_varea_falling10
         if cellid==None:
             for i in range(1,11):
-                source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
-                source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
+                source_rising[i].data  = {'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
+                source_falling[i].data = {'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
             return
         
+        osc_dict={'rising_frame':[], 'falling_frame':[],
+                  'rising_time':[], 'falling_time':[]}
         if len(cellid.cell_status.peaks)==6:
 
             for m in range(len(cellid.cell_status.peaks["max_frame"])):
@@ -1071,17 +1073,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         arrays_r['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays_r['yr1_{}'.format(m+1)].append(0)
                         arrays_r['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+                        osc_dict["rising_frame"].append(t)
+                        osc_dict["rising_time"].append(source_intensity_ch1.data["time"][t])
 
                     if t<cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]>min_val and t>min_val:
                         arrays_r['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays_r['yr1_{}'.format(m+1)].append(0)
                         arrays_r['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
-  
+                        osc_dict["rising_frame"].append(t)
+                        osc_dict["rising_time"].append(source_intensity_ch1.data["time"][t])
+
         for i in range(1,11):
             source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
 
-
-        
         if len(cellid.cell_status.peaks)==6:
 
             for m in range(len(cellid.cell_status.peaks["max_frame"])):
@@ -1096,13 +1100,38 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         arrays_f['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays_f['yf1_{}'.format(m+1)].append(0)
                         arrays_f['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
-  
+                        osc_dict["falling_frame"].append(t)
+                        osc_dict["falling_time"].append(source_intensity_ch1.data["time"][t])
+
                     if t==cellid.cell_status.end_oscillation_frame and min_val==cellid.cell_status.end_oscillation_frame:
                         arrays_f['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays_f['yf1_{}'.format(m+1)].append(0)
                         arrays_f['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
+                        osc_dict["falling_frame"].append(t)
+                        osc_dict["falling_time"].append(source_intensity_ch1.data["time"][t])                        
         for i in range(1,11):
             source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
+
+        if save:
+            maxf=cellid.cell_status.peaks["max_frame"]
+            cellrois = CellID.objects.select_related().filter(cell_id=cellid)
+            for cellroi in cellrois:
+                framenumber = cellroi.frame.number
+                cellflag = cellroi.cellflag_cellroi
+
+                if framenumber in osc_dict['rising_frame']:  cellflag.rising = True
+                if framenumber in osc_dict['falling_frame']: cellflag.falling = True
+                if framenumber in cellid.cell_status.peaks["max_frame"]: cellflag.maximum = True
+                if framenumber in cellid.cell_status.peaks["min_frame"]: cellflag.minimum = True
+                
+                if framenumber>=cellid.cell_status.start_oscillation_frame and \
+                    framenumber<=cellid.cell_status.end_oscillation_frame:
+                    cellflag.oscillating = True
+                if framenumber>=cellid.cell_status.time_of_death_frame: cellflag.alive = False
+                cellflag.save()
+            cellstatus = cellid.cell_status
+            cellstatus.flags = osc_dict
+            cellstatus.save()
     #___________________________________________________________________________________________
 
  
@@ -1815,8 +1844,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 int_array[int]=0
             if source_intensity_ch1.data["time"][int]>end_oscillation_position.location:
                 int_array[int]=0
-        print('source_intensity_ch1 ',source_intensity_ch1.data["intensity"])
-        print('int_array            ',int_array)
         peaksmax, _ = find_peaks(np.array(int_array),  prominence=slider_find_peaks.value)
         peaksmin, _ = find_peaks(-np.array(int_array), prominence=slider_find_peaks.value)
         print('SAVE save_peaks_callback            ',slider_find_peaks.value)
@@ -1842,9 +1869,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                           'min_int':int_min, 'max_int':int_max,
                           'min_time':time_min, 'max_time':time_max}
         cellstatus.n_oscillations = len(peaksmax.tolist())
+
         cellstatus.save()
 
-        set_rising_falling(cellsid[0])
+        set_rising_falling(cellsid[0], True)
         update_source_osc_tod()
     button_find_peaks = bokeh.models.Button(label="Save Peaks")
     button_find_peaks.on_click(save_peaks_callback)
@@ -1867,13 +1895,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 start_osc.append(cellid.cell_status.start_oscillation)
                 end_osc.append(cellid.cell_status.end_oscillation)
                 tod.append(cellid.cell_status.time_of_death)
-        #hist=[0,0]
-        #edges=[0,1]
-        #if len(n_osc)>0:
+        hist=[0]
+        edges=[0,1]
+        if len(n_osc)>0:
+        
             #hist, edges = np.histogram(n_osc, bins=max(n_osc, default=0)+2, range=(0, max(n_osc, default=0)+2))
-            #hist, edges = np.histogram(n_osc, bins=max(n_osc)+2, range=(0, max(n_osc)+2))
+        #else:
+            hist, edges = np.histogram(n_osc, bins=max(n_osc)+2, range=(0, max(n_osc)+2))
 
-        #source_nosc.data={'x': edges[:-1], 'top': hist}
+        source_nosc.data={'x': edges[:-1], 'top': hist}
 
         hist, edges = np.histogram(tod, bins=nframes*10, range=(0, nframes*10))
         source_tod.data={'x': edges[:-1], 'top': hist}
