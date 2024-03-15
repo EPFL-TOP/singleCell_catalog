@@ -1946,9 +1946,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def select_tap_callback():
         return """
         const indices = cb_data.source.selected.indices;
+        console.log('inices '+indices);
+        console.log('indices.length '+indices.length)
         if (indices.length > 0) {
             const index = indices[0];
-            console.log('inices '+indices);
             other_source.data = {'index': [index]};
             other_source.change.emit();  
         }
