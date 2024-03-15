@@ -2111,12 +2111,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.axis.visible = False
     plot_image.grid.visible = False
 
-    left_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
-                                    bokeh.layouts.row(dropdown_well),
-                                    bokeh.layouts.row(dropdown_pos), 
-                                    bokeh.layouts.row(dropdown_channel),
-                                    bokeh.layouts.row(dropdown_color),
-                                    bokeh.layouts.row(contrast_slider))
+    exp_color_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
+                                         bokeh.layouts.row(dropdown_well),
+                                         bokeh.layouts.row(dropdown_pos), 
+                                         bokeh.layouts.row(dropdown_channel),
+                                         bokeh.layouts.row(dropdown_color),
+                                         bokeh.layouts.row(contrast_slider))
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
@@ -2124,11 +2124,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_inspect, button_build_cells, dropdown_cell),
                                      bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
                                      bokeh.layouts.row(button_find_peaks),
-                                     bokeh.layouts.row(slider_find_peaks),
-                                     text)
+                                     bokeh.layouts.row(slider_find_peaks))
     
-    norm_layout = bokeh.layouts.column(bokeh.layouts.row(left_col, plot_image, right_col, plot_intensity),
-                                       bokeh.layouts.row(text, plot_nosc, plot_osc_tod))
+    intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity),
+                                              bokeh.layouts.row(plot_osc_tod))
+
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(exp_color_col, plot_image, right_col, intensity_plot_col),
+                                       bokeh.layouts.row(text, plot_nosc))
 
     doc.add_root(norm_layout)
 
