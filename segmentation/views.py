@@ -1125,14 +1125,25 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 cellflag = cellroi.cellflag_cellroi
 
                 if framenumber in osc_dict['rising_frame']:  cellflag.rising = True
+                else: cellflag.rising = False
+
                 if framenumber in osc_dict['falling_frame']: cellflag.falling = True
+                else: cellflag.falling = False
+
                 if framenumber in cellid.cell_status.peaks["max_frame"]: cellflag.maximum = True
+                else: cellflag.maximum = False
+
                 if framenumber in cellid.cell_status.peaks["min_frame"]: cellflag.minimum = True
-                
+                else: cellflag.minimum = False
+
                 if framenumber>=cellid.cell_status.start_oscillation_frame and \
                     framenumber<=cellid.cell_status.end_oscillation_frame:
                     cellflag.oscillating = True
+                else: cellflag.oscillating = False
+
                 if framenumber>=cellid.cell_status.time_of_death_frame: cellflag.alive = False
+                else: cellflag.alive = True
+                
                 cellflag.save()
             cellstatus = cellid.cell_status
             cellstatus.flags = osc_dict
