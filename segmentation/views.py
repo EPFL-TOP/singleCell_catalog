@@ -1948,6 +1948,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         const indices = cb_data.source.selected.indices;
         if (indices.length > 0) {
             const index = indices[0];
+            console.log('inices '+indices);
             other_source.data = {'index': [index]};
             other_source.change.emit();  
         }
