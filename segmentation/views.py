@@ -2017,11 +2017,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 data_mask['time'].append(source_intensity_ch1.data["time"][framenumber])
                 data_mask['intensity'].append(source_intensity_ch1.data["intensity"][framenumber])
                 cellflag.mask = True
+                mask_dict['mask_frame'].append(framenumber)
+                mask_dict['mask_time'].append(source_intensity_ch1.data["time"][framenumber])
             else:
                 cellflag.mask = False
 
-            mask_dict['mask_frame'].append(framenumber)
-            mask_dict['mask_time'].append(source_intensity_ch1.data["time"][framenumber])
+
             cellflag.save()
 
 
