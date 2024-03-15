@@ -1342,6 +1342,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         update_dropdown_cell('','','')
         slider.end=len(source_imgs.data['images'][0]) - 1
         prepare_intensity()
+        reset_tap_tool()
         update_source_osc_tod()
 
     dropdown_pos.on_change('value', prepare_pos)
