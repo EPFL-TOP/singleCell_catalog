@@ -1009,7 +1009,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def set_rising_falling(cellid, save=False):
-
+        print("*************************set_rising_falling*****************************************")
         arrays_r = {}
         for i in range(1,11):
             array_x  = 'xr_{}'.format(i)
@@ -1113,10 +1113,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
 
         if save and cellid!=None:
-            print('cellid=',cellid)
             cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
+            print('cellid=',cellid, ' cellrois=',len(cellrois))
+            print('osc_dict=',osc_dict)
+            print('cellid.cell_status.start_oscillation_frame ',cellid.cell_status.start_oscillation_frame)
+            print('cellid.cell_status.end_oscillation_frame ',cellid.cell_status.end_oscillation_frame)
+            print('cellid.cell_status.time_of_death_frame ',cellid.cell_status.time_of_death_frame)
             for cellroi in cellrois:
                 framenumber = cellroi.frame.number
+                print('  frame=',framenumber)
                 cellflag = cellroi.cellflag_cellroi
 
                 if framenumber in osc_dict['rising_frame']:  cellflag.rising = True
@@ -1851,7 +1856,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 int_array[int]=0
         peaksmax, _ = find_peaks(np.array(int_array),  prominence=slider_find_peaks.value)
         peaksmin, _ = find_peaks(-np.array(int_array), prominence=slider_find_peaks.value)
-        print('SAVE save_peaks_callback            ',slider_find_peaks.value)
 
         int_max=[]
         time_max=[]
