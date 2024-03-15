@@ -1174,7 +1174,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             slider.value = 0
         slider.end=len(source_imgs.data['images'][0]) - 1
 
-        #prepare_intensity()
     dropdown_exp.on_change('value', update_dropdown_well)
     #___________________________________________________________________________________________
 
@@ -1195,8 +1194,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         else:
             print('in the else update_dropdown_pos')
             slider.value = 0
-        prepare_intensity()
-        update_source_osc_tod()
+        #prepare_intensity()
+        #update_source_osc_tod()
 
         slider_find_peaks.value = 30
     dropdown_well.on_change('value', update_dropdown_pos)
@@ -1973,6 +1972,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         # For example, if a certain condition is met, include renderer1, otherwise include renderer2
         tap_tool.renderers = [int_ch1]
 
+    # Define a function to reset TapTool's selection
+    def reset_tap_tool():
+        source_intensity_ch1.selected.indices = []
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
