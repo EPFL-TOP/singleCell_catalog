@@ -878,6 +878,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if len(cellids[0].cell_status.peaks)>=6:
                 source_intensity_max.data={'time':cellids[0].cell_status.peaks["max_time"], 'intensity':cellids[0].cell_status.peaks["max_int"]}
                 source_intensity_min.data={'time':cellids[0].cell_status.peaks["min_time"], 'intensity':cellids[0].cell_status.peaks["min_int"]}
+                source_mask.data={'time':cellids[0].cell_status.flags["mask_time"], 'intensity':cellids[0].cell_status.flags["mask_int"]}
             else:
                 source_intensity_max.data={'time':[], 'intensity':[]}
                 source_intensity_min.data={'time':[], 'intensity':[]}
@@ -903,6 +904,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             source_intensity_max.data={'time':[], 'intensity':[]}
             source_intensity_min.data={'time':[], 'intensity':[]}
+            source_mask.data={'time':[], 'intensity':[]}
             set_rising_falling(None)
 
     #___________________________________________________________________________________________
@@ -1146,6 +1148,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
                 if framenumber>=cellid.cell_status.time_of_death_frame: cellflag.alive = False
                 else: cellflag.alive = True
+
 
                 cellflag.save()
             cellstatus = cellid.cell_status
@@ -1991,9 +1994,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         sample = Sample.objects.get(file_name=get_current_file())
         print('sample = ',sample)
         print('dropdown_cell.value=',dropdown_cell.value)
+        print('dropdown_cell.options=',dropdown_cell.options)
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
-
-
+        cellstatus = cellsid[0].cell_status
+        cellflags = cellstatus.flags
+        mask_dict = cellflags
+        mask_dict['mask_frame']=[]
+        mask_dict['mask_time']=[]
+        
         print('cellsid = ',cellsid)
         cellrois = CellROI.objects.select_related().filter(cell_id=cellsid[0])
         data_mask={'time':[], 'intensity':[]}
@@ -2007,7 +2015,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 cellflag.mask = True
             else:
                 cellflag.mask = False
+
+            mask_dict['mask_frame'].append(framenumber)
+            mask_dict['mask_time'].append(source_intensity_ch1.data["time"][framenumber])
             cellflag.save()
+
+
+        cellstatus.flags = mask_dict
+        cellstatus.save()
+
         source_mask.data = data_mask
     button_mask_cells = bokeh.models.Button(label="Mask")
     button_mask_cells.on_click(mask_cells_callback)
@@ -2050,6 +2066,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     for cid in cellIDs:
         cell_list.append(cid.name)
     dropdown_cell.options=cell_list
+    if len(cell_list)>0:dropdown_cell.value=cell_list[0]
     time_list={}
     intensity_list={}
     if len(cellIDs)>0:
