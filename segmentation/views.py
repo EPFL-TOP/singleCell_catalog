@@ -2195,7 +2195,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #source_tod.data = {'x': edges[:-1], 'top': hist}
 
 
-    #prepare_intensity() 
+    prepare_intensity() 
 
 
     # Add the rectangle glyph after adding the image
