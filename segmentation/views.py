@@ -2033,8 +2033,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('------------------------- time lisrt',time_list)
 
 
-    int_ch1 = plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
-    plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8, line_color='blue')
+    plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
+    int_ch1 = plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8, line_color='blue')
     plot_intensity.line('time', 'intensity', source=source_intensity_ch2, line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8, line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_max, fill_color="red", size=8, line_color='red')
