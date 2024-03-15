@@ -1961,10 +1961,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  update_image_tap_callback ****************************')
         #tap_tool.renderers = [int_ch1]
         #print(int_ch1.source)
+        update_tap_renderers()
         index = new['index'][0]
         print('index=',index)
         slider.value=index
     #___________________________________________________________________________________________
+
+
+    def update_tap_renderers():
+        # Determine which renderer should be included based on some condition
+        # For example, if a certain condition is met, include renderer1, otherwise include renderer2
+        tap_tool.renderers = [int_ch1]
 
 
     # Create a Div widget with some text
@@ -2026,14 +2033,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('------------------------- time lisrt',time_list)
 
 
-
-    plot_intensity.circle('time', 'intensity', source=source_intensity_max, fill_color="red", size=8, line_color='red')
-    plot_intensity.circle('time', 'intensity', source=source_intensity_min, fill_color="green", size=8, line_color='green')
     int_ch1 = plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8, line_color='blue')
-    int_ch2 = plot_intensity.line('time', 'intensity', source=source_intensity_ch2, line_color='black')
+    plot_intensity.line('time', 'intensity', source=source_intensity_ch2, line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8, line_color='black')
-
+    plot_intensity.circle('time', 'intensity', source=source_intensity_max, fill_color="red", size=8, line_color='red')
+    plot_intensity.circle('time', 'intensity', source=source_intensity_min, fill_color="green", size=8, line_color='green')
 
     index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
     tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()))
