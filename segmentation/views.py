@@ -883,6 +883,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_intensity_min.data={'time':[], 'intensity':[]}
 
             if len(cellids[0].cell_status.flags)>0:
+                print('ppppppppp=',cellids[0].cell_status.flags)
                 source_mask.data={'time':cellids[0].cell_status.flags["mask_time"], 'intensity':cellids[0].cell_status.flags["mask_int"]}
             else:
                 source_mask.data={'time':[], 'intensity':[]}
