@@ -827,10 +827,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Create a Slider widget
     initial_time_point = 0
     slider         = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point")
-    plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo")
+    plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=750, height=750)
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500)
-    plot_osc_tod   = bokeh.plotting.figure(title="Start/End of Oscilation and Time of death", x_axis_label='Time (minutes)', y_axis_label='Number of positions',width=1000, height=500)
-    plot_nosc      = bokeh.plotting.figure(title="Number of oscillations", x_axis_label='Number of oscillations', y_axis_label='Number of positions',width=500, height=500)
+    plot_osc_tod   = bokeh.plotting.figure(title="Start/End of Oscilation and Time of death", x_axis_label='Time (minutes)', y_axis_label='Number of positions',width=1000, height=250)
+    plot_nosc      = bokeh.plotting.figure(title="Number of oscillations", x_axis_label='Number of oscillations', y_axis_label='Number of positions',width=750, height=250)
 
     slider_find_peaks  = bokeh.models.Slider(start=0, end=100, value=30, step=1, title="Peak prominence")
 
@@ -2090,9 +2090,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_end_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_tod = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     update_source_osc_tod()
-    plot_osc_tod.vbar(x='x', top='top', width=2.5, source=source_start_osc, alpha=0.5, color='green', line_color=None)
-    plot_osc_tod.vbar(x='x', top='top', width=2.5, source=source_end_osc, alpha=0.5, color='red', line_color=None)
-    plot_osc_tod.vbar(x='x', top='top', width=2.5, source=source_tod, alpha=0.5, color='black', line_color=None)
+    plot_osc_tod.vbar(x='x', top='top', width=3, source=source_start_osc, alpha=0.5, color='green', line_color=None)
+    plot_osc_tod.vbar(x='x', top='top', width=3, source=source_end_osc, alpha=0.5, color='red', line_color=None)
+    plot_osc_tod.vbar(x='x', top='top', width=3, source=source_tod, alpha=0.5, color='black', line_color=None)
     plot_nosc.vbar(x='x', top='top', width=0.5, source=source_nosc, alpha=0.5, color='black', line_color=None)
 
     #data = np.random.normal(800, 40, 1000)
@@ -2129,8 +2129,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity),
                                               bokeh.layouts.row(plot_osc_tod))
 
-    norm_layout = bokeh.layouts.column(bokeh.layouts.row(exp_color_col, plot_image, right_col, intensity_plot_col),
-                                       bokeh.layouts.row(text, plot_nosc))
+    cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
+                                             bokeh.layouts.row(plot_nosc))
+
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
+                                       bokeh.layouts.row(text))
 
     doc.add_root(norm_layout)
 
