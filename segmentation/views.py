@@ -1526,7 +1526,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellrois = CellROI.objects.select_related().filter(frame=frame[0])
             roi_exist=False
             #TOBECHANGED CLEMENT really need to save more than1 roi per frame
-            roi_number = len(cellrois)+1
+            roi_number = len(cellrois)
             #roi_number=i+len(source_roi.data['left'])-len(source_roi_manual.data['left'])
             print('roi_number=',roi_number)
             print('source_roi=',len(source_roi.data['left']))
