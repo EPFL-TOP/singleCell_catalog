@@ -878,11 +878,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if len(cellids[0].cell_status.peaks)>=6:
                 source_intensity_max.data={'time':cellids[0].cell_status.peaks["max_time"], 'intensity':cellids[0].cell_status.peaks["max_int"]}
                 source_intensity_min.data={'time':cellids[0].cell_status.peaks["min_time"], 'intensity':cellids[0].cell_status.peaks["min_int"]}
-                source_mask.data={'time':cellids[0].cell_status.flags["mask_time"], 'intensity':cellids[0].cell_status.flags["mask_int"]}
             else:
                 source_intensity_max.data={'time':[], 'intensity':[]}
                 source_intensity_min.data={'time':[], 'intensity':[]}
+
+            if len(cellids[0].cell_status.flags)>0:
+                source_mask.data={'time':cellids[0].cell_status.flags["mask_time"], 'intensity':cellids[0].cell_status.flags["mask_int"]}
+            else:
                 source_mask.data={'time':[], 'intensity':[]}
+
             set_rising_falling(cellids[0])
 
         else:
@@ -2001,7 +2005,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         mask_dict = cellflags
         mask_dict['mask_frame']=[]
         mask_dict['mask_time']=[]
-        
+
         print('cellsid = ',cellsid)
         cellrois = CellROI.objects.select_related().filter(cell_id=cellsid[0])
         data_mask={'time':[], 'intensity':[]}
