@@ -882,12 +882,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_intensity_max.data={'time':[], 'intensity':[]}
                 source_intensity_min.data={'time':[], 'intensity':[]}
 
-            try:  
+            try: 
                 source_mask.data={'time':cellids[0].cell_status.flags["mask_time"], 'intensity':cellids[0].cell_status.flags["mask_int"]}
-                print('in the try source_mask=',source_mask)
+                print('in the try source_mask=',source_mask.data)
             except KeyError:
                 source_mask.data={'time':[], 'intensity':[]}
-                print('in the keyerrir source_mask=',source_mask)
+                print('in the keyerrir source_mask=',source_mask.data)
 
             set_rising_falling(cellids[0])
 
