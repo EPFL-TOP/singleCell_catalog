@@ -1865,16 +1865,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         sample = Sample.objects.get(file_name=get_current_file())
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
         print('cellsid ',cellsid, '  ',len(cellsid))
-        cellstatus = cellsid[0].cell_status
-        cellstatus.peaks={'min_frame':peaksmin.tolist(), 'max_frame':peaksmax.tolist(), 
-                          'min_int':int_min, 'max_int':int_max,
-                          'min_time':time_min, 'max_time':time_max}
-        cellstatus.n_oscillations = len(peaksmax.tolist())
+        if len(cellsid)==1:
+            cellstatus = cellsid[0].cell_status
+            cellstatus.peaks={'min_frame':peaksmin.tolist(), 'max_frame':peaksmax.tolist(), 
+                              'min_int':int_min, 'max_int':int_max,
+                              'min_time':time_min, 'max_time':time_max}
+            cellstatus.n_oscillations = len(peaksmax.tolist())
 
-        cellstatus.save()
+            cellstatus.save()
 
-        set_rising_falling(cellsid[0], True)
-        update_source_osc_tod()
+            set_rising_falling(cellsid[0], True)
+            update_source_osc_tod()
+        if len(cellsid)>1:
+            print('more than 1 cellsid=',len(cellsid))
+
     button_find_peaks = bokeh.models.Button(label="Save Peaks")
     button_find_peaks.on_click(save_peaks_callback)
     #___________________________________________________________________________________________
