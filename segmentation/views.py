@@ -1990,6 +1990,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('mask cells call=',source_intensity_ch1.selected.indices)
         sample = Sample.objects.get(file_name=get_current_file())
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+        print('cellsid = ',cellsid)
         cellrois = CellROI.objects.select_related().filter(cell_id=cellsid[0])
         data_mask={'time':[], 'intensity':[]}
 
