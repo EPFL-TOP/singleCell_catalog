@@ -1143,7 +1143,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
                 if framenumber>=cellid.cell_status.time_of_death_frame: cellflag.alive = False
                 else: cellflag.alive = True
-                
+
                 cellflag.save()
             cellstatus = cellid.cell_status
             cellstatus.flags = osc_dict
@@ -1357,7 +1357,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         return slider.value
 
     refresh_time_list = ["50","100", "200", "300", "400", "500", "1000"]
-    dropdown_refresh_time = bokeh.models.Select(value=refresh_time_list[3], title="time (ms)", options=refresh_time_list)
+    dropdown_refresh_time = bokeh.models.Select(value=refresh_time_list[1], title="time (ms)", options=refresh_time_list)
     # Callback function to handle menu item click
     #___________________________________________________________________________________________
     def refresh_time_callback(attr, old, new):
@@ -1958,6 +1958,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_image_tap_callback(attr, old, new):
         print('****************************  update_image_tap_callback ****************************')
         index = new['index'][0]
+        print('index=',index)
         slider.value=index
     #___________________________________________________________________________________________
 
