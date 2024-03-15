@@ -1945,6 +1945,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Select image from click
     def select_tap_callback():
         return """
+        tap_tool.renderers = [int_ch1];
+        // Trigger a redraw of the plot
+        Bokeh.documents[0].root.force_render();
         const indices = cb_data.source.selected.indices;
         console.log('inices '+indices);
         console.log('indices.length '+indices.length)
@@ -2033,7 +2036,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.circle('time', 'intensity', source=source_intensity_min, fill_color="green", size=8, line_color='green')
 
     index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
-    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()),renderers=[int_ch1, int_ch2])
+    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source, tap_tool=tap_tool),code=select_tap_callback()))
     plot_intensity.add_tools(tap_tool)
     # Define a Python callback function to update the image based on the index
 
