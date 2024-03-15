@@ -1990,6 +1990,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('mask cells call=',source_intensity_ch1.selected.indices)
         sample = Sample.objects.get(file_name=get_current_file())
         print('sample = ',sample)
+        print('dropdown_cell.value=',dropdown_cell.value)
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
 
 
