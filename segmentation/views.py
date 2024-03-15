@@ -1968,14 +1968,26 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
+    #___________________________________________________________________________________________
     def update_tap_renderers():
         # Determine which renderer should be included based on some condition
         # For example, if a certain condition is met, include renderer1, otherwise include renderer2
-        tap_tool.renderers = [int_ch1]
+        tap_tool.renderers = [int_ch1, int_ch2]
+    #___________________________________________________________________________________________
 
+    #___________________________________________________________________________________________
     # Define a function to reset TapTool's selection
     def reset_tap_tool():
         source_intensity_ch1.selected.indices = []
+    #___________________________________________________________________________________________
+
+    #___________________________________________________________________________________________
+    # Define a function to reset TapTool's selection
+    def mask_cells_callback():
+        print('mask cells call=',source_intensity_ch1.selected.indices)
+    button_mask_cells = bokeh.models.Button(label="Mask")
+    button_mask_cells.on_click(mask_cells_callback)
+    #___________________________________________________________________________________________
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
@@ -2037,11 +2049,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
-    int_ch1 = plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8, line_color='blue')
+    int_ch1 = plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=10, line_color='blue')
     plot_intensity.line('time', 'intensity', source=source_intensity_ch2, line_color='black')
-    plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8, line_color='black')
-    plot_intensity.circle('time', 'intensity', source=source_intensity_max, fill_color="red", size=8, line_color='red')
-    plot_intensity.circle('time', 'intensity', source=source_intensity_min, fill_color="green", size=8, line_color='green')
+    int_ch2 = plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=10, line_color='black')
+    plot_intensity.circle('time', 'intensity', source=source_intensity_max, fill_color="red", size=10, line_color='red')
+    plot_intensity.circle('time', 'intensity', source=source_intensity_min, fill_color="green", size=10, line_color='green')
 
     index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
     tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()))
@@ -2162,7 +2174,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_inspect, button_build_cells, dropdown_cell),
                                      bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
                                      bokeh.layouts.row(button_find_peaks),
-                                     bokeh.layouts.row(slider_find_peaks))
+                                     bokeh.layouts.row(slider_find_peaks,button_mask_cells))
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity),
                                               bokeh.layouts.row(plot_osc_tod))
