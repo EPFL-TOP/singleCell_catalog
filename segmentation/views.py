@@ -1864,6 +1864,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         sample = Sample.objects.get(file_name=get_current_file())
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+        print('cellsid ',cellsid, '  ',len(cellsid))
         cellstatus = cellsid[0].cell_status
         cellstatus.peaks={'min_frame':peaksmin.tolist(), 'max_frame':peaksmax.tolist(), 
                           'min_int':int_min, 'max_int':int_max,
