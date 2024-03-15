@@ -885,10 +885,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             try: 
                 source_mask.data={'time':cellids[0].cell_status.flags["mask_time"], 
                                   'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["mask_frame"]]}
-                print('in the try source_mask=',cellids[0].cell_status.flags)
             except KeyError:
                 source_mask.data={'time':[], 'intensity':[]}
-                print('in the keyerrir source_mask=',cellids[0].cell_status.flags)
 
             set_rising_falling(cellids[0])
 
@@ -2197,7 +2195,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #source_tod.data = {'x': edges[:-1], 'top': hist}
 
 
-
+    prepare_intensity() 
 
 
     # Add the rectangle glyph after adding the image
