@@ -1114,7 +1114,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         if save and cellid!=None:
             print('cellid=',cellid)
-            cellrois = CellID.objects.select_related().filter(cell_id=cellid)
+            cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
             for cellroi in cellrois:
                 framenumber = cellroi.frame.number
                 cellflag = cellroi.cellflag_cellroi
