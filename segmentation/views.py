@@ -1965,14 +1965,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
-
-    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()))
-    plot_intensity.add_tools(tap_tool)
-    # Define a Python callback function to update the image based on the index
-
-    index_source.on_change('data', update_image_tap_callback)
-
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
 
@@ -2033,12 +2025,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
+    int_ch1 = plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=8, line_color='blue')
-    plot_intensity.line('time', 'intensity', source=source_intensity_ch2, line_color='black')
+    int_ch2 = plot_intensity.line('time', 'intensity', source=source_intensity_ch2, line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=8, line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_max, fill_color="red", size=8, line_color='red')
     plot_intensity.circle('time', 'intensity', source=source_intensity_min, fill_color="green", size=8, line_color='green')
+
+    index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
+    tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()),renderers=[int_ch1, int_ch2])
+    plot_intensity.add_tools(tap_tool)
+    # Define a Python callback function to update the image based on the index
+
+    index_source.on_change('data', update_image_tap_callback)
 
     plot_intensity.y_range.start=0
     plot_intensity.x_range.start=-10
