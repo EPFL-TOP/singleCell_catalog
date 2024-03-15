@@ -1501,6 +1501,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             else:
                 print("Error: {} file not found".format(roi.contour_cellroi.file_name) )
             roi.delete()
+        update_dropdown_cell('','','')
+        prepare_intensity()
+
     button_delete_roi = bokeh.models.Button(label="Delete ROI")
     button_delete_roi.on_click(delete_roi_callback)
     #___________________________________________________________________________________________
@@ -1714,7 +1717,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellrois_t2 = CellROI.objects.select_related().filter(frame=frames[f+1])
             for cellroi in cellrois_t2:
                 if cellroi.cell_id != None: ncells_t2+=1
-            print('frame ',f, '  ncells_t1 ',ncells_t1,'  ncells_t2 ',ncells_t2)
+            if DEBUG: print('inspect_cells_callback: frame ',f, '  ncells_t1 ',ncells_t1,'  ncells_t2 ',ncells_t2)
             if ncells_t1 == 0: 
                 update_image(number=f)
                 break
