@@ -1960,6 +1960,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_image_tap_callback(attr, old, new):
         print('****************************  update_image_tap_callback ****************************')
         tap_tool.renderers = [int_ch1]
+        print(int_ch1.source)
         index = new['index'][0]
         print('index=',index)
         slider.value=index
