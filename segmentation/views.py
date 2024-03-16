@@ -2031,6 +2031,23 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_mask_cells.on_click(mask_cells_callback)
     #___________________________________________________________________________________________
 
+
+    #___________________________________________________________________________________________
+    def box_select_callback(event):
+        if isinstance(event, bokeh.models.SelectionGeometry):
+            indices = source_intensity_ch1.selected.indices
+            if len(indices)>0:
+                slider.start = indices[0]
+                slider.end = indices[-1]
+                slider.value = (indices[0],indices[-1])
+            
+            #slider2.value = len(indices) * 3
+
+    # Attach the Python callback to the figure
+    plot_intensity.on_event(bokeh.models.SelectionGeometry, box_select_callback)
+    #___________________________________________________________________________________________
+
+
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
 
@@ -2109,7 +2126,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     box_select_tool = bokeh.models.BoxSelectTool(select_every_mousemove=False)
     plot_intensity.add_tools(box_select_tool)
-    
+
     plot_intensity.y_range.start=0
     plot_intensity.x_range.start=-10
     #for ch in range(len(time_list)):
