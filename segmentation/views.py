@@ -1367,7 +1367,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('****************************  get_current_index ****************************')
         return slider.value
 
-    refresh_time_list = ["50","100", "200", "300", "400", "500", "1000"]
+    refresh_time_list = ["100", "200", "300", "400", "500", "1000"]
     dropdown_refresh_time = bokeh.models.Select(value=refresh_time_list[1], title="time (ms)", options=refresh_time_list)
     # Callback function to handle menu item click
     #___________________________________________________________________________________________
@@ -1666,6 +1666,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_index=get_current_index()
         images=source_imgs.data["images"]
         current_index = (current_index + 1*way) % len(images[0])
+        if current_index>slider.end:current_index=slider.start
+        if current_index<slider.start:current_index=slider.end
+
         if number>=0:
             current_index = number
         slider.value = current_index
