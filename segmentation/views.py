@@ -1970,8 +1970,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_image_tap_callback(attr, old, new):
         print('****************************  update_image_tap_callback ****************************')
-        #tap_tool.renderers = [int_ch1]
-        #print(int_ch1.source)
         update_tap_renderers()
         index = new['index'][0]
         print('index=',index)
@@ -1984,6 +1982,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         # Determine which renderer should be included based on some condition
         # For example, if a certain condition is met, include renderer1, otherwise include renderer2
         tap_tool.renderers = [int_ch1, int_ch2]
+        box_select_tool.renderers = [int_ch1, int_ch2]
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
@@ -2107,6 +2106,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     index_source.on_change('data', update_image_tap_callback)
 
+
+    box_select_tool = bokeh.models.BoxSelectTool(select_every_mousemove=False)
+    plot_intensity.add_tools(box_select_tool)
+    
     plot_intensity.y_range.start=0
     plot_intensity.x_range.start=-10
     #for ch in range(len(time_list)):
