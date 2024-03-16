@@ -1464,7 +1464,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         color_mapper.high = high
 
     # Create a slider to adjust contrast
-    contrast_slider = bokeh.models.RangeSlider(start=0, end=255, value=(0, 255), step=1, title="Contrast Adjustment", width=150)
+    contrast_slider = bokeh.models.RangeSlider(start=0, end=255, value=(0, 255), step=1, title="Contrast", width=150)
     contrast_slider.on_change('value', update_contrast)
     #___________________________________________________________________________________________
 
@@ -2236,7 +2236,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          bokeh.layouts.row(dropdown_color),
                                          bokeh.layouts.row(contrast_slider))
 
-    right_col = bokeh.layouts.column(bokeh.layouts.row(bokeh.layouts.Spacer(width=15),slider),
+    right_col = bokeh.layouts.column(bokeh.layouts.row(bokeh.layouts.Spacer(width=45),slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi ),
                                      bokeh.layouts.row(button_inspect, button_build_cells, dropdown_cell),
