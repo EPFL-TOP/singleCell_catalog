@@ -1956,6 +1956,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_end_osc.data={'x': edges[:-1], 'top': hist}
 
         print('source_nosc = ',source_nosc.data)
+        print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
+
     #___________________________________________________________________________________________
 
 
