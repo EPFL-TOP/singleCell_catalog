@@ -828,13 +828,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     # Create a Slider widget
     initial_time_point = 0
-    slider         = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point")
+    slider         = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point", width=250)
     plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=500, height=500)
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500)
     plot_osc_tod   = bokeh.plotting.figure(title="Start/End of Oscilation and Time of death", x_axis_label='Time (minutes)', y_axis_label='Number of positions',width=1000, height=250)
     plot_nosc      = bokeh.plotting.figure(title="Number of oscillations", x_axis_label='Number of oscillations', y_axis_label='Number of positions',width=500, height=250)
 
-    slider_find_peaks  = bokeh.models.Slider(start=0, end=100, value=30, step=1, title="Peak prominence")
+    slider_find_peaks  = bokeh.models.Slider(start=0, end=100, value=30, step=1, title="Peak prominence", width=200)
 
     #___________________________________________________________________________________________
     # Function to prepare the intensity plot
@@ -2234,9 +2234,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          bokeh.layouts.row(dropdown_pos), 
                                          bokeh.layouts.row(dropdown_channel),
                                          bokeh.layouts.row(dropdown_color),
-                                         bokeh.layouts.row(contrast_slider))
+                                         bokeh.layouts.row(bokeh.layouts.Spacer(width=10),contrast_slider))
 
-    right_col = bokeh.layouts.column(bokeh.layouts.row(bokeh.layouts.Spacer(width=45),slider),
+    right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi ),
                                      bokeh.layouts.row(button_inspect, button_build_cells, dropdown_cell),
