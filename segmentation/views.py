@@ -2044,7 +2044,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 slider.start = indices[0]
                 slider.end = indices[-1]
                 slider.value = indices[0]
-            
+            else: 
+                slider.start = 0
+                slider.end = len(source_intensity_ch0.data["time"])
             #slider2.value = len(indices) * 3
 
     # Attach the Python callback to the figure
