@@ -2034,7 +2034,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def box_select_callback(event):
-        if isinstance(event, bokeh.models.SelectionGeometry):
+        if isinstance(event, bokeh.events.SelectionGeometry):
             indices = source_intensity_ch1.selected.indices
             if len(indices)>0:
                 slider.start = indices[0]
@@ -2044,7 +2044,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             #slider2.value = len(indices) * 3
 
     # Attach the Python callback to the figure
-    plot_intensity.on_event(bokeh.models.SelectionGeometry, box_select_callback)
+    plot_intensity.on_event(bokeh.events.SelectionGeometry, box_select_callback)
     #___________________________________________________________________________________________
 
 
