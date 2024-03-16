@@ -2039,7 +2039,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if len(indices)>0:
                 slider.start = indices[0]
                 slider.end = indices[-1]
-                slider.value = (indices[0],indices[-1])
+                slider.value = indices[0]
             
             #slider2.value = len(indices) * 3
 
