@@ -912,13 +912,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_mask.data={'time':[], 'intensity':[]}
             set_rising_falling(None)
 
-        plot_intensity.y_range.start=0
-        if len(source_intensity_ch1.data["intensity"])>0:
-            plot_intensity.y_range.end=max(source_intensity_ch1.data["intensity"])*1.2
-            plot_intensity.y_range.start=min(source_intensity_ch1.data["intensity"])*0.4
-        #plot_intensity.y_range.trigger('start', 'end')
-        plot_intensity.y_range.update(start=plot_intensity.y_range.start, end=plot_intensity.y_range.end)
-        print('plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
+        #plot_intensity.y_range.start=0
+        #if len(source_intensity_ch1.data["intensity"])>0:
+        #    plot_intensity.y_range.end=max(source_intensity_ch1.data["intensity"])*1.2
+        #    plot_intensity.y_range.start=min(source_intensity_ch1.data["intensity"])*0.4
+        ##plot_intensity.y_range.trigger('start', 'end')
+        #plot_intensity.y_range.update(start=plot_intensity.y_range.start, end=plot_intensity.y_range.end)
+        print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
 
     #___________________________________________________________________________________________
 
