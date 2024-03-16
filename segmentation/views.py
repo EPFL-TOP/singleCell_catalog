@@ -912,6 +912,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_mask.data={'time':[], 'intensity':[]}
             set_rising_falling(None)
 
+        plot_intensity.y_range.start=0
+        plot_intensity.y_range.end=max(source_intensity_ch1.data["intensity"])*1.1
+
     #___________________________________________________________________________________________
 
 
