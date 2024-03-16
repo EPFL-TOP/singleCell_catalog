@@ -1460,9 +1460,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Define a callback function to update the contrast when the slider changes
     def update_contrast(attr, old, new):
         low, high = new 
-        # Update the image data in the ColumnDataSource
-        # Update the color mapper range
-        print('update_contrast ',low, high)
         color_mapper.low = low
         color_mapper.high = high
 
