@@ -913,7 +913,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             set_rising_falling(None)
 
         plot_intensity.y_range.start=0
-        plot_intensity.y_range.end=max(source_intensity_ch1.data["intensity"])*1.1
+        if len(source_intensity_ch1.data["intensity"])>0:
+            plot_intensity.y_range.end=max(source_intensity_ch1.data["intensity"])*1.5
+            plot_intensity.y_range.start=min(source_intensity_ch1.data["intensity"])*0.5
 
     #___________________________________________________________________________________________
 
