@@ -2037,6 +2037,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def box_select_callback(event):
+        print('-----==========-==---=box_select_callback=',source_intensity_ch1.selected.indices)
         if isinstance(event, bokeh.events.SelectionGeometry):
             indices = source_intensity_ch1.selected.indices
             if len(indices)>0:
