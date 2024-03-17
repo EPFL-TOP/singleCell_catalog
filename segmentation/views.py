@@ -2078,13 +2078,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if framenumber in source_intensity_ch1.selected.indices:
                 data['time'].append(source_intensity_ch1.data["time"][framenumber])
                 data['intensity'].append(source_intensity_ch1.data["intensity"][framenumber])
-                cellflag.mask = True
-                mydict['mask_frame'].append(framenumber)
-                mydict['mask_time'].append(source_intensity_ch1.data["time"][framenumber])
+                setattr(cellflag, flag, True)
+                mydict['{}_frame'.format(flag)].append(framenumber)
+                mydict['{}_time'.format(flag)].append(source_intensity_ch1.data["time"][framenumber])
             else:
                 cellflag.mask = False
             cellflag.save()
-
         cellstatus.flags = mydict
         cellstatus.save()
         return data
