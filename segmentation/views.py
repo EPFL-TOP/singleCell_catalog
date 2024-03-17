@@ -813,18 +813,21 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data_img={'img':[data_imgs_norm['images'][0][0]]}
     source_img = bokeh.models.ColumnDataSource(data=data_img)
 
-    data_intensity_ch0={'time':[], 'intensity':[]}
-    source_intensity_ch0 = bokeh.models.ColumnDataSource(data=data_intensity_ch0)
-    data_intensity_ch1={'time':[], 'intensity':[]}
-    source_intensity_ch1 = bokeh.models.ColumnDataSource(data=data_intensity_ch1)
-    data_intensity_ch2={'time':[], 'intensity':[]}
-    source_intensity_ch2 = bokeh.models.ColumnDataSource(data=data_intensity_ch2)
-    data_intensity_max={'time':[], 'intensity':[]}
-    source_intensity_max = bokeh.models.ColumnDataSource(data=data_intensity_max)
-    data_intensity_min={'time':[], 'intensity':[]}
-    source_intensity_min = bokeh.models.ColumnDataSource(data=data_intensity_min)
-    data_mask={'time':[], 'intensity':[]}
-    source_mask = bokeh.models.ColumnDataSource(data=data_mask)
+    source_intensity_ch0 = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    source_intensity_ch1 = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    source_intensity_ch2 = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    source_intensity_max = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    source_intensity_min = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+
+    source_mask_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    source_dividing_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    source_double_nuclei_cell = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    source_multiple_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    source_pair_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    source_flat_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    source_round_cell         = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    source_elongated_cell     = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    
 
     # Create a Slider widget
     initial_time_point = 0
@@ -883,10 +886,52 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_intensity_min.data={'time':[], 'intensity':[]}
 
             try: 
-                source_mask.data={'time':cellids[0].cell_status.flags["mask_time"], 
-                                  'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["mask_frame"]]}
+                source_mask_cell.data={'time':cellids[0].cell_status.flags["mask_time"], 
+                                       'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["mask_frame"]]}
             except KeyError:
-                source_mask.data={'time':[], 'intensity':[]}
+                source_mask_cell.data={'time':[], 'intensity':[]}
+
+            try: 
+                source_dividing_cell.data={'time':cellids[0].cell_status.flags["dividing_time"], 
+                                           'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["dividing_frame"]]}
+            except KeyError:
+                source_dividing_cell.data={'time':[], 'intensity':[]}
+
+            try: 
+                source_double_nuclei_cell.data={'time':cellids[0].cell_status.flags["double_nuclei_time"], 
+                                                'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["double_nuclei_frame"]]}
+            except KeyError:
+                source_double_nuclei_cell.data={'time':[], 'intensity':[]}
+
+            try: 
+                source_multiple_cell.data={'time':cellids[0].cell_status.flags["multiple_time"], 
+                                           'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["multiple_frame"]]}
+            except KeyError:
+                source_multiple_cell.data={'time':[], 'intensity':[]}
+
+            try: 
+                source_pair_cell.data={'time':cellids[0].cell_status.flags["pair_time"], 
+                                       'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["pair_frame"]]}
+            except KeyError:
+                source_pair_cell.data={'time':[], 'intensity':[]}
+
+            try: 
+                source_flat_cell.data={'time':cellids[0].cell_status.flags["flat_time"], 
+                                       'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["flat_frame"]]}
+            except KeyError:
+                source_flat_cell.data={'time':[], 'intensity':[]}
+
+            try: 
+                source_round_cell.data={'time':cellids[0].cell_status.flags["round_time"], 
+                                        'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["round_frame"]]}
+            except KeyError:
+                source_round_cell.data={'time':[], 'intensity':[]}
+
+            try: 
+                source_elongated_cell.data={'time':cellids[0].cell_status.flags["elongated_time"], 
+                                            'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["elongated_frame"]]}
+            except KeyError:
+                source_elongated_cell.data={'time':[], 'intensity':[]}
 
             set_rising_falling(cellids[0])
 
@@ -907,9 +952,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_varea_death.data['y1']   = []
             source_varea_death.data['y2']   = []
 
-            source_intensity_max.data={'time':[], 'intensity':[]}
-            source_intensity_min.data={'time':[], 'intensity':[]}
-            source_mask.data={'time':[], 'intensity':[]}
+            source_intensity_max.data      = {'time':[], 'intensity':[]}
+            source_intensity_min.data      = {'time':[], 'intensity':[]}
+    
+            source_mask_cell.data          = {'time':[], 'intensity':[]}
+            source_dividing_cell.data      = {'time':[], 'intensity':[]}
+            source_double_nuclei_cell.data = {'time':[], 'intensity':[]}
+            source_multiple_cell.data      = {'time':[], 'intensity':[]}
+            source_pair_cell.data          = {'time':[], 'intensity':[]}
+            source_flat_cell.data          = {'time':[], 'intensity':[]}
+            source_round_cell.data         = {'time':[], 'intensity':[]}
+            source_elongated_cell.data     = {'time':[], 'intensity':[]}
             set_rising_falling(None)
 
 
@@ -2007,44 +2060,60 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
-    # Define a function to reset TapTool's selection
-    def mask_cells_callback():
-        print('mask cells call=',source_intensity_ch1.selected.indices)
+    def generic_indices_callback(flag):
         sample = Sample.objects.get(file_name=get_current_file())
-        print('sample = ',sample)
-        print('dropdown_cell.value=',dropdown_cell.value)
-        print('dropdown_cell.options=',dropdown_cell.options)
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
         cellstatus = cellsid[0].cell_status
         cellflags = cellstatus.flags
-        mask_dict = cellflags
-        mask_dict['mask_frame']=[]
-        mask_dict['mask_time']=[]
+        mydict = cellflags
+        mydict['{}_frame'.format(flag)] = []
+        mydict['{}_time'.format(flag)]  = []
 
-        print('cellsid = ',cellsid)
         cellrois = CellROI.objects.select_related().filter(cell_id=cellsid[0])
-        data_mask={'time':[], 'intensity':[]}
+        data={'time':[], 'intensity':[]}
 
         for cellroi in cellrois:
             framenumber = cellroi.frame.number
             cellflag = cellroi.cellflag_cellroi
             if framenumber in source_intensity_ch1.selected.indices:
-                data_mask['time'].append(source_intensity_ch1.data["time"][framenumber])
-                data_mask['intensity'].append(source_intensity_ch1.data["intensity"][framenumber])
+                data['time'].append(source_intensity_ch1.data["time"][framenumber])
+                data['intensity'].append(source_intensity_ch1.data["intensity"][framenumber])
                 cellflag.mask = True
-                mask_dict['mask_frame'].append(framenumber)
-                mask_dict['mask_time'].append(source_intensity_ch1.data["time"][framenumber])
+                mydict['mask_frame'].append(framenumber)
+                mydict['mask_time'].append(source_intensity_ch1.data["time"][framenumber])
             else:
                 cellflag.mask = False
             cellflag.save()
 
-        cellstatus.flags = mask_dict
+        cellstatus.flags = mydict
         cellstatus.save()
-
-        source_mask.data = data_mask
-    button_mask_cells = bokeh.models.Button(label="Mask")
-    button_mask_cells.on_click(mask_cells_callback)
+        return data
     #___________________________________________________________________________________________
+
+    #___________________________________________________________________________________________
+    def mask_cell_callback():
+        data = generic_indices_callback('mask')
+        source_mask_cell.data = data
+    button_mask_cells = bokeh.models.Button(label="Mask")
+    button_mask_cells.on_click(mask_cell_callback)
+    #___________________________________________________________________________________________
+
+    #___________________________________________________________________________________________
+    def dividing_cell_callback():
+        data = generic_indices_callback('dividing')
+        source_dividing_cell.data = data
+    button_dividing_cells = bokeh.models.Button(label="Dividing")
+    button_dividing_cells.on_click(dividing_cell_callback)
+    #___________________________________________________________________________________________
+
+    #mask           = models.BooleanField(help_text="mask cell flag", default=False, blank=True)
+    #dividing       = models.BooleanField(help_text="dividing cell flag", default=False, blank=True)
+    #double_nuclei  = models.BooleanField(help_text="double nuclei cell flag", default=False, blank=True)
+    #multiple_cells = models.BooleanField(help_text="multiple cells flag", default=False, blank=True)
+    #pair_cell      = models.BooleanField(help_text="pair cell flag", default=False, blank=True)
+    #flat           = models.BooleanField(help_text="flat cell flag", default=False, blank=True)
+    #round          = models.BooleanField(help_text="round cell flag", default=False, blank=True)
+    #elongated      = models.BooleanField(help_text="round cell flag", default=False, blank=True)
 
 
     #___________________________________________________________________________________________
@@ -2132,7 +2201,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     int_ch2 = plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=10, line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_max, fill_color="red", size=10, line_color='red')
     plot_intensity.circle('time', 'intensity', source=source_intensity_min, fill_color="green", size=10, line_color='green')
-    plot_intensity.circle('time', 'intensity', source=source_mask, fill_color="black", size=10, line_color='black')
+    plot_intensity.circle('time', 'intensity', source=source_mask_cell, fill_color="black", size=10, line_color='black')
 
     index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
     tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()))
@@ -2257,7 +2326,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_inspect, button_build_cells, dropdown_cell),
                                      bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
                                      bokeh.layouts.row(button_find_peaks),
-                                     bokeh.layouts.row(slider_find_peaks,button_mask_cells))
+                                     bokeh.layouts.row(slider_find_peaks),
+                                     bokeh.layouts.row(button_mask_cells, button_mask_cells))
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity),
                                               bokeh.layouts.row(plot_osc_tod))

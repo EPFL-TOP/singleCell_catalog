@@ -214,6 +214,7 @@ class CellFlag(models.Model):
     minimum        = models.BooleanField(help_text="minimum oscillation signal cell flag", default=False, blank=True)
     falling        = models.BooleanField(help_text="falling oscillation signal cell flag", default=False, blank=True)
     rising         = models.BooleanField(help_text="rising oscillation signal cell flag", default=False, blank=True)
+    last_osc       = models.BooleanField(help_text="last oscillation signal cell flag", default=False, blank=True)
 
     mask           = models.BooleanField(help_text="mask cell flag", default=False, blank=True)
     dividing       = models.BooleanField(help_text="dividing cell flag", default=False, blank=True)
