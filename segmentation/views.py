@@ -913,16 +913,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             set_rising_falling(None)
 
 
-        if len(source_intensity_ch1.data["intensity"])>0:
-            plot_intensity.y_range = bokeh.models.Range1d(max(source_intensity_ch1.data["intensity"])*0.4, max(source_intensity_ch1.data["intensity"])*1.2, bounds="auto")
-        #plot_intensity.y_range.start=0
         #if len(source_intensity_ch1.data["intensity"])>0:
-        #    plot_intensity.y_range.end=max(source_intensity_ch1.data["intensity"])*1.2
-        #    plot_intensity.y_range.start=min(source_intensity_ch1.data["intensity"])*0.4
-        ##plot_intensity.y_range.trigger('start', 'end')
-        plot_intensity.y_range.update(start=plot_intensity.y_range.start, end=plot_intensity.y_range.end)
+        #    plot_intensity.y_range = bokeh.models.Range1d(max(source_intensity_ch1.data["intensity"])*0.4, max(source_intensity_ch1.data["intensity"])*1.2, bounds="auto")
+        ##plot_intensity.y_range.start=0
+        ##if len(source_intensity_ch1.data["intensity"])>0:
+        ##    plot_intensity.y_range.end=max(source_intensity_ch1.data["intensity"])*1.2
+        ##    plot_intensity.y_range.start=min(source_intensity_ch1.data["intensity"])*0.4
+        ###plot_intensity.y_range.trigger('start', 'end')
+        #plot_intensity.y_range.update(start=plot_intensity.y_range.start, end=plot_intensity.y_range.end)
         print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
-        print('===============---------------plot_intensity.y_range',plot_intensity.y_range,'  plot_intensity.x_range=',plot_intensity.x_range)
 
     #___________________________________________________________________________________________
 
@@ -1308,7 +1307,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     source_intensity_ch2.data={'time':time_sorted, 'intensity':intensity_sorted}
         dropdown_cell.options=cell_list
 
-        plot_intensity.y_range = bokeh.models.Range1d(max(source_intensity_ch1.data["intensity"])*0.4, max(source_intensity_ch1.data["intensity"])*1.2, bounds="auto")
+        #plot_intensity.y_range = bokeh.models.Range1d(max(source_intensity_ch1.data["intensity"])*0.4, max(source_intensity_ch1.data["intensity"])*1.2, bounds="auto")
 
         if dropdown_cell.value=='':
             if len(dropdown_cell.options)>0:
