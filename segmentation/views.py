@@ -938,6 +938,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                            'intensity':[flags_dict['multiple_cells'] for t in cellids[0].cell_status.flags["multiple_cells_frame"]]}
                 data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["multiple_cells_time"], 
                                 'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["multiple_cells_frame"]]}
+                source_segments_cell.data=data_segment
             except KeyError:
                 source_multiple_cells.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
@@ -948,6 +949,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                        'intensity':[flags_dict['pair_cell'] for t in cellids[0].cell_status.flags["pair_cell_frame"]]}
                 data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["pair_cell_time"], 
                                 'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["pair_cell_frame"]]}
+                source_segments_cell.data=data_segment
             except KeyError:
                 source_pair_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
@@ -958,6 +960,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                        'intensity':[flags_dict['flat'] for t in cellids[0].cell_status.flags["flat_frame"]]}
                 data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["flat_time"], 
                                 'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["flat_frame"]]}
+                source_segments_cell.data=data_segment
             except KeyError:
                 source_flat_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
@@ -968,6 +971,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                         'intensity':[flags_dict['round'] for t in cellids[0].cell_status.flags["round_frame"]]}
                 data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["round_time"], 
                                 'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["round_frame"]]}
+                source_segments_cell.data=data_segment
             except KeyError:
                 source_round_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
@@ -978,6 +982,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                             'intensity':[flags_dict['elongated'] for t in cellids[0].cell_status.flags["elongated_frame"]]}
                 data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["elongated_time"], 
                                 'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["elongated_frame"]]}
+                source_segments_cell.data=data_segment
             except KeyError:
                 source_elongated_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
