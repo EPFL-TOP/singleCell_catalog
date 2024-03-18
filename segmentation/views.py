@@ -2211,7 +2211,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.square_pin('time', 'intensity', source=source_dividing_cell, fill_color=None, size=10, line_color='black')
 
 
-    segments = plot_intensity.segment(x0='time', y0=0, x1='time', y1='intensity', line_color='red', line_width=1, source=source_segments_cell, line_dash="dashed")
+    segments = plot_intensity.segment(x0='time', y0=0, x1='time', y1='intensity', line_color='black', line_width=0.5, source=source_segments_cell, line_dash="dotted")
 
 
     index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
