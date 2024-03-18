@@ -819,6 +819,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_intensity_max = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_intensity_min = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
 
+    source_segments_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_mask_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_dividing_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_double_nuclei_cell = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
@@ -893,7 +894,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             try: 
                 source_dividing_cell.data={'time':cellids[0].cell_status.flags["dividing_time"], 
-                                           'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["dividing_frame"]]}
+                                           'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["dividing_frame"]],
+                                           'intensity':[10 for t in cellids[0].cell_status.flags["dividing_frame"]]}
+                source_segments_cell.data={'time':cellids[0].cell_status.flags["dividing_time"], 
+                                           'intensity':[source_intensity_ch1.data["intensity"][t]-5 for t in cellids[0].cell_status.flags["dividing_frame"]]}
             except KeyError:
                 source_dividing_cell.data={'time':[], 'intensity':[]}
 
@@ -2101,6 +2105,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def dividing_cell_callback():
         data = generic_indices_callback('dividing')
         source_dividing_cell.data = data
+        source_segments_cell.data = {"time":data["time"], "intensity":data["intensity"]}
     button_dividing_cells = bokeh.models.Button(label="Dividing")
     button_dividing_cells.on_click(dividing_cell_callback)
     #___________________________________________________________________________________________
@@ -2201,6 +2206,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.circle('time', 'intensity', source=source_intensity_max, fill_color="red", size=10, line_color='red')
     plot_intensity.circle('time', 'intensity', source=source_intensity_min, fill_color="green", size=10, line_color='green')
     plot_intensity.circle('time', 'intensity', source=source_mask_cell, fill_color="black", size=10, line_color='black')
+
+    plot_intensity.square_pin('time', 'intensity', source=source_dividing_cell, fill_color=None, size=10, line_color='black')
+
+
+    segments = plot_intensity.segment(x0='time', y0=0, x1='time', y1='intensity', line_color='red', line_width=2, source=source_segments_cell)
+
 
     index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
     tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()))
