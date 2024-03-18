@@ -895,7 +895,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             try: 
                 source_dividing_cell.data={'time':cellids[0].cell_status.flags["dividing_time"], 
                                            'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["dividing_frame"]],
-                                           'intensity':[10 for t in cellids[0].cell_status.flags["dividing_frame"]]}
+                                           'intensity':[50 for t in cellids[0].cell_status.flags["dividing_frame"]]}
                 source_segments_cell.data={'time':cellids[0].cell_status.flags["dividing_time"], 
                                            'intensity':[source_intensity_ch1.data["intensity"][t]-5 for t in cellids[0].cell_status.flags["dividing_frame"]]}
             except KeyError:
