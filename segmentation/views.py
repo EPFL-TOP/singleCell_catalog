@@ -706,7 +706,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     positions={}
     files={}
 
-    flags_dict = {'dividing':50,
+    flags_dict = {'mask':0,
+                  'dividing':50,
                   'double_nuclei':60}
     
     for exp in Experiment.objects.all():
