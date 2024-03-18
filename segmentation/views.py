@@ -906,8 +906,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["dividing_time"], 
                                 'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["dividing_frame"]]}
                 source_segments_cell.data=data_segment
-                #{'time':cellids[0].cell_status.flags["dividing_time"], 
-                #                           'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["dividing_frame"]]}
             except KeyError:
                 source_dividing_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
@@ -2122,7 +2120,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         data = generic_indices_callback('dividing')
         source_dividing_cell.data = data
         print('--------dividing_cell_callback-------- ', data)
-        source_segments_cell.data = {"time":data["time"], "intensity":data["intensity_full"]}
+        source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"], "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
     button_dividing_cells = bokeh.models.Button(label="Dividing")
     button_dividing_cells.on_click(dividing_cell_callback)
     #___________________________________________________________________________________________
@@ -2133,7 +2131,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         data = generic_indices_callback('double_nuclei')
         source_double_nuclei_cell.data = data
         print('--------double_nuclei_cell_callback-------- ', data)
-        source_segments_cell.data = {"time":data["time"], "intensity":data["intensity_full"]}
+        source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"], "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
     button_double_nuclei_cells = bokeh.models.Button(label="Double nuclei")
     button_double_nuclei_cells.on_click(double_nuclei_cell_callback)
     #___________________________________________________________________________________________
