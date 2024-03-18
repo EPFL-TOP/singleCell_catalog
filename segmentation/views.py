@@ -2111,6 +2111,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 mydict['{}_time'.format(flag)].append(source_intensity_ch1.data["time"][framenumber])
             elif len(source_intensity_ch1.selected.indices)==0:
                 setattr(cellflag, flag, False)
+                mydict['{}_frame'.format(flag)] = []
+                mydict['{}_time'.format(flag)]  = []
             cellflag.save()
 
         cellstatus.flags = mydict
@@ -2125,7 +2127,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def mask_cell_callback():
         data = generic_indices_callback('mask')
-        source_mask_cell.data = data
+        source_mask_cell.data = {"time":source_mask_cell.data["time"]+data["time"], "intensity":source_mask_cell.data["intensity"]+data["intensity_full"]}
         print('--------mask_cell_callback-------- ', data)
 
 
