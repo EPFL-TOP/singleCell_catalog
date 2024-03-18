@@ -2141,18 +2141,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def dividing_cell_callback():
         print('--------dividing_cell_callback-------- ')
         data = generic_indices_callback('dividing')
-        print('source_segments_cell.data  =  ',source_segments_cell.data)
         if len(source_intensity_ch1.selected.indices)==0:
             try:
                 for t1 in range(len(source_dividing_cell.data["time"])):
                    for t2 in range(len(source_segments_cell.data["time"])):
                        if source_dividing_cell.data["time"][t1] == source_segments_cell.data["time"][t2]:
-                           print('t1   = ',t1,'  t2=  ',t2,'  source_dividing_cell.data["time"][t1]=',source_dividing_cell.data["time"][t1],'  source_segments_cell.data["time"][t2]=',source_segments_cell.data["time"][t2])
                            source_segments_cell.data["time"].pop(t2)
                            source_segments_cell.data["intensity"].pop(t2)
                            break
             except KeyError:
-                print("dividing_cell_callback KeyError")
                 pass
             source_dividing_cell.data = {"time":[], "intensity":[]}
             source_segments_cell.data = {"time":source_segments_cell.data["time"], "intensity":source_segments_cell.data["intensity"]}
@@ -2168,7 +2165,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('--------double_nuclei_cell_callback-------- ')
         data = generic_indices_callback('double_nuclei')
         if len(source_intensity_ch1.selected.indices)==0:
+            try:
+                for t1 in range(len(source_double_nuclei_cell.data["time"])):
+                   for t2 in range(len(source_segments_cell.data["time"])):
+                       if source_double_nuclei_cell.data["time"][t1] == source_segments_cell.data["time"][t2]:
+                           source_segments_cell.data["time"].pop(t2)
+                           source_segments_cell.data["intensity"].pop(t2)
+                           break
+            except KeyError:
+                pass
             source_double_nuclei_cell.data = {"time":[], "intensity":[]}
+            source_segments_cell.data      = {"time":source_segments_cell.data["time"], "intensity":source_segments_cell.data["intensity"]}
         else:
             source_double_nuclei_cell.data = {"time":source_double_nuclei_cell.data["time"]+data["time"], "intensity":source_double_nuclei_cell.data["intensity"]+data["intensity"]}
             source_segments_cell.data      = {"time":source_segments_cell.data["time"]+data["time"],      "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
