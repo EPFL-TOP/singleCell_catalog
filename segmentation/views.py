@@ -825,12 +825,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_segments_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_mask_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_dividing_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
-    source_double_nuclei_cell = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]}})
-    source_multiple_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]}})
-    source_pair_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]}})
-    source_flat_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]}})
-    source_round_cell         = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]}})
-    source_elongated_cell     = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]}})
+    source_double_nuclei_cell = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
+    source_multiple_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
+    source_pair_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
+    source_flat_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
+    source_round_cell         = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
+    source_elongated_cell     = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
     
 
     # Create a Slider widget
