@@ -2113,6 +2113,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 setattr(cellflag, flag, False)
                 mydict['{}_frame'.format(flag)] = []
                 mydict['{}_time'.format(flag)]  = []
+
             cellflag.save()
 
         cellstatus.flags = mydict
@@ -2128,7 +2129,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def mask_cell_callback():
         print('--------mask_cell_callback-------- ')
         data = generic_indices_callback('mask')
-        source_mask_cell.data = {"time":source_mask_cell.data["time"]+data["time"], "intensity_full":source_mask_cell.data["intensity_full"]+data["intensity_full"]}
+        if len(source_intensity_ch1.selected.indices)==0:
+            source_mask_cell.data = {"time":[], "intensity_full":[]}
+        else:
+            source_mask_cell.data = {"time":source_mask_cell.data["time"]+data["time"], "intensity_full":source_mask_cell.data["intensity_full"]+data["intensity_full"]}
     button_mask_cells = bokeh.models.Button(label="Mask")
     button_mask_cells.on_click(mask_cell_callback)
     #___________________________________________________________________________________________
@@ -2137,7 +2141,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def dividing_cell_callback():
         print('--------dividing_cell_callback-------- ')
         data = generic_indices_callback('dividing')
-        source_dividing_cell.data = {"time":source_dividing_cell.data["time"]+data["time"], "intensity":source_dividing_cell.data["intensity"]+data["intensity"]}
+        if len(source_intensity_ch1.selected.indices)==0:
+            source_dividing_cell.data = {"time":[], "intensity":[]}
+        else:
+            source_dividing_cell.data = {"time":source_dividing_cell.data["time"]+data["time"], "intensity":source_dividing_cell.data["intensity"]+data["intensity"]}
         source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"], "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
     button_dividing_cells = bokeh.models.Button(label="Dividing")
     button_dividing_cells.on_click(dividing_cell_callback)
@@ -2148,7 +2155,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def double_nuclei_cell_callback():
         print('--------double_nuclei_cell_callback-------- ')
         data = generic_indices_callback('double_nuclei')
-        source_double_nuclei_cell.data = data
+        if len(source_intensity_ch1.selected.indices)==0:
+            source_double_nuclei_cell.data = {"time":[], "intensity":[]}
+        else:
+            source_double_nuclei_cell.data = {"time":source_double_nuclei_cell.data["time"]+data["time"], "intensity":source_double_nuclei_cell.data["intensity"]+data["intensity"]}
         source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"], "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
     button_double_nuclei_cells = bokeh.models.Button(label="Double nuclei")
     button_double_nuclei_cells.on_click(double_nuclei_cell_callback)
