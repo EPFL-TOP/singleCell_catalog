@@ -2084,8 +2084,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellstatus = cellsid[0].cell_status
         cellflags = cellstatus.flags
         mydict = cellflags
-        mydict['{}_frame'.format(flag)] = []
-        mydict['{}_time'.format(flag)]  = []
+
+
+        try:
+            mydict['{}_frame'.format(flag)]
+            mydict['{}_time'.format(flag)]
+        except KeyError:
+            mydict['{}_frame'.format(flag)] = []
+            mydict['{}_time'.format(flag)]  = []
+
+        print('cellflags begin=',cellflags)
+        print('mydict begin   =',mydict)
 
         cellrois = CellROI.objects.select_related().filter(cell_id=cellsid[0])
         data={'time':[], 'intensity':[], 'intensity_full':[]}
@@ -2104,20 +2113,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 setattr(cellflag, flag, False)
             cellflag.save()
 
-        flags = cellstatus.flags
-        print('cellstatus.flags=',cellstatus.flags)
-        print('mydict          =',mydict)
-        
-        for key in flags:
-            try:
-                mydict[key]=mydict[key]+flags[key]
-            except KeyError:
-                pass
-        print('mydict end      =',mydict)
-
         cellstatus.flags = mydict
         cellstatus.save()
-        print('cellstatus.flags end=',cellstatus.flags)
+
+        print('cellflags end=',cellstatus.flags)
+        print('mydict end   =',mydict)
 
         return data
     #___________________________________________________________________________________________
