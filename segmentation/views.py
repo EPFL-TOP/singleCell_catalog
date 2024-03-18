@@ -963,7 +963,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                         'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["round_cell_frame"]],
                                         'intensity':[flags_dict['round_cell'] for t in cellids[0].cell_status.flags["round_cell_frame"]]}
                 data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["round_cell_time"], 
-                                'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["round_cell_frame"]]}            except KeyError:
+                                'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["round_cell_frame"]]}
             except KeyError:
                 source_round_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
