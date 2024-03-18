@@ -2213,8 +2213,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     box_select_tool = bokeh.models.BoxSelectTool(select_every_mousemove=False)
     plot_intensity.add_tools(box_select_tool)
 
-    #plot_intensity.y_range.start=0
-    #plot_intensity.x_range.start=-10
+    plot_intensity.y_range.start=0
+    plot_intensity.x_range.start=-10
     #for ch in range(len(time_list)):
     for index, key in enumerate(time_list):
         if index==0:
