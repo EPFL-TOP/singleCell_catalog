@@ -2119,6 +2119,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def mask_cell_callback():
         data = generic_indices_callback('mask')
         source_mask_cell.data = data
+        print('--------mask_cell_callback-------- ', data)
+
+
     button_mask_cells = bokeh.models.Button(label="Mask")
     button_mask_cells.on_click(mask_cell_callback)
     #___________________________________________________________________________________________
