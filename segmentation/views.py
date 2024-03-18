@@ -2085,7 +2085,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellflags = cellstatus.flags
         mydict = cellflags
 
-
         try:
             mydict['{}_frame'.format(flag)]
             mydict['{}_time'.format(flag)]
@@ -2103,9 +2102,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             framenumber = cellroi.frame.number
             cellflag = cellroi.cellflag_cellroi
             if framenumber in source_intensity_ch1.selected.indices:
-#                data['time'].append(source_intensity_ch1.data["time"][framenumber])
-#                data['intensity'].append(flags_dict[flag])
-#                data['intensity_full'].append(source_intensity_ch1.data["intensity"][framenumber])
                 setattr(cellflag, flag, True)
                 if framenumber not in mydict['{}_frame'.format(flag)]:
                     mydict['{}_frame'.format(flag)].append(framenumber)
@@ -2146,11 +2142,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('--------dividing_cell_callback-------- ')
         data = generic_indices_callback('dividing')
         if len(source_intensity_ch1.selected.indices)==0:
-            #try:
-            #    for t in range(len(source_dividing_cell.data["time"])):
-#
- #           except KeyError:
-  #              pass
+            try:
+                for t1 in range(len(source_dividing_cell.data["time"])):
+                   for t2 in range(len(source_segments_cell.data["time"])):
+                       if source_dividing_cell.data["time"][t1] == source_segments_cell.data["time"][t2]:
+                           source_segments_cell.data["time"].pop(t2)
+                           source_segments_cell.data["intensity"].pop(t2)
+                           break
+            except KeyError:
+                pass
             source_dividing_cell.data = {"time":[], "intensity":[]}
         else:
             source_dividing_cell.data = {"time":source_dividing_cell.data["time"]+data["time"], "intensity":source_dividing_cell.data["intensity"]+data["intensity"]}
