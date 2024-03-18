@@ -2283,7 +2283,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def round_cell_callback():
         print('--------round_cell_callback-------- ')
-        data = generic_indices_callback('round_cell')
+        data = generic_indices_callback('round')
         if len(source_intensity_ch1.selected.indices)==0:
             try:
                 for t1 in range(len(source_round_cell.data["time"])):
@@ -2306,7 +2306,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def elongated_cell_callback():
         print('--------elongated_cell_callback-------- ')
-        data = generic_indices_callback('elongated_cell')
+        data = generic_indices_callback('elongated')
         if len(source_intensity_ch1.selected.indices)==0:
             try:
                 for t1 in range(len(source_elongated_cell.data["time"])):
