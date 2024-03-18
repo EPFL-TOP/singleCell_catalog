@@ -2078,6 +2078,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def generic_indices_callback(flag):
+        print("==================generic_indices_callback========================")
         sample = Sample.objects.get(file_name=get_current_file())
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
         cellstatus = cellsid[0].cell_status
@@ -2099,9 +2100,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 setattr(cellflag, flag, True)
                 mydict['{}_frame'.format(flag)].append(framenumber)
                 mydict['{}_time'.format(flag)].append(source_intensity_ch1.data["time"][framenumber])
-            elif len(source_intensity_ch1.selected.indices):
+            elif len(source_intensity_ch1.selected.indices)==0:
                 setattr(cellflag, flag, False)
             cellflag.save()
+
+        flags = cellstatus.flags
+        for key in flags:
+            try:
+                mydict[key]=mydict[key]+flags[key]
+            except KeyError:
+                pass
         cellstatus.flags = mydict
         cellstatus.save()
         return data
