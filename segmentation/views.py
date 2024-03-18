@@ -939,7 +939,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["multiple_cells_time"], 
                                 'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["multiple_cells_frame"]]}
             except KeyError:
-                print('KeyError source_multiple_cells=',source_multiple_cells)
+                print('KeyError source_multiple_cells=',source_multiple_cells.data)
                 source_multiple_cells.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
             #____________________________________________________
