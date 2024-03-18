@@ -2141,6 +2141,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def dividing_cell_callback():
         print('--------dividing_cell_callback-------- ')
         data = generic_indices_callback('dividing')
+        print('source_segments_cell.data  =  ',source_segments_cell.data)
         if len(source_intensity_ch1.selected.indices)==0:
             try:
                 for t1 in range(len(source_dividing_cell.data["time"])):
