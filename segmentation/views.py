@@ -939,10 +939,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["multiple_cells_time"], 
                                 'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["multiple_cells_frame"]]}
             except KeyError:
-                print('KeyError source_multiple_cells=',source_multiple_cells.data)
-                print('KeyError cellids[0].cell_status.flags["multiple_cells_time"] =',cellids[0].cell_status.flags["multiple_cells_time"])
-                print('KeyError cellids[0].cell_status.flags["multiple_cells_frame"] =',cellids[0].cell_status.flags["multiple_cells_frame"])
-
                 source_multiple_cells.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
             #____________________________________________________
@@ -957,31 +953,31 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             #____________________________________________________
             try: 
-                source_flat_cell.data={'time':cellids[0].cell_status.flags["flat_cell_time"], 
-                                       'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["flat_cell_frame"]],
-                                       'intensity':[flags_dict['flat'] for t in cellids[0].cell_status.flags["flat_cell_frame"]]}
-                data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["flat_cell_time"], 
-                                'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["flat_cell_frame"]]}
+                source_flat_cell.data={'time':cellids[0].cell_status.flags["flat_time"], 
+                                       'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["flat_frame"]],
+                                       'intensity':[flags_dict['flat'] for t in cellids[0].cell_status.flags["flat_frame"]]}
+                data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["flat_time"], 
+                                'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["flat_frame"]]}
             except KeyError:
                 source_flat_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
             #____________________________________________________
             try: 
-                source_round_cell.data={'time':cellids[0].cell_status.flags["round_cell_time"], 
-                                        'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["round_cell_frame"]],
-                                        'intensity':[flags_dict['round'] for t in cellids[0].cell_status.flags["round_cell_frame"]]}
-                data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["round_cell_time"], 
-                                'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["round_cell_frame"]]}
+                source_round_cell.data={'time':cellids[0].cell_status.flags["round_time"], 
+                                        'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["round_frame"]],
+                                        'intensity':[flags_dict['round'] for t in cellids[0].cell_status.flags["round_frame"]]}
+                data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["round_time"], 
+                                'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["round_frame"]]}
             except KeyError:
                 source_round_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
             #____________________________________________________
             try: 
-                source_elongated_cell.data={'time':cellids[0].cell_status.flags["elongated_cell_time"], 
-                                            'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["elongated_cell_frame"]],
-                                            'intensity':[flags_dict['elongated'] for t in cellids[0].cell_status.flags["elongated_cell_frame"]]}
-                data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["elongated_cell_time"], 
-                                'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["elongated_cell_frame"]]}
+                source_elongated_cell.data={'time':cellids[0].cell_status.flags["elongated_time"], 
+                                            'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["elongated_frame"]],
+                                            'intensity':[flags_dict['elongated'] for t in cellids[0].cell_status.flags["elongated_frame"]]}
+                data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["elongated_time"], 
+                                'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["elongated_frame"]]}
             except KeyError:
                 source_elongated_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
