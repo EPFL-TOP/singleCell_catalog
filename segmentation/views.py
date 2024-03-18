@@ -915,6 +915,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_double_nuclei_cell.data={'time':cellids[0].cell_status.flags["double_nuclei_time"], 
                                                 'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["double_nuclei_frame"]],
                                                 'intensity':[flags_dict['double_nuclei'] for t in cellids[0].cell_status.flags["double_nuclei_frame"]]}
+                data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["double_nuclei_time"], 
+                                'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["double_nuclei_frame"]]}
+                source_segments_cell.data=data_segment
             except KeyError:
                 source_double_nuclei_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
