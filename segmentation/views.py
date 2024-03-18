@@ -899,7 +899,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_segments_cell.data={'time':cellids[0].cell_status.flags["dividing_time"], 
                                            'intensity':[source_intensity_ch1.data["intensity"][t]-5 for t in cellids[0].cell_status.flags["dividing_frame"]]}
             except KeyError:
-                source_dividing_cell.data={'time':[], 'intensity':[]}
+                source_dividing_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
             try: 
                 source_double_nuclei_cell.data={'time':cellids[0].cell_status.flags["double_nuclei_time"], 
@@ -960,7 +960,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_intensity_min.data      = {'time':[], 'intensity':[]}
     
             source_mask_cell.data          = {'time':[], 'intensity':[]}
-            source_dividing_cell.data      = {'time':[], 'intensity':[]}
+            source_dividing_cell.data      = {'time':[], 'intensity':[], 'intensity_full':[]}
             source_double_nuclei_cell.data = {'time':[], 'intensity':[]}
             source_multiple_cell.data      = {'time':[], 'intensity':[]}
             source_pair_cell.data          = {'time':[], 'intensity':[]}
