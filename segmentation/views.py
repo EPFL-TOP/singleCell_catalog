@@ -821,7 +821,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     source_segments_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_mask_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
-    source_dividing_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
+    source_dividing_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
     source_double_nuclei_cell = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_multiple_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_pair_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
