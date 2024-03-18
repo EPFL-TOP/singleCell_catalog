@@ -2099,7 +2099,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 setattr(cellflag, flag, True)
                 mydict['{}_frame'.format(flag)].append(framenumber)
                 mydict['{}_time'.format(flag)].append(source_intensity_ch1.data["time"][framenumber])
-            else:
+            elif len(source_intensity_ch1.selected.indices):
                 setattr(cellflag, flag, False)
             cellflag.save()
         cellstatus.flags = mydict
