@@ -903,8 +903,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_dividing_cell.data={'time':cellids[0].cell_status.flags["dividing_time"], 
                                            'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["dividing_frame"]],
                                            'intensity':[flags_dict['dividing'] for t in cellids[0].cell_status.flags["dividing_frame"]]}
-                data_segment = {'time':source_segments_cell["time"]+cellids[0].cell_status.flags["dividing_time"], 
-                                'intensity':source_segments_cell["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["dividing_frame"]]}
+                data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["dividing_time"], 
+                                'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["dividing_frame"]]}
                 source_segments_cell.data=data_segment
                 #{'time':cellids[0].cell_status.flags["dividing_time"], 
                 #                           'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["dividing_frame"]]}
