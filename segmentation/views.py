@@ -708,8 +708,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     flags_dict = {'mask':0,
                   'dividing':50,
-                  'double_nuclei':100}
+                  'double_nuclei':100,
+                  'multiple_cell':150,
+                  'pair_cell':200,
+                  'flat':250,
+                  'round':300,
+                  'elongated':350}
     
+
     for exp in Experiment.objects.all():
         experiments.append(exp.name)
         wells[exp.name] = []
@@ -920,8 +926,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_double_nuclei_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
             try: 
-                source_multiple_cell.data={'time':cellids[0].cell_status.flags["multiple_time"], 
-                                           'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["multiple_frame"]]}
+                source_multiple_cell.data={'time':cellids[0].cell_status.flags["multiple_cell_time"], 
+                                           'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["multiple_cell_frame"]],
+                                           'intensity':[flags_dict['multiple_cell'] for t in cellids[0].cell_status.flags["multiple_cell_frame"]]}
+                data_segment = {'time':source_segments_cell.data["time"]+cellids[0].cell_status.flags["multiple_cell_time"], 
+                                'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["multiple_cell_frame"]]}
             except KeyError:
                 source_multiple_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
@@ -2183,6 +2192,31 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_double_nuclei_cells.on_click(double_nuclei_cell_callback)
     #___________________________________________________________________________________________
 
+    #___________________________________________________________________________________________
+    def multiple_cell_callback():
+        print('--------multiple_cell_callback-------- ')
+        data = generic_indices_callback('multiple_cell')
+        if len(source_intensity_ch1.selected.indices)==0:
+            try:
+                for t1 in range(len(source_multiple_cell.data["time"])):
+                   for t2 in range(len(source_segments_cell.data["time"])):
+                       if source_multiple_cell.data["time"][t1] == source_segments_cell.data["time"][t2]:
+                           source_segments_cell.data["time"].pop(t2)
+                           source_segments_cell.data["intensity"].pop(t2)
+                           break
+            except KeyError:
+                pass
+            source_multiple_cell.data = {"time":[], "intensity":[]}
+            source_segments_cell.data = {"time":source_segments_cell.data["time"], "intensity":source_segments_cell.data["intensity"]}
+        else:
+            source_multiple_cell.data = {"time":source_multiple_cell.data["time"]+data["time"], "intensity":source_multiple_cell.data["intensity"]+data["intensity"]}
+            source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"], "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
+    button_multiple_cell = bokeh.models.Button(label="Multiple cells")
+    button_multiple_cell.on_click(multiple_cell_callback)
+    #___________________________________________________________________________________________
+
+
+
     #multiple_cells = models.BooleanField(help_text="multiple cells flag", default=False, blank=True)
     #pair_cell      = models.BooleanField(help_text="pair cell flag", default=False, blank=True)
     #flat           = models.BooleanField(help_text="flat cell flag", default=False, blank=True)
@@ -2279,6 +2313,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     plot_intensity.square_pin('time', 'intensity', source=source_dividing_cell, fill_color=None, size=8, line_color='black')
     plot_intensity.circle_dot('time', 'intensity', source=source_double_nuclei_cell, fill_color=None, size=8, line_color='black')
+    plot_intensity.circle_x('time', 'intensity', source=source_multiple_cell, fill_color=None, size=8, line_color='black')
 
 
     segments = plot_intensity.segment(x0='time', y0=0, x1='time', y1='intensity', line_color='black', line_width=0.5, source=source_segments_cell, line_dash="dotted")
@@ -2408,7 +2443,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
                                      bokeh.layouts.row(button_find_peaks),
                                      bokeh.layouts.row(slider_find_peaks),
-                                     bokeh.layouts.row(button_mask_cells, button_dividing_cells, button_double_nuclei_cells))
+                                     bokeh.layouts.row(button_mask_cells, button_dividing_cells, button_double_nuclei_cells),
+                                     bokeh.layouts.row(button_multiple_cell))
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity),
                                               bokeh.layouts.row(plot_osc_tod))
