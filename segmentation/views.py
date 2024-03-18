@@ -2103,13 +2103,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             framenumber = cellroi.frame.number
             cellflag = cellroi.cellflag_cellroi
             if framenumber in source_intensity_ch1.selected.indices:
-                data['time'].append(source_intensity_ch1.data["time"][framenumber])
-                data['intensity'].append(flags_dict[flag])
-                data['intensity_full'].append(source_intensity_ch1.data["intensity"][framenumber])
+#                data['time'].append(source_intensity_ch1.data["time"][framenumber])
+#                data['intensity'].append(flags_dict[flag])
+#                data['intensity_full'].append(source_intensity_ch1.data["intensity"][framenumber])
                 setattr(cellflag, flag, True)
                 if framenumber not in mydict['{}_frame'.format(flag)]:
                     mydict['{}_frame'.format(flag)].append(framenumber)
                     mydict['{}_time'.format(flag)].append(source_intensity_ch1.data["time"][framenumber])
+                    data['time'].append(source_intensity_ch1.data["time"][framenumber])
+                    data['intensity'].append(flags_dict[flag])
+                    data['intensity_full'].append(source_intensity_ch1.data["intensity"][framenumber])
             elif len(source_intensity_ch1.selected.indices)==0:
                 setattr(cellflag, flag, False)
                 mydict['{}_frame'.format(flag)] = []
