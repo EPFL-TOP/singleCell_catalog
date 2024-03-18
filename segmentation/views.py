@@ -2127,7 +2127,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def mask_cell_callback():
         data = generic_indices_callback('mask')
-        source_mask_cell.data = {"time":source_mask_cell.data["time"]+data["time"], "intensity":source_mask_cell.data["intensity_full"]+data["intensity_full"]}
+        source_mask_cell.data = {"time":source_mask_cell.data["time"]+data["time"], "intensity_full":source_mask_cell.data["intensity_full"]+data["intensity_full"]}
         print('--------mask_cell_callback-------- ', data)
 
 
