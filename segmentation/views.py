@@ -886,7 +886,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_death.data['y1']   = []
                 source_varea_death.data['y2']   = []
 
-
+#{"mask_frame": [], "mask_time": [], "dividing_frame": [], "dividing_time": [], "double_nuclei_frame": [], 
+# "double_nuclei_time": [], "multiple_cells_frame": [], "multiple_cells_time": [], "pair_cell_frame": [], "pair_cell_time": [], 
+#"multiple_frame": [], "multiple_time": [], "pair_frame": [], "pair_time": [], 
+# "flat_frame": [0], "flat_time": [0.],"round_frame": [46, 47], "round_time": [68], "elongated_frame": [], "elongated_time": []}
 
             #Set maximums and mimimums if exists [] else
             if len(cellids[0].cell_status.peaks)>=6:
@@ -925,6 +928,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                 'intensity':source_segments_cell.data["intensity"]+[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["double_nuclei_frame"]]}
                 source_segments_cell.data=data_segment
             except KeyError:
+                print('KeyError source_double_nuclei_cell=',source_double_nuclei_cell)
                 source_double_nuclei_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
             #____________________________________________________
