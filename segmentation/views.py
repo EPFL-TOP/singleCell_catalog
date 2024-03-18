@@ -2126,20 +2126,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def mask_cell_callback():
+        print('--------mask_cell_callback-------- ')
         data = generic_indices_callback('mask')
         source_mask_cell.data = {"time":source_mask_cell.data["time"]+data["time"], "intensity_full":source_mask_cell.data["intensity_full"]+data["intensity_full"]}
-        print('--------mask_cell_callback-------- ', data)
-
-
     button_mask_cells = bokeh.models.Button(label="Mask")
     button_mask_cells.on_click(mask_cell_callback)
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     def dividing_cell_callback():
+        print('--------dividing_cell_callback-------- ')
         data = generic_indices_callback('dividing')
-        source_dividing_cell.data = data
-        print('--------dividing_cell_callback-------- ', data)
+        source_dividing_cell.data = {"time":source_dividing_cell.data["time"]+data["time"], "intensity":source_dividing_cell.data["intensity"]+data["intensity"]}
         source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"], "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
     button_dividing_cells = bokeh.models.Button(label="Dividing")
     button_dividing_cells.on_click(dividing_cell_callback)
@@ -2148,9 +2146,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def double_nuclei_cell_callback():
+        print('--------double_nuclei_cell_callback-------- ')
         data = generic_indices_callback('double_nuclei')
         source_double_nuclei_cell.data = data
-        print('--------double_nuclei_cell_callback-------- ', data)
         source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"], "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
     button_double_nuclei_cells = bokeh.models.Button(label="Double nuclei")
     button_double_nuclei_cells.on_click(double_nuclei_cell_callback)
