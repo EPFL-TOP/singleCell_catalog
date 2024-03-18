@@ -894,7 +894,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_mask_cell.data={'time':cellids[0].cell_status.flags["mask_time"], 
                                        'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["mask_frame"]]}
             except KeyError:
-                source_mask_cell.data={'time':[], 'intensity':[]}
+                source_mask_cell.data={'time':[], 'intensity_full':[]}
 
             try: 
                 source_dividing_cell.data={'time':cellids[0].cell_status.flags["dividing_time"], 
@@ -964,7 +964,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_intensity_max.data      = {'time':[], 'intensity':[]}
             source_intensity_min.data      = {'time':[], 'intensity':[]}
     
-            source_mask_cell.data          = {'time':[], 'intensity':[]}
+            source_mask_cell.data          = {'time':[], 'intensity_full':[]}
             source_dividing_cell.data      = {'time':[], 'intensity':[], 'intensity_full':[]}
             source_double_nuclei_cell.data = {'time':[], 'intensity':[], 'intensity_full':[]}
             source_multiple_cell.data      = {'time':[], 'intensity':[], 'intensity_full':[]}
@@ -2224,7 +2224,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     int_ch2 = plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=10, line_color='black')
     plot_intensity.circle('time', 'intensity', source=source_intensity_max, fill_color="red", size=10, line_color='red')
     plot_intensity.circle('time', 'intensity', source=source_intensity_min, fill_color="green", size=10, line_color='green')
-    plot_intensity.circle('time', 'intensity', source=source_mask_cell, fill_color="black", size=10, line_color='black')
+    plot_intensity.circle('time', 'intensity_full', source=source_mask_cell, fill_color="black", size=10, line_color='black')
 
     plot_intensity.square_pin('time', 'intensity', source=source_dividing_cell, fill_color=None, size=8, line_color='black')
     plot_intensity.circle_dot('time', 'intensity', source=source_double_nuclei_cell, fill_color=None, size=8, line_color='black')
