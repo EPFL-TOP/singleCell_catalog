@@ -2214,7 +2214,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def multiple_cells_callback():
         print('--------multiple_cells_callback-------- ')
-        data = generic_indices_callback('multiple_cells')
+        data = generic_indices_callback('multiple')
         if len(source_intensity_ch1.selected.indices)==0:
             try:
                 for t1 in range(len(source_multiple_cells.data["time"])):
@@ -2237,7 +2237,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def pair_cell_callback():
         print('--------pair_cell_callback-------- ')
-        data = generic_indices_callback('pair_cell')
+        data = generic_indices_callback('pair')
         if len(source_intensity_ch1.selected.indices)==0:
             try:
                 for t1 in range(len(source_pair_cell.data["time"])):
@@ -2260,7 +2260,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def flat_cell_callback():
         print('--------flat_cell_callback-------- ')
-        data = generic_indices_callback('flat_cell')
+        data = generic_indices_callback('flat')
         if len(source_intensity_ch1.selected.indices)==0:
             try:
                 for t1 in range(len(source_flat_cell.data["time"])):
