@@ -2146,10 +2146,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 for t1 in range(len(source_dividing_cell.data["time"])):
                    for t2 in range(len(source_segments_cell.data["time"])):
                        if source_dividing_cell.data["time"][t1] == source_segments_cell.data["time"][t2]:
+                           print('t1   = ',t1,'  t2=  ',t2)
                            source_segments_cell.data["time"].pop(t2)
                            source_segments_cell.data["intensity"].pop(t2)
                            break
             except KeyError:
+                print("dividing_cell_callback KeyError")
                 pass
             source_dividing_cell.data = {"time":[], "intensity":[]}
         else:
