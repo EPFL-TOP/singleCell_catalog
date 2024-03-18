@@ -2257,12 +2257,77 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_pair_cell.on_click(pair_cell_callback)
     #___________________________________________________________________________________________
 
+    #___________________________________________________________________________________________
+    def flat_cell_callback():
+        print('--------flat_cell_callback-------- ')
+        data = generic_indices_callback('flat_cell')
+        if len(source_intensity_ch1.selected.indices)==0:
+            try:
+                for t1 in range(len(source_flat_cell.data["time"])):
+                   for t2 in range(len(source_segments_cell.data["time"])):
+                       if source_flat_cell.data["time"][t1] == source_segments_cell.data["time"][t2]:
+                           source_segments_cell.data["time"].pop(t2)
+                           source_segments_cell.data["intensity"].pop(t2)
+                           break
+            except KeyError:
+                pass
+            source_flat_cell.data     = {"time":[], "intensity":[]}
+            source_segments_cell.data = {"time":source_segments_cell.data["time"], "intensity":source_segments_cell.data["intensity"]}
+        else:
+            source_flat_cell.data     = {"time":source_flat_cell.data["time"]+data["time"], "intensity":source_flat_cell.data["intensity"]+data["intensity"]}
+            source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"],  "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
+    button_flat_cell = bokeh.models.Button(label="Flat cell")
+    button_flat_cell.on_click(flat_cell_callback)
+    #___________________________________________________________________________________________
+
+    #___________________________________________________________________________________________
+    def round_cell_callback():
+        print('--------round_cell_callback-------- ')
+        data = generic_indices_callback('round_cell')
+        if len(source_intensity_ch1.selected.indices)==0:
+            try:
+                for t1 in range(len(source_round_cell.data["time"])):
+                   for t2 in range(len(source_segments_cell.data["time"])):
+                       if source_round_cell.data["time"][t1] == source_segments_cell.data["time"][t2]:
+                           source_segments_cell.data["time"].pop(t2)
+                           source_segments_cell.data["intensity"].pop(t2)
+                           break
+            except KeyError:
+                pass
+            source_round_cell.data     = {"time":[], "intensity":[]}
+            source_segments_cell.data = {"time":source_segments_cell.data["time"], "intensity":source_segments_cell.data["intensity"]}
+        else:
+            source_round_cell.data     = {"time":source_round_cell.data["time"]+data["time"], "intensity":source_round_cell.data["intensity"]+data["intensity"]}
+            source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"],  "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
+    button_round_cell = bokeh.models.Button(label="Round cell")
+    button_round_cell.on_click(round_cell_callback)
+    #___________________________________________________________________________________________
+
+    #___________________________________________________________________________________________
+    def elongated_cell_callback():
+        print('--------elongated_cell_callback-------- ')
+        data = generic_indices_callback('elongated_cell')
+        if len(source_intensity_ch1.selected.indices)==0:
+            try:
+                for t1 in range(len(source_elongated_cell.data["time"])):
+                   for t2 in range(len(source_segments_cell.data["time"])):
+                       if source_elongated_cell.data["time"][t1] == source_segments_cell.data["time"][t2]:
+                           source_segments_cell.data["time"].pop(t2)
+                           source_segments_cell.data["intensity"].pop(t2)
+                           break
+            except KeyError:
+                pass
+            source_elongated_cell.data     = {"time":[], "intensity":[]}
+            source_segments_cell.data = {"time":source_segments_cell.data["time"], "intensity":source_segments_cell.data["intensity"]}
+        else:
+            source_elongated_cell.data     = {"time":source_elongated_cell.data["time"]+data["time"], "intensity":source_elongated_cell.data["intensity"]+data["intensity"]}
+            source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"],  "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
+    button_elongated_cell = bokeh.models.Button(label="Elongated cell")
+    button_elongated_cell.on_click(elongated_cell_callback)
+    #___________________________________________________________________________________________
 
 
 
-    #pair_cell      = models.BooleanField(help_text="pair cell flag", default=False, blank=True)
-    #flat           = models.BooleanField(help_text="flat cell flag", default=False, blank=True)
-    #round          = models.BooleanField(help_text="round cell flag", default=False, blank=True)
     #elongated      = models.BooleanField(help_text="round cell flag", default=False, blank=True)
 
 
@@ -2490,7 +2555,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_find_peaks),
                                      bokeh.layouts.row(slider_find_peaks),
                                      bokeh.layouts.row(button_mask_cells, button_dividing_cells, button_double_nuclei_cells),
-                                     bokeh.layouts.row(button_multiple_cells, button_pair_cell))
+                                     bokeh.layouts.row(button_multiple_cells, button_pair_cell),
+                                     bokeh.layouts.row(button_flat_cell, button_round_cell, button_elongated_cell),
+                                     )
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity),
                                               bokeh.layouts.row(plot_osc_tod))
