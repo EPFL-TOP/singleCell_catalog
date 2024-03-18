@@ -2117,6 +2117,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         cellstatus.flags = mydict
         cellstatus.save()
+        print('cellstatus.flags end=',cellstatus.flags)
+
         return data
     #___________________________________________________________________________________________
 
