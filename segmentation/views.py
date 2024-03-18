@@ -708,7 +708,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     flags_dict = {'mask':0,
                   'dividing':50,
-                  'double_nuclei':60}
+                  'double_nuclei':100}
     
     for exp in Experiment.objects.all():
         experiments.append(exp.name)
@@ -892,7 +892,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             try: 
                 source_mask_cell.data={'time':cellids[0].cell_status.flags["mask_time"], 
-                                       'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["mask_frame"]]}
+                                       'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["mask_frame"]]}
             except KeyError:
                 source_mask_cell.data={'time':[], 'intensity':[]}
 
