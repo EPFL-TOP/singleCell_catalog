@@ -2155,6 +2155,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 print("dividing_cell_callback KeyError")
                 pass
             source_dividing_cell.data = {"time":[], "intensity":[]}
+            source_segments_cell.data = {"time":source_segments_cell.data["time"], "intensity":source_segments_cell.data["intensity"]}
         else:
             source_dividing_cell.data = {"time":source_dividing_cell.data["time"]+data["time"], "intensity":source_dividing_cell.data["intensity"]+data["intensity"]}
             source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"], "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
