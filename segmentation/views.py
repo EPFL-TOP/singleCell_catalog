@@ -2107,8 +2107,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 data['intensity'].append(flags_dict[flag])
                 data['intensity_full'].append(source_intensity_ch1.data["intensity"][framenumber])
                 setattr(cellflag, flag, True)
-                mydict['{}_frame'.format(flag)].append(framenumber)
-                mydict['{}_time'.format(flag)].append(source_intensity_ch1.data["time"][framenumber])
+                if framenumber not in mydict['{}_frame'.format(flag)]:
+                    mydict['{}_frame'.format(flag)].append(framenumber)
+                    mydict['{}_time'.format(flag)].append(source_intensity_ch1.data["time"][framenumber])
             elif len(source_intensity_ch1.selected.indices)==0:
                 setattr(cellflag, flag, False)
                 mydict['{}_frame'.format(flag)] = []
@@ -2142,14 +2143,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('--------dividing_cell_callback-------- ')
         data = generic_indices_callback('dividing')
         if len(source_intensity_ch1.selected.indices)==0:
+            #try:
+            #    for t in range(len(source_dividing_cell.data["time"])):
+#
+ #           except KeyError:
+  #              pass
             source_dividing_cell.data = {"time":[], "intensity":[]}
         else:
             source_dividing_cell.data = {"time":source_dividing_cell.data["time"]+data["time"], "intensity":source_dividing_cell.data["intensity"]+data["intensity"]}
-        source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"], "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
+            source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"], "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
     button_dividing_cells = bokeh.models.Button(label="Dividing")
     button_dividing_cells.on_click(dividing_cell_callback)
     #___________________________________________________________________________________________
-
 
     #___________________________________________________________________________________________
     def double_nuclei_cell_callback():
@@ -2159,14 +2164,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_double_nuclei_cell.data = {"time":[], "intensity":[]}
         else:
             source_double_nuclei_cell.data = {"time":source_double_nuclei_cell.data["time"]+data["time"], "intensity":source_double_nuclei_cell.data["intensity"]+data["intensity"]}
-        source_segments_cell.data = {"time":source_segments_cell.data["time"]+data["time"], "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
+            source_segments_cell.data      = {"time":source_segments_cell.data["time"]+data["time"],      "intensity":source_segments_cell.data["intensity"]+data["intensity_full"]}
     button_double_nuclei_cells = bokeh.models.Button(label="Double nuclei")
     button_double_nuclei_cells.on_click(double_nuclei_cell_callback)
     #___________________________________________________________________________________________
 
-    #mask           = models.BooleanField(help_text="mask cell flag", default=False, blank=True)
-    #dividing       = models.BooleanField(help_text="dividing cell flag", default=False, blank=True)
-    #double_nuclei  = models.BooleanField(help_text="double nuclei cell flag", default=False, blank=True)
     #multiple_cells = models.BooleanField(help_text="multiple cells flag", default=False, blank=True)
     #pair_cell      = models.BooleanField(help_text="pair cell flag", default=False, blank=True)
     #flat           = models.BooleanField(help_text="flat cell flag", default=False, blank=True)
