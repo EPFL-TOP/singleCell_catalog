@@ -2105,7 +2105,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def dividing_cell_callback():
         data = generic_indices_callback('dividing')
         source_dividing_cell.data = data
-        source_segments_cell.data = {"time":data["time"], "intensity":data["intensity"]}
+        print('--------dividing_cell_callback-------- ', data)
+        source_segments_cell.data = {"time":data["time"], "intensity":data["intensity_full"]}
     button_dividing_cells = bokeh.models.Button(label="Dividing")
     button_dividing_cells.on_click(dividing_cell_callback)
     #___________________________________________________________________________________________
@@ -2210,7 +2211,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.square_pin('time', 'intensity', source=source_dividing_cell, fill_color=None, size=10, line_color='black')
 
 
-    segments = plot_intensity.segment(x0='time', y0=0, x1='time', y1='intensity', line_color='red', line_width=2, source=source_segments_cell)
+    segments = plot_intensity.segment(x0='time', y0=0, x1='time', y1='intensity', line_color='red', line_width=1, source=source_segments_cell, line_dash="dashed")
 
 
     index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
