@@ -2074,7 +2074,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         mydict['{}_time'.format(flag)]  = []
 
         cellrois = CellROI.objects.select_related().filter(cell_id=cellsid[0])
-        data={'time':[], 'intensity':[]}
+        data={'time':[], 'intensity':[], 'intensity_full':[]}
 
         for cellroi in cellrois:
             framenumber = cellroi.frame.number
@@ -2082,6 +2082,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if framenumber in source_intensity_ch1.selected.indices:
                 data['time'].append(source_intensity_ch1.data["time"][framenumber])
                 data['intensity'].append(source_intensity_ch1.data["intensity"][framenumber])
+                data['intensity_full'].append(source_intensity_ch1.data["intensity"][framenumber])
                 setattr(cellflag, flag, True)
                 mydict['{}_frame'.format(flag)].append(framenumber)
                 mydict['{}_time'.format(flag)].append(source_intensity_ch1.data["time"][framenumber])
