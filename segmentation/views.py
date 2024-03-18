@@ -2105,11 +2105,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellflag.save()
 
         flags = cellstatus.flags
+        print('cellstatus.flags=',cellstatus.flags)
+        print('mydict          =',mydict)
+        
         for key in flags:
             try:
                 mydict[key]=mydict[key]+flags[key]
             except KeyError:
                 pass
+        print('mydict end      =',mydict)
+
         cellstatus.flags = mydict
         cellstatus.save()
         return data
