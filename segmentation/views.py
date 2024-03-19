@@ -538,8 +538,10 @@ def build_cells_sample(sample):
                                                cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.])
             
     for f in frames:
+        print('frame = ',f)
         cellrois_frame = CellROI.objects.select_related().filter(frame=f)
         for cellroi_frame in cellrois_frame:
+            print('  cellroi_frame=',cellroi_frame, '  cellroi_frame.id=',cellroi_frame.id)
             if cellroi_frame.id in cell_roi_id_list: continue
             min_dr_name=''
             min_dr_val=10000000000.
