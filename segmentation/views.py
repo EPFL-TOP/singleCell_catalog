@@ -529,6 +529,7 @@ def build_cells_sample(sample):
     cell_pos_dict={}
     cell_id_dict={}
     cellsid = CellID.objects.select_related().filter(sample = s)
+    print('  cellsid=',cellsid)
     for cellid in cellsid:
         cell_pos_dict[cellid.name]=[]
         cell_id_dict[cellid.name]=cellid
@@ -549,8 +550,9 @@ def build_cells_sample(sample):
             tmp_val=0
 
             for cell in cell_pos_dict:
-                print('    cell=',cell)
+                print('    cell=',cell,  '  cell_pos_dict[cell]=',cell_pos_dict[cell])
                 for pos in cell_pos_dict[cell]:
+                    print(  '        pos=',pos)
                     tmp_val+=math.sqrt(math.pow(pos[0]-cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.,2) + 
                                        math.pow(pos[1]-cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.,2))
                     if DEBUG: print('dr= ',math.sqrt(math.pow(pos[0]-cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.,2) + 
