@@ -576,6 +576,16 @@ def removeROIs(sample):
     for c in cells:
         return
 
+
+#___________________________________________________________________________________________
+def checkROI(ROIs):
+
+    for r in range(len(ROIs)):
+        if ROIs[r][2]-ROIs[r][0]>50 and ROIs[r][3]-ROIs[r][1]>50:
+            return True
+    return False
+
+
 #___________________________________________________________________________________________
 def build_ROIs():
     exp_list = Experiment.objects.all()
@@ -585,7 +595,7 @@ def build_ROIs():
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             counter_samp=0
             for s in samples:
-                if counter_samp==4: 
+                if counter_samp==10: 
                     print('===================BREAK ROIS========================')
                     break
                 counter_samp+=1
@@ -599,11 +609,11 @@ def build_ROIs():
                     #Just for now, should normally check that same ROI don't overlap
                     if len(rois)>0: continue
                     ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number])
-                    if len(ROIs)==0:
+                    if len(ROIs)==0 or checkROI(ROIs)==False:
                         ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2.8)
-                    if len(ROIs)==0:
+                    if len(ROIs)==0 or checkROI(ROIs)==False:
                         ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2.)
-                    if len(ROIs)==0:
+                    if len(ROIs)==0 or checkROI(ROIs)==False:
                         ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 1.5)
                     npixmin=10
                     for r in range(len(ROIs)):
