@@ -32,7 +32,7 @@ import base64
 from PIL import Image
 
 LOCAL=True
-DEBUG=False
+DEBUG=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 
 #MY macbook
