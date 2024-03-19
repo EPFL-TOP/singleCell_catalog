@@ -886,10 +886,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_varea_death.data['y1']   = []
                 source_varea_death.data['y2']   = []
 
-#{"mask_frame": [], "mask_time": [], "dividing_frame": [], "dividing_time": [], "double_nuclei_frame": [], 
-# "double_nuclei_time": [], "multiple_cells_frame": [], "multiple_cells_time": [], "pair_cell_frame": [], "pair_cell_time": [], 
-#"multiple_frame": [], "multiple_time": [], "pair_frame": [], "pair_time": [], 
-# "flat_frame": [0], "flat_time": [0.],"round_frame": [46, 47], "round_time": [68], "elongated_frame": [], "elongated_time": []}
 
             #Set maximums and mimimums if exists [] else
             if len(cellids[0].cell_status.peaks)>=6:
@@ -1016,6 +1012,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_flat_cell.data          = {'time':[], 'intensity':[], 'intensity_full':[]}
             source_round_cell.data         = {'time':[], 'intensity':[], 'intensity_full':[]}
             source_elongated_cell.data     = {'time':[], 'intensity':[], 'intensity_full':[]}
+            source_segments_cell.data      = {'time':[], 'intensity':[]}
+
             set_rising_falling(None)
 
 
