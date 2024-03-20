@@ -191,7 +191,7 @@ class Contour(models.Model):
     file_name        = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
     type             = models.CharField(max_length=200, choices=TYPE, help_text="contour type", default='auto')
     mode             = models.CharField(max_length=200, choices=MODE, help_text="contour type", default='cell_ROI')
-    cell_roi         = models.ForeignKey(CellROI, default='', null=True, on_delete=models.CASCADE, related_name="contour_cellroi")
+    cell_roi         = models.OneToOneField(CellROI, default='', null=True, on_delete=models.CASCADE, related_name="contour_cellroi")
 
 #    pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
 #    pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
