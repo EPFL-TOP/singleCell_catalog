@@ -1387,6 +1387,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             position_check_div.text = "<b style='color:green; ; font-size:18px;'> Position validated</b>"
         else:
             position_check_div.text = "<b style='color:red; ; font-size:18px;'> Position not validated</b>"
+
         if sample.keep_sample:
             position_keep_div.text  = "<b style='color:green; ; font-size:18px;'> Keep Position</b>"
         else:
@@ -2460,6 +2461,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     current_file=get_current_file()
     sample = Sample.objects.get(file_name=current_file)
+
+    if sample.check_sample:
+        position_check_div.text = "<b style='color:green; ; font-size:18px;'> Position validated</b>"
+    else:
+        position_check_div.text = "<b style='color:red; ; font-size:18px;'> Position not validated</b>"
+            
+    if sample.keep_sample:
+        position_keep_div.text  = "<b style='color:green; ; font-size:18px;'> Keep Position</b>"
+    else:
+        position_keep_div.text  = "<b style='color:red; ; font-size:18px;'> Do not Keep Position</b>"
     cellIDs = CellID.objects.select_related().filter(sample=sample)
     cell_list=[]
     for cid in cellIDs:
