@@ -1045,7 +1045,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def set_rising_falling_local(max_list, min_list):
 
-        print('-----------------set_rising_falling_local-------------------------     ')
+        if DEBUG:print('-----------------set_rising_falling_local-------------------------     ')
         arrays_r = {}
         for i in range(1,11):
             array_x  = 'xr_{}'.format(i)
@@ -1250,14 +1250,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         if save and cellid!=None:
             cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
-            print('cellid=',cellid, ' cellrois=',len(cellrois))
-            print('osc_dict=',osc_dict)
-            print('cellid.cell_status.start_oscillation_frame ',cellid.cell_status.start_oscillation_frame)
-            print('cellid.cell_status.end_oscillation_frame ',cellid.cell_status.end_oscillation_frame)
-            print('cellid.cell_status.time_of_death_frame ',cellid.cell_status.time_of_death_frame)
+            if DEBUG:
+                print('cellid=',cellid, ' cellrois=',len(cellrois))
+                print('osc_dict=',osc_dict)
+                print('cellid.cell_status.start_oscillation_frame ',cellid.cell_status.start_oscillation_frame)
+                print('cellid.cell_status.end_oscillation_frame ',cellid.cell_status.end_oscillation_frame)
+                print('cellid.cell_status.time_of_death_frame ',cellid.cell_status.time_of_death_frame)
             for cellroi in cellrois:
                 framenumber = cellroi.frame.number
-                print('  frame=',framenumber)
+                if DEBUG:print('  frame=',framenumber)
                 cellflag = cellroi.cellflag_cellroi
 
                 if framenumber in osc_dict['rising_frame']:  cellflag.rising = True
@@ -1853,7 +1854,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Create next button
     def prev_callback():
-        print('****************************  prev_callback ****************************')
+        if DEBUG:print('****************************  prev_callback ****************************')
         update_image(-1)
     button_prev = bokeh.models.Button(label="Prev")
     button_prev.on_click(prev_callback)
