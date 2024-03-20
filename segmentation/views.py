@@ -1385,17 +1385,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         sample = Sample.objects.get(file_name=current_file)
         if sample.check_sample:
             position_check_div.text = "<b style='color:green; ; font-size:18px;'> Position validated</b>"
-            position_check_button.label = "Position validated"
+            position_check_button.label = "Position not validated"
         else:
             position_check_div.text = "<b style='color:red; ; font-size:18px;'> Position not validated</b>"
-            position_check_button.label = "Position not validated"
+            position_check_button.label = "Position validated"
 
         if sample.keep_sample:
             position_keep_div.text  = "<b style='color:green; ; font-size:18px;'> Keep Position</b>"
-            position_keep_button.label = "Keep Position"
+            position_keep_button.label = "Don't Keep Position"
         else:
             position_keep_div.text  = "<b style='color:red; ; font-size:18px;'> Do not Keep Position</b>"
-            position_keep_button.label = "Don't keep Position"
+            position_keep_button.label = "Keep Position"
 
 
         cellIDs = CellID.objects.select_related().filter(sample=sample)
@@ -2468,13 +2468,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     if sample.check_sample:
         position_check_div.text = "<b style='color:green; ; font-size:18px;'> Position validated</b>"
+        position_check_button.label = "Position not validated"
     else:
         position_check_div.text = "<b style='color:red; ; font-size:18px;'> Position not validated</b>"
-            
+        position_check_button.label = "Position validated"
+
     if sample.keep_sample:
         position_keep_div.text  = "<b style='color:green; ; font-size:18px;'> Keep Position</b>"
+        position_keep_button.label = "Don't keep Position"
     else:
         position_keep_div.text  = "<b style='color:red; ; font-size:18px;'> Do not Keep Position</b>"
+        position_keep_button.label = "Keep Position"
     cellIDs = CellID.objects.select_related().filter(sample=sample)
     cell_list=[]
     for cid in cellIDs:
