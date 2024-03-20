@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-TEST=True
+TEST=False
 from pathlib import Path
 import os#, sys
 from bokeh.settings import bokehjsdir, settings as bokeh_settings
