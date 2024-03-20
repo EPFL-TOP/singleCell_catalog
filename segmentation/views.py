@@ -536,7 +536,8 @@ def build_cells_sample(sample):
         for cellroi in cellrois:
             cell_pos_dict[cellid.name].append([cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., 
                                                cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.])
-            
+
+
     for f in frames:
         cellrois_frame = CellROI.objects.select_related().filter(frame=f)
         for cellroi_frame in cellrois_frame:
@@ -557,10 +558,12 @@ def build_cells_sample(sample):
                 if tmp_val/len(cell_pos_dict[cell])<min_dr_val and tmp_val/len(cell_pos_dict[cell])<max_dr_val:
                     min_dr_val=tmp_val
                     min_dr_name=cell
+                    cellroi_frame.cell_id=cell_id_dict[min_dr_name]
+                    cellroi_frame.save()
                 if DEBUG: print('frame=',f, '   cellroi_frame=',cellroi_frame,'  min_dr_val=',min_dr_val, '  min_dr_name=',min_dr_name, '  max_dr_val=',max_dr_val,'  tmp_val/len(cell_pos_dict[cell])=',tmp_val/len(cell_pos_dict[cell]))
-            if min_dr_name!='':
-                cellroi_frame.cell_id=cell_id_dict[min_dr_name]
-                cellroi_frame.save()
+            #if min_dr_name!='':
+            #    cellroi_frame.cell_id=cell_id_dict[min_dr_name]
+            #    cellroi_frame.save()
                 
 
 #___________________________________________________________________________________________
@@ -595,8 +598,10 @@ def build_ROIs():
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             #counter_samp=0
             for s in samples:
+                cellids = CellID.objects.select_related().filter(sample=s)
+                if len(cellids)>0:continue
                 print('build roi sample: ',s.file_name)
-                if 'wscepfl0080' not in s.file_name and 'wscepfl0087' not in s.file_name:continue
+                if 'wscepfl00' not in s.file_name :continue
 
                 #if counter_samp==10: 
                 #    print('===================BREAK ROIS========================')
@@ -857,10 +862,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Create a Slider widget
     initial_time_point = 0
     slider         = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point", width=250)
-    plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=500, height=500)
+    plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500)
     plot_osc_tod   = bokeh.plotting.figure(title="Start/End of Oscilation and Time of death", x_axis_label='Time (minutes)', y_axis_label='Number of positions',width=1000, height=250)
-    plot_nosc      = bokeh.plotting.figure(title="Number of oscillations", x_axis_label='Number of oscillations', y_axis_label='Number of positions',width=500, height=250)
+    plot_nosc      = bokeh.plotting.figure(title="Number of oscillations", x_axis_label='Number of oscillations', y_axis_label='Number of positions',width=550, height=250)
 
     slider_find_peaks  = bokeh.models.Slider(start=0, end=100, value=30, step=1, title="Peak prominence", width=200)
 
@@ -1509,7 +1514,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #prepare_intensity()
         reset_tap_tool()
         update_source_osc_tod()
-
+        update_dropdown_channel('','','')
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
 
