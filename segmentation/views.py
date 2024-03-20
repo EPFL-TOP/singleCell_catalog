@@ -1854,11 +1854,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if sample.check_sample == False:
             sample.check_sample = True
             position_check_button.label = "Position not validated"
-            position_check_div.text = "<b style='color:red; ; font-size:14px;'> Position not validated</b>"
+            position_check_div.text = "<b style='color:green; ; font-size:18px;'> Position validated</b>"
+            dropdown_pos.title =  "<b style='color:green; ; font-size:14px;'> Position</b>"
         else:
             sample.check_sample = False
             position_check_button.label = "Position Validated"
-            position_check_div.text = "<b style='color:green; ; font-size:14px;'> Position validated</b>"
+            position_check_div.text = "<b style='color:red; ; font-size:18px;'> Position not validated</b>"
+            dropdown_pos.title =  "<b style='color:red; ; font-size:14px;'> Position</b>"
+
         sample.save()
     position_check_button = bokeh.models.Button(label="Validate Position")
     position_check_button.on_click(position_check_callback)
