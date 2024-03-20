@@ -72,27 +72,6 @@ class Frame(models.Model):
     def __str__(self):
         return '{0}, {1}'.format(self.number, self.sample)
 
-#___________________________________________________________________________________________
-class Segmentation(models.Model):
-    name                 = models.CharField(default='', max_length=200, help_text="name of the segmentation")
-    experiment           = models.ForeignKey(Experiment, default='', on_delete=models.SET_DEFAULT)
-    algorithm_type       = models.CharField(max_length=200, help_text="type of algorithm used")
-    algorithm_version    = models.CharField(max_length=200, help_text="version of algorithm used")
-    algorithm_parameters = models.JSONField(help_text="parameters of the algorithm used")
-
-    def __str__(self):
-        return '{0}, {1}, {2}, {3}'.format(self.name, self.algorithm_type, self.algorithm_version, self.algorithm_parameters)
-
-#___________________________________________________________________________________________
-class SegmentationChannel(models.Model):
-    channel_name   = models.CharField(max_length=200, default='', help_text="name of the channel used for the segmentation")
-    channel_number = models.PositiveSmallIntegerField(default=-1, help_text="channel number")
-    segmentation   = models.ForeignKey(Segmentation, default='', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return '{0}, {1}, {2}, {3}'.format(self.channel_name, self.channel_number, self.segmentation.name, self.segmentation.algorithm_type, self.segmentation.algorithm_version, self.segmentation.algorithm_parameters)
-
-
 
 #___________________________________________________________________________________________
 class CellStatus(models.Model):
@@ -193,9 +172,6 @@ class Contour(models.Model):
     mode             = models.CharField(max_length=200, choices=MODE, help_text="contour type", default='cell_ROI')
     cell_roi         = models.OneToOneField(CellROI, default='', null=True, on_delete=models.CASCADE, related_name="contour_cellroi")
 
-#    pixels_data_contour  = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data of the contour", related_name="pixels_data_contour")
-#    pixels_data_inside   = models.OneToOneField(Data, blank=True, null=True, default='', on_delete=models.CASCADE, help_text="pixels data inside the contour", related_name="pixels_data_inside")
-#    segmentation_channel = models.ForeignKey(SegmentationChannel, default='', on_delete=models.CASCADE)
 
     def __str__(self):
         if self.cell_roi.cell_id != None:
