@@ -1440,6 +1440,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:
             print('dropdown_cell.value = ',dropdown_cell.value)
             print('dropdown_cell.options = ',dropdown_cell.options)
+        prepare_intensity()
+
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
     #___________________________________________________________________________________________
@@ -1488,7 +1490,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:print('prepare_pos after slider')
         update_dropdown_cell('','','')
         slider.end=len(source_imgs.data['images'][0]) - 1
-        prepare_intensity()
+        #prepare_intensity()
         reset_tap_tool()
         update_source_osc_tod()
 
@@ -1665,7 +1667,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 print("Error: {} file not found".format(roi.contour_cellroi.file_name) )
             roi.delete()
         update_dropdown_cell('','','')
-        prepare_intensity()
+        #prepare_intensity()
 
     button_delete_roi = bokeh.models.Button(label="Delete ROI")
     button_delete_roi.on_click(delete_roi_callback)
@@ -1844,6 +1846,23 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_play_stop.on_click(play_stop_callback)
     #___________________________________________________________________________________________
 
+    position_check_div = bokeh.models.Div(text="Position not validated")
+    #___________________________________________________________________________________________
+    def position_check_callback():
+        current_file=get_current_file()
+        sample   = Sample.objects.get(file_name=current_file)
+        if sample.check_sample == False:
+            sample.check_sample = True
+            position_check_button.label = "Position not validated"
+            position_check_div.text = "<b style='color:red; ; font-size:14px;'> Position not validated</b>"
+        else:
+            sample.check_sample = False
+            position_check_button.label = "Position Validated"
+            position_check_div.text = "<b style='color:green; ; font-size:14px;'> Position validated</b>"
+        sample.save()
+    position_check_button = bokeh.models.Button(label="Validate Position")
+    position_check_button.on_click(position_check_callback)
+    #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     # Create next button
@@ -2566,12 +2585,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.axis.visible = False
     plot_image.grid.visible = False
 
+
     exp_color_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
                                          bokeh.layouts.row(dropdown_well),
                                          bokeh.layouts.row(dropdown_pos), 
                                          bokeh.layouts.row(dropdown_channel),
                                          bokeh.layouts.row(dropdown_color),
-                                         bokeh.layouts.row(bokeh.layouts.Spacer(width=10),contrast_slider))
+                                         bokeh.layouts.row(bokeh.layouts.Spacer(width=10),contrast_slider),
+                                         bokeh.layouts.row(position_check_button))
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
@@ -2591,7 +2612,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
                                              bokeh.layouts.row(plot_nosc))
 
-    norm_layout = bokeh.layouts.column(bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div),
+                                       bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
                                        bokeh.layouts.row(text))
 
     doc.add_root(norm_layout)
