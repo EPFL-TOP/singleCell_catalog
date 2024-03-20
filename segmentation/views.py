@@ -4,7 +4,7 @@ from django.db import connection
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
 
-from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, Segmentation, SegmentationChannel, CellID, CellROI, CellStatus, CellFlag
+from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, CellID, CellROI, CellStatus, CellFlag
 
 import os, sys, json, glob, gc
 import time
