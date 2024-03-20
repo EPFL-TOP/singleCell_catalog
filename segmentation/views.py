@@ -595,12 +595,13 @@ def build_ROIs():
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             #counter_samp=0
             for s in samples:
-                if 'wscepfl0080' not in s.file_name or 'wscepfl0087' not in s.file_name:continue
+                print('build roi sample: ',s.file_name)
+                if 'wscepfl0080' not in s.file_name and 'wscepfl0087' not in s.file_name:continue
 
                 #if counter_samp==10: 
                 #    print('===================BREAK ROIS========================')
                 #    break
-                counter_samp+=1
+                #counter_samp+=1
                 frames = Frame.objects.select_related().filter(sample=s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 #images are t, c, x, y 
