@@ -867,10 +867,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to prepare the intensity plot
     def prepare_intensity():
-        print('----------------prepare_intensity--------------------dropdown_cell.value=',dropdown_cell.value)
+        if DEBUG:print('----------------prepare_intensity--------------------dropdown_cell.value=',dropdown_cell.value)
         current_file=get_current_file()
         if dropdown_cell.value!='':
-            print('----------------prepare_intensity-------------------- in the if')
+            if DEBUG: print('----------------prepare_intensity-------------------- in the if')
 
             sample = Sample.objects.get(file_name=current_file)
             cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
@@ -999,7 +999,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             set_rising_falling(cellids[0])
 
         else:
-            print('in the else ----------------prepare_intensity-------------------- in the else')
+            if DEBUG: print('in the else ----------------prepare_intensity-------------------- in the else')
 
             line_position.location = 0
             if len(source_intensity_ch1.data["time"])!=0:
@@ -1039,7 +1039,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         ##    plot_intensity.y_range.start=min(source_intensity_ch1.data["intensity"])*0.4
         ###plot_intensity.y_range.trigger('start', 'end')
         #plot_intensity.y_range.update(start=plot_intensity.y_range.start, end=plot_intensity.y_range.end)
-        print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
+        if DEBUG: print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
 
     #___________________________________________________________________________________________
 
