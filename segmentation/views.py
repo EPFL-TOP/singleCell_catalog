@@ -274,7 +274,7 @@ def register_rawdataset():
                                  )
         experiment.save()
         list_experiments_uid.append(x[1])
-        print('adding experiment with name:  ',x[1])
+        if DEBUG:print('adding experiment with name:  ',x[1])
 
 
     for exp in Experiment.objects.all():
@@ -288,7 +288,7 @@ def register_rawdataset():
             files_json = json.loads(x[7])
             expds = ExperimentalDataset(data_type=x[4], data_name=x[5], experiment=exp, number_of_files=x[6], files=files_json)
             expds.save()
-            print('    adding experimental dataset with name ',os.path.join(x[4], x[5]))
+            if DEBUG:print('    adding experimental dataset with name ',os.path.join(x[4], x[5]))
 
             for f in files_json["files"]:
                 fname=os.path.join(BASEPATH, x[4], x[5], "raw_files", f["name"])
@@ -302,7 +302,7 @@ def register_rawdataset():
 #                                date=metadata['date'],
                                 keep_sample=True)
                 sample.save()
-                print('        adding sample with name ',fname)
+                if DEBUG:print('        adding sample with name ',fname)
 
                 metadataFrame = read.nd2reader_getFrameMetadata(fname)
                 for fr in range(metadata['number_of_frames']):
@@ -317,7 +317,7 @@ def register_rawdataset():
                                   width=metadataFrame['width'],
                                   pixel_microns=metadataFrame['pixel_microns'],
                                   )
-                    print('            adding frame with name ',fr)
+                    if DEBUG: print('            adding frame with name ',fr)
                     frame.save()
 
 #___________________________________________________________________________________________
@@ -593,11 +593,13 @@ def build_ROIs():
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-            counter_samp=0
+            #counter_samp=0
             for s in samples:
-                if counter_samp==10: 
-                    print('===================BREAK ROIS========================')
-                    break
+                if 'wscepfl0080' not in s.file_name or 'wscepfl0087' not in s.file_name:continue
+
+                #if counter_samp==10: 
+                #    print('===================BREAK ROIS========================')
+                #    break
                 counter_samp+=1
                 frames = Frame.objects.select_related().filter(sample=s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
