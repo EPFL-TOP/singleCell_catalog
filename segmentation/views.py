@@ -32,7 +32,7 @@ import base64
 from PIL import Image
 
 LOCAL=True
-DEBUG=True
+DEBUG=False
 BASEPATH="/mnt/nas_rcp/raw_data"
 
 #MY macbook
@@ -523,13 +523,12 @@ def build_cells_sample(sample):
                 cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
                 cell_roi_list[cid].save()
                 cell_roi_id_list.append(cell_roi_list[cid].id)
-    print('cell_roi_id_list afgter DBSCAN ',cell_roi_id_list)
+    if DEBUG: print('cell_roi_id_list afgter DBSCAN ',cell_roi_id_list)
 
     #Then cluster remaining or new cells ROIs
     cell_pos_dict={}
     cell_id_dict={}
     cellsid = CellID.objects.select_related().filter(sample = s)
-    print('  cellsid=',cellsid)
     for cellid in cellsid:
         cell_pos_dict[cellid.name]=[]
         cell_id_dict[cellid.name]=cellid
@@ -539,10 +538,8 @@ def build_cells_sample(sample):
                                                cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.])
             
     for f in frames:
-        print('frame = ',f)
         cellrois_frame = CellROI.objects.select_related().filter(frame=f)
         for cellroi_frame in cellrois_frame:
-            print('  cellroi_frame=',cellroi_frame, '  cellroi_frame.id=',cellroi_frame.id)
             if cellroi_frame.id in cell_roi_id_list: continue
             min_dr_name=''
             min_dr_val=10000000000.
@@ -550,12 +547,7 @@ def build_cells_sample(sample):
             tmp_val=0
 
             for cell in cell_pos_dict:
-                print('    cell=',cell,  '  cell_pos_dict[cell]=',cell_pos_dict[cell])
                 for pos in cell_pos_dict[cell]:
-                    print(  '        pos=',pos)
-                    print(  '  x=',cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2,'   y=',cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2)
-                    print(  '  math.pow(pos[0]-(cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.),2)=',math.pow(pos[0]-(cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.),2))
-                    print(  '  math.pow(pos[1]-(cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.),2)=',math.pow(pos[1]-(cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.),2))
                     tmp_val+=              math.sqrt(math.pow(pos[0]-(cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.),2) + 
                                                      math.pow(pos[1]-(cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.),2))
                     if DEBUG: print('dr= ',math.sqrt(math.pow(pos[0]-(cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.),2) + 
