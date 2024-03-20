@@ -552,7 +552,7 @@ def build_cells_sample(sample):
                 for pos in cell_pos_dict[cell]:
                     tmp_val+=              math.sqrt(math.pow(pos[0]-(cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.),2) + 
                                                      math.pow(pos[1]-(cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.),2))
-                    if DEBUG==False: print('dr= ',math.sqrt(math.pow(pos[0]-(cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.),2) + 
+                    if DEBUG: print('dr= ',math.sqrt(math.pow(pos[0]-(cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.),2) + 
                                                      math.pow(pos[1]-(cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.),2)),
                                            ' n pos=',len(cell_pos_dict[cell]))
 
@@ -561,7 +561,7 @@ def build_cells_sample(sample):
                     min_dr_name=cell
                     cellroi_frame.cell_id=cell_id_dict[min_dr_name]
                     cellroi_frame.save()
-                if DEBUG==False: print('frame=',f, '   cellroi_frame=',cellroi_frame,'  min_dr_val=',min_dr_val, '  min_dr_name=cellname=',min_dr_name, '  max_dr_val=',max_dr_val,'  tmp_val/len(cell_pos_dict[cell])=',tmp_val/len(cell_pos_dict[cell]))
+                if DEBUG: print('frame=',f, '   cellroi_frame=',cellroi_frame,'  min_dr_val=',min_dr_val, '  min_dr_name=cellname=',min_dr_name, '  max_dr_val=',max_dr_val,'  tmp_val/len(cell_pos_dict[cell])=',tmp_val/len(cell_pos_dict[cell]))
             #if min_dr_name!='':
             #    cellroi_frame.cell_id=cell_id_dict[min_dr_name]
             #    cellroi_frame.save()
