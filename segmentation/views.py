@@ -2647,7 +2647,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
                                              bokeh.layouts.row(plot_nosc))
 
-    norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10),position_keep_div)
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10),position_keep_div),
                                        bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
                                        bokeh.layouts.row(text))
 
