@@ -753,7 +753,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to get the image stack
     def get_current_stack():
-        print('****************************  get_current_stack ****************************')
+        if DEBUG: print('****************************  get_current_stack ****************************')
         current_file=get_current_file()
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
@@ -802,15 +802,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to get the current file
     def get_current_file():
-        print('****************************  get_current_file ****************************')
-        print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   dropdown_well.value',dropdown_well.value, '  dropdown_pos.value',dropdown_pos.value)
+        if DEBUG:
+            print('****************************  get_current_file ****************************')
+            print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   dropdown_well.value',dropdown_well.value, '  dropdown_pos.value',dropdown_pos.value)
 
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         current_file = ''
         for f in current_files:
             if dropdown_pos.value in f:
                 current_file = f
-        print('--------------- get_current_file() current file  ',current_file)
+        if DEBUG: print('--------------- get_current_file() current file  ',current_file)
         return current_file
     #___________________________________________________________________________________________
 
@@ -1143,7 +1144,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def set_rising_falling(cellid, save=False):
-        print("*************************set_rising_falling*****************************************")
+        if DEBUG: print("*************************set_rising_falling*****************************************")
         arrays_r = {}
         for i in range(1,11):
             array_x  = 'xr_{}'.format(i)
@@ -1290,23 +1291,24 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to update the well depending on the experiment
     def update_dropdown_well(attr, old, new):
-        print('****************************  update_dropdown_well ****************************')
+        if DEBUG: print('****************************  update_dropdown_well ****************************')
         dropdown_well.options = wells[dropdown_exp.value]
-        print('+++++++++++++++++  dropdown_exp.value ',dropdown_exp.value, '  wells[dropdown_exp.value]  +++++++++++  ',wells[dropdown_exp.value],'   ',)
-        print('+++++++++++++++++  positions[{0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0] +++  ',positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0])
-        print('+++++++++++++++++  {0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0]) +++++++++++++++++  ', '{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0]))
+        if DEBUG:
+            print('+++++++++++++++++  dropdown_exp.value ',dropdown_exp.value, '  wells[dropdown_exp.value]  +++++++++++  ',wells[dropdown_exp.value],'   ',)
+            print('+++++++++++++++++  positions[{0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0] +++  ',positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0])
+            print('+++++++++++++++++  {0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0]) +++++++++++++++++  ', '{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0]))
         dropdown_well.value   = wells[dropdown_exp.value][0]
         dropdown_pos.options  = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
         #dropdown_pos.value    = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0]
         if slider.value == 0:
-            print('in the if update_dropdown_well')
+            if DEBUG:print('in the if update_dropdown_well')
             left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         
             source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
             source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
             source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         else:
-            print('in the else update_dropdown_well')
+            if DEBUG:print('in the else update_dropdown_well')
             slider.value = 0
         slider.end=len(source_imgs.data['images'][0]) - 1
 
@@ -1316,19 +1318,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to update the position depending on the experiment and the well
     def update_dropdown_pos(attr, old, new):
-        print('****************************  update_dropdown_pos ****************************')
+        if DEBUG:print('****************************  update_dropdown_pos ****************************')
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
 
         if slider.value == 0:
-            print('in the if update_dropdown_pos')
+            if DEBUG:print('in the if update_dropdown_pos')
             left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         
             source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
             source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
             source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         else:
-            print('in the else update_dropdown_pos')
+            if DEBUG:print('in the else update_dropdown_pos')
             slider.value = 0
         #prepare_intensity()
         #update_source_osc_tod()
@@ -1340,7 +1342,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def update_dropdown_channel(attr, old, new):
-        print('****************************  update_dropdown_channel ****************************')
+        if DEBUG:print('****************************  update_dropdown_channel ****************************')
         ch_list=[]
         for ch in range(len(source_img_ch.data['img'])):
             ch_list.append(str(ch))
@@ -1358,8 +1360,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #contrast_slider.value = (img_min, img_max)
         #contrast_slider.start = img_min
         #contrast_slider.end = img_max
-        print('update_dropdown_channel options: ',dropdown_channel.options)
-        print('update_dropdown_channel value  : ',dropdown_channel.value)
+        if DEBUG:
+            print('update_dropdown_channel options: ',dropdown_channel.options)
+            print('update_dropdown_channel value  : ',dropdown_channel.value)
 
     channel_list=[]
     for ch in range(len(ind_images_list)):channel_list.append(str(ch))
@@ -1369,7 +1372,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def update_dropdown_cell(attr, old, new):
-        print('****************************  update_dropdown_cell ****************************')
+        if DEBUG:print('****************************  update_dropdown_cell ****************************')
         source_intensity_ch0.data={'time':[], 'intensity':[]}
         source_intensity_ch1.data={'time':[], 'intensity':[]}
         source_intensity_ch2.data={'time':[], 'intensity':[]}
@@ -1379,7 +1382,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellIDs = CellID.objects.select_related().filter(sample=sample)
 
 
-        print('dropdown_cell.value = ',dropdown_cell.value)
+        if DEBUG:print('dropdown_cell.value = ',dropdown_cell.value)
         cell_list=[]
         for cid in cellIDs:
             cell_list.append(cid.name)
@@ -1430,15 +1433,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 dropdown_cell.value = ''
         if len(dropdown_cell.options)==0:
             dropdown_cell.value = ''
-        print('dropdown_cell.value = ',dropdown_cell.value)
-        print('dropdown_cell.options = ',dropdown_cell.options)
+        if DEBUG:
+            print('dropdown_cell.value = ',dropdown_cell.value)
+            print('dropdown_cell.options = ',dropdown_cell.options)
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     def update_dropdown_color(attr, old, new):
-        print('****************************  update_dropdown_channel ****************************')
+        if DEBUG:print('****************************  update_dropdown_channel ****************************')
         palette = dropdown_color.value
         color_mapper.palette = palette
 
@@ -1454,7 +1458,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to update the position
     def prepare_pos(attr, old, new):
-        print('****************************  prepare_pos ****************************')
+        if DEBUG:print('****************************  prepare_pos ****************************')
         images, images_norm = get_current_stack()
         source_imgs.data      = {'images':images}
         source_imgs_norm.data = {'images':images_norm}
@@ -1464,19 +1468,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img.data = {'img':[new_image]}
         dropdown_channel.value = dropdown_channel.options[0]
         dropdown_color.value = dropdown_color.options[0]
-        print('prepare_pos dropdown_channel.value ',dropdown_channel.value)
-        print('prepare_pos dropdown_channel.options ',dropdown_channel.options)
-        print('prepare_pos before slider')
+        if DEBUG:
+            print('prepare_pos dropdown_channel.value ',dropdown_channel.value)
+            print('prepare_pos dropdown_channel.options ',dropdown_channel.options)
+            print('prepare_pos before slider')
         if slider.value == 0:
-            print('in the if prepare_pos')
+            if DEBUG:print('in the if prepare_pos')
             left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
             source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
             source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
             source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         else:
-            print('in the else prepare_pos')
+            if DEBUG:print('in the else prepare_pos')
             slider.value = 0
-        print('prepare_pos after slider')
+        if DEBUG:print('prepare_pos after slider')
         update_dropdown_cell('','','')
         slider.end=len(source_imgs.data['images'][0]) - 1
         prepare_intensity()
@@ -1491,7 +1496,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to get the current index
     def get_current_index():
-        print('****************************  get_current_index ****************************')
+        if DEBUG:print('****************************  get_current_index ****************************')
         return slider.value
 
     refresh_time_list = ["100", "200", "300", "400", "500", "1000"]
@@ -1499,8 +1504,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Callback function to handle menu item click
     #___________________________________________________________________________________________
     def refresh_time_callback(attr, old, new):
-        print('****************************  refresh_time_callback ****************************')
-        print("refresh time : {}".format(dropdown_refresh_time.value))
+        if DEBUG:
+            print('****************************  refresh_time_callback ****************************')
+            print("refresh time : {}".format(dropdown_refresh_time.value))
         play_stop_callback()
         play_stop_callback()
     dropdown_refresh_time.on_change('value',refresh_time_callback)
@@ -1512,7 +1518,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # update the source_roi
     def update_source_roi_cell_labels():
-        print('****************************  update_source_roi_cell_labels ****************************')
+        if DEBUG:print('****************************  update_source_roi_cell_labels ****************************')
         left_rois=[]
         right_rois=[]
         top_rois=[]
@@ -1548,7 +1554,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             height_cells.append(frame[0].height-roi.max_row)
             if roi.cell_id !=None: names_cells.append(roi.cell_id.name)
             else:names_cells.append("none")
-        print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
+        if DEBUG:print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
         return left_rois,right_rois,top_rois,bottom_rois, height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells
     #___________________________________________________________________________________________
@@ -1560,7 +1566,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Define a callback to update bf_display with slider
     def callback_slider(attr: str, old: Any, new: Any) -> None:
-        print('****************************  callback_slider ****************************')
+        if DEBUG:print('****************************  callback_slider ****************************')
         time_point = slider.value
         images_norm=source_imgs_norm.data['images']
         new_image = images_norm[int(dropdown_channel.value)][time_point]
@@ -1599,7 +1605,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Define a callback to update the ROI
     def select_roi_callback(event):
-        print('****************************  select_roi_callback ****************************')
+        if DEBUG:print('****************************  select_roi_callback ****************************')
         if isinstance(event, bokeh.events.SelectionGeometry):
             data_manual = dict(
                 left=source_roi_manual.data['left'] + [event.geometry['x0']],
@@ -1630,7 +1636,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Define a callback to delete the ROI
     def delete_roi_callback():
-        print('****************************  delete_roi_callback ****************************')
+        if DEBUG:print('****************************  delete_roi_callback ****************************')
         source_roi.data = {'left': [], 'right': [], 'top': [], 'bottom': []}
         source_labels.data = {'height':[], 'weight':[], 'names':[]}
         source_cells.data = {'height':[], 'weight':[], 'names':[]}
@@ -1664,8 +1670,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Save ROI
     def save_roi_callback():
-        print('****************************  save_roi_callback ****************************')
-        print('Saving ROI===================================',source_roi_manual.data)
+        if DEBUG:
+            print('****************************  save_roi_callback ****************************')
+            print('Saving ROI===================================',source_roi_manual.data)
         current_file=get_current_file()
         current_index=get_current_index()
 
@@ -1684,19 +1691,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             #TOBECHANGED CLEMENT really need to save more than1 roi per frame
             roi_number = len(cellrois)
             #roi_number=i+len(source_roi.data['left'])-len(source_roi_manual.data['left'])
-            print('roi_number=',roi_number)
-            print('source_roi=',len(source_roi.data['left']))
-            print('source_roi_manual=',len(source_roi_manual.data['left']))
-            print('i=',i)
+            if DEBUG:
+                print('roi_number=',roi_number)
+                print('source_roi=',len(source_roi.data['left']))
+                print('source_roi_manual=',len(source_roi_manual.data['left']))
+                print('i=',i)
             for cellroi in cellrois:
                 if cellroi.min_col == math.floor(source_roi_manual.data['left'][i]) and \
                     cellroi.min_row == math.floor(frame[0].height-source_roi_manual.data['bottom'][i])  and \
                         cellroi.max_col == math.ceil(source_roi_manual.data['right'][i]) and \
                             cellroi.max_row == math.ceil(frame[0].height-source_roi_manual.data['top'][i]):
-                        print('save_roi_callback already exist ',frame[0])
+                        if DEBUG:print('save_roi_callback already exist ',frame[0])
                         roi_exist=True
             if not roi_exist:
-                print('save_roi_callback saving frame=',frame[0], ' roi_number=',roi_number)
+                if DEBUG:print('save_roi_callback saving frame=',frame[0], ' roi_number=',roi_number)
                 roi = CellROI(min_col=math.floor(source_roi_manual.data['left'][i]), max_col=math.ceil(source_roi_manual.data['right'][i]), 
                               min_row=math.floor(frame[0].height-source_roi_manual.data['bottom'][i]),  max_row=math.ceil(frame[0].height-source_roi_manual.data['top'][i]),
                               roi_number=roi_number, 
@@ -1707,18 +1715,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 images=np.array(images)
                 for i in range(len(images)):
                     images[i]=np.flip(images[i],0)
-                print('save_roi_callback images shape ', images.shape)
+                if DEBUG:print('save_roi_callback images shape ', images.shape)
                 cropped_dict = {'shape_original':images[0].shape}
                 out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
                 out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame[0].number, roi_number))
                 if not os.path.exists(out_dir_name):
                     os.makedirs(out_dir_name)
-                print('roi.min_row, roi.max_row, roi.min_col,roi.max_col',roi.min_row, roi.max_row, roi.min_col,roi.max_col)
-                #cropped_img = images[:, 512-roi.min_row:512-roi.max_row, roi.min_col:roi.max_col]
+                if DEBUG:print('roi.min_row, roi.max_row, roi.min_col,roi.max_col',roi.min_row, roi.max_row, roi.min_col,roi.max_col)
                 cropped_img = images[:, roi.min_row:roi.max_row, roi.min_col:roi.max_col]
-                #from build_roi cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
-
-                print('images shape ',images.shape)
                 
                 cropped_dict['shape']=[cropped_img.shape[1],cropped_img.shape[2]]
                 cropped_dict['npixels']=cropped_img.shape[1]*cropped_img.shape[2]
@@ -1727,10 +1731,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
                 channels=exp.name_of_channels.split(',')
                 for ch in range(len(channels)):
-                    #cropped_dict['intensity_{}'.format(channels[ch])] = np.flip(cropped_img[ch],0).tolist()
                     cropped_dict['intensity_{}'.format(channels[ch])] = cropped_img[ch].tolist()
                             
-                print('out_file_name=',out_file_name)
+                if DEBUG:print('out_file_name=',out_file_name)
                 out_file = open(out_file_name, "w") 
                 json.dump(cropped_dict, out_file) 
                 out_file.close() 
@@ -1786,7 +1789,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to update the image displayed
     def update_image(way=1, number=-9999):
-        print('****************************  update_image ****************************')
+        if DEBUG:print('****************************  update_image ****************************')
         current_index=get_current_index()
         images=source_imgs.data["images"]
         current_index = (current_index + 1*way) % len(images[0])
@@ -1800,7 +1803,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             line_position.location = -999
         else:
             line_position.location = source_intensity_ch1.data["time"][current_index]
-        print('update_image index=',current_index)
+        if DEBUG:print('update_image index=',current_index)
 
     #___________________________________________________________________________________________
 
@@ -1822,7 +1825,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Create play/stop button
     def play_stop_callback():
-        print('****************************  play_stop_callback ****************************')
+        if DEBUG:print('****************************  play_stop_callback ****************************')
         refresh_time = int(dropdown_refresh_time.value)
         if  not play_state.playing:
             button_play_stop.label = "Stop"
@@ -1841,7 +1844,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Create next button
     def next_callback():
-        print('****************************  next_callback ****************************')
+        if DEBUG:print('****************************  next_callback ****************************')
         update_image()
     button_next = bokeh.models.Button(label="Next")
     button_next.on_click(next_callback)
@@ -1859,7 +1862,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Go to next frame with possible issue
     def inspect_cells_callback():
-        print('****************************  inspect_cells_callback ****************************')
+        if DEBUG:print('****************************  inspect_cells_callback ****************************')
         current_file=get_current_file()
 
         sample   = Sample.objects.get(file_name=current_file)
@@ -1893,7 +1896,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Go to next frame with possible issue
     def build_cells_callback():
-        print('****************************  build_cells_callback ****************************')
+        if DEBUG:print('****************************  build_cells_callback ****************************')
         current_file=get_current_file()
         build_cells_sample(sample=current_file)
         left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
@@ -1962,15 +1965,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def find_peaks_slider_callback(attr, old, new):
-        print('=======================find_peaks_slider_callback=======================================')
+        if DEBUG:print('=======================find_peaks_slider_callback=======================================')
         int_array = np.array(source_intensity_ch1.data["intensity"])
         for int in range(len(int_array)):
             if source_intensity_ch1.data["time"][int]<start_oscillation_position.location:
                 int_array[int]=0
             if source_intensity_ch1.data["time"][int]>end_oscillation_position.location:
                 int_array[int]=0
-        print('source_intensity_ch1 ',source_intensity_ch1.data["intensity"])
-        print('int_array            ',int_array)
+        if DEBUG:
+            print('source_intensity_ch1 ',source_intensity_ch1.data["intensity"])
+            print('int_array            ',int_array)
         peaksmax, _ = find_peaks(np.array(int_array),  prominence=new)
         peaksmin, _ = find_peaks(-np.array(int_array), prominence=new)
 
@@ -1987,7 +1991,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             time_min.append(source_intensity_ch1.data["time"][p])
             int_min.append(source_intensity_ch1.data["intensity"][p])
         source_intensity_min.data={'time':time_min, 'intensity':int_min}
-        print('peaksmax=',peaksmax,'  peaksmin=',peaksmin)
+        if DEBUG:print('peaksmax=',peaksmax,'  peaksmin=',peaksmin)
         set_rising_falling_local(peaksmax, peaksmin)
     slider_find_peaks.on_change('value', find_peaks_slider_callback)
     #___________________________________________________________________________________________
@@ -1996,7 +2000,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def save_peaks_callback():
-        print('------------------------------------save_peaks_callback-------------------------------')
+        if DEBUG:print('------------------------------------save_peaks_callback-------------------------------')
         int_array = np.array(source_intensity_ch1.data["intensity"])
         for int in range(len(int_array)):
             if source_intensity_ch1.data["time"][int]<start_oscillation_position.location:
@@ -2022,7 +2026,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         sample = Sample.objects.get(file_name=get_current_file())
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
-        print('cellsid ',cellsid, '  ',len(cellsid))
+        if DEBUG:print('cellsid ',cellsid, '  ',len(cellsid))
         if len(cellsid)==1:
             cellstatus = cellsid[0].cell_status
             cellstatus.peaks={'min_frame':peaksmin.tolist(), 'max_frame':peaksmax.tolist(), 
@@ -2043,7 +2047,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def update_source_osc_tod():
-        print('------------------------update_source_osc_tod-------------------------')
+        if DEBUG:print('------------------------update_source_osc_tod-------------------------')
         well = ExperimentalDataset.objects.get(data_name=dropdown_well.value)
         nframes = well.experiment.number_of_frames
         samples = Sample.objects.select_related().filter(experimental_dataset = well)
@@ -2074,8 +2078,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         hist, edges = np.histogram(end_osc, bins=nframes*10, range=(0, nframes*10))
         source_end_osc.data={'x': edges[:-1], 'top': hist}
 
-        print('source_nosc = ',source_nosc.data)
-        print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
+        if DEBUG:
+            print('source_nosc = ',source_nosc.data)
+            print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
 
     #___________________________________________________________________________________________
 
@@ -2086,8 +2091,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def select_tap_callback():
         return """
         const indices = cb_data.source.selected.indices;
-        console.log('inices '+indices);
-        console.log('indices.length '+indices.length)
+
         if (indices.length > 0) {
             const index = indices[0];
             other_source.data = {'index': [index]};
@@ -2098,10 +2102,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def update_image_tap_callback(attr, old, new):
-        print('****************************  update_image_tap_callback ****************************')
+        if DEBUG:print('****************************  update_image_tap_callback ****************************')
         update_tap_renderers()
         index = new['index'][0]
-        print('index=',index)
+        if DEBUG:print('index=',index)
         slider.value=index
     #___________________________________________________________________________________________
 
@@ -2123,7 +2127,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def generic_indices_callback(flag):
-        print("==================generic_indices_callback========================")
+        if DEBUG:print("==================generic_indices_callback========================")
         sample = Sample.objects.get(file_name=get_current_file())
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
         cellstatus = cellsid[0].cell_status
@@ -2137,8 +2141,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             mydict['{}_frame'.format(flag)] = []
             mydict['{}_time'.format(flag)]  = []
 
-        print('cellflags begin=',cellflags)
-        print('mydict begin   =',mydict)
+        if DEBUG:print('cellflags begin=',cellflags)
+        if DEBUG:print('mydict begin   =',mydict)
 
         cellrois = CellROI.objects.select_related().filter(cell_id=cellsid[0])
         data={'time':[], 'intensity':[], 'intensity_full':[]}
@@ -2164,15 +2168,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellstatus.flags = mydict
         cellstatus.save()
 
-        print('cellflags end=',cellstatus.flags)
-        print('mydict end   =',mydict)
+        if DEBUG:
+            print('cellflags end=',cellstatus.flags)
+            print('mydict end   =',mydict)
 
         return data
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     def mask_cell_callback():
-        print('--------mask_cell_callback-------- ')
+        if DEBUG:print('--------mask_cell_callback-------- ')
         data = generic_indices_callback('mask')
         if len(source_intensity_ch1.selected.indices)==0:
             source_mask_cell.data = {"time":[], "intensity_full":[]}
@@ -2184,7 +2189,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def dividing_cell_callback():
-        print('--------dividing_cell_callback-------- ')
+        if DEBUG:print('--------dividing_cell_callback-------- ')
         data = generic_indices_callback('dividing')
         if len(source_intensity_ch1.selected.indices)==0:
             try:
@@ -2207,7 +2212,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def double_nuclei_cell_callback():
-        print('--------double_nuclei_cell_callback-------- ')
+        if DEBUG:print('--------double_nuclei_cell_callback-------- ')
         data = generic_indices_callback('double_nuclei')
         if len(source_intensity_ch1.selected.indices)==0:
             try:
@@ -2230,7 +2235,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def multiple_cells_callback():
-        print('--------multiple_cells_callback-------- ')
+        if DEBUG:print('--------multiple_cells_callback-------- ')
         data = generic_indices_callback('multiple_cells')
         if len(source_intensity_ch1.selected.indices)==0:
             try:
@@ -2253,7 +2258,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def pair_cell_callback():
-        print('--------pair_cell_callback-------- ')
+        if DEBUG:print('--------pair_cell_callback-------- ')
         data = generic_indices_callback('pair_cell')
         if len(source_intensity_ch1.selected.indices)==0:
             try:
@@ -2276,7 +2281,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def flat_cell_callback():
-        print('--------flat_cell_callback-------- ')
+        if DEBUG:print('--------flat_cell_callback-------- ')
         data = generic_indices_callback('flat')
         if len(source_intensity_ch1.selected.indices)==0:
             try:
@@ -2299,7 +2304,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def round_cell_callback():
-        print('--------round_cell_callback-------- ')
+        if DEBUG:print('--------round_cell_callback-------- ')
         data = generic_indices_callback('round')
         if len(source_intensity_ch1.selected.indices)==0:
             try:
@@ -2322,7 +2327,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def elongated_cell_callback():
-        print('--------elongated_cell_callback-------- ')
+        if DEBUG:print('--------elongated_cell_callback-------- ')
         data = generic_indices_callback('elongated')
         if len(source_intensity_ch1.selected.indices)==0:
             try:
@@ -2350,7 +2355,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def box_select_callback(event):
-        print('-----==========-==---=box_select_callback=',source_intensity_ch1.selected.indices)
+        if DEBUG:print('-----==========-==---=box_select_callback=',source_intensity_ch1.selected.indices)
         if isinstance(event, bokeh.events.SelectionGeometry):
             indices = source_intensity_ch1.selected.indices
             if len(indices)>0:
