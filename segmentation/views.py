@@ -1383,6 +1383,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
+        if sample.check_sample:
+            position_check_div.text = "<b style='color:green; ; font-size:18px;'> Position validated</b>"
+        else:
+            position_check_div.text = "<b style='color:red; ; font-size:18px;'> Position not validated</b>"
+        if sample.keep_sample:
+            position_keep_div.text  = "<b style='color:green; ; font-size:18px;'> Keep Position</b>"
+        else:
+            position_keep_div.text  = "<b style='color:red; ; font-size:18px;'> Do not Keep Position</b>"
+
+
         cellIDs = CellID.objects.select_related().filter(sample=sample)
 
 
@@ -1474,6 +1484,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img.data = {'img':[new_image]}
         dropdown_channel.value = dropdown_channel.options[0]
         dropdown_color.value = dropdown_color.options[0]
+
         if DEBUG:
             print('prepare_pos dropdown_channel.value ',dropdown_channel.value)
             print('prepare_pos dropdown_channel.options ',dropdown_channel.options)
@@ -1846,7 +1857,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_play_stop.on_click(play_stop_callback)
     #___________________________________________________________________________________________
 
-    position_check_div = bokeh.models.Div(text="Position not validated")
+    position_check_div = bokeh.models.Div(text="<b style='color:red; ; font-size:18px;'> Position not validated</b>")
     #___________________________________________________________________________________________
     def position_check_callback():
         current_file=get_current_file()
@@ -1855,17 +1866,36 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             sample.check_sample = True
             position_check_button.label = "Position not validated"
             position_check_div.text = "<b style='color:green; ; font-size:18px;'> Position validated</b>"
-            dropdown_pos.title =  "<b style='color:green; ; font-size:14px;'> Position</b>"
         else:
             sample.check_sample = False
             position_check_button.label = "Position Validated"
             position_check_div.text = "<b style='color:red; ; font-size:18px;'> Position not validated</b>"
-            dropdown_pos.title =  "<b style='color:red; ; font-size:14px;'> Position</b>"
 
         sample.save()
     position_check_button = bokeh.models.Button(label="Validate Position")
     position_check_button.on_click(position_check_callback)
     #___________________________________________________________________________________________
+
+    position_keep_div = bokeh.models.Div(text="<b style='color:green; ; font-size:18px;'> Keep Position</b>")
+    #___________________________________________________________________________________________
+    def position_keep_callback():
+        current_file=get_current_file()
+        sample   = Sample.objects.get(file_name=current_file)
+        if sample.keep_sample == False:
+            sample.keep_sample = True
+            position_keep_button.label = "Don't keep Position"
+            position_keep_div.text = "<b style='color:green; ; font-size:18px;'> Keep Position</b>"
+        else:
+            sample.keep_sample = False
+            position_keep_button.label = "Keep Position"
+            position_keep_div.text = "<b style='color:red; ; font-size:18px;'> Don't keep Position</b>"
+
+        sample.save()
+    position_keep_button = bokeh.models.Button(label="Don't keep Position")
+    position_keep_button.on_click(position_keep_callback)
+    #___________________________________________________________________________________________
+
+
 
     #___________________________________________________________________________________________
     # Create next button
@@ -2595,7 +2625,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          bokeh.layouts.row(dropdown_channel),
                                          bokeh.layouts.row(dropdown_color),
                                          bokeh.layouts.row(bokeh.layouts.Spacer(width=10),contrast_slider),
-                                         bokeh.layouts.row(position_check_button))
+                                         bokeh.layouts.row(position_check_button),
+                                         bokeh.layouts.row(position_keep_button),
+                                         )
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
@@ -2615,7 +2647,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
                                              bokeh.layouts.row(plot_nosc))
 
-    norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div),
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10),position_keep_div)
                                        bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
                                        bokeh.layouts.row(text))
 
