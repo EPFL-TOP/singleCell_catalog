@@ -542,12 +542,13 @@ def build_cells_sample(sample):
         cellrois_frame = CellROI.objects.select_related().filter(frame=f)
         for cellroi_frame in cellrois_frame:
             if cellroi_frame.id in cell_roi_id_list: continue
-            min_dr_name=''
-            min_dr_val=10000000000.
-            max_dr_val=((cellroi_frame.max_col-cellroi_frame.min_col)/2. + (cellroi_frame.max_row-cellroi_frame.min_row)/2.)/2.
-            tmp_val=0
+
 
             for cell in cell_pos_dict:
+                min_dr_name=''
+                min_dr_val=10000000000.
+                max_dr_val=((cellroi_frame.max_col-cellroi_frame.min_col)/2. + (cellroi_frame.max_row-cellroi_frame.min_row)/2.)/2.
+                tmp_val=0
                 for pos in cell_pos_dict[cell]:
                     tmp_val+=              math.sqrt(math.pow(pos[0]-(cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.),2) + 
                                                      math.pow(pos[1]-(cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.),2))
