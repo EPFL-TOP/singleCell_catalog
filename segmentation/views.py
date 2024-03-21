@@ -771,10 +771,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             current_file = ''
             for f in current_files:
                 print('  f=',f)
-
                 if mypos in f:
                     current_file = f
-
+                    break
             sample = Sample.objects.get(file_name=current_file)
             if sample.check_sample and sample.keep_sample:
                 local_pos.append('{} - c'.format(mypos))
