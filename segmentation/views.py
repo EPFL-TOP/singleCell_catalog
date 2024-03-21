@@ -759,9 +759,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])
     dropdown_pos  = bokeh.models.Select(value=positions['{0}_{1}'.format(experiments[0], wells[experiments[0]][0])][0],title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
-    update_position_select()
 
 
+    #___________________________________________________________________________________________
     def update_position_select():
         local_pos = []
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
@@ -781,7 +781,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 local_pos.append('{}'.format(pos))
 
         dropdown_pos.options = local_pos
+    #___________________________________________________________________________________________
 
+    update_position_select()
 
     #___________________________________________________________________________________________
     # Function to get the image stack
