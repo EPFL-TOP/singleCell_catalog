@@ -2638,7 +2638,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     # Add the rectangle glyph after adding the image
-    quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom')#, fill_alpha=0.3, fill_color='#009933')
+    quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
     plot_image.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
 
     # Remove the axes
