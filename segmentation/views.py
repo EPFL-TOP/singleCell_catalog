@@ -1312,16 +1312,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_well.value   = wells[dropdown_exp.value][0]
         dropdown_pos.options  = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
 
-        local_pos = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
-        current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
-        for pos in local_pos:
-            current_file = ''
-            for f in current_files:
-                if pos.value in f:
-                    current_file = f
-            sample = Sample.objects.get(file_name=current_file)
-            if sample.check_sample:
-                
+        #local_pos = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
+        #current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        #for pos in local_pos:
+        #    current_file = ''
+        #    for f in current_files:
+        #        if pos.value in f:
+        #            current_file = f
+        #    sample = Sample.objects.get(file_name=current_file)
+        #    if sample.c
 
         if slider.value == 0:
             if DEBUG:print('in the if update_dropdown_well')
