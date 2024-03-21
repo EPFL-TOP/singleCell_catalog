@@ -1317,7 +1317,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for pos in dropdown_pos.options:
             current_file = ''
             for f in current_files:
-                if pos.value in f:
+                if pos in f:
                     current_file = f
             sample = Sample.objects.get(file_name=current_file)
             if sample.check_sample:
