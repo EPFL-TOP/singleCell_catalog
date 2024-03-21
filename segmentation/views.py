@@ -766,10 +766,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         local_pos = []
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         for pos in dropdown_pos.options:
+            print('pos = ',pos)
             current_file = ''
             for f in current_files:
+                print('  f=',f)
                 if pos in f:
                     current_file = f
+
             sample = Sample.objects.get(file_name=current_file)
             if sample.check_sample and sample.keep_sample:
                 local_pos.append('{} - c'.format(pos))
