@@ -32,7 +32,7 @@ import base64
 from PIL import Image
 
 LOCAL=True
-DEBUG=True
+DEBUG=False
 BASEPATH="/mnt/nas_rcp/raw_data"
 
 #MY macbook
@@ -2668,8 +2668,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
-                                     bokeh.layouts.row(button_delete_roi, button_save_roi ),
-                                     bokeh.layouts.row(button_inspect, button_build_cells, dropdown_cell),
+                                     bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_cell ),
+                                     bokeh.layouts.row(button_inspect, button_build_cells),
                                      bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
                                      bokeh.layouts.row(button_find_peaks),
                                      bokeh.layouts.row(slider_find_peaks),
