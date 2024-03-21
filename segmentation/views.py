@@ -1311,7 +1311,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('+++++++++++++++++  {0}_{1}.format(dropdown_exp.value, wells[dropdown_exp.value][0]) +++++++++++++++++  ', '{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0]))
         dropdown_well.value   = wells[dropdown_exp.value][0]
         dropdown_pos.options  = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
-        #dropdown_pos.value    = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])][0]
+
+        #local_pos = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
+        #for pos in local_pos:
+
+        #current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        #current_file = ''
+        #for f in current_files:
+        #    if dropdown_pos.value in f:
+        #        current_file = f
+
         if slider.value == 0:
             if DEBUG:print('in the if update_dropdown_well')
             left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
@@ -1553,9 +1562,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-
-
     #___________________________________________________________________________________________
+    def intensity_type_callback(attr, old, new):
+        print('dropdown_intensity_type value=',dropdown_intensity_type.value)
+        
+    int_type_list = ["avg", "max", "sum", "min"]
+    dropdown_intensity_type = bokeh.models.Select(value=int_type_list[0], title="intensity", options=int_type_list)
+    dropdown_intensity_type.on_change('value', intensity_type_callback)
+    #___________________________________________________________________________________________
+
     # update the source_roi
     def update_source_roi_cell_labels():
         if DEBUG:print('****************************  update_source_roi_cell_labels ****************************')
@@ -2671,7 +2686,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_cell ),
                                      bokeh.layouts.row(button_inspect, button_build_cells),
                                      bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
-                                     bokeh.layouts.row(button_find_peaks),
+                                     bokeh.layouts.row(button_find_peaks, dropdown_intensity_type),
                                      bokeh.layouts.row(slider_find_peaks),
                                      bokeh.layouts.row(button_mask_cells, button_dividing_cells, button_double_nuclei_cells),
                                      bokeh.layouts.row(button_multiple_cells, button_pair_cell),
