@@ -1568,6 +1568,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         reset_tap_tool()
         update_source_osc_tod()
         update_dropdown_channel('','','')
+        intensity_type_callback('','','')
+
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
 
