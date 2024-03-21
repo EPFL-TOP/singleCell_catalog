@@ -770,7 +770,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             current_file = ''
             for f in current_files:
                 print('  f=',f)
-                if pos in f:
+                if pos.split(' - ')[0] in f:
                     current_file = f
 
             sample = Sample.objects.get(file_name=current_file)
