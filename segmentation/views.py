@@ -820,7 +820,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         current_file = ''
         for f in current_files:
-            if dropdown_pos.value in f:
+            if dropdown_pos.value.replace('--check','') in f:
                 current_file = f
         if DEBUG: print('--------------- get_current_file() current file  ',current_file)
         return current_file
@@ -1321,9 +1321,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     current_file = f
             sample = Sample.objects.get(file_name=current_file)
             if sample.check_sample:
-                local_pos.append('<span style="color:green">{}</span>'.format(pos))
+                local_pos.append('{}--check'.format(pos))
             else:
-                local_pos.append('<span style="color:red">{}</span>'.format(pos))
+                local_pos.append('{}'.format(pos))
 
         dropdown_pos.options  =local_pos
         if slider.value == 0:
