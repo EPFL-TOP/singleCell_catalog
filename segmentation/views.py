@@ -820,7 +820,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         current_file = ''
         for f in current_files:
-            if dropdown_pos.value.replace('--check','') in f:
+            if dropdown_pos.value.split(' - ')[0] in f:
                 current_file = f
         if DEBUG: print('--------------- get_current_file() current file  ',current_file)
         return current_file
@@ -1320,8 +1320,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if pos in f:
                     current_file = f
             sample = Sample.objects.get(file_name=current_file)
-            if sample.check_sample:
-                local_pos.append('{}--check'.format(pos))
+            if sample.check_sample and sample.keep_sample:
+                local_pos.append('{} - c'.format(pos))
+            elif sample.check_sample and not sample.keep_sample:
+                local_pos.append('{} - c,dk'.format(pos))
+            elif not sample.check_sample and not sample.keep_sample:
+                local_pos.append('{} - dk'.format(pos))
             else:
                 local_pos.append('{}'.format(pos))
 
