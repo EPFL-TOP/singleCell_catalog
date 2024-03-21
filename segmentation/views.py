@@ -1602,17 +1602,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         update_dropdown_cell('','','')
         sample = Sample.objects.get(file_name=get_current_file())
         cellid = CellID.objects.select_related().filter(sample=sample)
+
         for cell in cellid:
             if cell.name != dropdown_cell.value:continue
             peaks=cell.cell_status.peaks
-            int_max=[]
-            for i in peaks["max_frame"]:
-                int_max.append(source_intensity_ch1.data["intensity"][i])
-            source_intensity_max.data={'time':peaks['max_time'], 'intensity':int_max}  
-            int_min=[]
-            for i in peaks["min_frame"]:
-                int_min.append(source_intensity_ch1.data["intensity"][i])
-        source_intensity_min.data={'time':peaks['min_time'], 'intensity':int_min}  
+            if len(peaks)>=6:
+                int_max=[]
+                for i in peaks["max_frame"]:
+                    int_max.append(source_intensity_ch1.data["intensity"][i])
+                source_intensity_max.data={'time':peaks['max_time'], 'intensity':int_max}  
+                int_min=[]
+                for i in peaks["min_frame"]:
+                    int_min.append(source_intensity_ch1.data["intensity"][i])
+                source_intensity_min.data={'time':peaks['min_time'], 'intensity':int_min}  
 
     int_type_list = ["avg", "max", "sum",  "std"]
     dropdown_intensity_type = bokeh.models.Select(value=int_type_list[0], title="intensity", options=int_type_list)
