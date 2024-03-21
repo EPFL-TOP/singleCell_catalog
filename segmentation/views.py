@@ -1429,8 +1429,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             intensity_list={}
             ROIs = CellROI.objects.select_related().filter(cell_id=cid)
             for roi in ROIs:
-                int_list = getattr(roi.contour_cellroi, 'intensity_sum')
-                for ch in int_list:
+                for ch in roi.contour_cellroi.intensity_sum:
                     try:
                         time_list[ch]
                     except KeyError:
@@ -1445,7 +1444,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         #time_list[ch].append((roi.frame.time/60000))
                         #intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
 
-                    intensity_list[ch][roi.frame.number]= roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels
+                    if   dropdown_intensity_type.value == 'sum': 
+                        intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_sum')[ch]
+                    elif dropdown_intensity_type.value == 'avg': 
+                        intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_sum')[ch]/roi.contour_cellroi.number_of_pixels
+                    elif   dropdown_intensity_type.value == 'max': 
+                        intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_max')[ch]
+                    elif   dropdown_intensity_type.value == 'min': 
+                        intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_min')[ch]
+                    elif   dropdown_intensity_type.value == 'std': 
+                        intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_std')[ch]
+
 
 
             for index, key in enumerate(time_list):
@@ -1567,8 +1576,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def intensity_type_callback(attr, old, new):
         if DEBUG:
             print('dropdown_intensity_type value=',dropdown_intensity_type.value)
-            update_dropdown_cell
-    int_type_list = ["avg", "max", "sum", "min"]
+        update_dropdown_cell('','','')
+    int_type_list = ["avg", "max", "sum", "min", "std"]
     dropdown_intensity_type = bokeh.models.Select(value=int_type_list[0], title="intensity", options=int_type_list)
     dropdown_intensity_type.on_change('value', intensity_type_callback)
     #___________________________________________________________________________________________
