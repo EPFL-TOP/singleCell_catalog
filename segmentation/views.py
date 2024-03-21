@@ -1325,6 +1325,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             else:
                 local_pos.append('<span style="color:red">{}</span>'.format(pos))
 
+        dropdown_pos.options  =local_pos
         if slider.value == 0:
             if DEBUG:print('in the if update_dropdown_well')
             left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
