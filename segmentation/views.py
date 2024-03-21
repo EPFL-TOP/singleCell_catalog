@@ -1342,18 +1342,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_exp.on_change('value', update_dropdown_well)
     #___________________________________________________________________________________________
 
-    hover = bokeh.models.CustomJSHover(code="""
+    print('----------------------------   ',dropdown_pos.el.options[0].style.color)
 
-        return '<span style="color: green;">@dropdown_pos.options</span>';       
-        //var flag = source.data['flags'][source.selected.indices[0]];
-        //if (flag) {
-        //    return '<span style="color: green;">@options</span>';
-        //} else {
-        //    return '<span style="color: red;">@options</span>';
-        //}
-    """)
-
-    dropdown_pos.hover = hover
     #___________________________________________________________________________________________
     # Function to update the position depending on the experiment and the well
     def update_dropdown_pos(attr, old, new):
