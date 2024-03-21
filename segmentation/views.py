@@ -767,21 +767,23 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         for pos in dropdown_pos.options:
             print('pos = ',pos)
+            mypos=pos.split(' - ')[0]
             current_file = ''
             for f in current_files:
                 print('  f=',f)
-                if pos.split(' - ')[0] in f:
+
+                if mypos in f:
                     current_file = f
 
             sample = Sample.objects.get(file_name=current_file)
             if sample.check_sample and sample.keep_sample:
-                local_pos.append('{} - c'.format(pos))
+                local_pos.append('{} - c'.format(mypos))
             elif sample.check_sample and not sample.keep_sample:
-                local_pos.append('{} - c,dk'.format(pos))
+                local_pos.append('{} - c,dk'.format(mypos))
             elif not sample.check_sample and not sample.keep_sample:
-                local_pos.append('{} - dk'.format(pos))
+                local_pos.append('{} - dk'.format(mypos))
             else:
-                local_pos.append('{}'.format(pos))
+                local_pos.append('{}'.format(mypos))
 
         dropdown_pos.options = local_pos
     #___________________________________________________________________________________________
