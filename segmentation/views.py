@@ -1429,7 +1429,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             intensity_list={}
             ROIs = CellROI.objects.select_related().filter(cell_id=cid)
             for roi in ROIs:
-                for ch in roi.contour_cellroi.intensity_sum:
+                int_list = getattr(roi.contour_cellroi, 'intensity_sum')
+                for ch in int_list:
                     try:
                         time_list[ch]
                     except KeyError:
@@ -1564,8 +1565,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def intensity_type_callback(attr, old, new):
-        print('dropdown_intensity_type value=',dropdown_intensity_type.value)
-        
+        if DEBUG:
+            print('dropdown_intensity_type value=',dropdown_intensity_type.value)
+            update_dropdown_cell
     int_type_list = ["avg", "max", "sum", "min"]
     dropdown_intensity_type = bokeh.models.Select(value=int_type_list[0], title="intensity", options=int_type_list)
     dropdown_intensity_type.on_change('value', intensity_type_callback)
