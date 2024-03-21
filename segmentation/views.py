@@ -759,25 +759,28 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])
     dropdown_pos  = bokeh.models.Select(value=positions['{0}_{1}'.format(experiments[0], wells[experiments[0]][0])][0],title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
+    update_position_select()
 
-    local_pos = []
-    current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
-    for pos in dropdown_pos.options:
-        current_file = ''
-        for f in current_files:
-            if pos in f:
-                current_file = f
-        sample = Sample.objects.get(file_name=current_file)
-        if sample.check_sample and sample.keep_sample:
-            local_pos.append('{} - c'.format(pos))
-        elif sample.check_sample and not sample.keep_sample:
-            local_pos.append('{} - c,dk'.format(pos))
-        elif not sample.check_sample and not sample.keep_sample:
-            local_pos.append('{} - dk'.format(pos))
-        else:
-            local_pos.append('{}'.format(pos))
 
-    dropdown_pos.options = local_pos
+    def update_position_select():
+        local_pos = []
+        current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        for pos in dropdown_pos.options:
+            current_file = ''
+            for f in current_files:
+                if pos in f:
+                    current_file = f
+            sample = Sample.objects.get(file_name=current_file)
+            if sample.check_sample and sample.keep_sample:
+                local_pos.append('{} - c'.format(pos))
+            elif sample.check_sample and not sample.keep_sample:
+                local_pos.append('{} - c,dk'.format(pos))
+            elif not sample.check_sample and not sample.keep_sample:
+                local_pos.append('{} - dk'.format(pos))
+            else:
+                local_pos.append('{}'.format(pos))
+
+        dropdown_pos.options = local_pos
 
 
     #___________________________________________________________________________________________
@@ -1331,24 +1334,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_well.value   = wells[dropdown_exp.value][0]
         dropdown_pos.options  = positions['{0}_{1}'.format(dropdown_exp.value, wells[dropdown_exp.value][0])]
 
-        local_pos = []
-        current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
-        for pos in dropdown_pos.options:
-            current_file = ''
-            for f in current_files:
-                if pos in f:
-                    current_file = f
-            sample = Sample.objects.get(file_name=current_file)
-            if sample.check_sample and sample.keep_sample:
-                local_pos.append('{} - c'.format(pos))
-            elif sample.check_sample and not sample.keep_sample:
-                local_pos.append('{} - c,dk'.format(pos))
-            elif not sample.check_sample and not sample.keep_sample:
-                local_pos.append('{} - dk'.format(pos))
-            else:
-                local_pos.append('{}'.format(pos))
+        update_position_select()
 
-        dropdown_pos.options = local_pos
         if slider.value == 0:
             if DEBUG:print('in the if update_dropdown_well')
             left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
@@ -1374,24 +1361,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
 
-        local_pos = []
-        current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
-        for pos in dropdown_pos.options:
-            current_file = ''
-            for f in current_files:
-                if pos in f:
-                    current_file = f
-            sample = Sample.objects.get(file_name=current_file)
-            if sample.check_sample and sample.keep_sample:
-                local_pos.append('{} - c'.format(pos))
-            elif sample.check_sample and not sample.keep_sample:
-                local_pos.append('{} - c,dk'.format(pos))
-            elif not sample.check_sample and not sample.keep_sample:
-                local_pos.append('{} - dk'.format(pos))
-            else:
-                local_pos.append('{}'.format(pos))
-
-        dropdown_pos.options = local_pos
+        update_position_select()
 
         if slider.value == 0:
             if DEBUG:print('in the if update_dropdown_pos')
@@ -1980,8 +1950,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             sample.check_sample = False
             position_check_button.label = "Position Validated"
             position_check_div.text = "<b style='color:red; ; font-size:18px;'> Position not validated</b>"
-
         sample.save()
+        update_position_select()
     position_check_button = bokeh.models.Button(label="Validate Position")
     position_check_button.on_click(position_check_callback)
     #___________________________________________________________________________________________
@@ -2001,6 +1971,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             position_keep_div.text = "<b style='color:red; ; font-size:18px;'> Don't keep Position</b>"
 
         sample.save()
+        update_position_select()
+
     position_keep_button = bokeh.models.Button(label="Don't keep Position")
     position_keep_button.on_click(position_keep_callback)
     #___________________________________________________________________________________________
