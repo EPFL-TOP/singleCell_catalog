@@ -766,11 +766,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         local_pos = []
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         for pos in dropdown_pos.options:
-            print('pos = ',pos)
             mypos=pos.split(' - ')[0]
             current_file = ''
             for f in current_files:
-                print('  f=',f)
                 if mypos in f:
                     current_file = f
                     break
