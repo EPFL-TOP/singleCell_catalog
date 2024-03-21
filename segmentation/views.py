@@ -1342,7 +1342,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_exp.on_change('value', update_dropdown_well)
     #___________________________________________________________________________________________
 
-    print('----------------------------   ',dropdown_pos.el.options[0].style.color)
+    print('----------------------------   ',dropdown_pos.css_classes)
 
     #___________________________________________________________________________________________
     # Function to update the position depending on the experiment and the well
