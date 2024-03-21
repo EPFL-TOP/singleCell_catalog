@@ -1329,7 +1329,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             else:
                 local_pos.append('{}'.format(pos))
 
-        dropdown_pos.options  =local_pos
+        dropdown_pos.options = local_pos
         if slider.value == 0:
             if DEBUG:print('in the if update_dropdown_well')
             left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
@@ -1355,6 +1355,25 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
 
+        local_pos = []
+        current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        for pos in dropdown_pos.options:
+            current_file = ''
+            for f in current_files:
+                if pos in f:
+                    current_file = f
+            sample = Sample.objects.get(file_name=current_file)
+            if sample.check_sample and sample.keep_sample:
+                local_pos.append('{} - c'.format(pos))
+            elif sample.check_sample and not sample.keep_sample:
+                local_pos.append('{} - c,dk'.format(pos))
+            elif not sample.check_sample and not sample.keep_sample:
+                local_pos.append('{} - dk'.format(pos))
+            else:
+                local_pos.append('{}'.format(pos))
+
+        dropdown_pos.options = local_pos
+        
         if slider.value == 0:
             if DEBUG:print('in the if update_dropdown_pos')
             left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
