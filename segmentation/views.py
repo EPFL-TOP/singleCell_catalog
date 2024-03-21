@@ -737,6 +737,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     for exp in Experiment.objects.all():
         experiments.append(exp.name)
+        experiments.append(f'<span style="color:red">{exp.name}</span>')
+    #formatted_options = [f'<span style="color: {conditions[opt]}">{opt}</span>' for opt in options]
         wells[exp.name] = []
         experimentaldatasets = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldatasets:
