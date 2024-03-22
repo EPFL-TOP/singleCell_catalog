@@ -592,7 +592,7 @@ def removeROIs(sample):
         s = Sample.objects.get(file_name = sample)
     else:
         s=sample
-    frames = Frame.objects.select_for_related().filter(sample=s)
+    frames = Frame.objects.select_related().filter(sample=s)
     for frame in frames:
         cellROIs = CellROI.objects.select_related().filter(frame=frame)
         for cellROI in cellROIs:
@@ -2845,7 +2845,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10),position_keep_div),
                                        bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
-                                       bokeh.layouts.row(pie),
+                                       #bokeh.layouts.row(pie),
                                        bokeh.layouts.row(text))
 
     doc.add_root(norm_layout)
