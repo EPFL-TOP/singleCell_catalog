@@ -1355,8 +1355,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 cellflag.minimum = False
                 cellflag.oscillating = False
                 cellflag.alive = True
-                cellstatus.flags = {}
-                cellstatus.save()
+                cellflag.save()
+            
+
     #___________________________________________________________________________________________
 
  
@@ -2248,6 +2249,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if len(cellsid)==1:
             cellstatus = cellsid[0].cell_status
             cellstatus.peaks={}
+            cellstatus.flags = {}
             cellstatus.n_oscillations = 0
 
             cellstatus.time_of_death_frame     = -999
