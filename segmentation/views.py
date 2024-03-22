@@ -783,9 +783,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
-    def update_position_select():
+    def update_position_select(change=True):
         local_pos = []
+        local_val = 0
+        local_pos_val = dropdown_pos.value
+
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        counter=0
         for pos in dropdown_pos.options:
             mypos=pos.split(' - ')[0]
             current_file = ''
@@ -802,8 +806,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 local_pos.append('{} - dk'.format(mypos))
             else:
                 local_pos.append('{}'.format(mypos))
-
+            if mypos == local_pos_val.split(' - ')[0]:local_val=counter
+            counter+=1
         dropdown_pos.options = local_pos
+        dropdown_pos.value = local_pos[local_val]
     #___________________________________________________________________________________________
 
     update_position_select()
@@ -1994,7 +2000,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             position_check_button.label = "Position Validated"
             position_check_div.text = "<b style='color:red; ; font-size:18px;'> Position not validated</b>"
         sample.save()
-        update_position_select()
+        update_position_select(change=False)
     position_check_button = bokeh.models.Button(label="Validate Position")
     position_check_button.on_click(position_check_callback)
     #___________________________________________________________________________________________
@@ -2014,7 +2020,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             position_keep_div.text = "<b style='color:red; ; font-size:18px;'> Don't keep Position</b>"
 
         sample.save()
-        update_position_select()
+        update_position_select(change=False)
 
     position_keep_button = bokeh.models.Button(label="Don't keep Position")
     position_keep_button.on_click(position_keep_callback)
