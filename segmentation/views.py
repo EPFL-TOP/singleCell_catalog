@@ -2782,25 +2782,37 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     # Sample data
-    data_pie = {'categories': ['A', 'B', 'C', 'D'], 'values': [20, 30, 25, 25]}
+    from bokeh.palettes import Category20c
+    from bokeh.transform import cumsum
+    from math import pi
 
-    # Calculate the angles for the sectors
-    angles = [data_pie['values'][0]/sum(data_pie['values']) * 2*math.pi]
-    for i in range(1, len(data_pie['values'])):
-        angles.append(angles[-1] + data_pie['values'][i]/sum(data_pie['values']) * 2*math.pi)
+    import pandas as pd
 
-    # Create a figure
-    fig_pie = bokeh.plotting.figure(height=250, title="Pie Chart", toolbar_location=None, tools="hover", tooltips="@categories: @values")
+    x = {
+        'United States': 157,
+        'United Kingdom': 93,
+        'Japan': 89,
+        'China': 63,
+        'Germany': 44,
+        'India': 42,
+        'Italy': 40,
+        'Australia': 35,
+        'Brazil': 32,
+        'France': 31,
+        'Taiwan': 31,
+        'Spain': 29,
+    }
 
-    # Draw the sectors of the pie chart
-    fig_pie.wedge(x=0, y=1, radius=0.4,
-                  start_angle=angles[:-1], end_angle=angles[1:],
-                  color=["red", "green", "blue", "orange"],
-                  legend_field="categories", source=data_pie)
+    data = pd.Series(x).reset_index(name='value').rename(columns={'index': 'country'})
+    data['angle'] = data['value']/data['value'].sum() * 2*pi
+    data['color'] = Category20c[len(x)]
 
-    # Hide the axes
-    fig_pie.axis.visible = False
+    pie = bokeh.plotting.figure(height=350, title="Pie Chart", toolbar_location=None,
+            tools="hover", tooltips="@country: @value", x_range=(-0.5, 1.0))
 
+    pie.wedge(x=0, y=1, radius=0.4,
+            start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
+            line_color="white", fill_color='color', legend_field='country', source=data)
 
     exp_color_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
                                          bokeh.layouts.row(dropdown_well),
@@ -2833,7 +2845,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10),position_keep_div),
                                        bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
-                                       bokeh.layouts.row(fig_pie),
+                                       bokeh.layouts.row(pie),
                                        bokeh.layouts.row(text))
 
     doc.add_root(norm_layout)
