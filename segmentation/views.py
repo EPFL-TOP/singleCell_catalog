@@ -2790,7 +2790,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         angles.append(angles[-1] + data_pie['values'][i]/sum(data_pie['values']) * 2*math.pi)
 
     # Create a figure
-    fig_pie = bokeh.plotting.figure(plot_height=350, title="Pie Chart", toolbar_location=None, tools="hover", tooltips="@categories: @values")
+    fig_pie = bokeh.plotting.figure(height=250, title="Pie Chart", toolbar_location=None, tools="hover", tooltips="@categories: @values")
 
     # Draw the sectors of the pie chart
     fig_pie.wedge(x=0, y=1, radius=0.4,
