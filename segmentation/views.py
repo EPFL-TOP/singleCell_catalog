@@ -2300,7 +2300,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 tod.append(cellid.cell_status.time_of_death)
 
         max_osc=0
-        if max(n_osc, default=0)>0:
+        if max(n_osc, default=-999)>0:
             max_osc=max(n_osc, default=0)
         hist, edges = np.histogram(n_osc, bins=max_osc+2, range=(0, max_osc+2))
         source_nosc.data={'x': edges[:-1], 'top': hist}
