@@ -2807,7 +2807,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data['angle'] = data['value']/data['value'].sum() * 2*pi
     data['color'] = Category20c[len(x)]
 
-    pie = bokeh.plotting.figure(height=350, title="Pie Chart", toolbar_location=None,
+    pie = bokeh.plotting.figure(height=150, title="Pie Chart", toolbar_location=None,
             tools="hover", tooltips="@country: @value", x_range=(-0.5, 1.0))
 
     pie.wedge(x=0, y=1, radius=0.4,
