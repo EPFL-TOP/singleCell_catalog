@@ -83,9 +83,9 @@ class CellStatus(models.Model):
     start_oscillation       = models.FloatField(default=-9999, help_text="Cell time start of oscillation in minutes", blank=True)
     end_oscillation         = models.FloatField(default=-9999, help_text="Cell time end of oscillation in minutes", blank=True)
 
-    time_of_death_frame     = models.PositiveSmallIntegerField(default=0, help_text="Cell frame of death", blank=True)
-    start_oscillation_frame = models.PositiveSmallIntegerField(default=0, help_text="Cell frame start of oscillation", blank=True)
-    end_oscillation_frame   = models.PositiveSmallIntegerField(default=0, help_text="Cell frame end of oscillation", blank=True)
+    time_of_death_frame     = models.IntegerField(default=-999, help_text="Cell frame of death", blank=True)
+    start_oscillation_frame = models.IntegerField(default=-999, help_text="Cell frame start of oscillation", blank=True)
+    end_oscillation_frame   = models.IntegerField(default=-999, help_text="Cell frame end of oscillation", blank=True)
 
     n_oscillations          = models.IntegerField(default=-999, help_text="Cell number of oscillations", blank=True)
 

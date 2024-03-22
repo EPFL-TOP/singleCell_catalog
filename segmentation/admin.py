@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Sample, Frame, CellFlag, CellStatus, Contour, Experiment, ExperimentalDataset, CellID, CellROI
+from .models import Sample, Frame, CellFlag, CellStatus, Contour, Experiment, ExperimentalDataset, CellID, CellROI, ContourSeg
 # Register your models here.
 
 class CellFlagAdmin(admin.ModelAdmin):
@@ -10,6 +10,7 @@ admin.site.register(Frame)
 admin.site.register(CellFlag, CellFlagAdmin)
 admin.site.register(CellStatus)
 admin.site.register(Contour)
+admin.site.register(ContourSeg)
 admin.site.register(Experiment)
 admin.site.register(ExperimentalDataset)
 admin.site.register(CellID)

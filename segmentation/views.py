@@ -4,7 +4,7 @@ from django.db import connection
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
 
-from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, CellID, CellROI, CellStatus, CellFlag
+from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, CellID, CellROI, CellStatus, CellFlag, ContourSeg
 
 import os, sys, json, glob, gc
 import time
@@ -321,98 +321,116 @@ def register_rawdataset():
                     frame.save()
 
 #___________________________________________________________________________________________
-def segment():
-    #loop over all experiments
-    exp_list = Experiment.objects.all()
+def segment_localThresholding(sample):
 
-    for exp in exp_list:
-        print(' ---- SEGMENTATION exp name ',exp.name)
-        print(' ---- SEGMENTATION channels ',exp.name_of_channels.split(','),' number ',exp.number_of_channels, ' full file name ', exp.file_name)
-        segExist=False
-        #build default segmentation class, to be replaced by calls from django app
-        default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
-        default_segmentation.channels = exp.name_of_channels.split(',')
-        default_segmentation.channel = 0
+    s=None
+    if type(sample) == str:
+        s = Sample.objects.get(file_name = sample)
+    else:
+        s=sample
 
-        default_segmentation_2 = segtools.customLocalThresholding_Segmentation(threshold=2., delta=1, npix_min=400, npix_max=4000)
-        default_segmentation_2.channels = exp.name_of_channels.split(',')
-        default_segmentation_2.channel = 0
+    segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=200, npix_max=5000)
 
-        #check existing segmentation if already registered
-        segmentations = Segmentation.objects.select_related().filter(experiment = exp)
-        for seg in segmentations:
-            if default_segmentation.get_param() == seg.algorithm_parameters and \
-                default_segmentation.get_type() == seg.algorithm_type and \
-                    default_segmentation.get_version() == seg.algorithm_version:
-                print('SEGMENTATION EXISTTTTTTTTT')
-                #check if the segmentation channel exists
-                segmentation_channels = SegmentationChannel.objects.select_related().filter(segmentation = seg)
-                for seg_ch in segmentation_channels:
-                    if seg_ch.channel_number == default_segmentation.channel and \
-                        seg_ch.channel_name == default_segmentation.channels[default_segmentation.channel]:
-                        segExist=True
-        if segExist: continue
+    frames = Frame.objects.select_for_related().filter(sample=s)
+    for frame in frames:
+        cellROIs = CellROI.objects.select_related().filter(frame=frame)
+        for cellROI in cellROIs:
+            eflag=False
+            if cellROI.cell_id == None: continue
+            contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellROI)
+            for contourSeg in contoursSeg:
+                if contourSeg.algo == 'localthresholding': 
+                    eflag=True
+            if eflag: continue
 
-        print('============= default_segmentation.get_param()   = ',default_segmentation.get_param())
-        print('============= default_segmentation.get_type()    = ',default_segmentation.get_type())
-        print('============= default_segmentation.get_version() = ',default_segmentation.get_version())
-        print('============= default_segmentation.channels      = ',default_segmentation.channels)
-        print('============= default_segmentation.channel       = ',default_segmentation.channel)
 
-        #create segmentation and segmentation channel if it does not exist
-        segmentation = Segmentation(name="default segmentation", 
-                                    experiment=exp,
-                                    algorithm_type=default_segmentation.get_type(),
-                                    algorithm_version=default_segmentation.get_version(),
-                                    algorithm_parameters=default_segmentation.get_param())
-        segmentation.save()
-        segmentation_channel = SegmentationChannel(segmentation=segmentation,
-                                                channel_name=exp.name_of_channels.split(',')[0],
-                                                channel_number=0)
-        segmentation_channel.save()
+            contour_list = segmentation.segmentation()
 
-        print(' ---- SEGMENTATION exp name ',exp.name)
-        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-
-        for expds in experimentaldataset:
-            print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
-            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-
-            counter_samp=0
-            for s in samples:
-                if counter_samp==2: 
-                    print('===========================================')
-                    break
-                counter_samp+=1
-                print('         ---- SEGMENTATION sample name ',s.file_name)
-                frames = Frame.objects.select_related().filter(sample = s)
-                print('getting the images')
-                images, channels = read.nd2reader_getFrames(s.file_name)
-                print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
-
-                for f in frames:
-                    print( 'getting contour for frame ',f.number)
-                    contour_list = default_segmentation.segmentation(images[f.number])
-
-                    print(' got ',len(contour_list),' contours')
-                    for cont in contour_list:
-                        #pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
-                        #pixels_data_contour.save()
-                        #pixels_data_inside   = Data(all_pixels=cont['all_pixels_inside'],  single_pixels=cont['single_pixels_inside'])
-                        #pixels_data_inside.save()
-                        print(cont['center'])
-                        contour = Contour(frame=f,
-                        #                  pixels_data_contour=pixels_data_contour,
-                        #                  pixels_data_inside=pixels_data_inside,
-                                          segmentation_channel=segmentation_channel,
-                                          center=cont['center'])
-                        contour.save()
-
-                        del contour
-                    del contour_list
-                    #print('gc collect 1: ',gc.collect())
-
-                print('gc collect 1: ',gc.collect())
+#    #loop over all experiments
+#    exp_list = Experiment.objects.all()
+#
+#    for exp in exp_list:
+#        print(' ---- SEGMENTATION exp name ',exp.name)
+#        print(' ---- SEGMENTATION channels ',exp.name_of_channels.split(','),' number ',exp.number_of_channels, ' full file name ', exp.file_name)
+#        segExist=False
+#        #build default segmentation class, to be replaced by calls from django app
+#        default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
+#        default_segmentation.channels = exp.name_of_channels.split(',')
+#        default_segmentation.channel = 0
+#
+#        default_segmentation_2 = segtools.customLocalThresholding_Segmentation(threshold=2., delta=1, npix_min=400, npix_max=4000)
+#        default_segmentation_2.channels = exp.name_of_channels.split(',')
+#        default_segmentation_2.channel = 0
+#
+#        #check existing segmentation if already registered
+#        segmentations = Segmentation.objects.select_related().filter(experiment = exp)
+#        for seg in segmentations:
+#            if default_segmentation.get_param() == seg.algorithm_parameters and \
+#                default_segmentation.get_type() == seg.algorithm_type and \
+#                    default_segmentation.get_version() == seg.algorithm_version:
+#                print('SEGMENTATION EXISTTTTTTTTT')
+#                #check if the segmentation channel exists
+#                segmentation_channels = SegmentationChannel.objects.select_related().filter(segmentation = seg)
+#                for seg_ch in segmentation_channels:
+#                    if seg_ch.channel_number == default_segmentation.channel and \
+#                        seg_ch.channel_name == default_segmentation.channels[default_segmentation.channel]:
+#                        segExist=True
+#        if segExist: continue
+#
+#        #create segmentation and segmentation channel if it does not exist
+#        segmentation = Segmentation(name="default segmentation", 
+#                                    experiment=exp,
+#                                    algorithm_type=default_segmentation.get_type(),
+#                                    algorithm_version=default_segmentation.get_version(),
+#                                    algorithm_parameters=default_segmentation.get_param())
+#        segmentation.save()
+#        segmentation_channel = SegmentationChannel(segmentation=segmentation,
+#                                                channel_name=exp.name_of_channels.split(',')[0],
+#                                                channel_number=0)
+#        segmentation_channel.save()
+#
+#        print(' ---- SEGMENTATION exp name ',exp.name)
+#        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+#
+#        for expds in experimentaldataset:
+#            print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
+#            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+#
+#            counter_samp=0
+#            for s in samples:
+#                if counter_samp==2: 
+#                    print('===========================================')
+#                    break
+#                counter_samp+=1
+#                print('         ---- SEGMENTATION sample name ',s.file_name)
+#                frames = Frame.objects.select_related().filter(sample = s)
+#                print('getting the images')
+#                images, channels = read.nd2reader_getFrames(s.file_name)
+#                print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
+#
+#                for f in frames:
+#                    print( 'getting contour for frame ',f.number)
+#                    contour_list = default_segmentation.segmentation(images[f.number])
+#
+#                    print(' got ',len(contour_list),' contours')
+#                    for cont in contour_list:
+#                        #pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
+#                        #pixels_data_contour.save()
+#                        #pixels_data_inside   = Data(all_pixels=cont['all_pixels_inside'],  single_pixels=cont['single_pixels_inside'])
+#                        #pixels_data_inside.save()
+#                        print(cont['center'])
+#                        contour = Contour(frame=f,
+#                        #                  pixels_data_contour=pixels_data_contour,
+#                        #                  pixels_data_inside=pixels_data_inside,
+#                                          segmentation_channel=segmentation_channel,
+#                                          center=cont['center'])
+#                        contour.save()
+#
+#                        del contour
+#                    del contour_list
+#                    #print('gc collect 1: ',gc.collect())
+#
+#                print('gc collect 1: ',gc.collect())
 
 #___________________________________________________________________________________________
 def build_cells_all_exp(sample=None):
@@ -574,11 +592,14 @@ def removeROIs(sample):
         s = Sample.objects.get(file_name = sample)
     else:
         s=sample
-    #frames = 
+    frames = Frame.objects.select_for_related().filter(sample=s)
+    for frame in frames:
+        cellROIs = CellROI.objects.select_related().filter(frame=frame)
+        for cellROI in cellROIs:
+            if cellROI.cell_id == None:
+                cellROI.delete()
     print('removeROIs sample ',s)
-    cells = CellID.objects.select_related().filter(sample=s)
-    for c in cells:
-        return
+
 
 
 #___________________________________________________________________________________________
@@ -1180,7 +1201,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
-    def set_rising_falling(cellid, save=False):
+    def set_rising_falling(cellid, save_status=False, delete_status=False):
         if DEBUG: print("*************************set_rising_falling*****************************************")
         arrays_r = {}
         for i in range(1,11):
@@ -1285,7 +1306,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for i in range(1,11):
             source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
 
-        if save and cellid!=None:
+        if save_status and cellid!=None:
             cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
             if DEBUG:
                 print('cellid=',cellid, ' cellrois=',len(cellrois))
@@ -1317,12 +1338,25 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
                 if framenumber>=cellid.cell_status.time_of_death_frame: cellflag.alive = False
                 else: cellflag.alive = True
-
-
                 cellflag.save()
+
+
             cellstatus = cellid.cell_status
             cellstatus.flags = osc_dict
             cellstatus.save()
+
+        if delete_status and cellid!=None:
+            cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
+            for cellroi in cellrois:
+                cellflag = cellroi.cellflag_cellroi
+                cellflag.rising = False
+                cellflag.falling = False
+                cellflag.maximum = False
+                cellflag.minimum = False
+                cellflag.oscillating = False
+                cellflag.alive = True
+                cellstatus.flags = {}
+                cellstatus.save()
     #___________________________________________________________________________________________
 
  
@@ -1985,6 +2019,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     position_keep_button.on_click(position_keep_callback)
     #___________________________________________________________________________________________
 
+    #___________________________________________________________________________________________
+    def remove_roi_callback():
+        if DEBUG:print('****************************  remove_roi_callback ****************************')
+        removeROIs(get_current_file())
+    button_remove_roi = bokeh.models.Button(label="Remove ROI")
+    button_remove_roi.on_click(remove_roi_callback)
+    #___________________________________________________________________________________________
 
 
     #___________________________________________________________________________________________
@@ -2182,13 +2223,40 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             cellstatus.save()
 
-            set_rising_falling(cellsid[0], True)
+            set_rising_falling(cellsid[0], save_status=True)
             update_source_osc_tod()
         if len(cellsid)>1:
             print('more than 1 cellsid=',len(cellsid))
 
-    button_find_peaks = bokeh.models.Button(label="Save Peaks")
-    button_find_peaks.on_click(save_peaks_callback)
+    button_save_peaks = bokeh.models.Button(label="Save Peaks")
+    button_save_peaks.on_click(save_peaks_callback)
+    #___________________________________________________________________________________________
+
+
+    #___________________________________________________________________________________________
+    def delete_peaks_callback():
+        if DEBUG:print('------------------------------------delete_peaks_callback-------------------------------')
+        sample = Sample.objects.get(file_name=get_current_file())
+        cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+        if DEBUG:print('cellsid ',cellsid, '  ',len(cellsid))
+        if len(cellsid)==1:
+            cellstatus = cellsid[0].cell_status
+            cellstatus.peaks={}
+            cellstatus.n_oscillations = 0
+
+            cellstatus.time_of_death_frame     = -999
+            cellstatus.start_oscillation_frame = -999
+            cellstatus.end_oscillation_frame   = -999
+
+            cellstatus.time_of_death     = -9999
+            cellstatus.start_oscillation = -9999
+            cellstatus.end_oscillation   = -9999
+
+            cellstatus.save()
+            set_rising_falling(cellsid[0], delete_status=True)
+            update_source_osc_tod()
+    button_delete_peaks = bokeh.models.Button(label="Delete Peaks")
+    button_delete_peaks.on_click(delete_peaks_callback)
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
@@ -2608,17 +2676,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.circle_cross('time', 'intensity', source=source_round_cell, fill_color=None, size=8, line_color='black')
     plot_intensity.dash('time', 'intensity', source=source_elongated_cell, fill_color=None, size=8, line_color='black')
 
-
-    segments = plot_intensity.segment(x0='time', y0=0, x1='time', y1='intensity', line_color='black', line_width=0.5, source=source_segments_cell, line_dash="dotted")
-
+    plot_intensity.segment(x0='time', y0=0, x1='time', y1='intensity', line_color='black', line_width=0.5, source=source_segments_cell, line_dash="dotted")
 
     index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
     tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()))
+
     plot_intensity.add_tools(tap_tool)
-    # Define a Python callback function to update the image based on the index
-
     index_source.on_change('data', update_image_tap_callback)
-
 
     box_select_tool = bokeh.models.BoxSelectTool(select_every_mousemove=False)
     plot_intensity.add_tools(box_select_tool)
@@ -2706,13 +2770,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_osc_tod.vbar(x='x', top='top', width=3, source=source_tod, alpha=0.5, color='black', line_color=None)
     plot_nosc.vbar(x='x', top='top', width=0.5, source=source_nosc, alpha=0.5, color='black', line_color=None)
 
-    #data = np.random.normal(800, 40, 1000)
-    #hist, edges = np.histogram(data, bins=200)
-    #source_tod.data = {'x': edges[:-1], 'top': hist}
-
-
     prepare_intensity() 
-
 
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
@@ -2723,6 +2781,27 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.grid.visible = False
 
 
+    # Sample data
+    data_pie = {'categories': ['A', 'B', 'C', 'D'], 'values': [20, 30, 25, 25]}
+
+    # Calculate the angles for the sectors
+    angles = [data_pie['values'][0]/sum(data_pie['values']) * 2*math.pi]
+    for i in range(1, len(data_pie['values'])):
+        angles.append(angles[-1] + data_pie['values'][i]/sum(data_pie['values']) * 2*math.pi)
+
+    # Create a figure
+    fig_pie = bokeh.models.figure(plot_height=350, title="Pie Chart", toolbar_location=None, tools="hover", tooltips="@categories: @values")
+
+    # Draw the sectors of the pie chart
+    fig_pie.wedge(x=0, y=1, radius=0.4,
+                  start_angle=angles[:-1], end_angle=angles[1:],
+                  color=["red", "green", "blue", "orange"],
+                  legend_field="categories", source=data_pie)
+
+    # Hide the axes
+    fig_pie.axis.visible = False
+
+
     exp_color_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
                                          bokeh.layouts.row(dropdown_well),
                                          bokeh.layouts.row(dropdown_pos), 
@@ -2731,6 +2810,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          bokeh.layouts.row(bokeh.layouts.Spacer(width=10),contrast_slider),
                                          bokeh.layouts.row(position_check_button),
                                          bokeh.layouts.row(position_keep_button),
+                                         bokeh.layouts.row(button_remove_roi),
                                          )
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
@@ -2738,7 +2818,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_cell ),
                                      bokeh.layouts.row(button_inspect, button_build_cells),
                                      bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
-                                     bokeh.layouts.row(button_find_peaks, dropdown_intensity_type),
+                                     bokeh.layouts.row(button_save_peaks, button_delete_peaks, dropdown_intensity_type),
                                      bokeh.layouts.row(slider_find_peaks),
                                      bokeh.layouts.row(button_mask_cells, button_dividing_cells, button_double_nuclei_cells),
                                      bokeh.layouts.row(button_multiple_cells, button_pair_cell),
