@@ -2274,6 +2274,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             start_oscillation_position.location = -9999
             end_oscillation_position.location = -9999
             time_of_death_position.location = -9999
+            source_varea_death.data['x']    = []
+            source_varea_death.data['y1']   = []
+            source_varea_death.data['y2']   = []
     button_delete_peaks = bokeh.models.Button(label="Delete Peaks")
     button_delete_peaks.on_click(delete_peaks_callback)
     #___________________________________________________________________________________________
