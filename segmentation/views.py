@@ -2269,6 +2269,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellstatus.save()
             set_rising_falling(cellsid[0], delete_status=True)
             update_source_osc_tod()
+            source_intensity_max.data={'time':[], 'intensity':[]}
+            source_intensity_min.data={'time':[], 'intensity':[]}
     button_delete_peaks = bokeh.models.Button(label="Delete Peaks")
     button_delete_peaks.on_click(delete_peaks_callback)
     #___________________________________________________________________________________________
