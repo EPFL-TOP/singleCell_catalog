@@ -2162,7 +2162,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_time_of_death.on_click(time_of_death_callback)
     #___________________________________________________________________________________________
 
-
     #___________________________________________________________________________________________
     def find_peaks_slider_callback(attr, old, new):
         if DEBUG:print('=======================find_peaks_slider_callback=======================================')
@@ -2195,8 +2194,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         set_rising_falling_local(peaksmax, peaksmin)
     slider_find_peaks.on_change('value', find_peaks_slider_callback)
     #___________________________________________________________________________________________
-
-
 
     #___________________________________________________________________________________________
     def save_peaks_callback():
@@ -2244,7 +2241,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_save_peaks = bokeh.models.Button(label="Save Peaks")
     button_save_peaks.on_click(save_peaks_callback)
     #___________________________________________________________________________________________
-
 
     #___________________________________________________________________________________________
     def delete_peaks_callback():
@@ -2322,8 +2318,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
 
-
-
     #___________________________________________________________________________________________
     # Select image from click
     def select_tap_callback():
@@ -2347,7 +2341,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         slider.value=index
     #___________________________________________________________________________________________
 
-
     #___________________________________________________________________________________________
     def update_tap_renderers():
         # Determine which renderer should be included based on some condition
@@ -2361,7 +2354,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def reset_tap_tool():
         source_intensity_ch1.selected.indices = []
     #___________________________________________________________________________________________
-
 
     #___________________________________________________________________________________________
     def generic_indices_callback(flag):
@@ -2785,6 +2777,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     source_nosc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_nosc_dk = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_start_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_end_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_tod = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
@@ -2792,7 +2785,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_osc_tod.vbar(x='x', top='top', width=3, source=source_start_osc, alpha=0.5, color='green', line_color=None)
     plot_osc_tod.vbar(x='x', top='top', width=3, source=source_end_osc, alpha=0.5, color='red', line_color=None)
     plot_osc_tod.vbar(x='x', top='top', width=3, source=source_tod, alpha=0.5, color='black', line_color=None)
-    plot_nosc.vbar(x='x', top='top', width=0.5, source=source_nosc, alpha=0.5, color='black', line_color=None)
+    plot_nosc.vbar(x='x', top='top', width=0.5, source=source_nosc, alpha=0.3, color='green', line_color=None, legend_label='keep')
+    plot_nosc.vbar(x='x', top='top', width=0.5, source=source_nosc_dk, alpha=0.3, color='black', line_color=None, legend_label='don\'t keep')
 
     prepare_intensity() 
 
