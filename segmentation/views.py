@@ -2298,7 +2298,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if cellid.cell_status.n_oscillations==0:# or cellid.cell_status.start_oscillation_frame==0 or cellid.cell_status.end_oscillation_frame==0:
                     print('---------------  ', cellid.cell_status)
                 end_osc.append(cellid.cell_status.end_oscillation)
-                tod.append(cellid.cell_status.time_of_death)
+                if cellid.cell_status.time_of_death>0:tod.append(cellid.cell_status.time_of_death)
 
         max_osc=0
         if max(n_osc, default=-999)>0:
