@@ -2302,8 +2302,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         max_osc=0
         if max(n_osc, default=-999)>0:
             max_osc=max(n_osc, default=0)
+            max_osc_dk=max(n_osc_dk, default=0)
+            if max_osc_dk>max_osc: max_osc=max_osc_dk
         hist, edges = np.histogram(n_osc, bins=max_osc+2, range=(0, max_osc+2))
         source_nosc.data={'x': edges[:-1], 'top': hist}
+
+        hist, edges = np.histogram(n_osc_dk, bins=max_osc+2, range=(0, max_osc+2))
+        source_nosc_dk.data={'x': edges[:-1], 'top': hist}
 
         hist, edges = np.histogram(tod, bins=nframes*10, range=(0, nframes*10))
         source_tod.data={'x': edges[:-1], 'top': hist}
