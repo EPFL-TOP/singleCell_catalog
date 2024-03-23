@@ -2793,9 +2793,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     update_source_osc_tod()
     #plot_osc_tod.vbar(x='x', top='top', width=3, source=source_start_osc, alpha=0.5, color='green', line_color=None)
     #plot_osc_tod.vbar(x='x', top='top', width=3, source=source_end_osc, alpha=0.5, color='red', line_color=None)
-    plot_tod.vbar(x='x', top='top', width=3, source=source_tod, alpha=0.5, color='black', line_color=None, legend_label='keep')
-    plot_nosc.vbar(x='x', top='top', width=0.5, source=source_nosc, alpha=0.2, color='green', line_color=None, legend_label='keep')
-    plot_nosc.vbar(x='x', top='top', width=0.5, source=source_nosc_dk, alpha=0.2, color='red', line_color=None, legend_label='don\'t keep')
+    plot_tod.vbar(x='x', top='top', width=28., source=source_tod, alpha=0.2, color='black', line_color=None, legend_label='keep')
+    plot_nosc.vbar(x='x', top='top', width=0.8, source=source_nosc, alpha=0.2, color='green', line_color=None, legend_label='keep')
+    plot_nosc.vbar(x='x', top='top', width=0.8, source=source_nosc_dk, alpha=0.2, color='red', line_color=None, legend_label='don\'t keep')
 
     prepare_intensity() 
 
