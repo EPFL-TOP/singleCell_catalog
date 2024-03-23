@@ -921,7 +921,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500)
     plot_osc_tod   = bokeh.plotting.figure(title="Start/End of Oscillation and Time of death", x_axis_label='Time (minutes)', y_axis_label='Number of positions',width=1000, height=250)
-    plot_nosc      = bokeh.plotting.figure(title="Number of oscillations", x_axis_label='Number of oscillations', y_axis_label='Number of positions',width=550, height=250)
+    plot_nosc      = bokeh.plotting.figure(title="Number of oscillations", x_axis_label='Number of oscillations', y_axis_label='Number of positions',width=550, height=350)
 
     slider_find_peaks  = bokeh.models.Slider(start=0, end=100, value=30, step=1, title="Peak prominence", width=200)
 
@@ -2284,13 +2284,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         nframes = well.experiment.number_of_frames
         samples = Sample.objects.select_related().filter(experimental_dataset = well)
         n_osc=[]
+        n_osc_dk=[]
         tod=[]
         start_osc=[]
         end_osc=[]
         for sample in samples:
             cellids = CellID.objects.select_related().filter(sample=sample)
             for cellid in cellids:
-                n_osc.append(cellid.cell_status.n_oscillations)
+                if cellid.sample.keep_sample: n_osc.append(cellid.cell_status.n_oscillations)
+                else: n_osc_dk.append(cellid.cell_status.n_oscillations)
                 start_osc.append(cellid.cell_status.start_oscillation)
                 if cellid.cell_status.n_oscillations==0:# or cellid.cell_status.start_oscillation_frame==0 or cellid.cell_status.end_oscillation_frame==0:
                     print('---------------  ', cellid.cell_status)
