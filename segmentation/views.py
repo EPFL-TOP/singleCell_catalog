@@ -2256,7 +2256,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellstatus = cellsid[0].cell_status
             cellstatus.peaks={}
             cellstatus.flags = {}
-            cellstatus.n_oscillations = 0
+            cellstatus.n_oscillations = -999
 
             cellstatus.time_of_death_frame     = -999
             cellstatus.start_oscillation_frame = -999
@@ -2713,7 +2713,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     plot_intensity.y_range.start=0
     plot_intensity.x_range.start=-10
-    #for ch in range(len(time_list)):
+
     for index, key in enumerate(time_list):
         if index==0:
             source_intensity_ch0.data={'time':time_list[key], 'intensity':intensity_list[key]}
