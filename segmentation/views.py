@@ -2648,7 +2648,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if eflag: continue
 
                 contour=segtools.segmentation_test(source_img_ch.data['img'][0], 2., frame.height-cellROI.max_row, cellROI.min_col, frame.height-cellROI.min_row, cellROI.max_col)
-                print('contour npix=',contour.n_pixels)
+                print('contour npix=',contour.num_pixels)
                 #contour=segtools.segmentation_test(source_img_ch.data['img'][0], 2., cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
                 x_coords=[]
                 y_coords=[]
