@@ -2650,11 +2650,26 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 contour=segtools.segmentation_test(source_img_ch.data['img'][0], 2., cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
                 x_coords=[]
                 y_coords=[]
+                mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
+
                 for coord in contour.coords:
                     x_coords.append(coord[0])
                     y_coords.append(coord[1])
-                    
-                source_segmentation.data={'x':x_coords, 'y':y_coords}
+                    mask0[coord[0]][coord[1]]=True
+
+                cs=plt.contour(mask0, [0.5],linewidths=1.2,  colors='red')
+                contcoords = cs.allsegs[0][0]
+                x_cont_coords=[]
+                y_cont_coords=[]
+                for p in contcoords:
+                    x_cont_coords['x'].append(p[0])
+                    y_cont_coords['y'].append(p[1])
+                source_segmentation.data={'x':x_cont_coords, 'y':y_cont_coords}
+
+                plt.figure().clear()
+                plt.close()
+                plt.cla()
+                plt.clf()
 
     button_segment_cell = bokeh.models.Button(label="Segment cell")
     button_segment_cell.on_click(segment_cell_callback)
