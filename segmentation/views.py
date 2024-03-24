@@ -2647,7 +2647,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         eflag=True
                 if eflag: continue
 
-                contour=segtools.segmentation_test(source_img_ch.data['img'][0], 3.5, cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
+                contour=segtools.segmentation_test(source_img_ch.data['img'][0], 2., cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
                 x_coords=[]
                 y_coords=[]
                 mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
@@ -2698,7 +2698,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
 
     source_segmentation  = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
-    plot_image.patch(x='x', y='y', fill_color=None, line_color="red", line_width=4, source=source_segmentation)
+    plot_image.patch(x='x', y='y', fill_color=None, line_color="red", line_width=2, line_alpha=0.5, source=source_segmentation)
 
        # Create a ColumnDataSource to store image data
     #source_url = bokeh.models.ColumnDataSource({'url': [''], 'x': [0], 'y': [0], 'dw': [0], 'dh': [0]})
