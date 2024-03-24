@@ -2683,7 +2683,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
 
     source_segmentation  = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
-    plot_image.patch(x='x', y='y', fill_color="blue", fill_alpha=0.5, line_color="red", line_width=4)
+    plot_image.patch(x='x', y='y', fill_color="blue", fill_alpha=0.5, line_color="red", line_width=4, source=source_segmentation)
 
        # Create a ColumnDataSource to store image data
     #source_url = bokeh.models.ColumnDataSource({'url': [''], 'x': [0], 'y': [0], 'dw': [0], 'dh': [0]})
