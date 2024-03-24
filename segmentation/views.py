@@ -2658,7 +2658,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     mask0[coord[0]][coord[1]]=True
 
 
-                source_img_mask.data = {'img':[np.flip(mask0,0)]}
+                source_img_mask.data = {'img':[mask0]}
                 cs=plt.contour(mask0, [0.5],linewidths=1.2,  colors='red')
                 contcoords = cs.allsegs[0][0]
                 x_cont_coords=[]
