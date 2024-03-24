@@ -2662,8 +2662,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 x_cont_coords=[]
                 y_cont_coords=[]
                 for p in contcoords:
-                    x_cont_coords['x'].append(p[0])
-                    y_cont_coords['y'].append(p[1])
+                    x_cont_coords.append(p[0])
+                    y_cont_coords.append(p[1])
                 source_segmentation.data={'x':x_cont_coords, 'y':y_cont_coords}
 
                 plt.figure().clear()
