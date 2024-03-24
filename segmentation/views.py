@@ -2904,6 +2904,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          bokeh.layouts.row(position_check_button),
                                          bokeh.layouts.row(position_keep_button),
                                          bokeh.layouts.row(button_remove_roi),
+                                         bokeh.layouts.row(button_segment_cell),                                         
                                          )
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
