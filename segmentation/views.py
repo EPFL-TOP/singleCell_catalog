@@ -2701,7 +2701,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     source_segmentation  = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
 #    plot_image.patch(x='x', y='y', fill_color=None, line_color="red", line_width=3, line_alpha=0.8, source=source_segmentation)
-    plot_image.line(x='x', y='y', fill_color=None, line_color="red", line_width=3, line_alpha=0.8, source=source_segmentation)
+    plot_image.line(x='x', y='y', line_color="red", line_width=3, line_alpha=0.8, source=source_segmentation)
 
 
     data_img_mask={'img':[]}
