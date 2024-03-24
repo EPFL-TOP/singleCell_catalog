@@ -2647,7 +2647,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         eflag=True
                 if eflag: continue
 
-                contour=segtools.segmentation_test(source_img_ch.data['img'][0], 2., cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
+                contour=segtools.segmentation_test(source_img_ch.data['img'][0], 3.5, cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
                 x_coords=[]
                 y_coords=[]
                 mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
@@ -2664,7 +2664,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 for p in contcoords:
                     x_cont_coords.append(p[0])
                     y_cont_coords.append(p[1])
-                source_segmentation.data={'x':x_cont_coords, 'y':y_cont_coords}
+                source_segmentation.data={'x':np.flip(x_cont_coords,0), 'y':y_cont_coords}
 
                 plt.figure().clear()
                 plt.close()
