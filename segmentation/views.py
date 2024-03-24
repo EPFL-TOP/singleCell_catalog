@@ -2657,6 +2657,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     y_coords.append(coord[1])
                     mask0[coord[0]][coord[1]]=True
 
+
+                source_img_mask.data = {'img':[mask0]}
                 cs=plt.contour(mask0, [0.5],linewidths=1.2,  colors='red')
                 contcoords = cs.allsegs[0][0]
                 x_cont_coords=[]
@@ -2699,6 +2701,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     source_segmentation  = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
     plot_image.patch(x='x', y='y', fill_color=None, line_color="red", line_width=3, line_alpha=0.8, source=source_segmentation)
+
+
+    data_img_mask={'img':[]}
+    source_img_mask  = bokeh.models.ColumnDataSource(data=data_img_mask)
+
+    plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=250, height=250)
+    plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img_mask)
 
        # Create a ColumnDataSource to store image data
     #source_url = bokeh.models.ColumnDataSource({'url': [''], 'x': [0], 'y': [0], 'dw': [0], 'dh': [0]})
@@ -2938,7 +2947,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                               bokeh.layouts.row(plot_tod))
 
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
-                                             bokeh.layouts.row(plot_nosc))
+                                             bokeh.layouts.row(plot_nosc),
+                                             bokeh.layouts.raw(plot_img_mask),)
 
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10),position_keep_div),
                                        bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
