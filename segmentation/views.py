@@ -2634,7 +2634,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:print('--------segment_cell_callback-------- ')
 
         sample = Sample.objects.get(file_name=get_current_file())
-        frames = Frame.objects.select_for_related().filter(sample=sample)
+        frames = Frame.objects.select_related().filter(sample=sample)
         for frame in frames:
             if frame.number!=slider.value:continue
             cellROIs = CellROI.objects.select_related().filter(frame=frame)
