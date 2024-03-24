@@ -2666,7 +2666,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 for p in contcoords:
                     x_cont_coords.append(p[0])
                     y_cont_coords.append(p[1])
-                source_segmentation.data={'x':np.flip(x_cont_coords,0), 'y':y_cont_coords}
+                source_segmentation.data={'x':x_cont_coords, 'y':y_cont_coords}
 
                 plt.figure().clear()
                 plt.close()
@@ -2700,7 +2700,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
 
     source_segmentation  = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
-    plot_image.patch(x='x', y='y', fill_color=None, line_color="red", line_width=3, line_alpha=0.8, source=source_segmentation)
+#    plot_image.patch(x='x', y='y', fill_color=None, line_color="red", line_width=3, line_alpha=0.8, source=source_segmentation)
+    plot_image.line(x='x', y='y', fill_color=None, line_color="red", line_width=3, line_alpha=0.8, source=source_segmentation)
 
 
     data_img_mask={'img':[]}
