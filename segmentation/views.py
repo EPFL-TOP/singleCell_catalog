@@ -320,32 +320,38 @@ def register_rawdataset():
                     if DEBUG: print('            adding frame with name ',fr)
                     frame.save()
 
+
 #___________________________________________________________________________________________
-def segment_localThresholding(sample):
-
-    s=None
-    if type(sample) == str:
-        s = Sample.objects.get(file_name = sample)
-    else:
-        s=sample
-
-    segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=200, npix_max=5000)
-
-    frames = Frame.objects.select_for_related().filter(sample=s)
-    for frame in frames:
-        cellROIs = CellROI.objects.select_related().filter(frame=frame)
-        for cellROI in cellROIs:
-            eflag=False
-            if cellROI.cell_id == None: continue
-            contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellROI)
-            for contourSeg in contoursSeg:
-                if contourSeg.algo == 'localthresholding': 
-                    eflag=True
-            if eflag: continue
+def segmentation(image, seg):
+    contour_list = seg.segmentation(image)
 
 
-            contour_list = segmentation.segmentation()
-
+#___________________________________________________________________________________________
+#def segment_localThresholding(sample):
+#
+#    s=None
+#    if type(sample) == str:
+#        s = Sample.objects.get(file_name = sample)
+#    else:
+#        s=sample
+#
+#    segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=200, npix_max=5000)
+#
+#    frames = Frame.objects.select_for_related().filter(sample=s)
+#    for frame in frames:
+#        cellROIs = CellROI.objects.select_related().filter(frame=frame)
+#        for cellROI in cellROIs:
+#            eflag=False
+#            if cellROI.cell_id == None: continue
+#            contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellROI)
+#            for contourSeg in contoursSeg:
+#                if contourSeg.algo == 'localthresholding': 
+#                    eflag=True
+#            if eflag: continue
+#
+#
+#            contour_list = segmentation.segmentation()
+#
 #    #loop over all experiments
 #    exp_list = Experiment.objects.all()
 #
@@ -2604,11 +2610,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_elongated_cell.on_click(elongated_cell_callback)
     #___________________________________________________________________________________________
 
-
-
-    #elongated      = models.BooleanField(help_text="round cell flag", default=False, blank=True)
-
-
     #___________________________________________________________________________________________
     def box_select_callback(event):
         if DEBUG:print('-----==========-==---=box_select_callback=',source_intensity_ch1.selected.indices)
@@ -2627,6 +2628,37 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.on_event(bokeh.events.SelectionGeometry, box_select_callback)
     #___________________________________________________________________________________________
 
+
+    #___________________________________________________________________________________________
+    def segment_cell_callback():
+        if DEBUG:print('--------segment_cell_callback-------- ')
+
+        sample = Sample.objects.get(file_name=get_current_file())
+        frames = Frame.objects.select_for_related().filter(sample=sample)
+        for frame in frames:
+            if frame.number!=slider.value:continue
+            cellROIs = CellROI.objects.select_related().filter(frame=frame)
+            for cellROI in cellROIs:
+                eflag=False
+                if cellROI.cell_id == None: continue
+                contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellROI)
+                for contourSeg in contoursSeg:
+                    if contourSeg.algo == 'localthresholding': 
+                        eflag=True
+                if eflag: continue
+
+                contour=segmentation.segmentation_test(source_img_ch[0], 2., cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
+                x_coords=[]
+                y_coords=[]
+                for coord in contour.coords:
+                    x_coords.append(coord[0])
+                    y_coords.append(coord[1])
+                    
+                source_segmentation.data={'x':x_coords, 'y':y_coords}
+
+    button_segment_cell = bokeh.models.Button(label="Segment cell")
+    button_segment_cell.on_click(segment_cell_callback)
+    #___________________________________________________________________________________________
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
@@ -2649,6 +2681,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #plot_image.add_layout(color_bar, 'right')
 
     plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
+
+    source_segmentation  = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
+    plot_image.patch(x='x', y='y', fill_color="blue", fill_alpha=0.5, line_color="red", line_width=4)
 
        # Create a ColumnDataSource to store image data
     #source_url = bokeh.models.ColumnDataSource({'url': [''], 'x': [0], 'y': [0], 'dw': [0], 'dh': [0]})
