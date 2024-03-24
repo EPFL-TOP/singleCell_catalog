@@ -2658,7 +2658,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     mask0[coord[0]][coord[1]]=True
 
 
-                source_img_mask.data = {'img':[mask0]}
+                source_img_mask.data = {'img':[np.flip(mask0,0)]}
                 cs=plt.contour(mask0, [0.5],linewidths=1.2,  colors='red')
                 contcoords = cs.allsegs[0][0]
                 x_cont_coords=[]
@@ -2706,7 +2706,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data_img_mask={'img':[]}
     source_img_mask  = bokeh.models.ColumnDataSource(data=data_img_mask)
 
-    plot_img_mask     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=250, height=250)
+    plot_img_mask     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
     plot_img_mask.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img_mask)
 
        # Create a ColumnDataSource to store image data
