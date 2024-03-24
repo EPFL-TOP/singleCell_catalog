@@ -2647,7 +2647,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         eflag=True
                 if eflag: continue
 
-                contour=segmentation.segmentation_test(source_img_ch[0], 2., cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
+                contour=segtools.segmentation_test(source_img_ch[0], 2., cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
                 x_coords=[]
                 y_coords=[]
                 for coord in contour.coords:
