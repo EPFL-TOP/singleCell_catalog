@@ -2674,20 +2674,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
  
 
         hist, edges = np.histogram(bkg_mean_list, 
-                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/10.), 
+                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/20.), 
                                    range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
         hist = hist/sum(hist)
         source_histo_int_mean_bkg.data={'x': edges[:-1], 'top': hist}
 
 
         hist, edges = np.histogram(sig_mean_list_sel,
-                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/10.), 
+                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/20.), 
                                    range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
         hist = hist/sum(hist)
         source_histo_int_mean_sig_sel.data={'x': edges[:-1], 'top': hist}
 
         hist, edges = np.histogram(sig_mean_list_notsel,
-                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/10.), 
+                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/20.), 
                                    range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
         hist = hist/sum(hist)
         source_histo_int_mean_sig_notsel.data={'x': edges[:-1], 'top': hist}
@@ -2927,9 +2927,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_histo_int_mean_sig_notsel = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
  
     plot_histo_int_mean       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity mean', y_axis_label='Number of pixels norm',width=500, height=400)#, y_axis_type="log"
-    plot_histo_int_mean.vbar(x='x', top='top', width=10., source=source_histo_int_mean_bkg, alpha=0.3, color='black', line_color=None)
-    plot_histo_int_mean.vbar(x='x', top='top', width=10., source=source_histo_int_mean_sig_sel, alpha=0.3, color='blue', line_color=None)
-    plot_histo_int_mean.vbar(x='x', top='top', width=10., source=source_histo_int_mean_sig_notsel, alpha=0.3, color='red', line_color=None)
+    plot_histo_int_mean.vbar(x='x', top='top', width=20., source=source_histo_int_mean_bkg, alpha=0.3, color='black', line_color=None)
+    plot_histo_int_mean.vbar(x='x', top='top', width=20., source=source_histo_int_mean_sig_sel, alpha=0.3, color='blue', line_color=None)
+    plot_histo_int_mean.vbar(x='x', top='top', width=20., source=source_histo_int_mean_sig_notsel, alpha=0.3, color='red', line_color=None)
 
     source_histo_int_std_bkg = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_histo_int_std_sig_sel = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
