@@ -2675,6 +2675,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 plt.cla()
                 plt.clf()
 
+        intlist=[]
+        for i in range(frame.height-cellROI.max_row, frame.height-cellROI.min_row):
+            for j in range(cellROI.min_col, cellROI.max_col+1):
+                intlist.append(source_img_ch.data['img'][0][i][j])
+        hist, edges = np.histogram(intlist, bins=100, range=(min(intlist), max(intlist)))
+        source_histo_int.data={'x': edges[:-1], 'top': hist}
     button_segment_cell = bokeh.models.Button(label="Segment cell")
     button_segment_cell.on_click(segment_cell_callback)
     #___________________________________________________________________________________________
@@ -2888,6 +2894,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.axis.visible = False
     plot_image.grid.visible = False
 
+    plot_histo_int      = bokeh.plotting.figure(title="histo int", x_axis_label='intensity', y_axis_label='Number of pixels',width=400, height=300)
+    source_histo_int      = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    plot_histo_int.vbar(x='x', top='top', width=28., source=source_histo_int, alpha=0.2, color='green', line_color=None, legend_label='keep')
+
 
     # Sample data
     from bokeh.palettes import Category20c
@@ -2947,7 +2957,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      )
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity),
-                                              bokeh.layouts.row(plot_tod))
+                                              bokeh.layouts.row(plot_tod),
+                                              bokeh.layouts.row(plot_histo_int),)
 
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
                                              bokeh.layouts.row(plot_nosc),
