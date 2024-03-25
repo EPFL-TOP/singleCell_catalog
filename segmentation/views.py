@@ -2681,6 +2681,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 intlist.append(source_img_ch.data['img'][0][i][j])
         hist, edges = np.histogram(intlist, bins=100, range=(min(intlist), max(intlist)))
         source_histo_int.data={'x': edges[:-1], 'top': hist}
+        plot_histo_int.width=(max(intlist)-min(intlist))/100.
     button_segment_cell = bokeh.models.Button(label="Segment cell")
     button_segment_cell.on_click(segment_cell_callback)
     #___________________________________________________________________________________________
@@ -2896,7 +2897,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     plot_histo_int      = bokeh.plotting.figure(title="histo int", x_axis_label='intensity', y_axis_label='Number of pixels',width=400, height=300)
     source_histo_int      = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    plot_histo_int.vbar(x='x', top='top', width=28., source=source_histo_int, alpha=0.2, color='green', line_color=None, legend_label='keep')
+    plot_histo_int.vbar(x='x', top='top', width=2., source=source_histo_int, alpha=0.2, color='green', line_color=None)
 
 
     # Sample data
