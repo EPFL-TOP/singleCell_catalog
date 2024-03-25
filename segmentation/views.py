@@ -627,7 +627,7 @@ def build_segmentation():
 
                 if 'wscepfl00' not in s.file_name :continue
                 for cellid in cellids:
-                    cellrois=CellROI.objects.select_related(cell_id=cellid)
+                    cellrois=CellROI.objects.select_related().filter(cell_id=cellid)
                     for cellroi in cellrois:
                         eflag=False
                         contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi)
