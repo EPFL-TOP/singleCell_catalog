@@ -1700,6 +1700,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_channel.value = dropdown_channel.options[0]
         dropdown_color.value = dropdown_color.options[0]
 
+        update_source_segment()
+
         if DEBUG:
             print('prepare_pos dropdown_channel.value ',dropdown_channel.value)
             print('prepare_pos dropdown_channel.options ',dropdown_channel.options)
@@ -1838,6 +1840,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellroi = cellrois[0]
         print('cellroi=',cellroi)
         contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo='localthresholding')
+        if len(contours)==0:return
+
         contour = contours[0]
         print('contour=',contour)
         source_segmentation.data={'x':contour.pixels['x'], 'y':contour.pixels['y']}
@@ -1852,9 +1856,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         images_norm=source_imgs_norm.data['images']
         new_image = images_norm[int(dropdown_channel.value)][time_point]
         source_img.data = {'img':[new_image]}
-        update_source_segment()
         images=source_imgs.data['images']
         source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
+
+        update_source_segment()
 
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
 
