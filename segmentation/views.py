@@ -1829,6 +1829,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         frames  = Frame.objects.select_related().filter(sample=sample, number=slider.value)
         frame = frames[0]
         cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+        if len(cellids)==0:return
         cellid=cellids[0]
         cellrois = CellROI.objects.select_related(cell_id=cellid, frame=frame)
         cellroi = cellrois[0]
@@ -1846,7 +1847,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         images_norm=source_imgs_norm.data['images']
         new_image = images_norm[int(dropdown_channel.value)][time_point]
         source_img.data = {'img':[new_image]}
-
+        update_source_segment()
         images=source_imgs.data['images']
         source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
