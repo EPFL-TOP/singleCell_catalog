@@ -2681,7 +2681,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 intlist.append(source_img_ch.data['img'][0][i][j])
         hist, edges = np.histogram(intlist, bins=100, range=(min(intlist), max(intlist)))
         source_histo_int.data={'x': edges[:-1], 'top': hist}
-        plot_histo_int.width=(max(intlist)-min(intlist))/100.
+        plot_histo_int.width=int(0.95*(max(intlist)-min(intlist))/100.)
     button_segment_cell = bokeh.models.Button(label="Segment cell")
     button_segment_cell.on_click(segment_cell_callback)
     #___________________________________________________________________________________________
