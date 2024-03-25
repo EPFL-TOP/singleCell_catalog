@@ -2685,11 +2685,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         hist = hist/sum(hist)
         source_histo_int_mean_sig.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(bkg_std_list, bins=int((max(bkg_std_list+sig_std_list)-min(bkg_std_list+sig_std_list))/0.5), range=(min(bkg_std_list+sig_std_list), max(bkg_std_list+sig_std_list)))
+        hist, edges = np.histogram(bkg_std_list, bins=int((max(bkg_std_list+sig_std_list)-min(bkg_std_list+sig_std_list))/1.), range=(min(bkg_std_list+sig_std_list), max(bkg_std_list+sig_std_list)))
         hist = hist/sum(hist)
         source_histo_int_std_bkg.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(sig_std_list, bins=int((max(bkg_std_list+sig_std_list)-min(bkg_std_list+sig_std_list))/0.5), range=(min(bkg_std_list+sig_std_list), max(bkg_std_list+sig_std_list)))
+        hist, edges = np.histogram(sig_std_list, bins=int((max(bkg_std_list+sig_std_list)-min(bkg_std_list+sig_std_list))/1.), range=(min(bkg_std_list+sig_std_list), max(bkg_std_list+sig_std_list)))
         hist = hist/sum(hist)
         source_histo_int_std_sig.data={'x': edges[:-1], 'top': hist}
 
@@ -2910,16 +2910,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_histo_int_mean_bkg = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_histo_int_mean_sig = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
  
-    plot_histo_int_mean       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity mean', y_axis_label='Number of pixels norm',width=400, height=300)
+    plot_histo_int_mean       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity mean', y_axis_label='Number of pixels norm',width=400, height=300, y_axis_type="log")
     plot_histo_int_mean.vbar(x='x', top='top', width=10., source=source_histo_int_mean_bkg, alpha=0.2, color='red', line_color=None)
     plot_histo_int_mean.vbar(x='x', top='top', width=10., source=source_histo_int_mean_sig, alpha=0.2, color='black', line_color=None)
 
     source_histo_int_std_bkg = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_histo_int_std_sig = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
  
-    plot_histo_int_std       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity std', y_axis_label='Number of pixels norm',width=400, height=300)
-    plot_histo_int_std.vbar(x='x', top='top', width=10., source=source_histo_int_std_bkg, alpha=0.2, color='red', line_color=None)
-    plot_histo_int_std.vbar(x='x', top='top', width=0.5, source=source_histo_int_std_sig, alpha=0.2, color='black', line_color=None)
+    plot_histo_int_std       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity std', y_axis_label='Number of pixels norm',width=400, height=300, y_axis_type="log",)
+    plot_histo_int_std.vbar(x='x', top='top', width=1., source=source_histo_int_std_bkg, alpha=0.2, color='red', line_color=None)
+    plot_histo_int_std.vbar(x='x', top='top', width=1., source=source_histo_int_std_sig, alpha=0.2, color='black', line_color=None)
 
 
     # Sample data
