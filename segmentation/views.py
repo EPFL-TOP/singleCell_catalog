@@ -1833,6 +1833,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         frame = frames[0]
         print('frame=',frame)
         cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+        print(cellids,'  dropdown_cell.value ',dropdown_cell.value)
         if len(cellids)==0:return
         cellid=cellids[0]
         print('cellid=',cellid)
