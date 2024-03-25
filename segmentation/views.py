@@ -615,10 +615,14 @@ def checkROI(ROIs):
 def build_segmentation():
     exp_list = Experiment.objects.all()
     for exp in exp_list:
+        print('exp ', exp.name)
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
+            print('  expds ', expds.data_name)
+
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
+                print('    sample ',s.file_name)
                 cellids = CellID.objects.select_related().filter(sample=s)
                 print('build segments sample: ',s.file_name)
                 time_lapse_path = Path(s.file_name)
