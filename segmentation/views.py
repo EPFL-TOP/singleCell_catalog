@@ -2765,7 +2765,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def segment_cell_callback():
-        if DEBUG:print('--------segment_cell_callback-------- ')
+        print('--------segment_cell_callback-------- ')
 
         sample = Sample.objects.get(file_name=get_current_file())
         frames = Frame.objects.select_related().filter(sample=sample)
@@ -2773,13 +2773,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if frame.number!=slider.value:continue
             cellROIs = CellROI.objects.select_related().filter(frame=frame)
             for cellROI in cellROIs:
-                eflag=False
+                #eflag=False
                 if cellROI.cell_id == None: continue
-                contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellROI)
-                for contourSeg in contoursSeg:
-                    if contourSeg.algo == 'localthresholding': 
-                        eflag=True
-                if eflag: continue
+                #contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellROI)
+                #for contourSeg in contoursSeg:
+                #    if contourSeg.algo == 'localthresholding': 
+                #       eflag=True
+                #if eflag: continue
 
                 contour, bkg_mean_list, bkg_std_list,  sig_mean_list_sel, sig_std_list_sel, sig_mean_list_notsel, sig_std_list_notsel =segtools.segmentation_test(source_img_ch.data['img'][0], 1.9, frame.height-cellROI.max_row, cellROI.min_col, frame.height-cellROI.min_row, cellROI.max_col)
                 print('contour npix=',contour.num_pixels)
