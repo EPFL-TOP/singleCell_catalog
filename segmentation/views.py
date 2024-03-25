@@ -2910,14 +2910,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_histo_int_mean_bkg = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_histo_int_mean_sig = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
  
-    plot_histo_int_mean       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity mean', y_axis_label='Number of pixels norm',width=400, height=300)#, y_axis_type="log"
+    plot_histo_int_mean       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity mean', y_axis_label='Number of pixels norm',width=500, height=400)#, y_axis_type="log"
     plot_histo_int_mean.vbar(x='x', top='top', width=10., source=source_histo_int_mean_bkg, alpha=0.2, color='red', line_color=None)
     plot_histo_int_mean.vbar(x='x', top='top', width=10., source=source_histo_int_mean_sig, alpha=0.2, color='black', line_color=None)
 
     source_histo_int_std_bkg = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_histo_int_std_sig = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
  
-    plot_histo_int_std       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity std', y_axis_label='Number of pixels norm',width=400, height=300, y_axis_type="log")
+    plot_histo_int_std       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity std', y_axis_label='Number of pixels norm',width=500, height=400)
     plot_histo_int_std.vbar(x='x', top='top', width=1., source=source_histo_int_std_bkg, alpha=0.2, color='red', line_color=None)
     plot_histo_int_std.vbar(x='x', top='top', width=1., source=source_histo_int_std_sig, alpha=0.2, color='black', line_color=None)
 
