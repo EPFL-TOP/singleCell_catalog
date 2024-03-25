@@ -704,7 +704,7 @@ def build_segmentation():
                         out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, 'localthresholding'))
                         if not os.path.exists(out_dir_name):
                             os.makedirs(out_dir_name)
-                        segment_dict['npixels']=contour.num_pixels
+                        segment_dict['npixels']=int(contour.num_pixels)
                         segment_dict['type']="localthresholding"
 
                         segment_dict['x'] = []
