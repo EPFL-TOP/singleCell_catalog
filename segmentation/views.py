@@ -1845,7 +1845,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         contour = contours[0]
         print('contour=',contour)
-        source_segmentation.data={'x':contour.pixels['x'], 'y':contour.pixels['y']}
+        source_segmentation.data={'x':np.flip(contour.pixels['x'],0), 'y':contour.pixels['y']}
     #___________________________________________________________________________________________
 
 
