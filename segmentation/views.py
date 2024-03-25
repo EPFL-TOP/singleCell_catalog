@@ -625,9 +625,11 @@ def build_segmentation():
                 print('    sample ',s.file_name)
                 cellids = CellID.objects.select_related().filter(sample=s)
                 print('build segments sample: ',s.file_name)
-                time_lapse_path = Path(s.file_name)
-                time_lapse = nd2.imread(time_lapse_path.as_posix())
-                images=time_lapse[:,0,:,:]
+
+                images, channels = read.nd2reader_getFrames(s.file_name)
+                #images are t, c, x, y 
+                images=images.transpose(1,0,2,3)
+                BF_images=images[0]
 
                 if 'wscepfl00' not in s.file_name :continue
                 for cellid in cellids:
@@ -640,11 +642,87 @@ def build_segmentation():
                                 eflag=True
                         if eflag: continue
                         contourseg = ContourSeg(cell_roi=cellroi)
-                        image=images[cellroi.frame.number]
-                        print(image.shape)
+                        image=BF_images[cellroi.frame.number]
+                        contour = segtools.segmentation(image, 1.9, 
+                                                        cellroi.min_row, 
+                                                        cellroi.min_col, 
+                                                        cellroi.max_row, 
+                                                        cellroi.max_col)
+
+                        x_coords=[]
+                        y_coords=[]
+                        mask0=np.zeros(image.shape, dtype=bool)
+
+                        for coord in contour.coords:
+                            x_coords.append(coord[0])
+                            y_coords.append(coord[1])
+                            mask0[coord[0]][coord[1]]=True
+
+                        cs=plt.contour(mask0, [0.5],linewidths=1.,  colors='red')
+                        contcoords = cs.allsegs[0][0]
+                        x_cont_coords=[]
+                        y_cont_coords=[]
+                        for p in contcoords:
+                            x_cont_coords.append(p[0])
+                            y_cont_coords.append(p[1])
+
+                        plt.figure().clear()
+                        plt.close()
+                        plt.cla()
+                        plt.clf()
+
+                        contourseg.pixels={'x':x_cont_coords, 'y':y_cont_coords}
+                        contourseg.center_x_pix = contour.centroid[0]
+                        contourseg.center_y_pix = contour.centroid[1]
+                        contourseg.center_x_mic = contour.centroid[0]*cellroi.frame.pixel_microns+cellroi.frame.pos_x
+                        contourseg.center_y_mic = contour.centroid[1]*cellroi.frame.pixel_microns+cellroi.frame.pos_y
+                        contourseg.algo = 'localthresholding'
+
+                        intensity_mean={}
+                        intensity_std={}
+                        intensity_sum={}
+                        intensity_max={}
+                        for ch in range(len(channels)): 
+                            segment=mask0*images[ch][cellroi.frame.number]
+                            sum=float(np.sum(segment))
+                            mean=float(np.mean(segment))
+                            std=float(np.std(segment))
+                            max=float(np.max(segment))
+                            ch_name=channels[ch].replace(" ","")
+                            intensity_mean[ch_name]=mean
+                            intensity_std[ch_name]=std
+                            intensity_sum[ch_name]=sum
+                            intensity_max[ch_name]=max
+
+                        contourseg.intensity_max  = intensity_max
+                        contourseg.intensity_mean = intensity_mean
+                        contourseg.intensity_std  = intensity_std
+                        contourseg.intensity_sum  = intensity_sum
+
+                        segment_dict = {}
+                        out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
+                        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, 'localthresholding'))
+                        if not os.path.exists(out_dir_name):
+                            os.makedirs(out_dir_name)
+                        segment_dict['npixels']=contour.num_pixels
+                        segment_dict['type']="localthresholding"
+
+                        segment_dict['x'] = []
+                        segment_dict['y'] = []
+                        for ch in range(len(channels)):
+                            segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = []
+                        
+                        for coord in contour.coords:
+                            segment_dict['x'].append(coord[0])
+                            segment_dict['y'].append(coord[1])
+                            for ch in range(len(channels)):
+                                segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(images[ch][cellroi.frame.number][coord[0]][coord[1]])
+                        out_file = open(out_file_name, "w") 
+                        json.dump(segment_dict, out_file) 
+                        out_file.close() 
+                        contourseg.file_name = out_file_name
+                        contourseg.save()
                         return
-
-
 #___________________________________________________________________________________________
 def build_ROIs():
     exp_list = Experiment.objects.all()

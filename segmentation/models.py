@@ -200,6 +200,8 @@ class ContourSeg(models.Model):
     intensity_max    = models.JSONField(help_text="Contour max intensity", default=dict)
     number_of_pixels = models.PositiveSmallIntegerField(default=-9999, help_text="Contour number of pixels")
 
+    pixels           = models.JSONField(help_text="pixels contour", default=dict)
+
     file_name        = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
     algo             = models.CharField(max_length=200, choices=ALGO, help_text="algorithm type", default='default')
     cell_roi         = models.ForeignKey(CellROI, default='', null=True, on_delete=models.CASCADE, related_name="contourseg_cellroi")
