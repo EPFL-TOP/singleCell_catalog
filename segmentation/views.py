@@ -2693,18 +2693,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_histo_int_mean_sig_notsel.data={'x': edges[:-1], 'top': hist}
 
 
-        hist, edges = np.histogram(bkg_std_list, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/1.), 
+        hist, edges = np.histogram(bkg_std_list, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/2.), 
                                    range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
         hist = hist/sum(hist)
         source_histo_int_std_bkg.data={'x': edges[:-1], 'top': hist}
 
 
-        hist, edges = np.histogram(sig_std_list_sel, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/1.), 
+        hist, edges = np.histogram(sig_std_list_sel, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/2.), 
                                    range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
         hist = hist/sum(hist)
         source_histo_int_std_sig_sel.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(sig_std_list_notsel, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/1.), 
+        hist, edges = np.histogram(sig_std_list_notsel, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/2.), 
                                    range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
         hist = hist/sum(hist)
         source_histo_int_std_sig_notsel.data={'x': edges[:-1], 'top': hist}
@@ -2936,9 +2936,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_histo_int_std_sig_notsel = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
  
     plot_histo_int_std       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity std', y_axis_label='Number of pixels norm',width=500, height=400)
-    plot_histo_int_std.vbar(x='x', top='top', width=1., source=source_histo_int_std_bkg, alpha=0.3, color='black', line_color=None)
-    plot_histo_int_std.vbar(x='x', top='top', width=1., source=source_histo_int_std_sig_sel, alpha=0.3, color='blue', line_color=None)
-    plot_histo_int_std.vbar(x='x', top='top', width=1., source=source_histo_int_std_sig_notsel, alpha=0.3, color='red', line_color=None)
+    plot_histo_int_std.vbar(x='x', top='top', width=2., source=source_histo_int_std_bkg, alpha=0.3, color='black', line_color=None)
+    plot_histo_int_std.vbar(x='x', top='top', width=2., source=source_histo_int_std_sig_sel, alpha=0.3, color='blue', line_color=None)
+    plot_histo_int_std.vbar(x='x', top='top', width=2., source=source_histo_int_std_sig_notsel, alpha=0.3, color='red', line_color=None)
 
 
     # Sample data
