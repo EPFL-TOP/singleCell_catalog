@@ -184,7 +184,8 @@ class Contour(models.Model):
 class ContourSeg(models.Model):
 
     ALGO = (
-        ('default', 'default'), 
+        ('localthresholding', 'localthresholding'), 
+        
         )
     center_x_pix     = models.FloatField(default=-9999, help_text="Contour center x position in pixels")
     center_y_pix     = models.FloatField(default=-9999, help_text="Contour center y position in pixels")
@@ -203,7 +204,7 @@ class ContourSeg(models.Model):
     pixels           = models.JSONField(help_text="pixels contour", default=dict)
 
     file_name        = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
-    algo             = models.CharField(max_length=200, choices=ALGO, help_text="algorithm type", default='default')
+    algo             = models.CharField(max_length=200, choices=ALGO, help_text="algorithm type", default='localthresholding')
     cell_roi         = models.ForeignKey(CellROI, default='', null=True, on_delete=models.CASCADE, related_name="contourseg_cellroi")
 
     def __str__(self):

@@ -1826,15 +1826,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_file=get_current_file()
 
         sample = Sample.objects.get(file_name=current_file)
+        print('sample=',sample)
         frames  = Frame.objects.select_related().filter(sample=sample, number=slider.value)
         frame = frames[0]
+        print('frame=',frame)
         cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
         if len(cellids)==0:return
         cellid=cellids[0]
-        cellrois = CellROI.objects.select_related(cell_id=cellid, frame=frame)
+        print('cellid=',cellid)
+        cellrois = CellROI.objects.select_related().filter(cell_id=cellid, frame=frame)
         cellroi = cellrois[0]
-        contours = ContourSeg.objects.select_related(cell_roi=cellroi)
-
+        print('cellroi=',cellroi)
+        contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo='localthresholding')
+        contours
         source_segmentation.data={'x':contours.pixels['x'], 'y':contours.pixels['y']}
     #___________________________________________________________________________________________
 
