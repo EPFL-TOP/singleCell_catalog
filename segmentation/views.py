@@ -2676,16 +2676,21 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 plt.clf()
 
  
+
         hist, edges = np.histogram(bkg_mean_list, bins=int((max(bkg_mean_list+sig_mean_list)-min(bkg_mean_list+sig_mean_list))/10.), range=(min(bkg_mean_list+sig_mean_list), max(bkg_mean_list+sig_mean_list)))
+        hist = hist/sum(hist)
         source_histo_int_mean_bkg.data={'x': edges[:-1], 'top': hist}
 
         hist, edges = np.histogram(sig_mean_list, bins=int((max(bkg_mean_list+sig_mean_list)-min(bkg_mean_list+sig_mean_list))/10.), range=(min(bkg_mean_list+sig_mean_list), max(bkg_mean_list+sig_mean_list)))
+        hist = hist/sum(hist)
         source_histo_int_mean_sig.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(bkg_std_list, bins=int((max(bkg_std_list+sig_std_list)-min(bkg_std_list+sig_std_list))/0.1), range=(min(bkg_std_list+sig_std_list), max(bkg_std_list+sig_std_list)))
+        hist, edges = np.histogram(bkg_std_list, bins=int((max(bkg_std_list+sig_std_list)-min(bkg_std_list+sig_std_list))/0.5), range=(min(bkg_std_list+sig_std_list), max(bkg_std_list+sig_std_list)))
+        hist = hist/sum(hist)
         source_histo_int_std_bkg.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(sig_std_list, bins=int((max(bkg_std_list+sig_std_list)-min(bkg_std_list+sig_std_list))/0.1), range=(min(bkg_std_list+sig_std_list), max(bkg_std_list+sig_std_list)))
+        hist, edges = np.histogram(sig_std_list, bins=int((max(bkg_std_list+sig_std_list)-min(bkg_std_list+sig_std_list))/0.5), range=(min(bkg_std_list+sig_std_list), max(bkg_std_list+sig_std_list)))
+        hist = hist/sum(hist)
         source_histo_int_std_sig.data={'x': edges[:-1], 'top': hist}
 
 
@@ -2914,7 +2919,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
  
     plot_histo_int_std       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity std', y_axis_label='Number of pixels norm',width=400, height=300)
     plot_histo_int_std.vbar(x='x', top='top', width=10., source=source_histo_int_std_bkg, alpha=0.2, color='red', line_color=None)
-    plot_histo_int_std.vbar(x='x', top='top', width=0.1, source=source_histo_int_std_sig, alpha=0.2, color='black', line_color=None)
+    plot_histo_int_std.vbar(x='x', top='top', width=0.5, source=source_histo_int_std_sig, alpha=0.2, color='black', line_color=None)
 
 
     # Sample data
