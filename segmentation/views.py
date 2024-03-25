@@ -1838,8 +1838,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellroi = cellrois[0]
         print('cellroi=',cellroi)
         contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo='localthresholding')
-        contours
-        source_segmentation.data={'x':contours.pixels['x'], 'y':contours.pixels['y']}
+        contour = contours[0]
+        print('contour=',contour)
+        source_segmentation.data={'x':contour.pixels['x'], 'y':contour.pixels['y']}
     #___________________________________________________________________________________________
 
 
