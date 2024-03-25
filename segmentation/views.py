@@ -1824,9 +1824,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_source_segment():
         if DEBUG:print('****************************  update_source_segment ****************************')
         current_file=get_current_file()
+
+        sample = Sample.objects.get(file_name=current_file)
         frames  = Frame.objects.select_related().filter(sample=sample, number=slider.value)
         frame = frames[0]
-        sample = Sample.objects.get(file_name=current_file)
         cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
         cellid=cellids[0]
         cellrois = CellROI.objects.select_related(cell_id=cellid, frame=frame)
