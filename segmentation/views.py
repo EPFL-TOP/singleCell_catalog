@@ -723,7 +723,7 @@ def build_segmentation():
                         out_file.close() 
                         contourseg.file_name = out_file_name
                         contourseg.save()
-                        return
+                return
 #___________________________________________________________________________________________
 def build_ROIs():
     exp_list = Experiment.objects.all()
@@ -1845,7 +1845,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         contour = contours[0]
         print('contour=',contour)
-        source_segmentation.data={'x':contour.pixels['x'], 'y':[512-c for c in contour.pixels['y']]}
+        source_segmentation.data={'x':contour.pixels['x'], 'y':[frame.height-c for c in contour.pixels['y']]}
     #___________________________________________________________________________________________
 
 
