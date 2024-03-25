@@ -1700,7 +1700,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_channel.value = dropdown_channel.options[0]
         dropdown_color.value = dropdown_color.options[0]
 
-        update_source_segment()
 
         if DEBUG:
             print('prepare_pos dropdown_channel.value ',dropdown_channel.value)
@@ -1726,6 +1725,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         update_source_osc_tod()
         update_dropdown_channel('','','')
         intensity_type_callback('','','')
+        update_source_segment()
 
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
@@ -1860,8 +1860,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         images=source_imgs.data['images']
         source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
-        update_source_segment()
-
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
 
         source_roi.data    = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
@@ -1871,6 +1869,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             line_position.location = -999
         else:
             line_position.location = source_intensity_ch1.data["time"][time_point]
+        update_source_segment()
 
     slider.on_change('value', callback_slider)
     #___________________________________________________________________________________________
