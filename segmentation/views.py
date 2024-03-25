@@ -1820,7 +1820,21 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
+    #___________________________________________________________________________________________
+    def update_source_segment():
+        if DEBUG:print('****************************  update_source_segment ****************************')
+        current_file=get_current_file()
+        frames  = Frame.objects.select_related().filter(sample=sample, number=slider.value)
+        frame = frames[0]
+        sample = Sample.objects.get(file_name=current_file)
+        cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+        cellid=cellids[0]
+        cellrois = CellROI.objects.select_related(cell_id=cellid, frame=frame)
+        cellroi = cellrois[0]
+        contours = ContourSeg.objects.select_related(cell_roi=cellroi)
 
+        source_segmentation.data={'x':contours.pixels['x'], 'y':contours.pixels['y']}
+    #___________________________________________________________________________________________
 
 
     #___________________________________________________________________________________________
@@ -3025,6 +3039,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_nosc.vbar(x='x', top='top', width=0.9, source=source_nosc_dk, alpha=0.2, color='red', line_color=None, legend_label='don\'t keep')
 
     prepare_intensity() 
+
+    update_source_segment()
 
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
