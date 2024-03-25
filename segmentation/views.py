@@ -2643,7 +2643,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         eflag=True
                 if eflag: continue
 
-                contour, bkg_mean_list, bkg_std_list,  sig_mean_list_sel, sig_std_list_sel, sig_mean_list_notsel, sig_std_list_notsel =segtools.segmentation_test(source_img_ch.data['img'][0], 2., frame.height-cellROI.max_row, cellROI.min_col, frame.height-cellROI.min_row, cellROI.max_col)
+                contour, bkg_mean_list, bkg_std_list,  sig_mean_list_sel, sig_std_list_sel, sig_mean_list_notsel, sig_std_list_notsel =segtools.segmentation_test(source_img_ch.data['img'][0], 1.8, frame.height-cellROI.max_row, cellROI.min_col, frame.height-cellROI.min_row, cellROI.max_col)
                 print('contour npix=',contour.num_pixels)
                 #contour=segtools.segmentation_test(source_img_ch.data['img'][0], 2., cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
                 x_coords=[]
@@ -2674,37 +2674,37 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
  
 
         hist, edges = np.histogram(bkg_mean_list, 
-                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/1.), 
+                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
                                    range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
         hist = hist/sum(hist)
         source_histo_int_mean_bkg.data={'x': edges[:-1], 'top': hist}
 
 
         hist, edges = np.histogram(sig_mean_list_sel,
-                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/1.), 
+                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
                                    range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
         hist = hist/sum(hist)
         source_histo_int_mean_sig_sel.data={'x': edges[:-1], 'top': hist}
 
         hist, edges = np.histogram(sig_mean_list_notsel,
-                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/1.), 
+                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
                                    range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
         hist = hist/sum(hist)
         source_histo_int_mean_sig_notsel.data={'x': edges[:-1], 'top': hist}
 
 
-        hist, edges = np.histogram(bkg_std_list, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/2.), 
+        hist, edges = np.histogram(bkg_std_list, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
                                    range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
         hist = hist/sum(hist)
         source_histo_int_std_bkg.data={'x': edges[:-1], 'top': hist}
 
 
-        hist, edges = np.histogram(sig_std_list_sel, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/2.), 
+        hist, edges = np.histogram(sig_std_list_sel, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
                                    range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
         hist = hist/sum(hist)
         source_histo_int_std_sig_sel.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(sig_std_list_notsel, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/2.), 
+        hist, edges = np.histogram(sig_std_list_notsel, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
                                    range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
         hist = hist/sum(hist)
         source_histo_int_std_sig_notsel.data={'x': edges[:-1], 'top': hist}
@@ -2927,18 +2927,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_histo_int_mean_sig_notsel = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
  
     plot_histo_int_mean       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity mean', y_axis_label='Number of pixels norm',width=500, height=400)#, y_axis_type="log"
-    plot_histo_int_mean.vbar(x='x', top='top', width=1., source=source_histo_int_mean_bkg, alpha=0.3, color='black', line_color=None)
-    plot_histo_int_mean.vbar(x='x', top='top', width=1., source=source_histo_int_mean_sig_sel, alpha=0.3, color='blue', line_color=None)
-    plot_histo_int_mean.vbar(x='x', top='top', width=1., source=source_histo_int_mean_sig_notsel, alpha=0.3, color='red', line_color=None)
+    plot_histo_int_mean.vbar(x='x', top='top', width=5., source=source_histo_int_mean_bkg, alpha=0.3, color='black', line_color=None)
+    plot_histo_int_mean.vbar(x='x', top='top', width=5., source=source_histo_int_mean_sig_sel, alpha=0.3, color='blue', line_color=None)
+    plot_histo_int_mean.vbar(x='x', top='top', width=5., source=source_histo_int_mean_sig_notsel, alpha=0.3, color='red', line_color=None)
 
     source_histo_int_std_bkg = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_histo_int_std_sig_sel = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_histo_int_std_sig_notsel = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
  
     plot_histo_int_std       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity std', y_axis_label='Number of pixels norm',width=500, height=400)
-    plot_histo_int_std.vbar(x='x', top='top', width=2., source=source_histo_int_std_bkg, alpha=0.3, color='black', line_color=None)
-    plot_histo_int_std.vbar(x='x', top='top', width=2., source=source_histo_int_std_sig_sel, alpha=0.3, color='blue', line_color=None)
-    plot_histo_int_std.vbar(x='x', top='top', width=2., source=source_histo_int_std_sig_notsel, alpha=0.3, color='red', line_color=None)
+    plot_histo_int_std.vbar(x='x', top='top', width=4., source=source_histo_int_std_bkg, alpha=0.3, color='black', line_color=None)
+    plot_histo_int_std.vbar(x='x', top='top', width=4., source=source_histo_int_std_sig_sel, alpha=0.3, color='blue', line_color=None)
+    plot_histo_int_std.vbar(x='x', top='top', width=4., source=source_histo_int_std_sig_notsel, alpha=0.3, color='red', line_color=None)
 
 
     # Sample data
