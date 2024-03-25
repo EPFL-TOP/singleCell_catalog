@@ -2647,7 +2647,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         eflag=True
                 if eflag: continue
 
-                contour=segtools.segmentation_test(source_img_ch.data['img'][0], 2., frame.height-cellROI.max_row, cellROI.min_col, frame.height-cellROI.min_row, cellROI.max_col)
+                contour, bkg_mean_list, bkg_std_list, sig_mean_list, sig_std_list =segtools.segmentation_test(source_img_ch.data['img'][0], 2., frame.height-cellROI.max_row, cellROI.min_col, frame.height-cellROI.min_row, cellROI.max_col)
                 print('contour npix=',contour.num_pixels)
                 #contour=segtools.segmentation_test(source_img_ch.data['img'][0], 2., cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
                 x_coords=[]
@@ -2675,25 +2675,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 plt.cla()
                 plt.clf()
 
-        intlist=[]
-        intlist_bkg=[]
-        
-        for i in range(frame.height-cellROI.max_row, frame.height-cellROI.min_row):
-            for j in range(cellROI.min_col, cellROI.max_col+1):
-                intlist.append(source_img_ch.data['img'][0][i][j])
+ 
+        hist, edges = np.histogram(bkg_mean_list, bins=int((max(bkg_mean_list+sig_mean_list)-min(bkg_mean_list+sig_mean_list))/10.), range=(min(bkg_mean_list+sig_mean_list), max(bkg_mean_list+sig_mean_list)))
+        source_histo_int_mean_bkg.data={'x': edges[:-1], 'top': hist}
 
-        for i in range(frame.height-cellROI.max_row, frame.height-cellROI.min_row):
-            for j in range(cellROI.min_col-3,cellROI.min_col):
-                intlist_bkg.append(source_img_ch.data['img'][0][i][j])
+        hist, edges = np.histogram(sig_mean_list, bins=int((max(bkg_mean_list+sig_mean_list)-min(bkg_mean_list+sig_mean_list))/10.), range=(min(bkg_mean_list+sig_mean_list), max(bkg_mean_list+sig_mean_list)))
+        source_histo_int_mean_sig.data={'x': edges[:-1], 'top': hist}
 
-            for jj in range(cellROI.max_col+1,cellROI.max_col+4):
-                intlist_bkg.append(source_img_ch.data['img'][0][i][j])
+        hist, edges = np.histogram(bkg_std_list, bins=int((max(bkg_std_list+sig_std_list)-min(bkg_std_list+sig_std_list))/0.1), range=(min(bkg_std_list+sig_std_list), max(bkg_std_list+sig_std_list)))
+        source_histo_int_std_bkg.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(intlist, bins=int((max(intlist)-min(intlist))/10.), range=(min(intlist), max(intlist)))
-        source_histo_int.data={'x': edges[:-1], 'top': hist}
+        hist, edges = np.histogram(sig_std_list, bins=int((max(bkg_std_list+sig_std_list)-min(bkg_std_list+sig_std_list))/0.1), range=(min(bkg_std_list+sig_std_list), max(bkg_std_list+sig_std_list)))
+        source_histo_int_std_sig.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(intlist_bkg, bins=int((max(intlist)-min(intlist))/10.), range=(min(intlist), max(intlist)))
-        source_histo_int_bkg.data={'x': edges[:-1], 'top': hist}
+
     button_segment_cell = bokeh.models.Button(label="Segment cell")
     button_segment_cell.on_click(segment_cell_callback)
     #___________________________________________________________________________________________
@@ -2907,11 +2902,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.axis.visible = False
     plot_image.grid.visible = False
 
-    plot_histo_int      = bokeh.plotting.figure(title="histo int", x_axis_label='intensity', y_axis_label='Number of pixels',width=400, height=300)
-    source_histo_int      = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    plot_histo_int.vbar(x='x', top='top', width=10., source=source_histo_int, alpha=0.2, color='green', line_color=None)
-    source_histo_int_bkg      = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    plot_histo_int.vbar(x='x', top='top', width=10., source=source_histo_int_bkg, alpha=0.2, color='red', line_color=None)
+    source_histo_int_mean_bkg = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_histo_int_mean_sig = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+ 
+    plot_histo_int_mean       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity mean', y_axis_label='Number of pixels norm',width=400, height=300)
+    plot_histo_int_mean.vbar(x='x', top='top', width=10., source=source_histo_int_mean_bkg, alpha=0.2, color='red', line_color=None)
+    plot_histo_int_mean.vbar(x='x', top='top', width=10., source=source_histo_int_mean_sig, alpha=0.2, color='black', line_color=None)
+
+    source_histo_int_std_bkg = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_histo_int_std_sig = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+ 
+    plot_histo_int_std       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity std', y_axis_label='Number of pixels norm',width=400, height=300)
+    plot_histo_int_std.vbar(x='x', top='top', width=10., source=source_histo_int_std_bkg, alpha=0.2, color='red', line_color=None)
+    plot_histo_int_std.vbar(x='x', top='top', width=0.1, source=source_histo_int_std_sig, alpha=0.2, color='black', line_color=None)
 
 
     # Sample data
@@ -2973,7 +2976,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity),
                                               bokeh.layouts.row(plot_tod),
-                                              bokeh.layouts.row(plot_histo_int),)
+                                              bokeh.layouts.row(plot_histo_int_mean, plot_histo_int_std),)
 
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
                                              bokeh.layouts.row(plot_nosc),
