@@ -198,7 +198,7 @@ class ContourSeg(models.Model):
     intensity_std    = models.JSONField(help_text="Contour std intensity")
     intensity_sum    = models.JSONField(help_text="Contour sum intensity")
     intensity_max    = models.JSONField(help_text="Contour max intensity", default=dict)
-    number_of_pixels = models.PositiveSmallIntegerField(default=-9999, help_text="Contour number of pixels")
+    number_of_pixels = models.PositiveSmallIntegerField(default=0, help_text="Contour number of pixels")
 
     pixels           = models.JSONField(help_text="pixels contour", default=dict)
 

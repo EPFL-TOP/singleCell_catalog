@@ -698,6 +698,7 @@ def build_segmentation():
                         contourseg.intensity_mean = intensity_mean
                         contourseg.intensity_std  = intensity_std
                         contourseg.intensity_sum  = intensity_sum
+                        contourseg.number_of_pixels = contour.num_pixels
 
                         segment_dict = {}
                         out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
