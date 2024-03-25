@@ -2811,41 +2811,41 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
  
 
-        hist, edges = np.histogram(bkg_mean_list, 
-                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
-                                   range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
-        hist = hist/sum(hist)
-        source_histo_int_mean_bkg.data={'x': edges[:-1], 'top': hist}
+                hist, edges = np.histogram(bkg_mean_list, 
+                                        bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
+                                        range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
+                hist = hist/sum(hist)
+                source_histo_int_mean_bkg.data={'x': edges[:-1], 'top': hist}
 
 
-        hist, edges = np.histogram(sig_mean_list_sel,
-                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
-                                   range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
-        hist = hist/sum(hist)
-        source_histo_int_mean_sig_sel.data={'x': edges[:-1], 'top': hist}
+                hist, edges = np.histogram(sig_mean_list_sel,
+                                        bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
+                                        range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
+                hist = hist/sum(hist)
+                source_histo_int_mean_sig_sel.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(sig_mean_list_notsel,
-                                   bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
-                                   range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
-        hist = hist/sum(hist)
-        source_histo_int_mean_sig_notsel.data={'x': edges[:-1], 'top': hist}
-
-
-        hist, edges = np.histogram(bkg_std_list, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
-                                   range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
-        hist = hist/sum(hist)
-        source_histo_int_std_bkg.data={'x': edges[:-1], 'top': hist}
+                hist, edges = np.histogram(sig_mean_list_notsel,
+                                        bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
+                                        range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
+                hist = hist/sum(hist)
+                source_histo_int_mean_sig_notsel.data={'x': edges[:-1], 'top': hist}
 
 
-        hist, edges = np.histogram(sig_std_list_sel, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
-                                   range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
-        hist = hist/sum(hist)
-        source_histo_int_std_sig_sel.data={'x': edges[:-1], 'top': hist}
+                hist, edges = np.histogram(bkg_std_list, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
+                                        range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
+                hist = hist/sum(hist)
+                source_histo_int_std_bkg.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(sig_std_list_notsel, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
-                                   range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
-        hist = hist/sum(hist)
-        source_histo_int_std_sig_notsel.data={'x': edges[:-1], 'top': hist}
+
+                hist, edges = np.histogram(sig_std_list_sel, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
+                                        range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
+                hist = hist/sum(hist)
+                source_histo_int_std_sig_sel.data={'x': edges[:-1], 'top': hist}
+
+                hist, edges = np.histogram(sig_std_list_notsel, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
+                                        range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
+                hist = hist/sum(hist)
+                source_histo_int_std_sig_notsel.data={'x': edges[:-1], 'top': hist}
 
     button_segment_cell = bokeh.models.Button(label="Segment cell")
     button_segment_cell.on_click(segment_cell_callback)
