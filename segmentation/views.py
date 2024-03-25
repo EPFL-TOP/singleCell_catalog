@@ -2643,7 +2643,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         eflag=True
                 if eflag: continue
 
-                contour, bkg_mean_list, bkg_std_list,  sig_mean_list_sel, sig_std_list_sel, sig_mean_list_notsel, sig_std_list_notsel =segtools.segmentation_test(source_img_ch.data['img'][0], 1.8, frame.height-cellROI.max_row, cellROI.min_col, frame.height-cellROI.min_row, cellROI.max_col)
+                contour, bkg_mean_list, bkg_std_list,  sig_mean_list_sel, sig_std_list_sel, sig_mean_list_notsel, sig_std_list_notsel =segtools.segmentation_test(source_img_ch.data['img'][0], 1.9, frame.height-cellROI.max_row, cellROI.min_col, frame.height-cellROI.min_row, cellROI.max_col)
                 print('contour npix=',contour.num_pixels)
                 #contour=segtools.segmentation_test(source_img_ch.data['img'][0], 2., cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
                 x_coords=[]
