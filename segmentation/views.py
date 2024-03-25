@@ -584,7 +584,7 @@ def build_cells_sample(sample):
             #if min_dr_name!='':
             #    cellroi_frame.cell_id=cell_id_dict[min_dr_name]
             #    cellroi_frame.save()
-                
+
 
 #___________________________________________________________________________________________
 def removeROIs(sample):
@@ -602,7 +602,6 @@ def removeROIs(sample):
     print('removeROIs sample ',s)
 
 
-
 #___________________________________________________________________________________________
 def checkROI(ROIs):
 
@@ -610,6 +609,36 @@ def checkROI(ROIs):
         if ROIs[r][2]-ROIs[r][0]>50 and ROIs[r][3]-ROIs[r][1]>50:
             return True
     return False
+
+
+#___________________________________________________________________________________________
+def build_segmentation():
+    exp_list = Experiment.objects.all()
+    for exp in exp_list:
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        for expds in experimentaldataset:
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            for s in samples:
+                cellids = CellID.objects.select_related().filter(sample=s)
+                print('build segments sample: ',s.file_name)
+                time_lapse_path = Path(s.file_name)
+                time_lapse = nd2.imread(time_lapse_path.as_posix())
+                images=time_lapse[:,0,:,:]
+
+                if 'wscepfl00' not in s.file_name :continue
+                for cellid in cellids:
+                    cellrois=CellROI.objects.select_related(cell_id=cellid)
+                    for cellroi in cellrois:
+                        eflag=False
+                        contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi)
+                        for contourSeg in contoursSeg:
+                            if contourSeg.algo == 'localthresholding': 
+                                eflag=True
+                        if eflag: continue
+                        contourseg = ContourSeg(cell_roi=cellroi)
+                        image=images[cellroi.frame.number]
+                        print(image.shape)
+                        return
 
 
 #___________________________________________________________________________________________
@@ -3036,7 +3065,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
     #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
     if 'segment' in request.POST:
-        segment()
+        build_segmentation()
 
     if 'build_cells' in request.POST:
         build_cells_all_exp()
