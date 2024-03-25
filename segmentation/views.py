@@ -716,7 +716,7 @@ def build_segmentation():
                             segment_dict['x'].append(int(coord[0]))
                             segment_dict['y'].append(int(coord[1]))
                             for ch in range(len(channels)):
-                                segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(images[ch][cellroi.frame.number][coord[0]][coord[1]])
+                                segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(float(images[ch][cellroi.frame.number][coord[0]][coord[1]]))
                         out_file = open(out_file_name, "w") 
                         json.dump(segment_dict, out_file) 
                         out_file.close() 
