@@ -2813,6 +2813,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
                 cellroi=cellROI
                 contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo='localthresholding')
+                print('contoursSeg = ',contoursSeg,'  ',len(contoursSeg))
+                for c in contoursSeg:
+                    print('=== ',c)
                 if len(contoursSeg)!=1:return
                 contourseg = contoursSeg[0]
 
