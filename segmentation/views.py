@@ -1740,7 +1740,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         data = json.load(f)
 
         for i in range(data['npixels']):
-            mask0[data['x']]['y']=True
+            mask0[data['x'][i]][data['y'][i]]=True
 
         source_img_mask.data = {'img':[mask0]}
 
