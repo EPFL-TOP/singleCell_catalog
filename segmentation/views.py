@@ -1783,7 +1783,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('cellid=',cellid)
         cellrois = CellROI.objects.select_related().filter(cell_id=cellid, frame=frame)
         if len(cellrois)==0:
-            print('----------',cellrois)
+            print('----------cellrois= ',cellrois)
+            print('----------cellid=   ',cellid)
+            print('----------frame=    ',frame)
+
             return
         cellroi = cellrois[0]
         print('cellroi=',cellroi)
