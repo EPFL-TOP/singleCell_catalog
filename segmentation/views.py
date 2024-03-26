@@ -2813,11 +2813,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
                 cellroi=cellROI
                 contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo='localthresholding')
+                contourseg = None
                 print('contoursSeg = ',contoursSeg,'  ',len(contoursSeg))
-                for c in contoursSeg:
-                    print('=== ',c)
-                if len(contoursSeg)!=1:return
-                contourseg = contoursSeg[0]
+
+                if len(contoursSeg)>1:
+                    for c in contoursSeg:
+                        print('=== ',c)
+                    return
+                if len(contoursSeg) == 0 :
+                    contourseg = ContourSeg(cell_roi=cellroi)
+                else:
+                    contourseg = contoursSeg[0]
 
                 contourseg.pixels={'x':x_cont_coords, 'y':y_cont_coords}
                 contourseg.center_x_pix = contour.centroid[0]
