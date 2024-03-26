@@ -513,6 +513,7 @@ def build_segmentation():
                 print('    sample ',s.file_name)
                 cellids = CellID.objects.select_related().filter(sample=s)
                 print('build segments sample: ',s.file_name)
+                if 'wscepfl0087' not in s.file_name :continue
 
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 #images are t, c, x, y 
@@ -611,7 +612,7 @@ def build_segmentation():
                         out_file.close() 
                         contourseg.file_name = out_file_name
                         contourseg.save()
-                return
+                
 #___________________________________________________________________________________________
 def build_ROIs():
     exp_list = Experiment.objects.all()
