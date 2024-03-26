@@ -3037,12 +3037,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      )
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity),
-                                              bokeh.layouts.row(plot_tod),
+                                              bokeh.layouts.row(plot_nosc, plot_tod),
                                               bokeh.layouts.row(plot_histo_int_mean, plot_histo_int_std),)
 
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
-                                             bokeh.layouts.row(plot_nosc),
+                                             #bokeh.layouts.row(plot_nosc),
                                              bokeh.layouts.row(plot_img_mask),)
+
+    cell_osc_plot_col =  bokeh.layouts.column(bokeh.layouts.gridplot([[plot_image], [plot_img_mask]]))
 
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10),position_keep_div),
                                        bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
