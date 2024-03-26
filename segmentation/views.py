@@ -1782,6 +1782,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellid=cellids[0]
         print('cellid=',cellid)
         cellrois = CellROI.objects.select_related().filter(cell_id=cellid, frame=frame)
+        if len(cellrois)==0:
+            print('----------',cellrois)
+            return
         cellroi = cellrois[0]
         print('cellroi=',cellroi)
         contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo='localthresholding')
