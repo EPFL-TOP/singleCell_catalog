@@ -322,118 +322,6 @@ def register_rawdataset():
 
 
 #___________________________________________________________________________________________
-#def segment_localThresholding(sample):
-#
-#    s=None
-#    if type(sample) == str:
-#        s = Sample.objects.get(file_name = sample)
-#    else:
-#        s=sample
-#
-#    segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=200, npix_max=5000)
-#
-#    frames = Frame.objects.select_for_related().filter(sample=s)
-#    for frame in frames:
-#        cellROIs = CellROI.objects.select_related().filter(frame=frame)
-#        for cellROI in cellROIs:
-#            eflag=False
-#            if cellROI.cell_id == None: continue
-#            contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellROI)
-#            for contourSeg in contoursSeg:
-#                if contourSeg.algo == 'localthresholding': 
-#                    eflag=True
-#            if eflag: continue
-#
-#
-#            contour_list = segmentation.segmentation()
-#
-#    #loop over all experiments
-#    exp_list = Experiment.objects.all()
-#
-#    for exp in exp_list:
-#        print(' ---- SEGMENTATION exp name ',exp.name)
-#        print(' ---- SEGMENTATION channels ',exp.name_of_channels.split(','),' number ',exp.number_of_channels, ' full file name ', exp.file_name)
-#        segExist=False
-#        #build default segmentation class, to be replaced by calls from django app
-#        default_segmentation = segtools.customLocalThresholding_Segmentation(threshold=2., delta=2, npix_min=400, npix_max=4000)
-#        default_segmentation.channels = exp.name_of_channels.split(',')
-#        default_segmentation.channel = 0
-#
-#        default_segmentation_2 = segtools.customLocalThresholding_Segmentation(threshold=2., delta=1, npix_min=400, npix_max=4000)
-#        default_segmentation_2.channels = exp.name_of_channels.split(',')
-#        default_segmentation_2.channel = 0
-#
-#        #check existing segmentation if already registered
-#        segmentations = Segmentation.objects.select_related().filter(experiment = exp)
-#        for seg in segmentations:
-#            if default_segmentation.get_param() == seg.algorithm_parameters and \
-#                default_segmentation.get_type() == seg.algorithm_type and \
-#                    default_segmentation.get_version() == seg.algorithm_version:
-#                print('SEGMENTATION EXISTTTTTTTTT')
-#                #check if the segmentation channel exists
-#                segmentation_channels = SegmentationChannel.objects.select_related().filter(segmentation = seg)
-#                for seg_ch in segmentation_channels:
-#                    if seg_ch.channel_number == default_segmentation.channel and \
-#                        seg_ch.channel_name == default_segmentation.channels[default_segmentation.channel]:
-#                        segExist=True
-#        if segExist: continue
-#
-#        #create segmentation and segmentation channel if it does not exist
-#        segmentation = Segmentation(name="default segmentation", 
-#                                    experiment=exp,
-#                                    algorithm_type=default_segmentation.get_type(),
-#                                    algorithm_version=default_segmentation.get_version(),
-#                                    algorithm_parameters=default_segmentation.get_param())
-#        segmentation.save()
-#        segmentation_channel = SegmentationChannel(segmentation=segmentation,
-#                                                channel_name=exp.name_of_channels.split(',')[0],
-#                                                channel_number=0)
-#        segmentation_channel.save()
-#
-#        print(' ---- SEGMENTATION exp name ',exp.name)
-#        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-#
-#        for expds in experimentaldataset:
-#            print('    ---- SEGMENTATION experimentaldataset name ',expds.data_name, expds.data_type)
-#            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-#
-#            counter_samp=0
-#            for s in samples:
-#                if counter_samp==2: 
-#                    print('===========================================')
-#                    break
-#                counter_samp+=1
-#                print('         ---- SEGMENTATION sample name ',s.file_name)
-#                frames = Frame.objects.select_related().filter(sample = s)
-#                print('getting the images')
-#                images, channels = read.nd2reader_getFrames(s.file_name)
-#                print ('          ---- SEGMENTATION will loop over ',len(frames),' frames')
-#
-#                for f in frames:
-#                    print( 'getting contour for frame ',f.number)
-#                    contour_list = default_segmentation.segmentation(images[f.number])
-#
-#                    print(' got ',len(contour_list),' contours')
-#                    for cont in contour_list:
-#                        #pixels_data_contour  = Data(all_pixels=cont['all_pixels_contour'], single_pixels=cont['single_pixels_contour'])
-#                        #pixels_data_contour.save()
-#                        #pixels_data_inside   = Data(all_pixels=cont['all_pixels_inside'],  single_pixels=cont['single_pixels_inside'])
-#                        #pixels_data_inside.save()
-#                        print(cont['center'])
-#                        contour = Contour(frame=f,
-#                        #                  pixels_data_contour=pixels_data_contour,
-#                        #                  pixels_data_inside=pixels_data_inside,
-#                                          segmentation_channel=segmentation_channel,
-#                                          center=cont['center'])
-#                        contour.save()
-#
-#                        del contour
-#                    del contour_list
-#                    #print('gc collect 1: ',gc.collect())
-#
-#                print('gc collect 1: ',gc.collect())
-
-#___________________________________________________________________________________________
 def build_cells_all_exp(sample=None):
     #loop over all experiments
     exp_list = Experiment.objects.all()
@@ -1846,6 +1734,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         contour = contours[0]
         print('contour=',contour)
         source_segmentation.data={'x':contour.pixels['x'], 'y':[frame.height-c for c in contour.pixels['y']]}
+
+        mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
+        f = open(contour.file_name)
+        data = json.load(f)
+
+        for i in range(data['npixels']):
+            mask0[data['x']]['y']=True
+
+        source_img_mask.data = {'img':[mask0]}
+
     #___________________________________________________________________________________________
 
 
