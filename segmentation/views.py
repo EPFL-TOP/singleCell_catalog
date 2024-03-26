@@ -1772,15 +1772,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_file=get_current_file()
 
         sample = Sample.objects.get(file_name=current_file)
-        print('sample=',sample)
+        #print('sample=',sample)
         frames  = Frame.objects.select_related().filter(sample=sample, number=slider.value)
         frame = frames[0]
-        print('frame=',frame)
+        #print('frame=',frame)
         cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
-        print(cellids,'  dropdown_cell.value ',dropdown_cell.value)
+        #print(cellids,'  dropdown_cell.value ',dropdown_cell.value)
         if len(cellids)==0:return
         cellid=cellids[0]
-        print('cellid=',cellid)
+        #print('cellid=',cellid)
         cellrois = CellROI.objects.select_related().filter(cell_id=cellid, frame=frame)
         if len(cellrois)==0:
             print('----------cellrois= ',cellrois)
@@ -1789,15 +1789,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             return
         cellroi = cellrois[0]
-        print('cellroi=',cellroi)
+        #print('cellroi=',cellroi)
         contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo='localthresholding')
         if len(contours)==0:return
 
         contour = contours[0]
-        print('contour=',contour)
+        #print('contour=',contour)
         source_segmentation.data={'x':contour.pixels['x'], 'y':[frame.height-c for c in contour.pixels['y']]}
 
-        print('update_source_segment source_segmentation.data=',source_segmentation.data)
+        #print('update_source_segment source_segmentation.data=',source_segmentation.data)
 
         #mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
         #f = open(contour.file_name)
