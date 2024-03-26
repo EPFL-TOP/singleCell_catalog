@@ -625,7 +625,7 @@ def build_ROIs():
                 cellids = CellID.objects.select_related().filter(sample=s)
                 if len(cellids)>0:continue
                 print('build roi sample: ',s.file_name)
-                if 'wscepfl00' not in s.file_name :continue
+                #if 'wscepfl00' not in s.file_name :continue
 
                 #if counter_samp==10: 
                 #    print('===================BREAK ROIS========================')
@@ -2775,8 +2775,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 plt.clf()
 
                 hist, edges = np.histogram(bkg_mean_list, 
-                                        bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
-                                        range=(min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
+                                        bins=int((np.max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-np.min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
+                                        range=(np.min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), np.max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
                 hist = hist/sum(hist)
                 source_histo_int_mean_bkg.data={'x': edges[:-1], 'top': hist}
 
