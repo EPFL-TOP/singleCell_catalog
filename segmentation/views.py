@@ -1799,14 +1799,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         print('update_source_segment source_segmentation.data=',source_segmentation.data)
 
-        mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
-        f = open(contour.file_name)
-        data = json.load(f)
+        #mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
+        #f = open(contour.file_name)
+        #data = json.load(f)
 
-        for i in range(data['npixels']):
-            mask0[frame.height-data['x'][i]][data['y'][i]]=True
+        #for i in range(data['npixels']):
+        #    mask0[frame.height-data['x'][i]][data['y'][i]]=True
 
-        source_img_mask.data = {'img':[mask0]}
+        #source_img_mask.data = {'img':[mask0]}
 
     #___________________________________________________________________________________________
 
