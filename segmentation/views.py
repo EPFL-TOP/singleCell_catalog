@@ -2794,7 +2794,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_histo_int_mean_sig_notsel.data={'x': edges[:-1], 'top': hist}
 
 
-                hist, edges = np.histogram(bkg_std_list, bins=int((max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-np.min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
+                hist, edges = np.histogram(bkg_std_list, bins=int((np.max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-np.min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
                                         range=(np.min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), np.max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
                 hist = hist/np.sum(hist)
                 source_histo_int_std_bkg.data={'x': edges[:-1], 'top': hist}
