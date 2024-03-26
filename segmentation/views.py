@@ -513,7 +513,7 @@ def build_segmentation():
                 print('    sample ',s.file_name)
                 cellids = CellID.objects.select_related().filter(sample=s)
                 print('build segments sample: ',s.file_name)
-                if 'wscepfl0087' not in s.file_name :continue
+                if 'wscepfl0080' not in s.file_name :continue
 
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 #images are t, c, x, y 
@@ -2724,6 +2724,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('--------segment_cell_callback-------- ')
 
         sample = Sample.objects.get(file_name=get_current_file())
+        channels = sample.experimental_dataset.experiment.name_of_channels.split(',')
         frames = Frame.objects.select_related().filter(sample=sample)
         for frame in frames:
             if frame.number!=slider.value:continue
@@ -2802,6 +2803,66 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                         range=(min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
                 hist = hist/sum(hist)
                 source_histo_int_std_sig_notsel.data={'x': edges[:-1], 'top': hist}
+
+
+                cellroi=cellROI
+                contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo='localthresholding')
+                if len(contoursSeg)!=1:return
+                contourseg = contoursSeg[0]
+
+                contourseg.pixels={'x':x_cont_coords, 'y':y_cont_coords}
+                contourseg.center_x_pix = contour.centroid[0]
+                contourseg.center_y_pix = contour.centroid[1]
+                contourseg.center_x_mic = contour.centroid[0]*cellroi.frame.pixel_microns+cellroi.frame.pos_x
+                contourseg.center_y_mic = contour.centroid[1]*cellroi.frame.pixel_microns+cellroi.frame.pos_y
+                contourseg.algo = 'localthresholding'
+
+                intensity_mean={}
+                intensity_std={}
+                intensity_sum={}
+                intensity_max={}
+                for ch in range(len(channels)): 
+                    segment=mask0*source_img_ch.data['img'][0]
+                    sum=float(np.sum(segment))
+                    mean=float(np.mean(segment))
+                    std=float(np.std(segment))
+                    max=float(np.max(segment))
+                    ch_name=channels[ch].replace(" ","")
+                    intensity_mean[ch_name]=mean
+                    intensity_std[ch_name]=std
+                    intensity_sum[ch_name]=sum
+                    intensity_max[ch_name]=max
+
+                contourseg.intensity_max  = intensity_max
+                contourseg.intensity_mean = intensity_mean
+                contourseg.intensity_std  = intensity_std
+                contourseg.intensity_sum  = intensity_sum
+                contourseg.number_of_pixels = contour.num_pixels
+
+                segment_dict = {}
+                out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
+                out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, 'localthresholding'))
+                if not os.path.exists(out_dir_name):
+                    os.makedirs(out_dir_name)
+                segment_dict['npixels']=int(contour.num_pixels)
+                segment_dict['type']="localthresholding"
+
+                segment_dict['x'] = []
+                segment_dict['y'] = []
+                for ch in range(len(channels)):
+                    segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = []
+                
+                for coord in contour.coords:
+                    segment_dict['x'].append(int(coord[0]))
+                    segment_dict['y'].append(int(coord[1]))
+                    for ch in range(len(channels)):
+                        segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(float(images[ch][cellroi.frame.number][coord[0]][coord[1]]))
+                out_file = open(out_file_name, "w") 
+                json.dump(segment_dict, out_file) 
+                out_file.close() 
+                contourseg.file_name = out_file_name
+                contourseg.save()
+
 
     button_segment_cell = bokeh.models.Button(label="Segment cell")
     button_segment_cell.on_click(segment_cell_callback)
