@@ -1743,6 +1743,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('contour=',contour)
         source_segmentation.data={'x':contour.pixels['x'], 'y':[frame.height-c for c in contour.pixels['y']]}
 
+        print('update_source_segment source_segmentation.data=',source_segmentation.data)
+
         mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
         f = open(contour.file_name)
         data = json.load(f)
@@ -2710,12 +2712,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     y_cont_coords.append(p[1])
                 source_segmentation.data={'x':x_cont_coords, 'y':y_cont_coords}
 
+                print('segment_cell_callback source_segmentation.data=',source_segmentation.data)
+
                 plt.figure().clear()
                 plt.close()
                 plt.cla()
                 plt.clf()
-
- 
 
                 hist, edges = np.histogram(bkg_mean_list, 
                                         bins=int((max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
