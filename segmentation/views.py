@@ -1503,31 +1503,50 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             intensity_list={}
             ROIs = CellROI.objects.select_related().filter(cell_id=cid)
             for roi in ROIs:
-                for ch in roi.contour_cellroi.intensity_sum:
-                    try:
-                        time_list[ch]
-                    except KeyError:
-                        #time_list[ch]=[]
-                        #intensity_list[ch]=[]
-                        #CHANGE WITH ssample.number_of_frames when available
-                        #nframes=sample.number_of_frames
-                        frames=Frame.objects.select_related().filter(sample=sample)
-                        nframes=len(frames)
-                        intensity_list[ch]=[0 for i in range(nframes)]
-                        time_list[ch]=[f.time/60000 for f in frames]
-                        #time_list[ch].append((roi.frame.time/60000))
-                        #intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
+                if dropdown_segmentation_type.value == 'roi':
+                    for ch in roi.contour_cellroi.intensity_sum:
+                        try:
+                            time_list[ch]
+                        except KeyError:
+                            #CHANGE WITH ssample.number_of_frames when available
+                            #nframes=sample.number_of_frames
+                            frames=Frame.objects.select_related().filter(sample=sample)
+                            nframes=len(frames)
+                            intensity_list[ch]=[0 for i in range(nframes)]
+                            time_list[ch]=[f.time/60000 for f in frames]
 
-                    if   dropdown_intensity_type.value == 'sum': 
-                        intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_sum')[ch]
-                    elif dropdown_intensity_type.value == 'avg': 
-                        intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_sum')[ch]/roi.contour_cellroi.number_of_pixels
-                    elif   dropdown_intensity_type.value == 'max': 
-                        intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_max')[ch]
-                    elif   dropdown_intensity_type.value == 'std': 
-                        intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_std')[ch]
+                        if   dropdown_intensity_type.value == 'sum': 
+                            intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_sum')[ch]
+                        elif dropdown_intensity_type.value == 'avg': 
+                            intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_sum')[ch]/roi.contour_cellroi.number_of_pixels
+                        elif   dropdown_intensity_type.value == 'max': 
+                            intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_max')[ch]
+                        elif   dropdown_intensity_type.value == 'std': 
+                            intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_std')[ch]
 
+                if dropdown_segmentation_type.value == 'localthr':
+                    contours = ContourSeg.objects.select_related().filter(cell_roi=roi, algo='localthresholding')
+                    if len(contours)==0:return
+                    contour  = contours[0]
+                    for ch in contour.intensity_sum:
+                        try:
+                            time_list[ch]
+                        except KeyError:
+                            #CHANGE WITH ssample.number_of_frames when available
+                            #nframes=sample.number_of_frames
+                            frames=Frame.objects.select_related().filter(sample=sample)
+                            nframes=len(frames)
+                            intensity_list[ch]=[0 for i in range(nframes)]
+                            time_list[ch]=[f.time/60000 for f in frames]
 
+                        if   dropdown_intensity_type.value == 'sum': 
+                            intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_sum')[ch]
+                        elif dropdown_intensity_type.value == 'avg': 
+                            intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_sum')[ch]/contour.number_of_pixels
+                        elif   dropdown_intensity_type.value == 'max': 
+                            intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_max')[ch]
+                        elif   dropdown_intensity_type.value == 'std': 
+                            intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_std')[ch]
 
             for index, key in enumerate(time_list):
                 if index==0:
@@ -1672,6 +1691,34 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     int_type_list = ["avg", "max", "sum",  "std"]
     dropdown_intensity_type = bokeh.models.Select(value=int_type_list[0], title="intensity", options=int_type_list)
     dropdown_intensity_type.on_change('value', intensity_type_callback)
+    #___________________________________________________________________________________________
+
+
+
+    #___________________________________________________________________________________________
+    def segmentation_type_callback(attr, old, new):
+        if DEBUG:
+            print('segmentation_type_callback value=',dropdown_segmentation_type.value)
+        update_dropdown_cell('','','')
+        sample = Sample.objects.get(file_name=get_current_file())
+        cellid = CellID.objects.select_related().filter(sample=sample)
+
+        for cell in cellid:
+            if cell.name != dropdown_cell.value:continue
+            peaks=cell.cell_status.peaks
+            if len(peaks)>=6:
+                int_max=[]
+                for i in peaks["max_frame"]:
+                    int_max.append(source_intensity_ch1.data["intensity"][i])
+                source_intensity_max.data={'time':peaks['max_time'], 'intensity':int_max}  
+                int_min=[]
+                for i in peaks["min_frame"]:
+                    int_min.append(source_intensity_ch1.data["intensity"][i])
+                source_intensity_min.data={'time':peaks['min_time'], 'intensity':int_min}  
+
+    seg_type_list = ["roi", "localthr"]
+    dropdown_segmentation_type = bokeh.models.Select(value=seg_type_list[0], title="segmentation", options=seg_type_list)
+    dropdown_segmentation_type.on_change('value', segmentation_type_callback)
     #___________________________________________________________________________________________
 
     # update the source_roi
@@ -3039,7 +3086,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_cell ),
                                      bokeh.layouts.row(button_inspect, button_build_cells),
                                      bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
-                                     bokeh.layouts.row(button_save_peaks, button_delete_peaks, dropdown_intensity_type),
+                                     bokeh.layouts.row(button_save_peaks, button_delete_peaks, dropdown_intensity_type, dropdown_segmentation_type),
                                      bokeh.layouts.row(slider_find_peaks),
                                      bokeh.layouts.row(button_mask_cells, button_dividing_cells, button_double_nuclei_cells),
                                      bokeh.layouts.row(button_multiple_cells, button_pair_cell),
