@@ -2855,7 +2855,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 contourseg.number_of_pixels = contour.num_pixels
 
                 segment_dict = {}
-                out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
+                out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
                 out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, 'localthresholding'))
                 if not os.path.exists(out_dir_name):
                     os.makedirs(out_dir_name)
@@ -2871,7 +2871,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     segment_dict['x'].append(int(coord[0]))
                     segment_dict['y'].append(int(coord[1]))
                     for ch in range(len(channels)):
-                        segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(float(images[ch][cellroi.frame.number][coord[0]][coord[1]]))
+                        segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(float(source_img_ch.data['img'][ch][coord[0]][coord[1]]))
                 out_file = open(out_file_name, "w") 
                 json.dump(segment_dict, out_file) 
                 out_file.close() 
