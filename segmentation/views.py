@@ -807,6 +807,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_varea_rising8  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
     source_varea_rising9  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
     source_varea_rising10 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising11 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising12 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising13 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising14 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_rising15 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
 
     source_varea_falling1  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
     source_varea_falling2  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
@@ -818,7 +823,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_varea_falling8  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
     source_varea_falling9  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
     source_varea_falling10 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-
+    source_varea_falling11 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling12 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling13 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling14 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+    source_varea_falling15 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
 
     source_nosc      = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_nosc_dk   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
@@ -1164,7 +1173,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         if DEBUG:print('-----------------set_rising_falling_local-------------------------     ')
         arrays_r = {}
-        for i in range(1,11):
+        for i in range(1,15):
             array_x  = 'xr_{}'.format(i)
             array_y1 = 'yr1_{}'.format(i)
             array_y2 = 'yr2_{}'.format(i)
@@ -1183,9 +1192,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_rising[8]=source_varea_rising8
         source_rising[9]=source_varea_rising9
         source_rising[10]=source_varea_rising10
+        source_rising[11]=source_varea_rising11
+        source_rising[12]=source_varea_rising12
+        source_rising[13]=source_varea_rising13
+        source_rising[14]=source_varea_rising14
+        source_rising[15]=source_varea_rising15
 
         arrays_f = {}
-        for i in range(1,11):
+        for i in range(1,15):
             array_x  = 'xf_{}'.format(i)
             array_y1 = 'yf1_{}'.format(i)
             array_y2 = 'yf2_{}'.format(i)
@@ -1204,10 +1218,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_falling[8]=source_varea_falling8
         source_falling[9]=source_varea_falling9
         source_falling[10]=source_varea_falling10
+        source_falling[11]=source_varea_falling11
+        source_falling[12]=source_varea_falling12
+        source_falling[13]=source_varea_falling13
+        source_falling[14]=source_varea_falling14
+        source_falling[15]=source_varea_falling15
 
 
         if end_oscillation_position.location  < 0 or start_oscillation_position.location < 0:
-            for i in range(1,11):
+            for i in range(1,15):
                 source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
                 source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
             return
@@ -1230,7 +1249,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     arrays_r['yr1_{}'.format(m+1)].append(0)
                     arrays_r['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
   
-        for i in range(1,11):
+        for i in range(1,15):
             source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
 
 
@@ -1253,7 +1272,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     arrays_f['yf1_{}'.format(m+1)].append(0)
                     arrays_f['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
 
-        for i in range(1,11):
+        for i in range(1,15):
             source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
     #___________________________________________________________________________________________
 
@@ -1263,7 +1282,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def set_rising_falling(cellid, save_status=False, delete_status=False):
         if DEBUG: print("*************************set_rising_falling*****************************************")
         arrays_r = {}
-        for i in range(1,11):
+        for i in range(1,15):
             array_x  = 'xr_{}'.format(i)
             array_y1 = 'yr1_{}'.format(i)
             array_y2 = 'yr2_{}'.format(i)
@@ -1282,10 +1301,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_rising[8]=source_varea_rising8
         source_rising[9]=source_varea_rising9
         source_rising[10]=source_varea_rising10
+        source_rising[11]=source_varea_rising11
+        source_rising[12]=source_varea_rising12
+        source_rising[13]=source_varea_rising13
+        source_rising[14]=source_varea_rising14
+        source_rising[15]=source_varea_rising15
 
 
         arrays_f = {}
-        for i in range(1,11):
+        for i in range(1,15):
             array_x  = 'xf_{}'.format(i)
             array_y1 = 'yf1_{}'.format(i)
             array_y2 = 'yf2_{}'.format(i)
@@ -1304,8 +1328,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_falling[8]=source_varea_falling8
         source_falling[9]=source_varea_falling9
         source_falling[10]=source_varea_falling10
+        source_falling[11]=source_varea_falling11
+        source_falling[12]=source_varea_falling12
+        source_falling[13]=source_varea_falling13
+        source_falling[14]=source_varea_falling14
+        source_falling[15]=source_varea_falling15
+
         if cellid==None:
-            for i in range(1,11):
+            for i in range(1,15):
                 source_rising[i].data  = {'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
                 source_falling[i].data = {'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
             return
@@ -1336,7 +1366,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         osc_dict["rising_frame"].append(t)
                         osc_dict["rising_time"].append(source_intensity_ch1.data["time"][t])
 
-        for i in range(1,11):
+        for i in range(1,15):
             source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
 
         if len(cellid.cell_status.peaks)==6:
@@ -1362,7 +1392,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         arrays_f['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
                         osc_dict["falling_frame"].append(t)
                         osc_dict["falling_time"].append(source_intensity_ch1.data["time"][t])                        
-        for i in range(1,11):
+        for i in range(1,15):
             source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
 
         if save_status and cellid!=None:
@@ -2310,6 +2340,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             frame = Frame.objects.select_related().filter(sample=sample, number=current_index)
             cellstatus.time_of_death = frame[0].time/60000.
         cellstatus.save()
+        update_source_osc_tod()
     button_time_of_death = bokeh.models.Button(label="Dead")
     button_time_of_death.on_click(time_of_death_callback)
     #___________________________________________________________________________________________
