@@ -791,6 +791,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
     end_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
+    time_of_death_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='black', line_width=2)
 
     #___________________________________________________________________________________________
     def update_position_select(change=True):
@@ -3022,7 +3023,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     plot_intensity.add_layout(start_oscillation_position)
     plot_intensity.add_layout(end_oscillation_position)
-    time_of_death_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='black', line_width=2)
     plot_intensity.add_layout(time_of_death_position)
 
     source_varea_death = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
