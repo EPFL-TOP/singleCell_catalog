@@ -3079,7 +3079,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     plot_intensity.asterisk('time', 'intensity', source=source_dead_cell, fill_color=None, size=14, line_color='black')
-    plot_markers = bokeh.plotting.figure(width=50, plot_height=200, title="Bokeh Base Markers")
+    plot_markers = bokeh.plotting.figure(width=50, height=200, title="Bokeh Base Markers")
 
     # Sample data
     x = [1, 1, 1, 1, 1]
