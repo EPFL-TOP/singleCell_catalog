@@ -966,6 +966,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_flat_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
     source_round_cell         = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
     source_elongated_cell     = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
+    source_dead_cell     = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
     
 
     # Create a Slider widget
@@ -1397,7 +1398,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         if save_status and cellid!=None:
             cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
-            if DEBUG:
+            if DEBUG or True:
                 print('cellid=',cellid, ' cellrois=',len(cellrois))
                 print('osc_dict=',osc_dict)
                 print('cellid.cell_status.start_oscillation_frame ',cellid.cell_status.start_oscillation_frame)
@@ -1427,6 +1428,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
                 if framenumber>=cellid.cell_status.time_of_death_frame and cellid.cell_status.time_of_death_frame>0: cellflag.alive = False
                 else: cellflag.alive = True
+
+                print('framenumber = ',framenumber, '   cellflag.alive = ',cellflag.alive)
                 cellflag.save()
 
 
@@ -1438,15 +1441,22 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
             for cellroi in cellrois:
                 cellflag = cellroi.cellflag_cellroi
-                cellflag.rising = False
-                cellflag.falling = False
-                cellflag.maximum = False
-                cellflag.minimum = False
-                cellflag.oscillating = False
-                cellflag.alive = True
+                cellflag.alive          = True
+                cellflag.rising         = False
+                cellflag.falling        = False
+                cellflag.maximum        = False
+                cellflag.minimum        = False
+                cellflag.oscillating    = False
+                cellflag.last_osc       = False
+                cellflag.mask           = False
+                cellflag.dividing       = False
+                cellflag.double_nuclei  = False
+                cellflag.multiple_cells = False
+                cellflag.pair_cell      = False
+                cellflag.flat           = False
+                cellflag.round          = False
+                cellflag.elongated      = False
                 cellflag.save()
-            
-
     #___________________________________________________________________________________________
 
  
@@ -2329,6 +2339,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_varea_death.data['x']    = []
             source_varea_death.data['y1']   = []
             source_varea_death.data['y2']   = []
+            cellstatus.time_of_death_frame = -999
+
         else:
             current_index=source_intensity_ch1.selected.indices[0]
             time_of_death_position.location = source_intensity_ch1.data["time"][current_index]
@@ -3065,6 +3077,30 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.circle_cross('time', 'intensity', source=source_round_cell, fill_color=None, size=8, line_color='black')
     plot_intensity.dash('time', 'intensity', source=source_elongated_cell, fill_color=None, size=8, line_color='black')
 
+
+    plot_intensity.asterisk('time', 'intensity', source=source_dead_cell, fill_color=None, size=14, line_color='black')
+    plot_markers = bokeh.plotting.figure(plot_width=800, plot_height=400, title="Bokeh Base Markers")
+
+    # Sample data
+    x = [1, 1, 1, 1, 1]
+    y = [2, 3, 4, 5, 6]
+
+    # Available marker types
+    markers = ['square_pin','circle_dot', 'circle_x', 'circle_y', 'triangle_pin', 'circle_cross','dash']
+    labels  = ['dividing', 'double nuclei', 'multiple cells', 'pair cells', 'flat', 'round', 'elongated']
+    # Plot each marker type
+    for i, marker in range(len(markers)):
+        plot_markers.scatter(x=x, y=y, marker=markers[marker], size=15, legend_label=labels[marker])
+
+    # Adjust plot properties
+    plot_markers.xaxis.visible = False
+    plot_markers.yaxis.visible = False
+    plot_markers.legend.title = "Marker Type"
+    plot_markers.legend.location = "top_left"
+    plot_markers.legend.click_policy = "hide"
+
+
+
     plot_intensity.segment(x0='time', y0=0, x1='time', y1='intensity', line_color='black', line_width=0.5, source=source_segments_cell, line_dash="dotted")
 
     index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
@@ -3221,7 +3257,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_flat_cell, button_round_cell, button_elongated_cell),
                                      )
     
-    intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity),
+    intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity, plot_markers),
                                               bokeh.layouts.row(plot_nosc, plot_tod),
                                               bokeh.layouts.row(plot_histo_int_mean, plot_histo_int_std),)
 
