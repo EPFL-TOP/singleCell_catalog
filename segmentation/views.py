@@ -3076,7 +3076,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.circle_cross('time', 'intensity', source=source_round_cell, fill_color=None, size=8, line_color='black')
     plot_intensity.dash('time', 'intensity', source=source_elongated_cell, fill_color=None, size=8, line_color='black')
 
-    plot_markers = bokeh.plotting.figure(width=200, height=500, title="cell flags", tools=None)
+    plot_markers = bokeh.plotting.figure(width=200, height=500, title="cell flags", tools="")
 
     # Sample data
     x = [1, 1, 1, 1, 1]
