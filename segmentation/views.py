@@ -818,6 +818,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_varea_falling8  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
     source_varea_falling9  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
     source_varea_falling10 = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
+
+
+    source_nosc      = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_nosc_dk   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_start_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_end_osc   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_tod       = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_tod_dk    = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     #___________________________________________________________________________________________
     def update_position_select(change=True):
         local_pos = []
@@ -3076,12 +3084,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.20, fill_color='green', source=source_varea_falling9)
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.20, fill_color='green', source=source_varea_falling10)
 
-    source_nosc      = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    source_nosc_dk   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    source_start_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    source_end_osc   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    source_tod       = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    source_tod_dk    = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+
 
     update_source_osc_tod()
     #plot_osc_tod.vbar(x='x', top='top', width=3, source=source_start_osc, alpha=0.5, color='green', line_color=None)
