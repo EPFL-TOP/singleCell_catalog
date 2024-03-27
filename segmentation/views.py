@@ -966,7 +966,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_flat_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
     source_round_cell         = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
     source_elongated_cell     = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
-    source_dead_cell     = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
     
 
     # Create a Slider widget
@@ -3077,20 +3076,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.circle_cross('time', 'intensity', source=source_round_cell, fill_color=None, size=8, line_color='black')
     plot_intensity.dash('time', 'intensity', source=source_elongated_cell, fill_color=None, size=8, line_color='black')
 
-
-    plot_intensity.asterisk('time', 'intensity', source=source_dead_cell, fill_color=None, size=14, line_color='black')
-    plot_markers = bokeh.plotting.figure(width=100, height=500, title="Bokeh Base Markers")
+    plot_markers = bokeh.plotting.figure(width=200, height=500, title="cell flags", tools=None)
 
     # Sample data
     x = [1, 1, 1, 1, 1]
-    y = [2, 3, 4, 5, 6]
+    y = [1, 1, 1, 1, 1]
 
     # Available marker types
     markers = ['square_pin','circle_dot', 'circle_x', 'circle_y', 'triangle_pin', 'circle_cross','dash']
     labels  = ['dividing', 'double nuclei', 'multiple cells', 'pair cells', 'flat', 'round', 'elongated']
     # Plot each marker type
     for i in range(len(markers)):
-        plot_markers.scatter(x=x, y=y, marker=markers[i], size=8, legend_label=labels[i])
+        plot_markers.scatter(x=x, y=y, marker=markers[i], size=8, legend_label=labels[i], fill_color=None)
 
     # Adjust plot properties
     plot_markers.xaxis.visible = False
