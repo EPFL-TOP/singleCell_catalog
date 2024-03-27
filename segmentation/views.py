@@ -2290,17 +2290,25 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Set cell time of death
     def time_of_death_callback():
-        current_index=get_current_index()
-        time_of_death_position.location = source_intensity_ch1.data["time"][current_index]
-        source_varea_death.data['x']  = [source_intensity_ch1.data["time"][t] for t in range(current_index, len(source_intensity_ch1.data["time"])) ]
-        source_varea_death.data['y1'] = [source_intensity_ch1.data["intensity"][t] for t in range(current_index, len(source_intensity_ch1.data["intensity"])) ]
-        source_varea_death.data['y2'] = [0 for i in range(len(source_varea_death.data['y1']))]
         sample = Sample.objects.get(file_name=get_current_file())
         cellsid = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
         cellstatus = cellsid[0].cell_status
-        cellstatus.time_of_death_frame = current_index
-        frame = Frame.objects.select_related().filter(sample=sample, number=current_index)
-        cellstatus.time_of_death = frame[0].time/60000.
+        if len(source_intensity_ch1.selected.indices)==0:
+            cellstatus.time_of_death = -9999
+            time_of_death_position.location = -9999
+            source_varea_death.data['x']    = []
+            source_varea_death.data['y1']   = []
+            source_varea_death.data['y2']   = []
+        else:
+            current_index=source_intensity_ch1.selected.indices[0]
+            time_of_death_position.location = source_intensity_ch1.data["time"][current_index]
+            source_varea_death.data['x']  = [source_intensity_ch1.data["time"][t] for t in range(current_index, len(source_intensity_ch1.data["time"])) ]
+            source_varea_death.data['y1'] = [source_intensity_ch1.data["intensity"][t] for t in range(current_index, len(source_intensity_ch1.data["intensity"])) ]
+            source_varea_death.data['y2'] = [0 for i in range(len(source_varea_death.data['y1']))]
+
+            cellstatus.time_of_death_frame = current_index
+            frame = Frame.objects.select_related().filter(sample=sample, number=current_index)
+            cellstatus.time_of_death = frame[0].time/60000.
         cellstatus.save()
     button_time_of_death = bokeh.models.Button(label="Dead")
     button_time_of_death.on_click(time_of_death_callback)
