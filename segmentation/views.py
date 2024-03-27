@@ -3089,8 +3089,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     markers = ['square_pin','circle_dot', 'circle_x', 'circle_y', 'triangle_pin', 'circle_cross','dash']
     labels  = ['dividing', 'double nuclei', 'multiple cells', 'pair cells', 'flat', 'round', 'elongated']
     # Plot each marker type
-    for i, marker in range(len(markers)):
-        plot_markers.scatter(x=x, y=y, marker=markers[marker], size=15, legend_label=labels[marker])
+    for i in range(len(markers)):
+        plot_markers.scatter(x=x, y=y, marker=markers[i], size=15, legend_label=labels[i])
 
     # Adjust plot properties
     plot_markers.xaxis.visible = False
