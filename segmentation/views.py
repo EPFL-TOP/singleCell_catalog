@@ -625,7 +625,11 @@ def build_ROIs():
                 cellids = CellID.objects.select_related().filter(sample=s)
                 if len(cellids)>0:continue
                 print('build roi sample: ',s.file_name)
-                #if 'wscepfl00' not in s.file_name :continue
+                if 'wscepfl' in s.file_name :continue
+                if 'ppf00' in s.file_name :continue
+                if 'bleb002' in s.file_name :continue
+                if 'bleb001_well3' in s.file_name :continue
+                if 'bleb001_well2' in s.file_name :continue
 
                 #if counter_samp==10: 
                 #    print('===================BREAK ROIS========================')
@@ -1641,7 +1645,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         update_source_osc_tod()
         update_dropdown_channel('','','')
         intensity_type_callback('','','')
-        update_source_segment()
+        #update_source_segment()
 
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
@@ -1831,7 +1835,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             line_position.location = -999
         else:
             line_position.location = source_intensity_ch1.data["time"][time_point]
-        update_source_segment()
+        #update_source_segment()
 
     slider.on_change('value', callback_slider)
     #___________________________________________________________________________________________
@@ -3084,7 +3088,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     prepare_intensity() 
 
-    update_source_segment()
+    #update_source_segment()
 
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
