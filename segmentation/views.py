@@ -3079,7 +3079,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     plot_intensity.asterisk('time', 'intensity', source=source_dead_cell, fill_color=None, size=14, line_color='black')
-    plot_markers = bokeh.plotting.figure(width=50, height=200, title="Bokeh Base Markers")
+    plot_markers = bokeh.plotting.figure(width=100, height=500, title="Bokeh Base Markers")
 
     # Sample data
     x = [1, 1, 1, 1, 1]
@@ -3090,7 +3090,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     labels  = ['dividing', 'double nuclei', 'multiple cells', 'pair cells', 'flat', 'round', 'elongated']
     # Plot each marker type
     for i in range(len(markers)):
-        plot_markers.scatter(x=x, y=y, marker=markers[i], size=15, legend_label=labels[i])
+        plot_markers.scatter(x=x, y=y, marker=markers[i], size=8, legend_label=labels[i])
 
     # Adjust plot properties
     plot_markers.xaxis.visible = False
