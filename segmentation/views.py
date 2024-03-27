@@ -787,6 +787,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])
     dropdown_pos  = bokeh.models.Select(value=positions['{0}_{1}'.format(experiments[0], wells[experiments[0]][0])][0],title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
 
+    start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
 
     #___________________________________________________________________________________________
     def update_position_select(change=True):
@@ -3017,7 +3018,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.add_layout(line_position)
 
     initial_position=-9999
-    start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
     plot_intensity.add_layout(start_oscillation_position)
     end_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
     plot_intensity.add_layout(end_oscillation_position)
