@@ -645,6 +645,7 @@ def build_ROIs():
                 BF_images=images.transpose(1,0,2,3)
                 BF_images=BF_images[0]
                 for frame in frames:
+                    print(frame)
                     rois = CellROI.objects.select_related().filter(frame = frame)
                     #Just for now, should normally check that same ROI don't overlap
                     #if len(rois)>0: continue
@@ -674,18 +675,19 @@ def build_ROIs():
                                 roi = roi_DB
                                 roi.roi_number = roi_number
                                 minDR = math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))
-
+                                print("take roi in DB ",roi_number)
                         if roi==None:
                             roi = CellROI(min_row = ROIs[r][0], min_col = ROIs[r][1],
                                           max_row = ROIs[r][2], max_col = ROIs[r][3], 
                                           frame = frame, roi_number=roi_number)
+                            print("take new ROI ",roi_number)
                             roi.save()
 
-                        bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
-                        roi.min_row = bbox[0]
-                        roi.min_col = bbox[1]
-                        roi.max_row = bbox[2]
-                        roi.max_col = bbox[3]
+                        #bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
+                        #roi.min_row = bbox[0]
+                        #roi.min_col = bbox[1]
+                        #roi.max_row = bbox[2]
+                        #roi.max_col = bbox[3]
                         roi.save()
 
                         #Bounding box (min_row, min_col, max_row, max_col). 
