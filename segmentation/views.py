@@ -632,11 +632,12 @@ def build_ROIs():
                 #uncomment to speed up, this will continue if cell is already associated with position
                 #if len(cellids)>0:continue
                 print('build roi sample: ',s.file_name)
-                if 'wscepfl' in s.file_name :continue
-                if 'ppf00' in s.file_name :continue
-                if 'bleb002' in s.file_name :continue
-                if 'bleb001_well3' in s.file_name :continue
-                if 'bleb001_well2' in s.file_name :continue
+                #if 'wscepfl' in s.file_name :continue
+                #if 'ppf00' in s.file_name :continue
+                #if 'bleb002' in s.file_name :continue
+                #if 'bleb001_well3' in s.file_name :continue
+                #if 'bleb001_well2' in s.file_name :continue
+                if 'ppf005_xy003' not in s.file_name :continue
 
                 frames = Frame.objects.select_related().filter(sample=s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
