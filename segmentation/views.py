@@ -683,11 +683,11 @@ def build_ROIs():
                             print("take new ROI ",roi_number)
                             roi.save()
 
-                        #bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
-                        #roi.min_row = bbox[0]
-                        #roi.min_col = bbox[1]
-                        #roi.max_row = bbox[2]
-                        #roi.max_col = bbox[3]
+                        bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
+                        roi.min_row = bbox[0]
+                        roi.min_col = bbox[1]
+                        roi.max_row = bbox[2]
+                        roi.max_col = bbox[3]
                         roi.save()
 
                         #Bounding box (min_row, min_col, max_row, max_col). 
