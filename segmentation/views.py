@@ -722,10 +722,10 @@ def build_ROIs():
                             intensity_max[ch_name]=max
                         
                         contour = None
-                        if roi.contour_cellroi == None:
-                            contour = Contour(cell_roi=roi)
-                        else:
+                        if hasattr(roi, 'contour_cellroi'):
                             contour = roi.contour_cellroi
+                        else:
+                            contour = Contour(cell_roi=roi)
 
                         contour.center_x_pix     = roi.min_col+(roi.max_col-roi.min_col)/2.
                         contour.center_y_pix     = roi.min_row+(roi.max_row-roi.min_row)/2.
