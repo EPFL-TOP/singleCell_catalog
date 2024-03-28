@@ -450,7 +450,6 @@ def build_cells_sample(sample):
         for cellroi_frame in cellrois_frame:
             if cellroi_frame.id in cell_roi_id_list: continue
 
-
             for cell in cell_pos_dict:
                 min_dr_name=''
                 min_dr_val=10000000000.
@@ -469,6 +468,11 @@ def build_cells_sample(sample):
                     cellroi_frame.cell_id=cell_id_dict[min_dr_name]
                     cellroi_frame.save()
                 if DEBUG: print('frame=',f, '   cellroi_frame=',cellroi_frame,'  min_dr_val=',min_dr_val, '  min_dr_name=cellname=',min_dr_name, '  max_dr_val=',max_dr_val,'  tmp_val/len(cell_pos_dict[cell])=',tmp_val/len(cell_pos_dict[cell]))
+
+            #if cellroi_frame.cell_id == None:
+            #    if len(cellrois_frame)==1:
+            #        cellroi_frame.cell_id=cell_id_dict[min_dr_name]
+
             #if min_dr_name!='':
             #    cellroi_frame.cell_id=cell_id_dict[min_dr_name]
             #    cellroi_frame.save()
@@ -2929,7 +2933,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 intensity_sum={}
                 intensity_max={}
                 for ch in range(len(channels)): 
-                    segment=mask0*source_img_ch.data['img'][0]
+                    segment=mask0*source_img_ch.data['img'][ch]
                     sum=float(np.sum(segment))
                     mean=float(np.mean(segment))
                     std=float(np.std(segment))
