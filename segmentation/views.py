@@ -738,8 +738,8 @@ def build_ROIs():
                         contour.intensity_sum    = intensity_sum
                         contour.intensity_max    = intensity_max
                         contour.number_of_pixels = cropped_img.shape[1]*cropped_img.shape[2]
-                        contour.file_name        = out_file_name,
-                        contour.type             = "cell_ROI",
+                        contour.file_name        = out_file_name
+                        contour.type             = "cell_ROI"
                         contour.mode             = "auto"
                         contour.save()
 
