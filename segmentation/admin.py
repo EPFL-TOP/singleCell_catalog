@@ -5,17 +5,29 @@ from .models import Sample, Frame, CellFlag, CellStatus, Contour, Experiment, Ex
 class CellFlagAdmin(admin.ModelAdmin):
     search_fields = ["cell_roi__frame__sample__file_name"]
 
-
 class ContourSegAdmin(admin.ModelAdmin):
     search_fields = ["cell_roi__frame__sample__file_name"]
 
-admin.site.register(Sample)
-admin.site.register(Frame)
-admin.site.register(CellFlag, CellFlagAdmin)
-admin.site.register(CellStatus)
-admin.site.register(Contour)
-admin.site.register(ContourSeg, ContourSegAdmin)
+class ContourAdmin(admin.ModelAdmin):
+    search_fields = ["cell_roi__frame__sample__file_name"]
+
+class CellROIAdmin(admin.ModelAdmin):
+    search_fields = ["frame__sample__file_name"]
+
+class CellIDAdmin(admin.ModelAdmin):
+    search_fields = ["sample__file_name"]
+
+class CellStatusAdmin(admin.ModelAdmin):
+    search_fields = ["cellid_cellstatus__sample__file_name"]
+
 admin.site.register(Experiment)
 admin.site.register(ExperimentalDataset)
-admin.site.register(CellID)
-admin.site.register(CellROI)
+admin.site.register(Sample)
+admin.site.register(Frame)
+
+admin.site.register(CellFlag, CellFlagAdmin)
+admin.site.register(CellStatus, CellStatusAdmin)
+admin.site.register(Contour, ContourAdmin)
+admin.site.register(ContourSeg, ContourSegAdmin)
+admin.site.register(CellID, CellIDAdmin)
+admin.site.register(CellROI, CellROIAdmin)
