@@ -617,6 +617,8 @@ def build_segmentation():
                         contourseg.file_name = out_file_name
                         contourseg.save()
                 
+
+                
 #___________________________________________________________________________________________
 def build_ROIs():
     exp_list = Experiment.objects.all()
@@ -627,7 +629,8 @@ def build_ROIs():
             #counter_samp=0
             for s in samples:
                 cellids = CellID.objects.select_related().filter(sample=s)
-                if len(cellids)>0:continue
+                #uncomment to speed up, this will continue if cell is already associated with position
+                #if len(cellids)>0:continue
                 print('build roi sample: ',s.file_name)
                 if 'wscepfl' in s.file_name :continue
                 if 'ppf00' in s.file_name :continue
@@ -635,10 +638,6 @@ def build_ROIs():
                 if 'bleb001_well3' in s.file_name :continue
                 if 'bleb001_well2' in s.file_name :continue
 
-                #if counter_samp==10: 
-                #    print('===================BREAK ROIS========================')
-                #    break
-                #counter_samp+=1
                 frames = Frame.objects.select_related().filter(sample=s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 #images are t, c, x, y 
@@ -647,33 +646,57 @@ def build_ROIs():
                 for frame in frames:
                     rois = CellROI.objects.select_related().filter(frame = frame)
                     #Just for now, should normally check that same ROI don't overlap
-                    if len(rois)>0: continue
-                    ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number])
-                    if len(ROIs)==0 or checkROI(ROIs)==False:
-                        ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2.8)
-                    if len(ROIs)==0 or checkROI(ROIs)==False:
-                        ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2.)
-                    if len(ROIs)==0 or checkROI(ROIs)==False:
-                        ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 1.5)
+                    #if len(rois)>0: continue
+                    #ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2)
+                    ROIs = segtools.triangle_opening(BF_images[frame.number])
+                    #if len(ROIs)==0 or checkROI(ROIs)==False:
+                    #    ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2.8)
+                    #if len(ROIs)==0 or checkROI(ROIs)==False:
+                    #    ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2.)
+                    #if len(ROIs)==0 or checkROI(ROIs)==False:
+                    #    ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 1.5)
                     npixmin=10
+                    roi_number=0
                     for r in range(len(ROIs)):
+                        roi=None
                         if ROIs[r][0]<npixmin or ROIs[r][1]<npixmin or ROIs[r][2]>frame.height-npixmin or ROIs[r][3]>frame.width-npixmin:
                             continue
-                        roi = CellROI(min_row = ROIs[r][0], min_col = ROIs[r][1],
-                                      max_row = ROIs[r][2], max_col = ROIs[r][3], 
-                                      frame = frame, roi_number=r)
-                        roi.save()
-            #Bounding box (min_row, min_col, max_row, max_col). 
 
+                        x_roi_seg = ROIs[r][1]+(ROIs[r][3]-ROIs[r][1])/2.
+                        y_roi_seg = ROIs[r][0]+(ROIs[r][2]-ROIs[r][0])/2.
+                        minDR=100000
+                        for roi_DB in rois:
+                            x_roi_DB = roi_DB.min_col+(roi_DB.max_col-roi_DB.min_col)/2.
+                            y_roi_DB = roi_DB.min_row+(roi_DB.max_row-roi_DB.min_row)/2.
+
+                            if math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<50 and math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<minDR:
+                                roi = roi_DB
+                                roi.roi_number = roi_number
+                                minDR = math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))
+
+                        if roi==None:
+                            roi = CellROI(min_row = ROIs[r][0], min_col = ROIs[r][1],
+                                          max_row = ROIs[r][2], max_col = ROIs[r][3], 
+                                          frame = frame, roi_number=roi_number)
+                            roi.save()
+
+                        bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
+                        roi.min_row = bbox[0]
+                        roi.min_col = bbox[1]
+                        roi.max_row = bbox[2]
+                        roi.max_col = bbox[3]
+                        roi.save()
+
+                        #Bounding box (min_row, min_col, max_row, max_col). 
                         cropped_dict = {'shape_original':BF_images[frame.number].shape}
                         out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
-                        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, r))
+                        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, roi_number))
                         if not os.path.exists(out_dir_name):
                             os.makedirs(out_dir_name)
-                        cropped_img = images[frame.number][:, ROIs[r][0]:ROIs[r][2], ROIs[r][1]:ROIs[r][3]]
+                        cropped_img = images[frame.number][:, roi.min_row:roi.max_row, roi.min_col:roi.max_col]
                         cropped_dict['shape']=[cropped_img.shape[1], cropped_img.shape[2]]
                         cropped_dict['npixels']=cropped_img.shape[1]*cropped_img.shape[2]
-                        cropped_dict['shift']=[ROIs[r][0], ROIs[r][1]]
+                        cropped_dict['shift']=[roi.min_row, roi.min_col]
                         cropped_dict['type']="auto"
 
                         for ch in range(len(channels)):
@@ -697,25 +720,33 @@ def build_ROIs():
                             intensity_sum[ch_name]=sum
                             intensity_max[ch_name]=max
                         
-                        contour = Contour(center_x_pix=ROIs[r][1]+(ROIs[r][3]-ROIs[r][1])/2., 
-                                          center_y_pix=ROIs[r][0]+(ROIs[r][2]-ROIs[r][0])/2.,
-                                          center_z_pix=0, 
-                                          center_x_mic=(ROIs[r][1]+(ROIs[r][3]-ROIs[r][1])/2.)*roi.frame.pixel_microns+roi.frame.pos_x,
-                                          center_y_mic=(ROIs[r][0]+(ROIs[r][2]-ROIs[r][0])/2.)*roi.frame.pixel_microns+roi.frame.pos_y,
-                                          center_z_mic=0,
-                                          intensity_mean=intensity_mean,
-                                          intensity_std=intensity_std,
-                                          intensity_sum=intensity_sum,
-                                          intensity_max=intensity_max,
-                                          number_of_pixels=cropped_img.shape[1]*cropped_img.shape[2],
-                                          file_name=out_file_name,
-                                          cell_roi=roi,
-                                          type="cell_ROI",
-                                          mode="auto")
+                        contour = None
+                        if roi.contour_cellroi == None:
+                            contour = Contour(cell_roi=roi)
+                        else:
+                            contour = roi.contour_cellroi
+
+                        contour.center_x_pix     = roi.min_col+(roi.max_col-roi.min_col)/2.
+                        contour.center_y_pix     = roi.min_row+(roi.max_row-roi.min_row)/2.
+                        contour.center_z_pix     = 0 
+                        contour.center_x_mic     = (roi.min_col+(roi.max_col-roi.min_col)/2.)*roi.frame.pixel_microns+roi.frame.pos_x
+                        contour.center_y_mic     = (roi.min_row+(roi.max_row-roi.min_row)/2.)*roi.frame.pixel_microns+roi.frame.pos_y,
+                        contour.center_z_mic     = 0
+                        contour.intensity_mean   = intensity_mean
+                        contour.intensity_std    = intensity_std
+                        contour.intensity_sum    = intensity_sum
+                        contour.intensity_max    = intensity_max
+                        contour.number_of_pixels = cropped_img.shape[1]*cropped_img.shape[2]
+                        contour.file_name        = out_file_name,
+                        contour.type             = "cell_ROI",
+                        contour.mode             = "auto"
                         contour.save()
 
-                        cellflag = CellFlag(cell_roi=roi)
-                        cellflag.save()
+                        if roi.cellflag_cellroi == None:
+                            cellflag = CellFlag(cell_roi=roi)
+                            cellflag.save()
+
+                        roi_number+=1
 
                 build_cells_sample(s)
 
@@ -2802,6 +2833,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
+    def delete_cell_callback():
+        sample = Sample.objects.get(file_name=get_current_file())
+        cellID = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+        cellstatus = cellID.cell_status
+        if len(cellID)==0:return
+        cellROIs = CellROI.objects.select_related().filter(cell_id=cellID[0])
+        for cellroi in cellROIs:
+            cellroi.delete()
+        cellstatus.delete()
+    button_delete_cell = bokeh.models.Button(label="Delete cell")
+    button_delete_cell.on_click(delete_cell_callback)
+    #___________________________________________________________________________________________
+
+    #___________________________________________________________________________________________
     def box_select_callback(event):
         if DEBUG:print('-----==========-==---=box_select_callback=',source_intensity_ch1.selected.indices)
         if isinstance(event, bokeh.events.SelectionGeometry):
@@ -3249,7 +3294,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_cell ),
-                                     bokeh.layouts.row(button_inspect, button_build_cells),
+                                     bokeh.layouts.row(button_inspect, button_build_cells, button_delete_cell),
                                      bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
                                      bokeh.layouts.row(button_save_peaks, button_delete_peaks, dropdown_intensity_type, dropdown_segmentation_type),
                                      bokeh.layouts.row(slider_find_peaks),
