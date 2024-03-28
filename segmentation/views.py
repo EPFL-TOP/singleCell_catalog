@@ -731,7 +731,7 @@ def build_ROIs():
                         contour.center_y_pix     = roi.min_row+(roi.max_row-roi.min_row)/2.
                         contour.center_z_pix     = 0 
                         contour.center_x_mic     = (roi.min_col+(roi.max_col-roi.min_col)/2.)*roi.frame.pixel_microns+roi.frame.pos_x
-                        contour.center_y_mic     = (roi.min_row+(roi.max_row-roi.min_row)/2.)*roi.frame.pixel_microns+roi.frame.pos_y,
+                        contour.center_y_mic     = (roi.min_row+(roi.max_row-roi.min_row)/2.)*roi.frame.pixel_microns+roi.frame.pos_y
                         contour.center_z_mic     = 0
                         contour.intensity_mean   = intensity_mean
                         contour.intensity_std    = intensity_std
