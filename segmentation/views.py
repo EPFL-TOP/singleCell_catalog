@@ -748,7 +748,7 @@ def build_ROIs():
                             cellflag.save()
 
                         roi_number+=1
-
+                print('about to build cells')
                 build_cells_sample(s)
 
 
