@@ -743,7 +743,7 @@ def build_ROIs():
                         contour.mode             = "auto"
                         contour.save()
 
-                        if roi.cellflag_cellroi == None:
+                        if not hasattr(roi, 'cellflag_cellroi'):
                             cellflag = CellFlag(cell_roi=roi)
                             cellflag.save()
 
