@@ -2836,8 +2836,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def delete_cell_callback():
         sample = Sample.objects.get(file_name=get_current_file())
         cellID = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
-        cellstatus = cellID.cell_status
         if len(cellID)==0:return
+        cellstatus = cellID[0].cell_status
         cellROIs = CellROI.objects.select_related().filter(cell_id=cellID[0])
         for cellroi in cellROIs:
             cellroi.delete()
