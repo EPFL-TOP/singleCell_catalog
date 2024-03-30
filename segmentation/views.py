@@ -2265,7 +2265,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_build_roi.on_click(build_roi_callback)
     #___________________________________________________________________________________________
 
-build_ROIs(sample=None)
 
     #___________________________________________________________________________________________
     # Create next button
