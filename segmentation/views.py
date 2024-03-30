@@ -611,13 +611,14 @@ def build_segmentation():
 
                 
 #___________________________________________________________________________________________
-def build_ROIs():
+def build_ROIs(sample=None):
     exp_list = Experiment.objects.all()
     for exp in exp_list:
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
+                if sample!=None and sample!=s.file_name:continue
                 cellids = CellID.objects.select_related().filter(sample=s)
                 #uncomment to speed up, this will continue if cell is already associated with position
                 #if len(cellids)>0:continue
@@ -2251,6 +2252,22 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
+    def build_roi_callback():
+        if DEBUG:print('****************************  build_roi_callback ****************************')
+        build_ROIs(get_current_file())
+
+        left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
+        
+        source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
+        source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
+        source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+    button_build_roi = bokeh.models.Button(label="Build ROI")
+    button_build_roi.on_click(build_roi_callback)
+    #___________________________________________________________________________________________
+
+build_ROIs(sample=None)
+
+    #___________________________________________________________________________________________
     # Create next button
     def next_callback():
         if DEBUG:print('****************************  next_callback ****************************')
@@ -3278,6 +3295,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          bokeh.layouts.row(bokeh.layouts.Spacer(width=10),contrast_slider),
                                          bokeh.layouts.row(position_check_button),
                                          bokeh.layouts.row(position_keep_button),
+                                         bokeh.layouts.row(button_build_roi),
                                          bokeh.layouts.row(button_remove_roi),
                                          bokeh.layouts.row(button_segment_cell),                                         
                                          )
