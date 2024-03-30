@@ -2261,6 +2261,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+        prepare_intensity()
+
     button_build_roi = bokeh.models.Button(label="Build ROI")
     button_build_roi.on_click(build_roi_callback)
     #___________________________________________________________________________________________
