@@ -669,7 +669,7 @@ def build_ROIs(sample=None):
                             print("take new ROI ",roi_number)
                             roi.save()
 
-                        if roi_DB.contour_cellroi.mode == "auto" and roi_DB.contour_cellroi.type == "cell_ROI":
+                        if roi.contour_cellroi.mode == "auto" and roi.contour_cellroi.type == "cell_ROI":
 
                             bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
                             roi.min_row = bbox[0]
