@@ -1862,6 +1862,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             weight_labels.append(roi.min_col)
             height_labels.append(frame[0].height-roi.min_row)
+            print('roit ',roi)
             names_labels.append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
 
             weight_cells.append(roi.min_col)
