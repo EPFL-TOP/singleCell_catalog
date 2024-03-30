@@ -628,7 +628,7 @@ def build_ROIs(sample=None):
                 #if 'bleb002' in s.file_name :continue
                 #if 'bleb001_well3' in s.file_name :continue
                 #if 'bleb001_well2' in s.file_name :continue
-                if 'ppf005_xy122' not in s.file_name :continue
+                #if 'ppf005_xy122' not in s.file_name :continue
 
                 frames = Frame.objects.select_related().filter(sample=s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
