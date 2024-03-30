@@ -495,15 +495,6 @@ def removeROIs(sample):
 
 
 #___________________________________________________________________________________________
-def checkROI(ROIs):
-
-    for r in range(len(ROIs)):
-        if ROIs[r][2]-ROIs[r][0]>50 and ROIs[r][3]-ROIs[r][1]>50:
-            return True
-    return False
-
-
-#___________________________________________________________________________________________
 def build_segmentation():
     exp_list = Experiment.objects.all()
     for exp in exp_list:
@@ -626,7 +617,6 @@ def build_ROIs():
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-            #counter_samp=0
             for s in samples:
                 cellids = CellID.objects.select_related().filter(sample=s)
                 #uncomment to speed up, this will continue if cell is already associated with position
@@ -651,12 +641,6 @@ def build_ROIs():
                     #if len(rois)>0: continue
                     #ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2)
                     ROIs = segtools.triangle_opening(BF_images[frame.number])
-                    #if len(ROIs)==0 or checkROI(ROIs)==False:
-                    #    ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2.8)
-                    #if len(ROIs)==0 or checkROI(ROIs)==False:
-                    #    ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2.)
-                    #if len(ROIs)==0 or checkROI(ROIs)==False:
-                    #    ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 1.5)
                     npixmin=10
                     roi_number=0
                     for r in range(len(ROIs)):
@@ -671,7 +655,8 @@ def build_ROIs():
                             x_roi_DB = roi_DB.min_col+(roi_DB.max_col-roi_DB.min_col)/2.
                             y_roi_DB = roi_DB.min_row+(roi_DB.max_row-roi_DB.min_row)/2.
 
-                            if math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<50 and math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<minDR:
+                            if (math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<50 and math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<minDR) or \
+                                (roi_DB.contour_cellroi.mode == "manual" and roi_DB.contour_cellroi.type == "cell_ROI"):
                                 roi = roi_DB
                                 roi.roi_number = roi_number
                                 minDR = math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))
@@ -683,11 +668,14 @@ def build_ROIs():
                             print("take new ROI ",roi_number)
                             roi.save()
 
-                        bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
-                        roi.min_row = bbox[0]
-                        roi.min_col = bbox[1]
-                        roi.max_row = bbox[2]
-                        roi.max_col = bbox[3]
+                        if roi_DB.contour_cellroi.mode == "auto" and roi_DB.contour_cellroi.type == "cell_ROI":
+
+                            bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
+                            roi.min_row = bbox[0]
+                            roi.min_col = bbox[1]
+                            roi.max_row = bbox[2]
+                            roi.max_col = bbox[3]
+
                         roi.save()
 
                         #Bounding box (min_row, min_col, max_row, max_col). 
