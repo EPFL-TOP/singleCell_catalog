@@ -667,6 +667,11 @@ def build_ROIs(sample=None):
                                           max_row = ROIs[r][2], max_col = ROIs[r][3], 
                                           frame = frame, roi_number=roi_number)
                             print("take new ROI ",roi_number)
+                            bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
+                            roi.min_row = bbox[0]
+                            roi.min_col = bbox[1]
+                            roi.max_row = bbox[2]
+                            roi.max_col = bbox[3]
                             roi.save()
 
                         if hasattr(roi, 'contour_cellroi'):
@@ -676,13 +681,6 @@ def build_ROIs(sample=None):
                                 roi.min_col = bbox[1]
                                 roi.max_row = bbox[2]
                                 roi.max_col = bbox[3]
-
-                        else:
-                            bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
-                            roi.min_row = bbox[0]
-                            roi.min_col = bbox[1]
-                            roi.max_row = bbox[2]
-                            roi.max_col = bbox[3]
                         roi.save()
 
                         #Bounding box (min_row, min_col, max_row, max_col). 
