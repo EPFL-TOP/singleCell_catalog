@@ -671,13 +671,18 @@ def build_ROIs(sample=None):
 
                         if hasattr(roi, 'contour_cellroi'):
                             if roi.contour_cellroi.mode == "auto" and roi.contour_cellroi.type == "cell_ROI":
-
                                 bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
                                 roi.min_row = bbox[0]
                                 roi.min_col = bbox[1]
                                 roi.max_row = bbox[2]
                                 roi.max_col = bbox[3]
 
+                        else:
+                            bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
+                            roi.min_row = bbox[0]
+                            roi.min_col = bbox[1]
+                            roi.max_row = bbox[2]
+                            roi.max_col = bbox[3]
                         roi.save()
 
                         #Bounding box (min_row, min_col, max_row, max_col). 
