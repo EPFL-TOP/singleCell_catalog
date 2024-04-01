@@ -642,15 +642,12 @@ def build_ROIs(sample=None):
                     #if len(rois)>0: continue
                     #ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2)
                     ROIs = segtools.triangle_opening(BF_images[frame.number])
-                    npixmin=10
                     roi_number=0
-                    for r in range(len(ROIs)):
+                    for rois_seg in range(len(ROIs)):
                         roi=None
-                        if ROIs[r][0]<npixmin or ROIs[r][1]<npixmin or ROIs[r][2]>frame.height-npixmin or ROIs[r][3]>frame.width-npixmin:
-                            continue
 
-                        x_roi_seg = ROIs[r][1]+(ROIs[r][3]-ROIs[r][1])/2.
-                        y_roi_seg = ROIs[r][0]+(ROIs[r][2]-ROIs[r][0])/2.
+                        x_roi_seg = rois_seg[1]+(rois_seg[3]-rois_seg[1])/2.
+                        y_roi_seg = rois_seg[0]+(rois_seg[2]-rois_seg[0])/2.
                         minDR=100000
                         for roi_DB in rois:
                             x_roi_DB = roi_DB.min_col+(roi_DB.max_col-roi_DB.min_col)/2.
@@ -663,8 +660,8 @@ def build_ROIs(sample=None):
                                 minDR = math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))
                                 print("take roi in DB ",roi_number)
                         if roi==None:
-                            roi = CellROI(min_row = ROIs[r][0], min_col = ROIs[r][1],
-                                          max_row = ROIs[r][2], max_col = ROIs[r][3], 
+                            roi = CellROI(min_row = rois_seg[0], min_col = rois_seg[1],
+                                          max_row = rois_seg[2], max_col = rois_seg[3], 
                                           frame = frame, roi_number=roi_number)
                             print("take new ROI ",roi_number)
                             bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
