@@ -643,7 +643,7 @@ def build_ROIs(sample=None):
                     #ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2)
                     ROIs = segtools.triangle_opening(BF_images[frame.number])
                     roi_number=0
-                    for rois_seg in range(len(ROIs)):
+                    for rois_seg in ROIs:
                         roi=None
 
                         x_roi_seg = rois_seg[1]+(rois_seg[3]-rois_seg[1])/2.
