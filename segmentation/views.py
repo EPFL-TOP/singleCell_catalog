@@ -2484,7 +2484,35 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                               'min_time':time_min, 'max_time':time_max}
             cellstatus.n_oscillations = len(peaksmax.tolist())
 
+            cellrois = CellROI.objects.select_related().filter(cell_id=cellsid[0])
+            for cellroi in cellrois:
+                cellflag = cellroi.cellflag_cellroi
+
+                print('cellflag.last_osc=', cellflag.last_osc)
+                print('cellflag.mask    =', cellflag.mask)
+                print('cellflag.dividing       =', cellflag.dividing)
+                print('cellflag.double_nuclei  =', cellflag.double_nuclei)
+                print('cellflag.multiple_cells =', cellflag.multiple_cells)
+                print('cellflag.pair_cell      =', cellflag.pair_cell)
+                print('cellflag.flat           =', cellflag.flat)
+                print('cellflag.round          =', cellflag.round)
+                print('cellflag.elongated      =', cellflag.elongated )
+
             cellstatus.save()
+
+
+            for cellroi in cellrois:
+                cellflag = cellroi.cellflag_cellroi
+                print('===========================')
+                print('cellflag.last_osc=', cellflag.last_osc)
+                print('cellflag.mask    =', cellflag.mask)
+                print('cellflag.dividing       =', cellflag.dividing)
+                print('cellflag.double_nuclei  =', cellflag.double_nuclei)
+                print('cellflag.multiple_cells =', cellflag.multiple_cells)
+                print('cellflag.pair_cell      =', cellflag.pair_cell)
+                print('cellflag.flat           =', cellflag.flat)
+                print('cellflag.round          =', cellflag.round)
+                print('cellflag.elongated      =', cellflag.elongated )
 
             set_rising_falling(cellsid[0], save_status=True)
             update_source_osc_tod()
