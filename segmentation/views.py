@@ -1499,6 +1499,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
         for cellroi in cellrois:
+            cellflag = cellroi.cellflag_cellroi
+
             print('===========---------in set rsing------------------================')
             print('cellflag.last_osc=', cellflag.last_osc)
             print('cellflag.mask    =', cellflag.mask)
