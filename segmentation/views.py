@@ -1456,6 +1456,23 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if framenumber>=cellid.cell_status.time_of_death_frame and cellid.cell_status.time_of_death_frame>0: cellflag.alive = False
                 else: cellflag.alive = True
 
+
+                cellflag.alive          = cellflag.alive
+                cellflag.rising         = cellflag.rising
+                cellflag.falling        = cellflag.falling 
+                cellflag.maximum        = cellflag.maximum 
+                cellflag.minimum        = cellflag.minimum
+                cellflag.oscillating    = cellflag.oscillating
+                cellflag.last_osc       = cellflag.last_osc
+                cellflag.mask           = cellflag.mask
+                cellflag.dividing       = cellflag.dividing
+                cellflag.double_nuclei  = cellflag.double_nuclei
+                cellflag.multiple_cells = cellflag.multiple_cells
+                cellflag.pair_cell      = cellflag.pair_cell
+                cellflag.flat           = cellflag.flat
+                cellflag.round          = cellflag.round
+                cellflag.elongated      = cellflag.elongated 
+
                 print('framenumber = ',framenumber, '   cellflag.alive = ',cellflag.alive)
                 cellflag.save()
 
