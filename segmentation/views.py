@@ -1371,6 +1371,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         osc_dict={'rising_frame':[], 'falling_frame':[], 'mask_frame':[],
                   'rising_time':[],  'falling_time':[],  'mask_time':[]}
         
+        cellstatus = cellid.cell_status
+        if len(cellstatus.flags)==6:
+            for cellroi in cellrois:
+                framenumber = cellroi.frame.number
+
+
         if len(cellid.cell_status.peaks)==6:
 
             for m in range(len(cellid.cell_status.peaks["max_frame"])):
@@ -1460,8 +1466,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 cellflag.save()
 
 
+            osc_dict_final = cellstatus.flags
+            osc_dict_final.update(osc_dict)
             cellstatus = cellid.cell_status
-            cellstatus.flags = osc_dict
+            cellstatus.flags = osc_dict_final
             cellstatus.save()
 
         if delete_status and cellid!=None:
