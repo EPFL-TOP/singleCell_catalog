@@ -1496,6 +1496,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 cellflag.round          = False
                 cellflag.elongated      = False
                 cellflag.save()
+
+        cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
+        for cellroi in cellrois:
+            print('===========---------in set rsing------------------================')
+            print('cellflag.last_osc=', cellflag.last_osc)
+            print('cellflag.mask    =', cellflag.mask)
+            print('cellflag.dividing       =', cellflag.dividing)
+            print('cellflag.double_nuclei  =', cellflag.double_nuclei)
+            print('cellflag.multiple_cells =', cellflag.multiple_cells)
+            print('cellflag.pair_cell      =', cellflag.pair_cell)
+            print('cellflag.flat           =', cellflag.flat)
+            print('cellflag.round          =', cellflag.round)
+            print('cellflag.elongated      =', cellflag.elongated )
     #___________________________________________________________________________________________
 
  
