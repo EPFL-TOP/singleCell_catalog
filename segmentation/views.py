@@ -1373,6 +1373,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         
         cellstatus = cellid.cell_status
         if len(cellstatus.flags)==6:
+            cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
+
             for cellroi in cellrois:
                 framenumber = cellroi.frame.number
 
