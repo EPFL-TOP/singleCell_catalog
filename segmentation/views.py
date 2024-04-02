@@ -1368,16 +1368,55 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_falling[i].data = {'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
             return
         
-        osc_dict={'rising_frame':[], 'falling_frame':[], 'mask_frame':[],
-                  'rising_time':[],  'falling_time':[],  'mask_time':[]}
+        osc_dict={'rising_frame':[], 'falling_frame':[],
+                  'rising_time':[],  'falling_time':[]}
         
-        cellstatus = cellid.cell_status
-        if len(cellstatus.flags)==6:
-            cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
 
+        #####BEGIN OF THIS IS TEMPORARY TO RESTORE STATUS IN CELLSTATUS.FLAGS
+        cellstatus = cellid.cell_status
+        if len(cellstatus.flags)==6 or len(cellstatus.flags)==4:
+            cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
+            osc_dict_final={"mask_frame":[],"mask_time":[],
+                            "dividing_frame":[],"dividing_time":[],
+                            "double_nuclei_frame":[], "double_nuclei_time":[],
+                            "multiple_cells_frame":[],"multiple_cells_time":[],
+                            "pair_cell_frame":[],"pair_cell_time":[],
+                            "flat_frame":[],"flat_time":[],
+                            "round_frame":[],"round_time":[],
+                            "elongated_frame":[], "elongated_time":[]}
             for cellroi in cellrois:
                 framenumber = cellroi.frame.number
+                cellflag = cellroi.cellflag_cellroi
 
+                if cellflag.mask:
+                    osc_dict_final["mask_frame"].append(framenumber)
+                    osc_dict_final["mask_time"].append(source_intensity_ch1.data["time"][framenumber])
+                if cellflag.dividing:
+                    osc_dict_final["dividing_frame"].append(framenumber)
+                    osc_dict_final["dividing_time"].append(source_intensity_ch1.data["time"][framenumber])
+                if cellflag.double_nuclei:
+                    osc_dict_final["double_nuclei_frame"].append(framenumber)
+                    osc_dict_final["double_nuclei_time"].append(source_intensity_ch1.data["time"][framenumber])
+                if cellflag.multiple_cells:
+                    osc_dict_final["multiple_cells_frame"].append(framenumber)
+                    osc_dict_final["multiple_cells_time"].append(source_intensity_ch1.data["time"][framenumber])
+                if cellflag.pair_cell:
+                    osc_dict_final["pair_cell_frame"].append(framenumber)
+                    osc_dict_final["pair_cell_time"].append(source_intensity_ch1.data["time"][framenumber])
+                if cellflag.flat:
+                    osc_dict_final["flat_frame"].append(framenumber)
+                    osc_dict_final["flat_time"].append(source_intensity_ch1.data["time"][framenumber])
+                if cellflag.round:
+                    osc_dict_final["round_frame"].append(framenumber)
+                    osc_dict_final["round_time"].append(source_intensity_ch1.data["time"][framenumber])
+                if cellflag.elongated:
+                    osc_dict_final["elongated_frame"].append(framenumber)
+                    osc_dict_final["elongated_time"].append(source_intensity_ch1.data["time"][framenumber])
+
+            osc_dict_final.update(cellstatus.flags)
+            cellstatus.flags = osc_dict_final
+            cellstatus.save()
+        #####END OF THIS IS TEMPORARY TO RESTORE STATUS IN CELLSTATUS.FLAGS
 
         if len(cellid.cell_status.peaks)==6:
 
