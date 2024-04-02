@@ -1457,12 +1457,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 else: cellflag.alive = True
 
 
-                cellflag.alive          = cellflag.alive
-                cellflag.rising         = cellflag.rising
-                cellflag.falling        = cellflag.falling 
-                cellflag.maximum        = cellflag.maximum 
-                cellflag.minimum        = cellflag.minimum
-                cellflag.oscillating    = cellflag.oscillating
                 cellflag.last_osc       = cellflag.last_osc
                 cellflag.mask           = cellflag.mask
                 cellflag.dividing       = cellflag.dividing
@@ -1473,7 +1467,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 cellflag.round          = cellflag.round
                 cellflag.elongated      = cellflag.elongated 
 
-                print('framenumber = ',framenumber, '   cellflag.alive = ',cellflag.alive)
+                #print('framenumber = ',framenumber, '   cellflag.alive = ',cellflag.alive)
                 cellflag.save()
 
 
@@ -1482,6 +1476,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellstatus.save()
 
         if delete_status and cellid!=None:
+            print('delete_status=',delete_status)
             cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
             for cellroi in cellrois:
                 cellflag = cellroi.cellflag_cellroi
