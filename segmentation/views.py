@@ -624,11 +624,6 @@ def build_ROIs(sample=None):
                 #if len(cellids)>0:continue
                 print('build roi sample: ',s.file_name)
                 #if 'wscepfl' in s.file_name :continue
-                #if 'ppf00' in s.file_name :continue
-                #if 'bleb002' in s.file_name :continue
-                #if 'bleb001_well3' in s.file_name :continue
-                #if 'bleb001_well2' in s.file_name :continue
-                #if 'ppf005_xy122' not in s.file_name :continue
 
                 frames = Frame.objects.select_related().filter(sample=s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
@@ -637,23 +632,24 @@ def build_ROIs(sample=None):
                 BF_images=BF_images[0]
                 for frame in frames:
                     print(frame)
-                    rois = CellROI.objects.select_related().filter(frame = frame)
+                    rois_DB = CellROI.objects.select_related().filter(frame = frame)
                     #Just for now, should normally check that same ROI don't overlap
                     #if len(rois)>0: continue
                     #ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2)
-                    ROIs = segtools.triangle_opening(BF_images[frame.number])
+                    rois_seg = segtools.triangle_opening(BF_images[frame.number])
                     roi_number=0
-                    for rois_seg in ROIs:
+                    for rois_seg in rois_seg:
                         roi=None
 
                         x_roi_seg = rois_seg[1]+(rois_seg[3]-rois_seg[1])/2.
                         y_roi_seg = rois_seg[0]+(rois_seg[2]-rois_seg[0])/2.
                         minDR=100000
-                        for roi_DB in rois:
+                        for roi_DB in rois_DB:
                             x_roi_DB = roi_DB.min_col+(roi_DB.max_col-roi_DB.min_col)/2.
                             y_roi_DB = roi_DB.min_row+(roi_DB.max_row-roi_DB.min_row)/2.
 
-                            if (math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<50 and math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<minDR) or \
+                            if (math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<100 and 
+                                math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<minDR) or \
                                 (roi_DB.contour_cellroi.mode == "manual" and roi_DB.contour_cellroi.type == "cell_ROI"):
                                 roi = roi_DB
                                 roi.roi_number = roi_number
@@ -740,8 +736,31 @@ def build_ROIs(sample=None):
                             cellflag.save()
 
                         roi_number+=1
+                    #check overlapping ROIs
+                    rois_DB_final = CellROI.objects.select_related().filter(frame = frame)
+                    if len(rois_DB_final)>1:
+                        for roi_final_1 in rois_DB_final:
+                            for roi_final_2 in rois_DB_final:
+                                if roi_final_1.id == roi_final_2.id: continue
+                                img_1=np.zeros((frame.height, frame.width))
+                                img_2=np.zeros((frame.height, frame.width))
+                                img_1[roi_final_1.min_row:roi_final_1.max_row, roi_final_1.min_col:roi_final_1.max_col]=True
+                                img_2[roi_final_2.min_row:roi_final_2.max_row, roi_final_2.min_col:roi_final_2.max_col]=True
+                                count_img1=np.count_nonzero(img_1)
+                                count_img2=np.count_nonzero(img_2)
+                                overlap=img_1*img_2
+                                count_overlap=np.count_nonzero(overlap)
+                                if count_overlap/count_img1 > 0.7 or count_overlap/count_img2>0.7:
+                                    if count_img1>count_img2:
+                                        roi_final_2.delete()
+                                    else:
+                                        roi_final_1.delete()
+
+
+
                 print('about to build cells')
                 build_cells_sample(s)
+#___________________________________________________________________________________________
 
 
 
@@ -1054,8 +1073,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             #Set maximums and mimimums if exists [] else
             if len(cellids[0].cell_status.peaks)>=6:
-                source_intensity_max.data={'time':cellids[0].cell_status.peaks["max_time"], 'intensity':cellids[0].cell_status.peaks["max_int"]}
-                source_intensity_min.data={'time':cellids[0].cell_status.peaks["min_time"], 'intensity':cellids[0].cell_status.peaks["min_int"]}
+                source_intensity_max.data={'time':cellids[0].cell_status.peaks["max_time"], 
+                                           #'intensity':cellids[0].cell_status.peaks["max_int"]}
+                                           'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.peaks["min_frame"]]}
+                source_intensity_min.data={'time':cellids[0].cell_status.peaks["min_time"], 
+                                           #'intensity':cellids[0].cell_status.peaks["min_int"]}
+                                           'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.peaks["max_frame"]]}
+
             else:
                 source_intensity_max.data={'time':[], 'intensity':[]}
                 source_intensity_min.data={'time':[], 'intensity':[]}
@@ -1514,7 +1538,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellstatus.save()
 
         if delete_status and cellid!=None:
-            print('delete_status=',delete_status)
             cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
             for cellroi in cellrois:
                 cellflag = cellroi.cellflag_cellroi
@@ -1535,7 +1558,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 cellflag.elongated      = False
                 cellflag.save()
 
-        print('osc_dict=',osc_dict)
+        if DEBUG:print('osc_dict=',osc_dict)
         cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
         for cellroi in cellrois:
             cellflag = cellroi.cellflag_cellroi
