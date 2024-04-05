@@ -373,16 +373,36 @@ def build_cells_all_exp(sample=None):
 
 
 #___________________________________________________________________________________________
-def build_cells_sample(sample):
+def build_cells_sample(sample, addmode=False):
  
     s=None
     if type(sample) == str:
         s = Sample.objects.get(file_name = sample)
     else:
         s=sample
-    print('build_cells_sample ',s)
-    print('        ---- BUILD CELL sample name ',s.file_name)
+    print('---- BUILD CELL sample name ',s.file_name)
+
     cellsid = CellID.objects.select_related().filter(sample = s)
+    frames  = Frame.objects.select_related().filter(sample = s)
+    nframes = len(frames)
+    #addmode false, will build cells as nothing existed on the position
+    if addmode==False:
+        if len(cellsid)!=0:
+            print('can not build cells has cells already exist for this sample')
+            return
+
+        cell_dict={}
+        for f in range(nframes):
+            frame = frames.filter(number=f)
+            print(frame)
+            cellrois_frame = CellROI.objects.select_related().filter(frame=frame)
+            for cellroi_frame in cellrois_frame:
+
+                if f == 0:
+                    cellroi_frame.contour_cellroi.center_x_mic
+
+    return
+
     ##delete the existing cellID
     #cellsid.delete()
 
@@ -2406,11 +2426,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
-    # Go to next frame with possible issue
     def build_cells_callback():
         if DEBUG:print('****************************  build_cells_callback ****************************')
         current_file=get_current_file()
-        build_cells_sample(sample=current_file)
+        build_cells_sample(sample=current_file, addmode=True)
         left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         update_dropdown_cell('','','')
