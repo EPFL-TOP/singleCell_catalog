@@ -398,7 +398,7 @@ def build_cells_sample(sample, addmode=False):
             cellrois_frame = CellROI.objects.select_related().filter(frame=frame[0])
             for cellroi_frame in cellrois_frame:
                 if f == 0:
-                    cell_dict['cell{}'.format(cellroi_frame.roi_number)]={'frame':[f], 'x':[cellroi_frame.contour_cellroi.center_x_pix], 'y':cellroi_frame.contour_cellroi.center_y_pix}
+                    cell_dict['cell{}'.format(cellroi_frame.roi_number)]={'frame':[f], 'x':[cellroi_frame.contour_cellroi.center_x_pix], 'y':[cellroi_frame.contour_cellroi.center_y_pix]}
                     continue
                 minDR=10000000
                 maxDR=75
