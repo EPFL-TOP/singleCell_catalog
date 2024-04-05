@@ -409,8 +409,8 @@ def build_cells_sample(sample, addmode=False):
                     print('cell= ',cell)
                     print("cell_dict[cell]['frame'][-1]=",cell_dict[cell]['frame'][-1])
                     print("cell_dict[cell]['x']=",cell_dict[cell]['x'])
-                    dR = math.sqrt(math.pow((cell_dict[cell]['x'][len(cell_dict[cell]['frame'])] - cellroi_frame.contour_cellroi.center_x_pix),2) +  
-                                   math.pow((cell_dict[cell]['y'][len(cell_dict[cell]['frame'])] - cellroi_frame.contour_cellroi.center_y_pix),2)) 
+                    dR = math.sqrt(math.pow((cell_dict[cell]['x'][len(cell_dict[cell]['frame'])-1] - cellroi_frame.contour_cellroi.center_x_pix),2) +  
+                                   math.pow((cell_dict[cell]['y'][len(cell_dict[cell]['frame'])-1] - cellroi_frame.contour_cellroi.center_y_pix),2)) 
                     if dR<minDR and dR<maxDR:
                         minDR=dR
                         sel_cell = cell
