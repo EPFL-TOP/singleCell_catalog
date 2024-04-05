@@ -403,7 +403,12 @@ def build_cells_sample(sample, addmode=False):
                 minDR=10000000
                 maxDR=75
                 sel_cell=None
+                print('cell_dict beofre loop',cell_dict)
+
                 for cell in cell_dict:
+                    print('cell= ',cell)
+                    print("cell_dict[cell]['frame'][-1]=",cell_dict[cell]['frame'][-1])
+                    print("cell_dict[cell]['x']=",cell_dict[cell]['x'])
                     dR = math.sqrt(math.pow((cell_dict[cell]['x'][cell_dict[cell]['frame'][-1]] - cellroi_frame.contour_cellroi.center_x_pix),2) +  
                                    math.pow((cell_dict[cell]['y'][cell_dict[cell]['frame'][-1]] - cellroi_frame.contour_cellroi.center_y_pix),2)) 
                     if dR<minDR and dR<maxDR:
@@ -3001,6 +3006,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellroi.delete()
         cellstatus.delete()
         update_dropdown_cell('','','')
+        left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()        
+        source_roi.data    = {'left': left_rois,      'right': right_rois,    'top': top_rois, 'bottom': bottom_rois}
+        source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
+        source_cells.data  = {'height':height_cells,  'weight':weight_cells,  'names':names_cells}
+
     button_delete_cell = bokeh.models.Button(label="Delete cell")
     button_delete_cell.on_click(delete_cell_callback)
     #___________________________________________________________________________________________
