@@ -395,7 +395,7 @@ def build_cells_sample(sample, addmode=False):
         for f in range(nframes):
             frame = frames.filter(number=f)
             print(frame)
-            cellrois_frame = CellROI.objects.select_related().filter(frame=frame)
+            cellrois_frame = CellROI.objects.select_related().filter(frame=frame[0])
             for cellroi_frame in cellrois_frame:
 
                 if f == 0:
@@ -2983,6 +2983,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for cellroi in cellROIs:
             cellroi.delete()
         cellstatus.delete()
+        update_dropdown_cell('','','')
     button_delete_cell = bokeh.models.Button(label="Delete cell")
     button_delete_cell.on_click(delete_cell_callback)
     #___________________________________________________________________________________________
