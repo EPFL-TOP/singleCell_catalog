@@ -739,25 +739,27 @@ def build_ROIs(sample=None):
                     #check overlapping ROIs
                     rois_DB_final = CellROI.objects.select_related().filter(frame = frame)
                     if len(rois_DB_final)>1:
-                        for roi_final_1 in rois_DB_final:
-                            for roi_final_2 in rois_DB_final:
-                                if roi_final_1.id == roi_final_2.id: continue
+                        for roi_final_1 in range(len(rois_DB_final)-1):
+                            for roi_final_2 in range(roi_final_1, len(rois_DB_final)):
+                                if roi_final_1 == roi_final_2: continue
                                 img_1=np.zeros((frame.height, frame.width))
                                 img_2=np.zeros((frame.height, frame.width))
-                                img_1[roi_final_1.min_row:roi_final_1.max_row, roi_final_1.min_col:roi_final_1.max_col]=True
-                                img_2[roi_final_2.min_row:roi_final_2.max_row, roi_final_2.min_col:roi_final_2.max_col]=True
+                                img_1[rois_DB_final[roi_final_1].min_row:rois_DB_final[roi_final_1].max_row, rois_DB_final[roi_final_1].min_col:rois_DB_final[roi_final_1].max_col]=True
+                                img_2[rois_DB_final[roi_final_2].min_row:rois_DB_final[roi_final_2].max_row, rois_DB_final[roi_final_2].min_col:rois_DB_final[roi_final_2].max_col]=True
                                 count_img1=np.count_nonzero(img_1)
                                 count_img2=np.count_nonzero(img_2)
                                 overlap=img_1*img_2
                                 count_overlap=np.count_nonzero(overlap)
                                 if count_overlap/count_img1 > 0.7 or count_overlap/count_img2>0.7:
                                     if count_img1>count_img2:
-                                        roi_final_2.delete()
+                                        rois_DB_final[roi_final_2].delete()
                                     else:
-                                        roi_final_1.delete()
-
-
-
+                                        rois_DB_final[roi_final_1].delete()
+                        #set the roi order after it has been deleted
+                        rois_DB_final = CellROI.objects.select_related().filter(frame = frame)
+                        for roi_final in range(len(rois_DB_final)):
+                            rois_DB_final[roi_final].roi_number = roi_final
+                            rois_DB_final[roi_final].save()
                 print('about to build cells')
                 build_cells_sample(s)
 #___________________________________________________________________________________________
