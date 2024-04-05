@@ -414,7 +414,7 @@ def build_cells_sample(sample, addmode=False):
                     cell_dict[cell]['x'].append(cellroi_frame.contour_cellroi.center_x_pix)
                     cell_dict[cell]['y'].append(cellroi_frame.contour_cellroi.center_y_pix)
                 else:
-                    cell_dict['cell{}'.format(len(cell_dict))] = {'frame':[f], 'x':[cellroi_frame.contour_cellroi.center_x_pix], 'y':cellroi_frame.contour_cellroi.center_y_pix}
+                    cell_dict['cell{}'.format(len(cell_dict))] = {'frame':[f], 'x':[cellroi_frame.contour_cellroi.center_x_pix], 'y':[cellroi_frame.contour_cellroi.center_y_pix]}
 
 
         print(cell_dict)
