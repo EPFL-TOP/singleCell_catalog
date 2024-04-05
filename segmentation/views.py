@@ -397,10 +397,27 @@ def build_cells_sample(sample, addmode=False):
             print(frame)
             cellrois_frame = CellROI.objects.select_related().filter(frame=frame[0])
             for cellroi_frame in cellrois_frame:
-
                 if f == 0:
-                    cellroi_frame.contour_cellroi.center_x_mic
+                    cell_dict['cell{}'.format(cellrois_frame.roi_number)]={'frame':[f], 'x':[cellroi_frame.contour_cellroi.center_x_pix], 'y':cellroi_frame.contour_cellroi.center_y_pix}
+                    continue
+                minDR=10000000
+                maxDR=75
+                sel_cell=None
+                for cell in cell_dict:
+                    dR = math.sqrt(math.pow((cell_dict[cell]['x'][cell_dict[cell]['frame'][-1]] - cellroi_frame.contour_cellroi.center_x_pix),2) +  
+                                   math.pow((cell_dict[cell]['y'][cell_dict[cell]['frame'][-1]] - cellroi_frame.contour_cellroi.center_y_pix),2)) 
+                    if dR<minDR and dR<maxDR:
+                        minDR=dR
+                        sel_cell = cell
+                if sel_cell!=None:
+                    cell_dict[cell]['frame'].append(f)
+                    cell_dict[cell]['x'].append(cellroi_frame.contour_cellroi.center_x_pix)
+                    cell_dict[cell]['y'].append(cellroi_frame.contour_cellroi.center_y_pix)
+                else:
+                    cell_dict['cell{}'.format(len(cell_dict))] = {'frame':[f], 'x':[cellroi_frame.contour_cellroi.center_x_pix], 'y':cellroi_frame.contour_cellroi.center_y_pix}
 
+
+        print(cell_dict)
     return
 
     ##delete the existing cellID
