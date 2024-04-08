@@ -467,7 +467,7 @@ def build_cells_sample(sample, addmode=False):
                 print('    ---- frame    ',frame)
                 print('    ---- roi      ',roi) 
                 print('    ---- cellid   ',cellid)
-                print('    ---- roi[0]   ',roi[0])
+                print('    ---- roi      ',roi)
 
                 roi.cell_id = cellid_dict[cell]
 #roi   = CellROI.objects.select_for_update
