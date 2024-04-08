@@ -421,9 +421,9 @@ def build_cells_sample(sample, addmode=False):
                         print('minDR=',minDR,'  cell=',cell)
                 if sel_cell!=None:
                     print('cell found')
-                    cell_dict[cell]['frame'].append(f)
-                    cell_dict[cell]['x'].append(cellroi_frame.contour_cellroi.center_x_pix)
-                    cell_dict[cell]['y'].append(cellroi_frame.contour_cellroi.center_y_pix)
+                    cell_dict[sel_cell]['frame'].append(f)
+                    cell_dict[sel_cell]['x'].append(cellroi_frame.contour_cellroi.center_x_pix)
+                    cell_dict[sel_cell]['y'].append(cellroi_frame.contour_cellroi.center_y_pix)
                 else:
                     print('cell not found')
                     cell_dict['cell{}'.format(len(cell_dict))] = {'frame':[f], 'x':[cellroi_frame.contour_cellroi.center_x_pix], 'y':[cellroi_frame.contour_cellroi.center_y_pix]}
