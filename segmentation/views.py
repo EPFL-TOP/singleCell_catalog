@@ -451,31 +451,30 @@ def build_cells_sample(sample, addmode=False):
             count+=1
         print('after: ',cell_dict_final)
 
-
-
+        cellid_dict={}
         for cell in cell_dict_final:
             print('---- cell=',cell)
             cellstatus = CellStatus()
             cellstatus.save()
             cellid = CellID(sample=s, name=cell, cell_status=cellstatus)
             cellid.save()
-            for nroi in range(len(cell_dict_final[cell]['roi_number'])):
-                cellid = CellID.objects.get(sample=s, name=cell)
+            cellid_dict[cell]=cellid
 
+            for nroi in range(len(cell_dict_final[cell]['roi_number'])):
                 print('    ---- nroi=',nroi, '  frame=',cell_dict_final[cell]['frame'][nroi], '   roi=',cell_dict_final[cell]['roi_number'][nroi])
                 frame = frames.filter(number=cell_dict_final[cell]['frame'][nroi])
                 roi   = CellROI.objects.select_related().filter(frame=frame[0], roi_number=cell_dict_final[cell]['roi_number'][nroi])
-                print('    ---- frame=  ',frame)
-                print('    ---- roi=    ',roi) 
-                print('    ---- cellid= ',cellid)
-                print('    ---- roi[0]= ',roi[0])
+                print('    ---- frame    ',frame)
+                print('    ---- roi      ',roi) 
+                print('    ---- cellid   ',cellid)
+                print('    ---- roi[0]   ',roi[0])
 
-                roi[0].cell_id = cellid
+                roi[0].cell_id = cellid_dict[cell]
 
                 roi[0].save()
-                print('    ---- roi after=  ',roi) 
-                print('    ---- roi[0]=     ',roi[0])
-                print('    ---- roi[0].cell_id     ',roi[0].cell_id)
+                print('    ---- roi after        ',roi) 
+                print('    ---- roi[0]           ',roi[0])
+                print('    ---- roi[0].cell_id   ',roi[0].cell_id)
 
 
     return
