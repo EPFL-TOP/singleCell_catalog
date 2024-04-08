@@ -432,9 +432,11 @@ def build_cells_sample(sample, addmode=False):
 
         print('before: ',cell_dict)
 
+        topop=[]
         for cell in cell_dict:
-            if len(cell_dict[cell]['frame'])<int(nframes/2.):
-                cell_dict.pop(cell, None)
+            if len(cell_dict[cell]['frame'])<int(nframes/2.): topop.append(cell)
+        for cell in topop:
+            cell_dict.pop(cell, None)
         print('after: ',cell_dict)
     return
 
