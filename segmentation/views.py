@@ -703,7 +703,7 @@ def build_ROIs(sample=None):
                         minDR=100000
                         roi_DB_count=0
                         for roi_DB in rois_DB:
-                            print('     ----- roi_DB_count=',roi_DB_count)
+                            #print('     ----- roi_DB_count=',roi_DB_count)
                             roi_DB_count+=1
                             x_roi_DB = roi_DB.min_col+(roi_DB.max_col-roi_DB.min_col)/2.
                             y_roi_DB = roi_DB.min_row+(roi_DB.max_row-roi_DB.min_row)/2.
@@ -714,7 +714,7 @@ def build_ROIs(sample=None):
                                 roi = roi_DB
                                 roi.roi_number = roi_number
                                 minDR = math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))
-                                print("          take roi in DB ",roi_number)
+                                print("          take roi in DB ",roi_number, '     ----- roi_DB_count=',roi_DB_count)
                         if roi==None:
                             roi = CellROI(min_row = rois_seg[0], min_col = rois_seg[1],
                                           max_row = rois_seg[2], max_col = rois_seg[3], 
