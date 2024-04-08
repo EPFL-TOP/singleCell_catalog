@@ -462,19 +462,19 @@ def build_cells_sample(sample, addmode=False):
 
             for nroi in range(len(cell_dict_final[cell]['roi_number'])):
                 print('    ---- nroi=',nroi, '  frame=',cell_dict_final[cell]['frame'][nroi], '   roi=',cell_dict_final[cell]['roi_number'][nroi])
-                frame = frames.filter(number=cell_dict_final[cell]['frame'][nroi])
-                roi   = CellROI.objects.select_related().filter(frame=frame[0], roi_number=cell_dict_final[cell]['roi_number'][nroi])
+                frame = frames.get(number=cell_dict_final[cell]['frame'][nroi])
+                roi   = CellROI.objects.select_related().filter(frame=frame).get(roi_number=cell_dict_final[cell]['roi_number'][nroi])
                 print('    ---- frame    ',frame)
                 print('    ---- roi      ',roi) 
                 print('    ---- cellid   ',cellid)
                 print('    ---- roi[0]   ',roi[0])
 
-                roi[0].cell_id = cellid_dict[cell]
-
-                roi[0].save()
+                roi.cell_id = cellid_dict[cell]
+#roi   = CellROI.objects.select_for_update
+                roi.save()
                 print('    ---- roi after        ',roi) 
-                print('    ---- roi[0]           ',roi[0])
-                print('    ---- roi[0].cell_id   ',roi[0].cell_id)
+                print('    ---- roi[0]           ',roi)
+                print('    ---- roi[0].cell_id   ',roi.cell_id)
 
 
     return
