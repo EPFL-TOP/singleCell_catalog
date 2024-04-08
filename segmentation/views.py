@@ -442,7 +442,11 @@ def build_cells_sample(sample, addmode=False):
         for cell in cell_dict:
             cell_dict_final['cell{}'.format(count)]=cell_dict[cell]
             count+=1
-        print('after: ',cell_dict)
+        print('after: ',cell_dict_final)
+
+
+
+
     return
 
     ##delete the existing cellID
