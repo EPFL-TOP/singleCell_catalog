@@ -437,6 +437,11 @@ def build_cells_sample(sample, addmode=False):
             if len(cell_dict[cell]['frame'])<int(nframes/2.): topop.append(cell)
         for cell in topop:
             cell_dict.pop(cell, None)
+        cell_dict_final={}
+        count=0
+        for cell in cell_dict:
+            cell_dict_final['cell{}'.format(count)]=cell_dict[cell]
+            count+=1
         print('after: ',cell_dict)
     return
 
@@ -696,6 +701,7 @@ def build_ROIs(sample=None):
                     rois_seg = segtools.triangle_opening(BF_images[frame.number])
                     roi_number=0
                     roi_seg_count=0
+                    roi_DB_list=[]
                     for rois_seg in rois_seg:
                         roi=None
                         print('----- roi_seg_count=',roi_seg_count)
@@ -705,6 +711,7 @@ def build_ROIs(sample=None):
                         minDR=100000
                         roi_DB_count=0
                         for roi_DB in rois_DB:
+                            if roi_DB_count in roi_DB_list: continue
                             x_roi_DB = roi_DB.min_col+(roi_DB.max_col-roi_DB.min_col)/2.
                             y_roi_DB = roi_DB.min_row+(roi_DB.max_row-roi_DB.min_row)/2.
 
