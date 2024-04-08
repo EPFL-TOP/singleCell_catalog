@@ -467,6 +467,7 @@ def build_cells_sample(sample, addmode=False):
                 print('    ---- roi=  ',roi) 
                 roi[0].cell_id = cellid
                 roi[0].save()
+                print('    ---- roi after=  ',roi) 
 
     return
 
