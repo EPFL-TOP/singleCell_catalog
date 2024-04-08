@@ -394,10 +394,10 @@ def build_cells_sample(sample, addmode=False):
         cell_dict={}
         for f in range(nframes):
             frame = frames.filter(number=f)
-            print('frame = = = = = ',frame)
+            print('===== frame  ',frame)
             cellrois_frame = CellROI.objects.select_related().filter(frame=frame[0])
             for cellroi_frame in cellrois_frame:
-                print('cell roi=',cellroi_frame.roi_number, ' center=',cellroi_frame.contour_cellroi.center_x_pix,' , ',cellroi_frame.contour_cellroi.center_y_pix)
+                print('     ===== cell roi=',cellroi_frame.roi_number, ' center=',cellroi_frame.contour_cellroi.center_x_pix,' , ',cellroi_frame.contour_cellroi.center_y_pix)
                 if f == 0:
                     cell_dict['cell{}'.format(cellroi_frame.roi_number)]={'frame':[f], 'x':[cellroi_frame.contour_cellroi.center_x_pix], 'y':[cellroi_frame.contour_cellroi.center_y_pix]}
                     continue
@@ -407,10 +407,10 @@ def build_cells_sample(sample, addmode=False):
                 print('cell_dict beofre loop',cell_dict)
 
                 for cell in cell_dict:
+                    print('          ===== cell cell_dict=',cell)
                     if f in cell_dict[cell]['frame']:
                         print('cell already in dic=',cell)
                         continue
-                    print('cell= ',cell)
                     #print("cell_dict[cell]['frame'][-1]=",cell_dict[cell]['frame'][-1])
                     #print("cell_dict[cell]['x']=",cell_dict[cell]['x'])
                     dR = math.sqrt(math.pow((cell_dict[cell]['x'][len(cell_dict[cell]['frame'])-1] - cellroi_frame.contour_cellroi.center_x_pix),2) +  
