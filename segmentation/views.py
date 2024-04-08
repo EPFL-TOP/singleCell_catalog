@@ -407,6 +407,9 @@ def build_cells_sample(sample, addmode=False):
                 print('cell_dict beofre loop',cell_dict)
 
                 for cell in cell_dict:
+                    if f in cell_dict[cell]['frame']:
+                        print('cell already in dic=',cell)
+                        continue
                     print('cell= ',cell)
                     #print("cell_dict[cell]['frame'][-1]=",cell_dict[cell]['frame'][-1])
                     #print("cell_dict[cell]['x']=",cell_dict[cell]['x'])
