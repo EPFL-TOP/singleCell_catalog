@@ -459,8 +459,9 @@ def build_cells_sample(sample, addmode=False):
             cellstatus.save()
             cellid = CellID(sample=s, name=cell, cell_status=cellstatus)
             cellid.save()
-            #cellid = CellID.objects.get(sample=s, name=cell)
             for nroi in range(len(cell_dict_final[cell]['roi_number'])):
+                cellid = CellID.objects.get(sample=s, name=cell)
+
                 print('    ---- nroi=',nroi, '  frame=',cell_dict_final[cell]['frame'][nroi], '   roi=',cell_dict_final[cell]['roi_number'][nroi])
                 frame = frames.filter(number=cell_dict_final[cell]['frame'][nroi])
                 roi   = CellROI.objects.select_related().filter(frame=frame[0], roi_number=cell_dict_final[cell]['roi_number'][nroi])
