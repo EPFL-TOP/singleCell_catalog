@@ -394,7 +394,7 @@ def build_cells_sample(sample, addmode=False):
         cell_dict={}
         for f in range(nframes):
             frame = frames.filter(number=f)
-            print(frame)
+            print('frame = = = = = ',frame)
             cellrois_frame = CellROI.objects.select_related().filter(frame=frame[0])
             for cellroi_frame in cellrois_frame:
                 if f == 0:
@@ -407,18 +407,21 @@ def build_cells_sample(sample, addmode=False):
 
                 for cell in cell_dict:
                     print('cell= ',cell)
-                    print("cell_dict[cell]['frame'][-1]=",cell_dict[cell]['frame'][-1])
-                    print("cell_dict[cell]['x']=",cell_dict[cell]['x'])
+                    #print("cell_dict[cell]['frame'][-1]=",cell_dict[cell]['frame'][-1])
+                    #print("cell_dict[cell]['x']=",cell_dict[cell]['x'])
                     dR = math.sqrt(math.pow((cell_dict[cell]['x'][len(cell_dict[cell]['frame'])-1] - cellroi_frame.contour_cellroi.center_x_pix),2) +  
                                    math.pow((cell_dict[cell]['y'][len(cell_dict[cell]['frame'])-1] - cellroi_frame.contour_cellroi.center_y_pix),2)) 
                     if dR<minDR and dR<maxDR:
                         minDR=dR
                         sel_cell = cell
+                        print('minDR=',minDR,'  cell=',cell)
                 if sel_cell!=None:
+                    print('cell found')
                     cell_dict[cell]['frame'].append(f)
                     cell_dict[cell]['x'].append(cellroi_frame.contour_cellroi.center_x_pix)
                     cell_dict[cell]['y'].append(cellroi_frame.contour_cellroi.center_y_pix)
                 else:
+                    print('cell not found')
                     cell_dict['cell{}'.format(len(cell_dict))] = {'frame':[f], 'x':[cellroi_frame.contour_cellroi.center_x_pix], 'y':[cellroi_frame.contour_cellroi.center_y_pix]}
 
 
