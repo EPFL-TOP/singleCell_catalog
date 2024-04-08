@@ -422,11 +422,15 @@ def build_cells_sample(sample, addmode=False):
                 if sel_cell!=None:
                     print('cell found')
                     cell_dict[sel_cell]['frame'].append(f)
+                    cell_dict[sel_cell]['roi_number'].append(cellroi_frame.roi_number)
                     cell_dict[sel_cell]['x'].append(cellroi_frame.contour_cellroi.center_x_pix)
                     cell_dict[sel_cell]['y'].append(cellroi_frame.contour_cellroi.center_y_pix)
                 else:
                     print('cell not found')
-                    cell_dict['cell{}'.format(len(cell_dict))] = {'frame':[f], 'x':[cellroi_frame.contour_cellroi.center_x_pix], 'y':[cellroi_frame.contour_cellroi.center_y_pix]}
+                    cell_dict['cell{}'.format(len(cell_dict))] = {'frame':[f], 
+                                                                  'roi_number':[cellroi_frame.roi_number],
+                                                                  'x':[cellroi_frame.contour_cellroi.center_x_pix], 
+                                                                  'y':[cellroi_frame.contour_cellroi.center_y_pix]}
 
 
 
@@ -446,6 +450,20 @@ def build_cells_sample(sample, addmode=False):
 
 
 
+        for cell in cell_dict_final:
+            print('---- cell=',cell)
+            cellstatus = CellStatus()
+            cellstatus.save()
+            cellid = CellID(sample=s, name=cell, cell_status=cellstatus)
+            cellid.save()
+            for nroi in range(len(cell_dict_final[cell]['roi_number'])):
+                print('    ---- nroi=',nroi, '  frame=',cell_dict_final[cell]['frame'][nroi], '   roi=',cell_dict_final[cell]['roi_number'][nroi])
+                frame = frames.filter(number=cell_dict_final[cell]['frame'][nroi])
+                roi   = CellROI.objects.select_related().filter(frame=frame[0], roi_number=cell_dict_final[cell]['roi_number'][nroi])
+                print('    ---- frame=',frame)
+                print('    ---- roi=  ',roi) 
+                roi[0].cell_id = cellid
+                roi[0].save()
 
     return
 
