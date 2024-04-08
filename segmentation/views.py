@@ -684,13 +684,18 @@ def build_ROIs(sample=None):
                     #ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2)
                     rois_seg = segtools.triangle_opening(BF_images[frame.number])
                     roi_number=0
+                    roi_seg_count=0
                     for rois_seg in rois_seg:
                         roi=None
-
+                        print('roi_seg_count=',roi_seg_count)
+                        roi_seg_count+=1
                         x_roi_seg = rois_seg[1]+(rois_seg[3]-rois_seg[1])/2.
                         y_roi_seg = rois_seg[0]+(rois_seg[2]-rois_seg[0])/2.
                         minDR=100000
+                        roi_DB_count=0
                         for roi_DB in rois_DB:
+                            print('roi_DB_count=',roi_DB_count)
+                            roi_DB_count+=1
                             x_roi_DB = roi_DB.min_col+(roi_DB.max_col-roi_DB.min_col)/2.
                             y_roi_DB = roi_DB.min_row+(roi_DB.max_row-roi_DB.min_row)/2.
 
