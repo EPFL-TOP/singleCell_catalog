@@ -129,15 +129,15 @@ class CellROI(models.Model):
     def __str__(self):
         if self.cell_id != None:
             if  hasattr(self, 'contour_cellroi'):
-                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id.name, self.contour_cellroi.file_name)
+                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}, id={5}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id.name, self.contour_cellroi.file_name, self.id)
             else:
-                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id.name, None)
+                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}, id={5}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id.name, None, self.id)
 
         else:
             if  hasattr(self, 'contour_cellroi'):
-                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id, self.contour_cellroi.file_name)
+                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}, id={5}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id, self.contour_cellroi.file_name, self.id)
             else:
-                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id, None)
+                return 'file={0}, frame={1}, roi={2}, cell={3}, contour={4}, id={5}'.format(self.frame.sample.file_name, self.frame.number,self.roi_number, self.cell_id, None, self.id)
 
 
 #___________________________________________________________________________________________
