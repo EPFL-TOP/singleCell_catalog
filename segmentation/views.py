@@ -748,7 +748,7 @@ def build_ROIs(sample=None, force=False):
                             x_roi_DB = roi_DB.min_col+(roi_DB.max_col-roi_DB.min_col)/2.
                             y_roi_DB = roi_DB.min_row+(roi_DB.max_row-roi_DB.min_row)/2.
 
-                            if (math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<100 and 
+                            if (math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<50 and 
                                 math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<minDR) or \
                                 (roi_DB.contour_cellroi.mode == "manual" and roi_DB.contour_cellroi.type == "cell_ROI"):
                                 roi = roi_DB
@@ -855,7 +855,7 @@ def build_ROIs(sample=None, force=False):
                                 overlap=img_1*img_2
                                 count_overlap=np.count_nonzero(overlap)
                                 print('count_overlap/count_img1=',count_overlap/count_img1, '  count_overlap/count_img2=',count_overlap/count_img2)
-                                if count_overlap/count_img1 > 0.7 or count_overlap/count_img2>0.7:
+                                if count_overlap/count_img1 > 0.5 or count_overlap/count_img2>0.5:
                                     if count_img1>count_img2:
                                         print('1>2: ',rois_DB_final[roi_final_2])
                                         if rois_DB_final[roi_final_2].id!=None:rois_DB_final[roi_final_2].delete()
@@ -1776,11 +1776,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
         if sample.check_sample:
-            position_check_div.text = "<b style='color:green; ; font-size:18px;'> Position validated</b>"
-            position_check_button.label = "Position not validated"
+            position_check_div.text = "<b style='color:green; ; font-size:18px;'> Peaks/ToD/Division validated</b>"
+            position_check_button.label = "Peaks/ToD/Division not validated"
         else:
-            position_check_div.text = "<b style='color:red; ; font-size:18px;'> Position not validated</b>"
-            position_check_button.label = "Position validated"
+            position_check_div.text = "<b style='color:red; ; font-size:18px;'> Peaks/ToD/Division not validated</b>"
+            position_check_button.label = "Peaks/ToD/Division validated"
 
         if sample.keep_sample:
             position_keep_div.text  = "<b style='color:green; ; font-size:18px;'> Keep Position</b>"
@@ -2387,22 +2387,22 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_play_stop.on_click(play_stop_callback)
     #___________________________________________________________________________________________
 
-    position_check_div = bokeh.models.Div(text="<b style='color:red; ; font-size:18px;'> Position not validated</b>")
+    position_check_div = bokeh.models.Div(text="<b style='color:red; ; font-size:18px;'> Peaks/ToD/Division not validated</b>")
     #___________________________________________________________________________________________
     def position_check_callback():
         current_file=get_current_file()
         sample   = Sample.objects.get(file_name=current_file)
         if sample.check_sample == False:
             sample.check_sample = True
-            position_check_button.label = "Position not validated"
-            position_check_div.text = "<b style='color:green; ; font-size:18px;'> Position validated</b>"
+            position_check_button.label = "Peaks/ToD/Division not validated"
+            position_check_div.text = "<b style='color:green; ; font-size:18px;'> Peaks/ToD/Division validated</b>"
         else:
             sample.check_sample = False
-            position_check_button.label = "Position Validated"
-            position_check_div.text = "<b style='color:red; ; font-size:18px;'> Position not validated</b>"
+            position_check_button.label = "Peaks/ToD/Division validated"
+            position_check_div.text = "<b style='color:red; ; font-size:18px;'> Peaks/ToD/Division not validated</b>"
         sample.save()
         update_position_select(change=False)
-    position_check_button = bokeh.models.Button(label="Validate Position")
+    position_check_button = bokeh.models.Button(label="Peaks/ToD/Division validated")
     position_check_button.on_click(position_check_callback)
     #___________________________________________________________________________________________
 
@@ -3303,11 +3303,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     sample = Sample.objects.get(file_name=current_file)
 
     if sample.check_sample:
-        position_check_div.text = "<b style='color:green; ; font-size:18px;'> Position validated</b>"
-        position_check_button.label = "Position not validated"
+        position_check_div.text = "<b style='color:green; ; font-size:18px;'> Peaks/ToD/Division validated</b>"
+        position_check_button.label = "Peaks/ToD/Division not validated"
     else:
-        position_check_div.text = "<b style='color:red; ; font-size:18px;'> Position not validated</b>"
-        position_check_button.label = "Position validated"
+        position_check_div.text = "<b style='color:red; ; font-size:18px;'> Peaks/ToD/Division not validated</b>"
+        position_check_button.label = "Peaks/ToD/Division validated"
 
     if sample.keep_sample:
         position_keep_div.text  = "<b style='color:green; ; font-size:18px;'> Keep Position</b>"
