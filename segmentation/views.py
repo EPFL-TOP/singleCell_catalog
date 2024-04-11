@@ -854,8 +854,10 @@ def build_ROIs(sample=None, force=False):
                                 count_overlap=np.count_nonzero(overlap)
                                 if count_overlap/count_img1 > 0.7 or count_overlap/count_img2>0.7:
                                     if count_img1>count_img2:
+                                        print('1>2: ',rois_DB_final[roi_final_2])
                                         rois_DB_final[roi_final_2].delete()
                                     else:
+                                        print('2>1: ',rois_DB_final[roi_final_1])
                                         rois_DB_final[roi_final_1].delete()
                         #set the roi order after it has been deleted
                         rois_DB_final = CellROI.objects.select_related().filter(frame = frame)
