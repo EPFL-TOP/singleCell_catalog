@@ -45,8 +45,8 @@ class Sample(models.Model):
     file_name                = models.CharField(default='', max_length=500, help_text="name of the file (full path)")
     sample_quality           = models.CharField(max_length=200, choices=QUALITY, help_text="", default='High')
     keep_sample              = models.BooleanField(help_text="keep this sample flag", default=True)
-    peaks_tod_div_validated  = models.BooleanField(help_text="peaks, tod, division validated flag", default=False, db_column='check_sample')
-    bf_features_validated    = models.BooleanField(help_text="other bright field features validated flag", default=False)
+    peaks_tod_div_validated  = models.BooleanField(help_text="peaks, tod, division validated flag", default=False)
+    #bf_features_validated    = models.BooleanField(help_text="other bright field features validated flag", default=False)
 
     def __str__(self):
         return 'position={0}'.format(self.file_name)
