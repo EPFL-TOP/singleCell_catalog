@@ -707,7 +707,7 @@ def build_segmentation():
 
                 
 #___________________________________________________________________________________________
-def build_ROIs(sample=None):
+def build_ROIs(sample=None, force=False):
     exp_list = Experiment.objects.all()
     for exp in exp_list:
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
@@ -717,9 +717,8 @@ def build_ROIs(sample=None):
                 if sample!=None and sample!=s.file_name:continue
                 cellids = CellID.objects.select_related().filter(sample=s)
                 #uncomment to speed up, this will continue if cell is already associated with position
-                #if len(cellids)>0:continue
+                if force==False and len(cellids)>0:continue
                 print('build roi sample: ',s.file_name)
-                #if 'wscepfl' in s.file_name :continue
 
                 frames = Frame.objects.select_related().filter(sample=s)
                 images, channels = read.nd2reader_getFrames(s.file_name)
@@ -736,12 +735,12 @@ def build_ROIs(sample=None):
                     roi_number=0
                     roi_seg_count=0
                     roi_DB_list=[]
-                    for rois_seg in rois_seg:
+                    for roi_seg in rois_seg:
                         roi=None
                         print('----- roi_seg_count=',roi_seg_count)
                         roi_seg_count+=1
-                        x_roi_seg = rois_seg[1]+(rois_seg[3]-rois_seg[1])/2.
-                        y_roi_seg = rois_seg[0]+(rois_seg[2]-rois_seg[0])/2.
+                        x_roi_seg = roi_seg[1]+(roi_seg[3]-roi_seg[1])/2.
+                        y_roi_seg = roi_seg[0]+(roi_seg[2]-roi_seg[0])/2.
                         minDR=100000
                         roi_DB_count=0
                         for roi_DB in rois_DB:
@@ -759,8 +758,8 @@ def build_ROIs(sample=None):
                             roi_DB_count+=1
 
                         if roi==None:
-                            roi = CellROI(min_row = rois_seg[0], min_col = rois_seg[1],
-                                          max_row = rois_seg[2], max_col = rois_seg[3], 
+                            roi = CellROI(min_row = roi_seg[0], min_col = roi_seg[1],
+                                          max_row = roi_seg[2], max_col = roi_seg[3], 
                                           frame = frame, roi_number=roi_number)
                             print("          take new ROI ",roi_number)
                             bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
@@ -2441,7 +2440,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def build_roi_callback():
         if DEBUG:print('****************************  build_roi_callback ****************************')
-        build_ROIs(get_current_file())
+        build_ROIs(get_current_file(), force=True)
 
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         
