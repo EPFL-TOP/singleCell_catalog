@@ -845,7 +845,7 @@ def build_ROIs(sample=None, force=False):
                             print('== roi_final_1=',roi_final_1)
                             for roi_final_2 in range(roi_final_1, len(rois_DB_final)):
                                 if roi_final_1 == roi_final_2: continue
-                                print('===== roi_final_2=',roi_final_2)
+                                print('    == roi_final_2=',roi_final_2)
                                 img_1=np.zeros((frame.height, frame.width))
                                 img_2=np.zeros((frame.height, frame.width))
                                 img_1[rois_DB_final[roi_final_1].min_row:rois_DB_final[roi_final_1].max_row, rois_DB_final[roi_final_1].min_col:rois_DB_final[roi_final_1].max_col]=True
@@ -854,7 +854,7 @@ def build_ROIs(sample=None, force=False):
                                 count_img2=np.count_nonzero(img_2)
                                 overlap=img_1*img_2
                                 count_overlap=np.count_nonzero(overlap)
-                                print('count_img1=',count_img1, '  count_img2=',count_img2)
+                                print('count_overlap/count_img1=',count_overlap/count_img1, '  count_overlap/count_img2=',count_overlap/count_img2)
                                 if count_overlap/count_img1 > 0.7 or count_overlap/count_img2>0.7:
                                     if count_img1>count_img2:
                                         print('1>2: ',rois_DB_final[roi_final_2])
