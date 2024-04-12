@@ -1008,9 +1008,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     break
             sample = Sample.objects.get(file_name=current_file)
             if sample.peaks_tod_div_validated and sample.keep_sample:
-                local_pos.append('{} - c'.format(mypos))
+                local_pos.append('{} - c1'.format(mypos))
             elif sample.peaks_tod_div_validated and not sample.keep_sample:
-                local_pos.append('{} - c,dk'.format(mypos))
+                local_pos.append('{} - c1,dk'.format(mypos))
             elif not sample.peaks_tod_div_validated and not sample.keep_sample:
                 local_pos.append('{} - dk'.format(mypos))
             else:
@@ -1782,6 +1782,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             position_check_div.text = "<b style='color:red; ; font-size:18px;'> Peaks/ToD/Division not validated</b>"
             position_check_button.label = "Peaks/ToD/Division validated"
 
+
+        if sample.bf_features_validated:
+            position_check2_div.text = "<b style='color:green; ; font-size:18px;'> BF features validated</b>"
+            position_check2_button.label = "BF features not validated"
+        else:
+            position_check2_div.text = "<b style='color:red; ; font-size:18px;'> BF features not validated</b>"
+            position_check2_button.label = "BF features validated"
+
         if sample.keep_sample:
             position_keep_div.text  = "<b style='color:green; ; font-size:18px;'> Keep Position</b>"
             position_keep_button.label = "Don't Keep Position"
@@ -2405,6 +2413,27 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     position_check_button = bokeh.models.Button(label="Peaks/ToD/Division validated")
     position_check_button.on_click(position_check_callback)
     #___________________________________________________________________________________________
+
+
+    position_check2_div = bokeh.models.Div(text="<b style='color:red; ; font-size:18px;'> BF features not validated</b>")
+    #___________________________________________________________________________________________
+    def position_check2_callback():
+        current_file=get_current_file()
+        sample   = Sample.objects.get(file_name=current_file)
+        if sample.bf_features_validated == False:
+            sample.bf_features_validated = True
+            position_check2_button.label = "BF features not validated"
+            position_check2_div.text = "<b style='color:green; ; font-size:18px;'> BF features validated</b>"
+        else:
+            sample.bf_features_validated = False
+            position_check2_button.label = "BF features validated"
+            position_check2_div.text = "<b style='color:red; ; font-size:18px;'> BF features not validated</b>"
+        sample.save()
+        update_position_select(change=False)
+    position_check2_button = bokeh.models.Button(label="BF features validated")
+    position_check2_button.on_click(position_check2_callback)
+    #___________________________________________________________________________________________
+
 
     position_keep_div = bokeh.models.Div(text="<b style='color:green; ; font-size:18px;'> Keep Position</b>")
     #___________________________________________________________________________________________
@@ -3309,6 +3338,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         position_check_div.text = "<b style='color:red; ; font-size:18px;'> Peaks/ToD/Division not validated</b>"
         position_check_button.label = "Peaks/ToD/Division validated"
 
+    if sample.bf_features_validated:
+        position_check2_div.text = "<b style='color:green; ; font-size:18px;'> BF features validated</b>"
+        position_check2_button.label = "BF features not validated"
+    else:
+        position_check2_div.text = "<b style='color:red; ; font-size:18px;'> BF features not validated</b>"
+        position_check2_button.label = "BF features validated"
+
     if sample.keep_sample:
         position_keep_div.text  = "<b style='color:green; ; font-size:18px;'> Keep Position</b>"
         position_keep_button.label = "Don't keep Position"
@@ -3520,6 +3556,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          bokeh.layouts.row(dropdown_color),
                                          bokeh.layouts.row(bokeh.layouts.Spacer(width=10),contrast_slider),
                                          bokeh.layouts.row(position_check_button),
+                                         bokeh.layouts.row(position_check2_button),
                                          bokeh.layouts.row(position_keep_button),
                                          bokeh.layouts.row(button_build_roi),
                                          bokeh.layouts.row(button_remove_roi),
@@ -3548,7 +3585,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     cell_osc_plot_col =  bokeh.layouts.column(bokeh.layouts.gridplot([[plot_image], [plot_img_mask]]))
 
-    norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10),position_keep_div),
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10), position_check2_div, bokeh.layouts.Spacer(width=10), position_keep_div),
                                        bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
                                        #bokeh.layouts.row(pie),
                                        bokeh.layouts.row(text))
