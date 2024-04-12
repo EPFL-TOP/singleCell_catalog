@@ -1007,12 +1007,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     current_file = f
                     break
             sample = Sample.objects.get(file_name=current_file)
-            if sample.peaks_tod_div_validated and sample.keep_sample:
+            if sample.peaks_tod_div_validated and sample.keep_sample and not sample.bf_features_validated:
                 local_pos.append('{} - c1'.format(mypos))
-            elif sample.peaks_tod_div_validated and not sample.keep_sample:
+            elif sample.peaks_tod_div_validated and not sample.keep_sample and not sample.bf_features_validated:
                 local_pos.append('{} - c1,dk'.format(mypos))
-            elif not sample.peaks_tod_div_validated and not sample.keep_sample:
+            elif not sample.peaks_tod_div_validated and not sample.keep_sample and not sample.bf_features_validated:
                 local_pos.append('{} - dk'.format(mypos))
+            elif sample.peaks_tod_div_validated and sample.keep_sample and sample.bf_features_validated:
+                local_pos.append('{} - c1,c2'.format(mypos))
+            elif sample.peaks_tod_div_validated and not sample.keep_sample and sample.bf_features_validated:
+                local_pos.append('{} - c1,c2,dk'.format(mypos))
+            elif not sample.peaks_tod_div_validated and sample.keep_sample and sample.bf_features_validated:
+                local_pos.append('{} - c2'.format(mypos))
+            elif not sample.peaks_tod_div_validated and not sample.keep_sample and sample.bf_features_validated:
+                local_pos.append('{} - c2,dk'.format(mypos))
             else:
                 local_pos.append('{}'.format(mypos))
             if mypos == local_pos_val.split(' - ')[0]:local_val=counter
