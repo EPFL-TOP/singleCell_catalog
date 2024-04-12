@@ -1739,7 +1739,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         slider.end=len(source_imgs.data['images'][0]) - 1
         #update_source_osc_tod()
 
-        slider_find_peaks.value = 30
+        #slider_find_peaks.value = 30
     dropdown_well.on_change('value', update_dropdown_pos)
     #___________________________________________________________________________________________
 
@@ -1897,8 +1897,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('dropdown_cell.options = ',dropdown_cell.options)
         prepare_intensity()
 
-        slider_find_peaks.end = np.max(source_intensity_ch1.data['intensity'])-np.min(source_intensity_ch1.data['intensity'])
-
+        slider_find_peaks.end   = int(np.max(source_intensity_ch1.data['intensity'])-np.min(source_intensity_ch1.data['intensity']))
+        slider_find_peaks.value = int(slider_find_peaks.end/3.)
+        if slider_find_peaks.end<250:
+            slider_find_peaks.step = 1
+        elif slider_find_peaks.end>=250 and slider_find_peaks.end<500:
+            slider_find_peaks.step = 5
+        elif slider_find_peaks.end>=500:
+            slider_find_peaks.step = 10
+        elif slider_find_peaks.end>=1000:
+            slider_find_peaks.step = 20
+        elif slider_find_peaks.end>=5000:
+            slider_find_peaks.step = 50
+        elif slider_find_peaks.end>=10000:
+            slider_find_peaks.step = 100
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
     #___________________________________________________________________________________________
