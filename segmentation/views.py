@@ -1007,11 +1007,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     current_file = f
                     break
             sample = Sample.objects.get(file_name=current_file)
-            if sample.check_sample and sample.keep_sample:
+            if sample.peaks_tod_div_validated and sample.keep_sample:
                 local_pos.append('{} - c'.format(mypos))
-            elif sample.check_sample and not sample.keep_sample:
+            elif sample.peaks_tod_div_validated and not sample.keep_sample:
                 local_pos.append('{} - c,dk'.format(mypos))
-            elif not sample.check_sample and not sample.keep_sample:
+            elif not sample.peaks_tod_div_validated and not sample.keep_sample:
                 local_pos.append('{} - dk'.format(mypos))
             else:
                 local_pos.append('{}'.format(mypos))
@@ -1775,7 +1775,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
-        if sample.check_sample:
+        if sample.peaks_tod_div_validated:
             position_check_div.text = "<b style='color:green; ; font-size:18px;'> Peaks/ToD/Division validated</b>"
             position_check_button.label = "Peaks/ToD/Division not validated"
         else:
@@ -2392,12 +2392,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def position_check_callback():
         current_file=get_current_file()
         sample   = Sample.objects.get(file_name=current_file)
-        if sample.check_sample == False:
-            sample.check_sample = True
+        if sample.peaks_tod_div_validated == False:
+            sample.peaks_tod_div_validated = True
             position_check_button.label = "Peaks/ToD/Division not validated"
             position_check_div.text = "<b style='color:green; ; font-size:18px;'> Peaks/ToD/Division validated</b>"
         else:
-            sample.check_sample = False
+            sample.peaks_tod_div_validated = False
             position_check_button.label = "Peaks/ToD/Division validated"
             position_check_div.text = "<b style='color:red; ; font-size:18px;'> Peaks/ToD/Division not validated</b>"
         sample.save()
@@ -3302,7 +3302,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     current_file=get_current_file()
     sample = Sample.objects.get(file_name=current_file)
 
-    if sample.check_sample:
+    if sample.peaks_tod_div_validated:
         position_check_div.text = "<b style='color:green; ; font-size:18px;'> Peaks/ToD/Division validated</b>"
         position_check_button.label = "Peaks/ToD/Division not validated"
     else:
