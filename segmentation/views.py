@@ -493,10 +493,8 @@ def build_cells_sample(sample, addmode=False):
                 minDelta=999999
                 cframe_num = None
                 for cellroi_cell in cellsroi_cell:
-                    print('        cellroi_cell=',cellroi_cell)
                     delta=math.fabs(cellroi_frame.frame.number-cellroi_cell.frame.number)
                     if delta<minDelta:
-                        print('        delta=',delta,'  mindelta=',minDelta)
                         minDelta=delta
                         cframe_num = cellroi_cell.frame.number
                 print('    cframe_num=',cframe_num)
@@ -510,6 +508,9 @@ def build_cells_sample(sample, addmode=False):
                 if dR<minDR:
                     minDR=dR
                     mincellid=cellid
+            if mincellid!=None: 
+                cellroi_frame.cell_id = mincellid
+                cellroi_frame.save()
     return
 
     ##delete the existing cellID
