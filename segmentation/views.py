@@ -487,7 +487,7 @@ def build_cells_sample(sample, addmode=False):
             mincellid=None
             for cellid in cellsid:
 
-                if 
+                #if 
                 #find the closest frame to calculate DeltaR
                 cellsroi_cell = CellROI.objects.select_related().filter(cell_id=cellid)
                 minDelta=999999
