@@ -494,7 +494,7 @@ def build_cells_sample(sample, addmode=False):
                     delta=math.fabs(cellroi_frame.frame.number-cellroi_cell.frame.number)
                     print('        delta=',delta)
                     print('        cellroi_frame.frame=',cellroi_frame.frame)
-                    print('        cellroi_frame.frame=',cellroi_cell.frame)
+                    print('        cellroi_cell.frame =',cellroi_cell.frame)
                     if delta<minDelta and delta>0:
                         minDelta=delta
                         cframe_num = cellroi_cell.frame.number
@@ -505,9 +505,10 @@ def build_cells_sample(sample, addmode=False):
                 print('    cframe=    ',cframe)
                 #get the cell ROI of the closest frame
                 cellroi_cell = CellROI.objects.select_related().filter(frame=cframe).get(cell_id=cellid)
+                print("cellroi_cell=",cellroi_cell)
                 dR = math.sqrt(math.pow((cellroi_cell.contour_cellroi.center_x_pix - cellroi_frame.contour_cellroi.center_x_pix),2) +  
                                 math.pow((cellroi_cell.contour_cellroi.center_y_pix - cellroi_frame.contour_cellroi.center_y_pix),2))                    
-
+                print(' dR=',dR)
                 if dR<minDR:
                     minDR=dR
                     mincellid=cellid
