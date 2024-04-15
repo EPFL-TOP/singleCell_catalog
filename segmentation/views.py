@@ -478,8 +478,6 @@ def build_cells_sample(sample, addmode=False):
 
     if addmode==True:
         cellsid = CellID.objects.select_related().filter(sample = s)
-        #for f in range(nframes):
-        #    frame = frames.get(number=f)
         cellrois_frame = CellROI.objects.select_related().filter(frame__sample = s, cell_id=None)
         for cellroi_frame in cellrois_frame:
             print('==============  ADDMODE=',addmode, '  cellroi_frame=',cellroi_frame)
@@ -494,10 +492,12 @@ def build_cells_sample(sample, addmode=False):
                 cframe_num = None
                 for cellroi_cell in cellsroi_cell:
                     delta=math.fabs(cellroi_frame.frame.number-cellroi_cell.frame.number)
-                    if delta<minDelta:
+                    if delta<minDelta and delta>0:
                         minDelta=delta
                         cframe_num = cellroi_cell.frame.number
                 print('    cframe_num=',cframe_num)
+                if cframe_num == None:
+                    continue
                 cframe = frames.get(number=cframe_num)
                 print('    cframe=    ',cframe)
                 #get the cell ROI of the closest frame
