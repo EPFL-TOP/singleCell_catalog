@@ -484,132 +484,28 @@ def build_cells_sample(sample, addmode=False):
             minDR=9999999
             mincellid=None
             for cellid in cellsid:
-                print('    cellid=',cellid)
-                #if 
                 #find the closest frame to calculate DeltaR
                 cellsroi_cell = CellROI.objects.select_related().filter(cell_id=cellid)
                 minDelta=999999
                 cframe_num = None
                 for cellroi_cell in cellsroi_cell:
                     delta=math.fabs(cellroi_frame.frame.number-cellroi_cell.frame.number)
-                    print('        delta=',delta)
-                    print('        cellroi_frame.frame=',cellroi_frame.frame)
-                    print('        cellroi_cell.frame =',cellroi_cell.frame)
                     if delta<minDelta:
                         minDelta=delta
                         cframe_num = cellroi_cell.frame.number
-                print('    cframe_num=',cframe_num)
                 if minDelta<1.:
                     continue
                 cframe = frames.get(number=cframe_num)
-                print('    cframe=    ',cframe)
                 #get the cell ROI of the closest frame
                 cellroi_cell = CellROI.objects.select_related().filter(frame=cframe).get(cell_id=cellid)
-                print("cellroi_cell=",cellroi_cell)
                 dR = math.sqrt(math.pow((cellroi_cell.contour_cellroi.center_x_pix - cellroi_frame.contour_cellroi.center_x_pix),2) +  
                                 math.pow((cellroi_cell.contour_cellroi.center_y_pix - cellroi_frame.contour_cellroi.center_y_pix),2))                    
-                print(' dR=',dR)
                 if dR<minDR:
                     minDR=dR
                     mincellid=cellid
             if mincellid!=None: 
                 cellroi_frame.cell_id = mincellid
                 cellroi_frame.save()
-    return
-
-    ##delete the existing cellID
-    #cellsid.delete()
-
-    frames = Frame.objects.select_related().filter(sample = s)
-    cell_roi_id_list=[]
-    for cellid in cellsid:
-        cellrois_cellid = CellROI.objects.select_related().filter(cell_id=cellid)
-        for cellroi_cellid in cellrois_cellid:
-            cell_roi_id_list.append(cellroi_cellid.id)
-    cell_roi_list=[]
-    cell_roi_coord=[]
-
-    #do a first clustering using all ROIs
-    if len(cell_roi_id_list)==0:
-        eps=0
-        for f in frames:
-            cellrois_frame = CellROI.objects.select_related().filter(frame=f)
-            for cellroi_frame in cellrois_frame:
-
-                cell_roi_list.append(cellroi_frame)
-                cell_roi_coord.append([cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2., 
-                                        cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.])
-                eps+= ((cellroi_frame.max_col-cellroi_frame.min_col)/2. + (cellroi_frame.max_row-cellroi_frame.min_row)/2.)/2.
-
-        eps=eps/len(frames)
-        print('number of cell frames=',len(cell_roi_list))
-        if len(cell_roi_list)==0:return
-        X = np.array(cell_roi_coord)
-        clustering = DBSCAN(eps=eps, min_samples=20).fit(X)
-        print(clustering.labels_)
-
-        #Create the cells ID according to existing clusters (one per cluster >=0)
-        #Connect the cellFrames to cellID
-        createdcells=[]
-        cellid_dict={}
-        for cid in range(len(clustering.labels_)):
-            if clustering.labels_[cid] not in createdcells and clustering.labels_[cid]!=-1:
-                cellstatus = CellStatus()
-                cellstatus.save()
-                cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]), cell_status=cellstatus)
-                cellid.save()
-                createdcells.append(clustering.labels_[cid])
-                cellid_dict['cell{}'.format(clustering.labels_[cid])]=cellid
-            if clustering.labels_[cid]!=-1:
-                cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
-                cell_roi_list[cid].save()
-                cell_roi_id_list.append(cell_roi_list[cid].id)
-    if DEBUG: print('cell_roi_id_list afgter DBSCAN ',cell_roi_id_list)
-
-    #Then cluster remaining or new cells ROIs
-    cell_pos_dict={}
-    cell_id_dict={}
-    cellsid = CellID.objects.select_related().filter(sample = s)
-    for cellid in cellsid:
-        cell_pos_dict[cellid.name]=[]
-        cell_id_dict[cellid.name]=cellid
-        cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
-        for cellroi in cellrois:
-            cell_pos_dict[cellid.name].append([cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., 
-                                               cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.])
-
-
-    for f in frames:
-        cellrois_frame = CellROI.objects.select_related().filter(frame=f)
-        for cellroi_frame in cellrois_frame:
-            if cellroi_frame.id in cell_roi_id_list: continue
-
-            for cell in cell_pos_dict:
-                min_dr_name=''
-                min_dr_val=10000000000.
-                max_dr_val=((cellroi_frame.max_col-cellroi_frame.min_col)/2. + (cellroi_frame.max_row-cellroi_frame.min_row)/2.)/2.
-                tmp_val=0
-                for pos in cell_pos_dict[cell]:
-                    tmp_val+=              math.sqrt(math.pow(pos[0]-(cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.),2) + 
-                                                     math.pow(pos[1]-(cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.),2))
-                    if DEBUG: print('dr= ',math.sqrt(math.pow(pos[0]-(cellroi_frame.min_col+(cellroi_frame.max_col-cellroi_frame.min_col)/2.),2) + 
-                                                     math.pow(pos[1]-(cellroi_frame.min_row+(cellroi_frame.max_row-cellroi_frame.min_row)/2.),2)),
-                                           ' n pos=',len(cell_pos_dict[cell]))
-
-                if tmp_val/len(cell_pos_dict[cell])<min_dr_val and tmp_val/len(cell_pos_dict[cell])<max_dr_val:
-                    min_dr_val=tmp_val
-                    min_dr_name=cell
-                    cellroi_frame.cell_id=cell_id_dict[min_dr_name]
-                    cellroi_frame.save()
-                if DEBUG: print('frame=',f, '   cellroi_frame=',cellroi_frame,'  min_dr_val=',min_dr_val, '  min_dr_name=cellname=',min_dr_name, '  max_dr_val=',max_dr_val,'  tmp_val/len(cell_pos_dict[cell])=',tmp_val/len(cell_pos_dict[cell]))
-
-            #if cellroi_frame.cell_id == None:
-            #    if len(cellrois_frame)==1:
-            #        cellroi_frame.cell_id=cell_id_dict[min_dr_name]
-
-            #if min_dr_name!='':
-            #    cellroi_frame.cell_id=cell_id_dict[min_dr_name]
-            #    cellroi_frame.save()
 
 
 #___________________________________________________________________________________________
@@ -743,171 +639,179 @@ def build_segmentation():
                         contourseg.save()
                 
 
-                
 #___________________________________________________________________________________________
-def build_ROIs(sample=None, force=False):
+def build_ROIs_loop():
     exp_list = Experiment.objects.all()
     for exp in exp_list:
+        if exp.name!="bleb001":continue
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
-                if sample!=None and sample!=s.file_name:continue
-                cellids = CellID.objects.select_related().filter(sample=s)
-                #uncomment to speed up, this will continue if cell is already associated with position
-                if force==False and len(cellids)>0:continue
-                print('build roi sample: ',s.file_name)
+                build_ROIs(sample=s, force=True)
+                
+#___________________________________________________________________________________________
+def build_ROIs(sample=None, force=False):
+    s=None
+    if type(sample) == str:
+        s = Sample.objects.get(file_name = sample)
+    else:
+        s=sample
+    cellids = CellID.objects.select_related().filter(sample=s)
+    #uncomment to speed up, this will continue if cell is already associated with position
+    if force==False and len(cellids)>0:return
+    print('build roi sample: ',s.file_name)
 
-                frames = Frame.objects.select_related().filter(sample=s)
-                images, channels = read.nd2reader_getFrames(s.file_name)
-                #images are t, c, x, y 
-                BF_images=images.transpose(1,0,2,3)
-                BF_images=BF_images[0]
-                for frame in frames:
-                    print(frame)
-                    rois_DB = CellROI.objects.select_related().filter(frame = frame)
-                    #Just for now, should normally check that same ROI don't overlap
-                    #if len(rois)>0: continue
-                    #ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2)
-                    rois_seg = segtools.triangle_opening(BF_images[frame.number])
-                    roi_number=0
-                    roi_seg_count=0
-                    roi_DB_list=[]
-                    for roi_seg in rois_seg:
-                        roi=None
-                        print('----- roi_seg_count=',roi_seg_count)
-                        roi_seg_count+=1
-                        x_roi_seg = roi_seg[1]+(roi_seg[3]-roi_seg[1])/2.
-                        y_roi_seg = roi_seg[0]+(roi_seg[2]-roi_seg[0])/2.
-                        minDR=100000
-                        roi_DB_count=0
-                        for roi_DB in rois_DB:
-                            if roi_DB_count in roi_DB_list: continue
-                            x_roi_DB = roi_DB.min_col+(roi_DB.max_col-roi_DB.min_col)/2.
-                            y_roi_DB = roi_DB.min_row+(roi_DB.max_row-roi_DB.min_row)/2.
+    frames = Frame.objects.select_related().filter(sample=s)
+    images, channels = read.nd2reader_getFrames(s.file_name)
+    #images are t, c, x, y 
+    BF_images=images.transpose(1,0,2,3)
+    BF_images=BF_images[0]
+    for frame in frames:
+        print(frame)
+        rois_DB = CellROI.objects.select_related().filter(frame = frame)
+        #Just for now, should normally check that same ROI don't overlap
+        #if len(rois)>0: continue
+        #ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2)
+        rois_seg = segtools.triangle_opening(BF_images[frame.number])
+        roi_number=0
+        roi_seg_count=0
+        roi_DB_list=[]
+        for roi_seg in rois_seg:
+            roi=None
+            print('----- roi_seg_count=',roi_seg_count)
+            roi_seg_count+=1
+            x_roi_seg = roi_seg[1]+(roi_seg[3]-roi_seg[1])/2.
+            y_roi_seg = roi_seg[0]+(roi_seg[2]-roi_seg[0])/2.
+            minDR=100000
+            roi_DB_count=0
+            for roi_DB in rois_DB:
+                if roi_DB_count in roi_DB_list: continue
+                x_roi_DB = roi_DB.min_col+(roi_DB.max_col-roi_DB.min_col)/2.
+                y_roi_DB = roi_DB.min_row+(roi_DB.max_row-roi_DB.min_row)/2.
 
-                            if (math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<50 and 
-                                math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<minDR) or \
-                                (roi_DB.contour_cellroi.mode == "manual" and roi_DB.contour_cellroi.type == "cell_ROI"):
-                                roi = roi_DB
-                                roi.roi_number = roi_number
-                                minDR = math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))
-                                print("          take roi in DB ",roi_number, '     ----- roi_DB_count=',roi_DB_count,'  minDR ',minDR)
-                            roi_DB_count+=1
+                if (math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<50 and 
+                    math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))<minDR) or \
+                    (roi_DB.contour_cellroi.mode == "manual" and roi_DB.contour_cellroi.type == "cell_ROI"):
+                    roi = roi_DB
+                    roi.roi_number = roi_number
+                    minDR = math.sqrt(pow(x_roi_seg-x_roi_DB,2) + pow(y_roi_seg-y_roi_DB,2))
+                    print("          take roi in DB ",roi_number, '     ----- roi_DB_count=',roi_DB_count,'  minDR ',minDR)
+                roi_DB_count+=1
 
-                        if roi==None:
-                            roi = CellROI(min_row = roi_seg[0], min_col = roi_seg[1],
-                                          max_row = roi_seg[2], max_col = roi_seg[3], 
-                                          frame = frame, roi_number=roi_number)
-                            print("          take new ROI ",roi_number)
-                            bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
-                            roi.min_row = bbox[0]
-                            roi.min_col = bbox[1]
-                            roi.max_row = bbox[2]
-                            roi.max_col = bbox[3]
-                            roi.save()
+            if roi==None:
+                roi = CellROI(min_row = roi_seg[0], min_col = roi_seg[1],
+                                max_row = roi_seg[2], max_col = roi_seg[3], 
+                                frame = frame, roi_number=roi_number)
+                print("          take new ROI ",roi_number)
+                bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
+                roi.min_row = bbox[0]
+                roi.min_col = bbox[1]
+                roi.max_row = bbox[2]
+                roi.max_col = bbox[3]
+                roi.save()
 
-                        if hasattr(roi, 'contour_cellroi'):
-                            if roi.contour_cellroi.mode == "auto" and roi.contour_cellroi.type == "cell_ROI":
-                                bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
-                                roi.min_row = bbox[0]
-                                roi.min_col = bbox[1]
-                                roi.max_row = bbox[2]
-                                roi.max_col = bbox[3]
-                        roi.save()
+            if hasattr(roi, 'contour_cellroi'):
+                if roi.contour_cellroi.mode == "auto" and roi.contour_cellroi.type == "cell_ROI":
+                    bbox = segtools.validate_roi(BF_images[frame.number], roi.min_row, roi.min_col, roi.max_row, roi.max_col)
+                    roi.min_row = bbox[0]
+                    roi.min_col = bbox[1]
+                    roi.max_row = bbox[2]
+                    roi.max_col = bbox[3]
+            roi.save()
 
-                        #Bounding box (min_row, min_col, max_row, max_col). 
-                        cropped_dict = {'shape_original':BF_images[frame.number].shape}
-                        out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
-                        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, roi_number))
-                        if not os.path.exists(out_dir_name):
-                            os.makedirs(out_dir_name)
-                        cropped_img = images[frame.number][:, roi.min_row:roi.max_row, roi.min_col:roi.max_col]
-                        cropped_dict['shape']=[cropped_img.shape[1], cropped_img.shape[2]]
-                        cropped_dict['npixels']=cropped_img.shape[1]*cropped_img.shape[2]
-                        cropped_dict['shift']=[roi.min_row, roi.min_col]
-                        cropped_dict['type']="auto"
+            #Bounding box (min_row, min_col, max_row, max_col). 
+            cropped_dict = {'shape_original':BF_images[frame.number].shape}
+            out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
+            out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, roi_number))
+            if not os.path.exists(out_dir_name):
+                os.makedirs(out_dir_name)
+            cropped_img = images[frame.number][:, roi.min_row:roi.max_row, roi.min_col:roi.max_col]
+            cropped_dict['shape']=[cropped_img.shape[1], cropped_img.shape[2]]
+            cropped_dict['npixels']=cropped_img.shape[1]*cropped_img.shape[2]
+            cropped_dict['shift']=[roi.min_row, roi.min_col]
+            cropped_dict['type']="auto"
 
-                        for ch in range(len(channels)):
-                            cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = cropped_img[ch].tolist()     
-                        out_file = open(out_file_name, "w") 
-                        json.dump(cropped_dict, out_file) 
-                        out_file.close() 
+            for ch in range(len(channels)):
+                cropped_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = cropped_img[ch].tolist()     
+            out_file = open(out_file_name, "w") 
+            json.dump(cropped_dict, out_file) 
+            out_file.close() 
 
-                        intensity_mean={}
-                        intensity_std={}
-                        intensity_sum={}
-                        intensity_max={}
-                        for ch in range(len(channels)): 
-                            sum=float(np.sum(cropped_img[ch]))
-                            mean=float(np.mean(cropped_img[ch]))
-                            std=float(np.std(cropped_img[ch]))
-                            max=float(np.max(cropped_img[ch]))
-                            ch_name=channels[ch].replace(" ","")
-                            intensity_mean[ch_name]=mean
-                            intensity_std[ch_name]=std
-                            intensity_sum[ch_name]=sum
-                            intensity_max[ch_name]=max
-                        
-                        contour = None
-                        if hasattr(roi, 'contour_cellroi'):
-                            contour = roi.contour_cellroi
+            intensity_mean={}
+            intensity_std={}
+            intensity_sum={}
+            intensity_max={}
+            for ch in range(len(channels)): 
+                sum=float(np.sum(cropped_img[ch]))
+                mean=float(np.mean(cropped_img[ch]))
+                std=float(np.std(cropped_img[ch]))
+                max=float(np.max(cropped_img[ch]))
+                ch_name=channels[ch].replace(" ","")
+                intensity_mean[ch_name]=mean
+                intensity_std[ch_name]=std
+                intensity_sum[ch_name]=sum
+                intensity_max[ch_name]=max
+            
+            contour = None
+            if hasattr(roi, 'contour_cellroi'):
+                contour = roi.contour_cellroi
+            else:
+                contour = Contour(cell_roi=roi)
+
+            contour.center_x_pix     = roi.min_col+(roi.max_col-roi.min_col)/2.
+            contour.center_y_pix     = roi.min_row+(roi.max_row-roi.min_row)/2.
+            contour.center_z_pix     = 0 
+            contour.center_x_mic     = (roi.min_col+(roi.max_col-roi.min_col)/2.)*roi.frame.pixel_microns+roi.frame.pos_x
+            contour.center_y_mic     = (roi.min_row+(roi.max_row-roi.min_row)/2.)*roi.frame.pixel_microns+roi.frame.pos_y
+            contour.center_z_mic     = 0
+            contour.intensity_mean   = intensity_mean
+            contour.intensity_std    = intensity_std
+            contour.intensity_sum    = intensity_sum
+            contour.intensity_max    = intensity_max
+            contour.number_of_pixels = cropped_img.shape[1]*cropped_img.shape[2]
+            contour.file_name        = out_file_name
+            contour.type             = "cell_ROI"
+            contour.mode             = "auto"
+            contour.save()
+
+            if not hasattr(roi, 'cellflag_cellroi'):
+                cellflag = CellFlag(cell_roi=roi)
+                cellflag.save()
+
+            roi_number+=1
+        #check overlapping ROIs
+        rois_DB_final = CellROI.objects.select_related().filter(frame = frame)
+        if len(rois_DB_final)>1:
+            for roi_final_1 in range(len(rois_DB_final)-1):
+                print('== roi_final_1=',roi_final_1)
+                for roi_final_2 in range(roi_final_1, len(rois_DB_final)):
+                    if roi_final_1 == roi_final_2: continue
+                    print('    == roi_final_2=',roi_final_2)
+                    img_1=np.zeros((frame.height, frame.width))
+                    img_2=np.zeros((frame.height, frame.width))
+                    img_1[rois_DB_final[roi_final_1].min_row:rois_DB_final[roi_final_1].max_row, rois_DB_final[roi_final_1].min_col:rois_DB_final[roi_final_1].max_col]=True
+                    img_2[rois_DB_final[roi_final_2].min_row:rois_DB_final[roi_final_2].max_row, rois_DB_final[roi_final_2].min_col:rois_DB_final[roi_final_2].max_col]=True
+                    count_img1=np.count_nonzero(img_1)
+                    count_img2=np.count_nonzero(img_2)
+                    overlap=img_1*img_2
+                    count_overlap=np.count_nonzero(overlap)
+                    print('count_overlap/count_img1=',count_overlap/count_img1, '  count_overlap/count_img2=',count_overlap/count_img2)
+                    if count_overlap/count_img1 > 0.5 or count_overlap/count_img2>0.5:
+                        if count_img1>count_img2:
+                            print('1>2: ',rois_DB_final[roi_final_2])
+                            if rois_DB_final[roi_final_2].id!=None:rois_DB_final[roi_final_2].delete()
                         else:
-                            contour = Contour(cell_roi=roi)
-
-                        contour.center_x_pix     = roi.min_col+(roi.max_col-roi.min_col)/2.
-                        contour.center_y_pix     = roi.min_row+(roi.max_row-roi.min_row)/2.
-                        contour.center_z_pix     = 0 
-                        contour.center_x_mic     = (roi.min_col+(roi.max_col-roi.min_col)/2.)*roi.frame.pixel_microns+roi.frame.pos_x
-                        contour.center_y_mic     = (roi.min_row+(roi.max_row-roi.min_row)/2.)*roi.frame.pixel_microns+roi.frame.pos_y
-                        contour.center_z_mic     = 0
-                        contour.intensity_mean   = intensity_mean
-                        contour.intensity_std    = intensity_std
-                        contour.intensity_sum    = intensity_sum
-                        contour.intensity_max    = intensity_max
-                        contour.number_of_pixels = cropped_img.shape[1]*cropped_img.shape[2]
-                        contour.file_name        = out_file_name
-                        contour.type             = "cell_ROI"
-                        contour.mode             = "auto"
-                        contour.save()
-
-                        if not hasattr(roi, 'cellflag_cellroi'):
-                            cellflag = CellFlag(cell_roi=roi)
-                            cellflag.save()
-
-                        roi_number+=1
-                    #check overlapping ROIs
-                    rois_DB_final = CellROI.objects.select_related().filter(frame = frame)
-                    if len(rois_DB_final)>1:
-                        for roi_final_1 in range(len(rois_DB_final)-1):
-                            print('== roi_final_1=',roi_final_1)
-                            for roi_final_2 in range(roi_final_1, len(rois_DB_final)):
-                                if roi_final_1 == roi_final_2: continue
-                                print('    == roi_final_2=',roi_final_2)
-                                img_1=np.zeros((frame.height, frame.width))
-                                img_2=np.zeros((frame.height, frame.width))
-                                img_1[rois_DB_final[roi_final_1].min_row:rois_DB_final[roi_final_1].max_row, rois_DB_final[roi_final_1].min_col:rois_DB_final[roi_final_1].max_col]=True
-                                img_2[rois_DB_final[roi_final_2].min_row:rois_DB_final[roi_final_2].max_row, rois_DB_final[roi_final_2].min_col:rois_DB_final[roi_final_2].max_col]=True
-                                count_img1=np.count_nonzero(img_1)
-                                count_img2=np.count_nonzero(img_2)
-                                overlap=img_1*img_2
-                                count_overlap=np.count_nonzero(overlap)
-                                print('count_overlap/count_img1=',count_overlap/count_img1, '  count_overlap/count_img2=',count_overlap/count_img2)
-                                if count_overlap/count_img1 > 0.5 or count_overlap/count_img2>0.5:
-                                    if count_img1>count_img2:
-                                        print('1>2: ',rois_DB_final[roi_final_2])
-                                        if rois_DB_final[roi_final_2].id!=None:rois_DB_final[roi_final_2].delete()
-                                    else:
-                                        print('2>1: ',rois_DB_final[roi_final_1])
-                                        if rois_DB_final[roi_final_1].id!=None:rois_DB_final[roi_final_1].delete()
-                        #set the roi order after it has been deleted
-                        rois_DB_final = CellROI.objects.select_related().filter(frame = frame)
-                        for roi_final in range(len(rois_DB_final)):
-                            rois_DB_final[roi_final].roi_number = roi_final
-                            rois_DB_final[roi_final].save()
-                print('about to build cells')
-                build_cells_sample(s)
-                removeROIs(s)
+                            print('2>1: ',rois_DB_final[roi_final_1])
+                            if rois_DB_final[roi_final_1].id!=None:rois_DB_final[roi_final_1].delete()
+            #set the roi order after it has been deleted
+            rois_DB_final = CellROI.objects.select_related().filter(frame = frame)
+            for roi_final in range(len(rois_DB_final)):
+                rois_DB_final[roi_final].roi_number = roi_final
+                rois_DB_final[roi_final].save()
+    print('about to build cells')
+    build_cells_sample(s)
+    removeROIs(s)
 #___________________________________________________________________________________________
 
 
@@ -3674,7 +3578,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
     #THIS BUILDS THE ROIS FOR ALL THE EXISTING SAMPLES
     if 'build_ROIs' in request.POST:
-        build_ROIs()
+        build_ROIs_loop()
 
     #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
     if 'segment' in request.POST:
