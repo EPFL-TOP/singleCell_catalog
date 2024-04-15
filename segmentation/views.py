@@ -495,11 +495,11 @@ def build_cells_sample(sample, addmode=False):
                     print('        delta=',delta)
                     print('        cellroi_frame.frame=',cellroi_frame.frame)
                     print('        cellroi_cell.frame =',cellroi_cell.frame)
-                    if delta<minDelta and delta>0:
+                    if delta<minDelta:
                         minDelta=delta
                         cframe_num = cellroi_cell.frame.number
                 print('    cframe_num=',cframe_num)
-                if cframe_num == None:
+                if minDelta<1.:
                     continue
                 cframe = frames.get(number=cframe_num)
                 print('    cframe=    ',cframe)
