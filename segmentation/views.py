@@ -486,21 +486,22 @@ def build_cells_sample(sample, addmode=False):
             minDR=9999999
             mincellid=None
             for cellid in cellsid:
-
+                print('    cellid=',cellid)
                 #if 
                 #find the closest frame to calculate DeltaR
                 cellsroi_cell = CellROI.objects.select_related().filter(cell_id=cellid)
                 minDelta=999999
                 cframe_num = None
                 for cellroi_cell in cellsroi_cell:
+                    print('        cellroi_cell=',cellroi_cell)
                     delta=math.fabs(cellroi_frame.frame.number-cellroi_cell.frame.number)
                     if delta<minDelta:
-                        print('delta=',delta,'  mindelta=',minDelta)
+                        print('        delta=',delta,'  mindelta=',minDelta)
                         minDelta=delta
                         cframe_num = cellroi_cell.frame.number
-                print('  cframe_num=',cframe_num)
+                print('    cframe_num=',cframe_num)
                 cframe = frames.get(number=cframe_num)
-                print('  cframe=    ',cframe)
+                print('    cframe=    ',cframe)
                 #get the cell ROI of the closest frame
                 cellroi_cell = CellROI.objects.select_related().filter(frame=cframe).get(cell_id=cellid)
                 dR = math.sqrt(math.pow((cellroi_cell.contour_cellroi.center_x_pix - cellroi_frame.contour_cellroi.center_x_pix),2) +  
