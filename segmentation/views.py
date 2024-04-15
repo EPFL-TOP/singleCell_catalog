@@ -476,7 +476,12 @@ def build_cells_sample(sample, addmode=False):
                 print('    ---- roi[0]           ',roi)
                 print('    ---- roi[0].cell_id   ',roi.cell_id)
 
-
+    if addmode==True:
+        for f in range(nframes):
+            frame = frames.get(number=f)
+            cellrois_frame = CellROI.objects.select_related().filter(frame=frame, cell_id=None)
+            for cellroi_frame in cellrois_frame:
+                print('addmode=',addmode, '  cellroi_frame=',cellroi_frame)
     return
 
     ##delete the existing cellID
