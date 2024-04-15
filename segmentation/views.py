@@ -492,6 +492,7 @@ def build_cells_sample(sample, addmode=False):
                 cframe_num = None
                 for cellroi_cell in cellsroi_cell:
                     delta=math.fabs(cellroi_frame.frame.number-cellroi_cell.frame.number)
+                    print('        delta=',delta)
                     if delta<minDelta and delta>0:
                         minDelta=delta
                         cframe_num = cellroi_cell.frame.number
