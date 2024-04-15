@@ -477,11 +477,32 @@ def build_cells_sample(sample, addmode=False):
                 print('    ---- roi[0].cell_id   ',roi.cell_id)
 
     if addmode==True:
+        cellsid = CellID.objects.select_related().filter(sample = s)
         for f in range(nframes):
             frame = frames.get(number=f)
             cellrois_frame = CellROI.objects.select_related().filter(frame=frame, cell_id=None)
             for cellroi_frame in cellrois_frame:
-                print('addmode=',addmode, '  cellroi_frame=',cellroi_frame)
+                print('==============  ADDMODE=',addmode, '  cellroi_frame=',cellroi_frame)
+                minDR=9999999
+                for cellid in cellsid:
+
+                    #find the closest frame to calculate DeltaR
+                    cellsroi_cell = CellROI.objects.select_related().filter(cell_id=cellid)
+                    minDelta=999999
+                    cframe_num = None
+                    for cellroi_cell in cellsroi_cell:
+                        delta=math.abs(f-cellroi_cell.frame.number)
+                        if delta<minDelta:
+                            minDelta=delta
+                            cframe_num = cellroi_cell.frame.number
+                    print('  cframe_num=',cframe_num)
+                    cframe = frames.get(number=cframe_num)
+                    print('  cframe=    ',cframe)
+
+                    #get the cell ROI of the closest frame
+                    cellroi_cell = CellROI.objects.select_related().filter(frame=cframe).get(cell_id=cellid)
+
+
     return
 
     ##delete the existing cellID
