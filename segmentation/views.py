@@ -869,6 +869,7 @@ def build_ROIs(sample=None, force=False):
                             rois_DB_final[roi_final].save()
                 print('about to build cells')
                 build_cells_sample(s)
+                removeROIs(s)
 #___________________________________________________________________________________________
 
 
