@@ -3545,7 +3545,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     exp_color_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
                                          bokeh.layouts.row(dropdown_well),
                                          bokeh.layouts.row(dropdown_pos), 
-                                         bokeh.layouts.row(prev_position_button),bokeh.layouts.row(next_position_button),
+                                         bokeh.layouts.row(prev_position_button, next_position_button),
                                          bokeh.layouts.row(dropdown_channel),
                                          bokeh.layouts.row(dropdown_color),
                                          bokeh.layouts.row(bokeh.layouts.Spacer(width=10),contrast_slider),
