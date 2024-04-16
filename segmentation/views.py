@@ -889,8 +889,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     initial_position=-9999
 
     start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
-    end_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
-    time_of_death_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='black', line_width=2)
+    end_oscillation_position   = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
+    time_of_death_position     = bokeh.models.Span(location=initial_position, dimension='height', line_color='black', line_width=2)
 
 
     source_varea_death = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
@@ -935,8 +935,27 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_tod       = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_tod_dk    = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
 
-
     ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
+
+    #___________________________________________________________________________________________
+    def next_position_callback():
+        current_pos = dropdown_pos.options.index(dropdown_pos.value)
+        next_pos    = (current_pos + 1) % len(dropdown_pos.options)
+        dropdown_pos.value = dropdown_pos.value[next_pos]
+
+    next_position_button = bokeh.models.Button(label="Next pos")
+    next_position_button.on_click(next_position_callback)
+    #___________________________________________________________________________________________
+
+    #___________________________________________________________________________________________
+    def prev_position_callback():
+        current_pos = dropdown_pos.options.index(dropdown_pos.value)
+        prev_pos    = (current_pos - 1) % len(dropdown_pos.options)
+        dropdown_pos.value = dropdown_pos.value[prev_pos]
+    prev_position_button = bokeh.models.Button(label="Prev pos")
+    prev_position_button.on_click(prev_position_callback)
+    #___________________________________________________________________________________________
+
 
     #___________________________________________________________________________________________
     def update_position_select(change=True):
@@ -1664,8 +1683,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     dropdown_exp.on_change('value', update_dropdown_well)
     #___________________________________________________________________________________________
-
-    print('----------------------------   ',dropdown_pos.css_classes)
 
     #___________________________________________________________________________________________
     # Function to update the position depending on the experiment and the well
@@ -2430,6 +2447,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     position_keep_button = bokeh.models.Button(label="Don't keep Position")
     position_keep_button.on_click(position_keep_callback)
     #___________________________________________________________________________________________
+
 
     #___________________________________________________________________________________________
     def remove_roi_callback():
@@ -3527,6 +3545,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     exp_color_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
                                          bokeh.layouts.row(dropdown_well),
                                          bokeh.layouts.row(dropdown_pos), 
+                                         bokeh.layouts.row(prev_position_button),bokeh.layouts.row(next_position_button),
                                          bokeh.layouts.row(dropdown_channel),
                                          bokeh.layouts.row(dropdown_color),
                                          bokeh.layouts.row(bokeh.layouts.Spacer(width=10),contrast_slider),
@@ -3560,7 +3579,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     cell_osc_plot_col =  bokeh.layouts.column(bokeh.layouts.gridplot([[plot_image], [plot_img_mask]]))
 
-    norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10), position_check2_div, bokeh.layouts.Spacer(width=10), position_keep_div, bokeh.layouts.Spacer(width=40), ncells_div),
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10), position_check2_div, 
+                                                         bokeh.layouts.Spacer(width=10), position_keep_div, bokeh.layouts.Spacer(width=40), ncells_div),
                                        bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
                                        #bokeh.layouts.row(pie),
                                        bokeh.layouts.row(text))
