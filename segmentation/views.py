@@ -941,7 +941,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def next_position_callback():
         current_pos = dropdown_pos.options.index(dropdown_pos.value)
         next_pos    = (current_pos + 1) % len(dropdown_pos.options)
-        dropdown_pos.value = dropdown_pos.value[next_pos]
+        dropdown_pos.value = dropdown_pos.options[next_pos]
 
     next_position_button = bokeh.models.Button(label="Next pos")
     next_position_button.on_click(next_position_callback)
@@ -951,7 +951,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def prev_position_callback():
         current_pos = dropdown_pos.options.index(dropdown_pos.value)
         prev_pos    = (current_pos - 1) % len(dropdown_pos.options)
-        dropdown_pos.value = dropdown_pos.value[prev_pos]
+        dropdown_pos.value = dropdown_pos.options[prev_pos]
     prev_position_button = bokeh.models.Button(label="Prev pos")
     prev_position_button.on_click(prev_position_callback)
     #___________________________________________________________________________________________
