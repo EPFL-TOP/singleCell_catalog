@@ -934,6 +934,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_end_osc   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_tod       = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_tod_dk    = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+
+
+    ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
+
     #___________________________________________________________________________________________
     def update_position_select(change=True):
         local_pos = []
@@ -1099,10 +1103,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def prepare_intensity():
         if DEBUG:print('----------------prepare_intensity--------------------dropdown_cell.value=',dropdown_cell.value)
         current_file=get_current_file()
+        sample = Sample.objects.get(file_name=current_file)
+        allcellids = CellID.objects.select_related().filter(sample=sample)
+
+        ncells_div.text="<b style='color:black; ; font-size:18px;'> Number of cells={}</b>".format(len(allcellids))
+
         if dropdown_cell.value!='':
             if DEBUG: print('----------------prepare_intensity-------------------- in the if')
 
-            sample = Sample.objects.get(file_name=current_file)
             cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
 
             #Set start of oscilation if it exist, -999 else
@@ -3552,7 +3560,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     cell_osc_plot_col =  bokeh.layouts.column(bokeh.layouts.gridplot([[plot_image], [plot_img_mask]]))
 
-    norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10), position_check2_div, bokeh.layouts.Spacer(width=10), position_keep_div),
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10), position_check2_div, bokeh.layouts.Spacer(width=10), position_keep_div, bokeh.layouts.Spacer(width=40), ncells_div),
                                        bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
                                        #bokeh.layouts.row(pie),
                                        bokeh.layouts.row(text))
