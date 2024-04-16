@@ -643,7 +643,9 @@ def build_segmentation():
 def build_ROIs_loop():
     exp_list = Experiment.objects.all()
     for exp in exp_list:
-        if exp.name!="ppf003":continue
+    #ALREADY DONE WITH NEW bleb001, bleb002, ppf001, ppf003
+    #ppf005 Ppf008 Ppf009 Wscepfl0060 Wscepfl0078 Wscepfl0089 Wscepfl0096
+        if exp.name!="ppf005" and exp.name!="ppf008" and exp.name!="ppf009" and exp.name!="wscepfl0060" and exp.name!="wscepfl0078"and exp.name!="wscepfl0089" and exp.name!="wscepfl0096":continue
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
