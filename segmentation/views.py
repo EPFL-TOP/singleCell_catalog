@@ -2890,15 +2890,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         callback_code = f"""
             const checkbox_status = checkbox.active.includes({i});
             // Trigger the Python callback with the checkbox status
-            my_callback(checkbox_status);
+            update_source_osc_tod(checkbox_status);
         """
         callback = bokeh.models.CustomJS(args=dict(checkbox=tod_checkbox), code=callback_code)
         checkbox_callbacks.append(callback)
 
     # Attach the CustomJS callbacks to the checkboxes
     for i, callback in enumerate(checkbox_callbacks):
-        tod_checkbox.js_on_click(callback)
-
+        tod_checkbox.js_property_callbacks['active'].append(callback)
 
 
 
