@@ -3526,7 +3526,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    update_source_osc_tod()
+    update_source_osc_tod([1,0,0])
     #plot_osc_tod.vbar(x='x', top='top', width=3, source=source_start_osc, alpha=0.5, color='green', line_color=None)
     #plot_osc_tod.vbar(x='x', top='top', width=3, source=source_end_osc, alpha=0.5, color='red', line_color=None)
     plot_tod.vbar(x='x', top='top', width=28., source=source_tod, alpha=0.25, color='green', line_color=None, legend_label='keep')
