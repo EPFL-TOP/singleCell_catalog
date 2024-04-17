@@ -2865,12 +2865,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #tod_checkbox_keep  = bokeh.models.CheckboxGroup(labels=["Keep"], active=[0])
     #tod_checkbox_dkeep = bokeh.models.CheckboxGroup(labels=["Don't keep"], active=[0])
 
+    # Define a wrapper function to invoke the Python callback
+    def callback_wrapper(checkbox_status):
+        update_source_osc_tod(checkbox_status)
+
     # Define a CustomJS callback to trigger the Python callback
-    checkbox_tod_callback = bokeh.models.CustomJS(args=dict(checkbox=tod_checkbox, callback=update_source_osc_tod), code="""
+    checkbox_tod_callback = bokeh.models.CustomJS(args=dict(checkbox=tod_checkbox), code="""
         const checkbox_status = checkbox.active.map(i => i === 0);
         // Trigger the Python callback with the checkbox statuses
-        callback.execute(checkbox_status);
+        callback_wrapper(checkbox_status);
     """)
+
 
 
     # Attach the CustomJS callback to each checkbox
