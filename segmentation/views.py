@@ -925,10 +925,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     source_nosc      = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_nosc_dk   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_nosc_all  = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_start_osc = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_end_osc   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_tod       = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_tod_dk    = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_tod_all   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
 
     ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
 
@@ -1133,7 +1135,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500)
-    #plot_osc_tod   = bokeh.plotting.figure(title="Start/End of Oscillation and Time of death", x_axis_label='Time (minutes)', y_axis_label='Number of positions',width=1000, height=250)
     plot_tod       = bokeh.plotting.figure(title="Time of death", x_axis_label='Time (30 mins bins)', y_axis_label='Number of positions',width=550, height=350)
     plot_nosc      = bokeh.plotting.figure(title="Number of oscillations", x_axis_label='Number of oscillations', y_axis_label='Number of positions',width=550, height=350)
 
@@ -2778,16 +2779,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_delete_peaks.on_click(delete_peaks_callback)
     #___________________________________________________________________________________________
 
+
+
     #___________________________________________________________________________________________
-    def update_source_osc_tod():
+    def update_source_osc_tod(tod_checkbox_all=True, tod_checkbox_keep=False, tod_checkbox_dkeep=False):
         if DEBUG:print('------------------------update_source_osc_tod-------------------------')
         well = ExperimentalDataset.objects.get(data_name=dropdown_well.value)
         nframes = well.experiment.number_of_frames
         samples = Sample.objects.select_related().filter(experimental_dataset = well)
         n_osc=[]
         n_osc_dk=[]
+        n_osc_all=[]
         tod=[]
         tod_dk=[]
+        tod_all=[]
         start_osc=[]
         end_osc=[]
         for sample in samples:
@@ -2795,17 +2800,21 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             for cellid in cellids:
                 if cellid.sample.keep_sample: 
                     n_osc.append(cellid.cell_status.n_oscillations)
+                    n_osc_all.append(cellid.cell_status.n_oscillations)
                 else: 
                     n_osc_dk.append(cellid.cell_status.n_oscillations)
+                    n_osc_all.append(cellid.cell_status.n_oscillations)
                 start_osc.append(cellid.cell_status.start_oscillation)
                 if cellid.cell_status.n_oscillations==0:# or cellid.cell_status.start_oscillation_frame==0 or cellid.cell_status.end_oscillation_frame==0:
                     print('---------------  ', cellid.cell_status)
                 end_osc.append(cellid.cell_status.end_oscillation)
                 if cellid.cell_status.time_of_death>0:
                     if cellid.sample.keep_sample:
-                        tod.append(cellid.cell_status.time_of_death)
+                        if tod_checkbox_keep: tod.append(cellid.cell_status.time_of_death)
+                        if tod_checkbox_all: tod_all.append(cellid.cell_status.time_of_death)
                     else:
-                        tod_dk.append(cellid.cell_status.time_of_death)
+                        if tod_checkbox_dkeep: tod_dk.append(cellid.cell_status.time_of_death)
+                        if tod_checkbox_all:tod_all.append(cellid.cell_status.time_of_death)
 
 
 
@@ -2820,6 +2829,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         hist, edges = np.histogram(n_osc_dk, bins=max_osc+2, range=(0, max_osc+2))
         source_nosc_dk.data={'x': edges[:-1], 'top': hist}
 
+        hist, edges = np.histogram(n_osc_all, bins=max_osc+2, range=(0, max_osc+2))
+        source_nosc_all.data={'x': edges[:-1], 'top': hist}
+
         max_tod=max(tod, default=100.)
         min_tod=min(tod, default=0.)
         if max(tod_dk, default=100.)>max_tod:max_tod=max(tod_dk, default=100.)
@@ -2830,6 +2842,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         hist, edges = np.histogram(tod_dk, bins=int((max_tod-min_tod)/30.), range=(min_tod, max_tod))
         source_tod_dk.data={'x': edges[:-1], 'top': hist}
+
+        hist, edges = np.histogram(tod_all, bins=int((max_tod-min_tod)/30.), range=(min_tod, max_tod))
+        source_tod_all.data={'x': edges[:-1], 'top': hist}
 
 
         hist, edges = np.histogram(start_osc, bins=nframes*10, range=(0, nframes*10))
@@ -2843,6 +2858,25 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
 
     #___________________________________________________________________________________________
+
+
+    tod_checkbox_all   = bokeh.models.CheckboxGroup(labels=["All"], active=[1])
+    tod_checkbox_keep  = bokeh.models.CheckboxGroup(labels=["Keep"], active=[0])
+    tod_checkbox_dkeep = bokeh.models.CheckboxGroup(labels=["Don't keep"], active=[0])
+
+    # Define a CustomJS callback to trigger the Python callback
+    checkbox_tod_callback = bokeh.models.CustomJS(args=dict(checkbox1=tod_checkbox_all, checkbox2=tod_checkbox_keep, checkbox3=tod_checkbox_dkeep, callback=update_source_osc_tod), code="""
+        const checkbox1_status = checkbox1.active.includes(0);
+        const checkbox2_status = checkbox2.active.includes(0);
+        const checkbox3_status = checkbox3.active.includes(0);
+        // Trigger the Python callback with the checkbox statuses
+        callback.execute(checkbox1_status, checkbox2_status, checkbox3_status);
+    """)
+
+    # Attach the CustomJS callback to each checkbox
+    tod_checkbox_all.js_on_click(checkbox_tod_callback)
+    tod_checkbox_keep.js_on_click(checkbox_tod_callback)
+    tod_checkbox_dkeep.js_on_click(checkbox_tod_callback)
 
     #___________________________________________________________________________________________
     # Select image from click
@@ -3495,10 +3529,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     update_source_osc_tod()
     #plot_osc_tod.vbar(x='x', top='top', width=3, source=source_start_osc, alpha=0.5, color='green', line_color=None)
     #plot_osc_tod.vbar(x='x', top='top', width=3, source=source_end_osc, alpha=0.5, color='red', line_color=None)
-    plot_tod.vbar(x='x', top='top', width=28., source=source_tod, alpha=0.2, color='green', line_color=None, legend_label='keep')
-    plot_tod.vbar(x='x', top='top', width=28., source=source_tod_dk, alpha=0.2, color='red', line_color=None, legend_label='don\'t keep')
-    plot_nosc.vbar(x='x', top='top', width=0.9, source=source_nosc, alpha=0.2, color='green', line_color=None, legend_label='keep')
-    plot_nosc.vbar(x='x', top='top', width=0.9, source=source_nosc_dk, alpha=0.2, color='red', line_color=None, legend_label='don\'t keep')
+    plot_tod.vbar(x='x', top='top', width=28., source=source_tod, alpha=0.25, color='green', line_color=None, legend_label='keep')
+    plot_tod.vbar(x='x', top='top', width=28., source=source_tod_dk, alpha=0.25, color='red', line_color=None, legend_label='don\'t keep')
+    plot_tod.vbar(x='x', top='top', width=28., source=source_tod_all, alpha=0.25, color='black', line_color=None, legend_label='all')
+
+    plot_nosc.vbar(x='x', top='top', width=0.9, source=source_nosc, alpha=0.25, color='green', line_color=None, legend_label='keep')
+    plot_nosc.vbar(x='x', top='top', width=0.9, source=source_nosc_dk, alpha=0.25, color='red', line_color=None, legend_label='don\'t keep')
+    plot_nosc.vbar(x='x', top='top', width=0.9, source=source_nosc_all, alpha=0.25, color='black', line_color=None, legend_label='all')
 
     prepare_intensity() 
 
@@ -3592,7 +3629,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      )
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity, plot_markers),
-                                              bokeh.layouts.row(plot_nosc, plot_tod),
+                                              bokeh.layouts.row(bokeh.layouts.column(bokeh.layouts.row(tod_checkbox_all, tod_checkbox_keep, tod_checkbox_dkeep),plot_tod), plot_nosc),
                                               bokeh.layouts.row(plot_histo_int_mean, plot_histo_int_std),)
 
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
