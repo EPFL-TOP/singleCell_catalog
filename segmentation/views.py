@@ -464,17 +464,9 @@ def build_cells_sample(sample, addmode=False):
                 print('    ---- nroi=',nroi, '  frame=',cell_dict_final[cell]['frame'][nroi], '   roi=',cell_dict_final[cell]['roi_number'][nroi])
                 frame = frames.get(number=cell_dict_final[cell]['frame'][nroi])
                 roi   = CellROI.objects.select_related().filter(frame=frame).get(roi_number=cell_dict_final[cell]['roi_number'][nroi])
-                print('    ---- frame    ',frame)
-                print('    ---- roi      ',roi) 
-                print('    ---- cellid   ',cellid)
-                print('    ---- roi      ',roi)
-
                 roi.cell_id = cellid_dict[cell]
-#roi   = CellROI.objects.select_for_update
                 roi.save()
-                print('    ---- roi after        ',roi) 
-                print('    ---- roi[0]           ',roi)
-                print('    ---- roi[0].cell_id   ',roi.cell_id)
+
 
     if addmode==True:
         cellsid = CellID.objects.select_related().filter(sample = s)
@@ -646,9 +638,8 @@ def build_ROIs_loop():
     #ALREADY DONE WITH NEW 
     #bleb001, bleb002 = 2
     #ppf001, ppf003, ppf005, ppf008 ppf009 = 5
-    #wscepfl0060, wscepfl0078, wscepfl0086, wscepfl0089, wscepfl0096 = 5
-    #reste wscepfl0080 (annotated), wscepfl0081, wscepfl0082, wscepfl0087
-        #if exp.name!="ppf005" and exp.name!="ppf008" and exp.name!="ppf009" and exp.name!="wscepfl0060" and exp.name!="wscepfl0078"and exp.name!="wscepfl0089" and exp.name!="wscepfl0096":continue
+    #wscepfl0060, wscepfl0078, wscepfl0081, wscepfl0086, wscepfl0089, wscepfl0096 = 6
+    #reste wscepfl0080 (annotated), wscepfl0082, wscepfl0087 (annotated)
         if exp.name!="wscepfl0081":continue
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
