@@ -3629,7 +3629,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      )
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity, plot_markers),
-                                              bokeh.layouts.row(bokeh.layouts.column(bokeh.layouts.row(tod_checkbox_all, tod_checkbox_keep, tod_checkbox_dkeep),plot_tod), plot_nosc),
+                                              bokeh.layouts.row(tod_checkbox,plot_tod, plot_nosc),
                                               bokeh.layouts.row(plot_histo_int_mean, plot_histo_int_std),)
 
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
