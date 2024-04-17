@@ -2860,12 +2860,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    tod_checkbox_all   = bokeh.models.CheckboxGroup(labels=["All"], active=[1])
-    tod_checkbox_keep  = bokeh.models.CheckboxGroup(labels=["Keep"], active=[0])
-    tod_checkbox_dkeep = bokeh.models.CheckboxGroup(labels=["Don't keep"], active=[0])
+    tod_checkbox   = bokeh.models.CheckboxGroup(labels=["All", "Keep", "Don't keep"], active=[1,0,0])
+    #tod_checkbox_keep  = bokeh.models.CheckboxGroup(labels=["Keep"], active=[0])
+    #tod_checkbox_dkeep = bokeh.models.CheckboxGroup(labels=["Don't keep"], active=[0])
 
     # Define a CustomJS callback to trigger the Python callback
-    checkbox_tod_callback = bokeh.models.CustomJS(args=dict(checkbox1=tod_checkbox_all, checkbox2=tod_checkbox_keep, checkbox3=tod_checkbox_dkeep, callback=update_source_osc_tod), code="""
+    checkbox_tod_callback = bokeh.models.CustomJS(args=dict(checkbox=tod_checkbox, callback=update_source_osc_tod), code="""
         const checkbox1_status = checkbox1.active.includes(0);
         const checkbox2_status = checkbox2.active.includes(0);
         const checkbox3_status = checkbox3.active.includes(0);
@@ -2874,9 +2874,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     """)
 
     # Attach the CustomJS callback to each checkbox
-    tod_checkbox_all.js_on_click(checkbox_tod_callback)
-    tod_checkbox_keep.js_on_click(checkbox_tod_callback)
-    tod_checkbox_dkeep.js_on_click(checkbox_tod_callback)
+    tod_checkbox.js_on_change(checkbox_tod_callback)
+    #tod_checkbox_keep.js_on_click(checkbox_tod_callback)
+    #tod_checkbox_dkeep.js_on_click(checkbox_tod_callback)
 
     #___________________________________________________________________________________________
     # Select image from click
