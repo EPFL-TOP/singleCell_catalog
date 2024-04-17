@@ -643,8 +643,11 @@ def build_segmentation():
 def build_ROIs_loop():
     exp_list = Experiment.objects.all()
     for exp in exp_list:
-    #ALREADY DONE WITH NEW bleb001, bleb002, ppf001, ppf003
-    #ppf005 Ppf008 Ppf009 Wscepfl0060 Wscepfl0078 Wscepfl0089 Wscepfl0096
+    #ALREADY DONE WITH NEW 
+    #bleb001, bleb002 = 2
+    #ppf001, ppf003, ppf005, ppf008 ppf009 = 5
+    #wscepfl0060, wscepfl0078, wscepfl0086, wscepfl0089, wscepfl0096 = 5
+    #reste wscepfl0080 (annotated), wscepfl0081, wscepfl0082, wscepfl0087
         #if exp.name!="ppf005" and exp.name!="ppf008" and exp.name!="ppf009" and exp.name!="wscepfl0060" and exp.name!="wscepfl0078"and exp.name!="wscepfl0089" and exp.name!="wscepfl0096":continue
         if exp.name!="wscepfl0086":continue
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
@@ -895,9 +898,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     end_oscillation_position   = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
     time_of_death_position     = bokeh.models.Span(location=initial_position, dimension='height', line_color='black', line_width=2)
 
-
     source_varea_death = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
-
 
     source_varea_rising1  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
     source_varea_rising2  = bokeh.models.ColumnDataSource(data=dict(x=[], y1=[], y2=[]))
@@ -940,6 +941,33 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
 
+    dropdown_filter_position_keep  = bokeh.models.Select(value='all', title='keep', options=['all', 'keep', 'do not keep'])
+
+    #___________________________________________________________________________________________
+    def filter_position_keep_callback(attr, old, new):
+
+        if dropdown_filter_position_keep.value == 'all':
+            dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+            if len(positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])>0:
+                dropdown_pos.value   = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
+
+        elif dropdown_filter_position_keep.value == 'keep':
+            filtered_list = [k for k in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)] if 'dk' not in k.split(' - ')[-1]]
+            dropdown_pos.options = filtered_list
+            if len(filtered_list)>0:
+                dropdown_pos.value = filtered_list[0]
+        
+        else:
+            filtered_list = [k for k in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)] if 'dk' in k.split(' - ')[-1]]
+            dropdown_pos.options = filtered_list
+            if len(filtered_list)>0:
+                dropdown_pos.value = filtered_list[0]            
+
+    dropdown_filter_position_keep.on_change('value', filter_position_keep_callback)
+    #___________________________________________________________________________________________
+
+
+    #___________________________________________________________________________________________
     #___________________________________________________________________________________________
     def next_position_callback():
         current_pos = dropdown_pos.options.index(dropdown_pos.value)
@@ -1755,7 +1783,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
         if sample.peaks_tod_div_validated:
-            position_check_div.text = "<b style='color:green; ; font-size:18px;'> Peaks/ToD/Division validated</b>"
+            position_check_div.text = "<b style='color:green; ; font-size:18px;'> Peaks/ToD/Division validated (c1)</b>"
             position_check_button.label = "Peaks/ToD/Division not validated"
         else:
             position_check_div.text = "<b style='color:red; ; font-size:18px;'> Peaks/ToD/Division not validated</b>"
@@ -1763,7 +1791,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
         if sample.bf_features_validated:
-            position_check2_div.text = "<b style='color:green; ; font-size:18px;'> BF features validated</b>"
+            position_check2_div.text = "<b style='color:green; ; font-size:18px;'> BF features validated (c2)</b>"
             position_check2_button.label = "BF features not validated"
         else:
             position_check2_div.text = "<b style='color:red; ; font-size:18px;'> BF features not validated</b>"
@@ -1773,7 +1801,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             position_keep_div.text  = "<b style='color:green; ; font-size:18px;'> Keep Position</b>"
             position_keep_button.label = "Don't Keep Position"
         else:
-            position_keep_div.text  = "<b style='color:red; ; font-size:18px;'> Do not Keep Position</b>"
+            position_keep_div.text  = "<b style='color:red; ; font-size:18px;'> Do not Keep Position (dk)</b>"
             position_keep_button.label = "Keep Position"
 
 
@@ -3328,14 +3356,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     sample = Sample.objects.get(file_name=current_file)
 
     if sample.peaks_tod_div_validated:
-        position_check_div.text = "<b style='color:green; ; font-size:18px;'> Peaks/ToD/Division validated</b>"
+        position_check_div.text = "<b style='color:green; ; font-size:18px;'> Peaks/ToD/Division validated (c1)</b>"
         position_check_button.label = "Peaks/ToD/Division not validated"
     else:
         position_check_div.text = "<b style='color:red; ; font-size:18px;'> Peaks/ToD/Division not validated</b>"
         position_check_button.label = "Peaks/ToD/Division validated"
 
     if sample.bf_features_validated:
-        position_check2_div.text = "<b style='color:green; ; font-size:18px;'> BF features validated</b>"
+        position_check2_div.text = "<b style='color:green; ; font-size:18px;'> BF features validated (c2)</b>"
         position_check2_button.label = "BF features not validated"
     else:
         position_check2_div.text = "<b style='color:red; ; font-size:18px;'> BF features not validated</b>"
@@ -3345,7 +3373,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         position_keep_div.text  = "<b style='color:green; ; font-size:18px;'> Keep Position</b>"
         position_keep_button.label = "Don't keep Position"
     else:
-        position_keep_div.text  = "<b style='color:red; ; font-size:18px;'> Do not Keep Position</b>"
+        position_keep_div.text  = "<b style='color:red; ; font-size:18px;'> Do not Keep Position (dk)</b>"
         position_keep_button.label = "Keep Position"
     cellIDs = CellID.objects.select_related().filter(sample=sample)
     cell_list=[]
@@ -3582,7 +3610,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     cell_osc_plot_col =  bokeh.layouts.column(bokeh.layouts.gridplot([[plot_image], [plot_img_mask]]))
 
-    norm_layout = bokeh.layouts.column(bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10), position_check2_div, 
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(dropdown_filter_position_keep),
+        bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10), position_check2_div, 
                                                          bokeh.layouts.Spacer(width=10), position_keep_div, bokeh.layouts.Spacer(width=40), ncells_div),
                                        bokeh.layouts.row(exp_color_col, cell_osc_plot_col, right_col, intensity_plot_col),
                                        #bokeh.layouts.row(pie),
