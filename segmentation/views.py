@@ -2782,7 +2782,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
-    def update_source_osc_tod(tod_checkbox_all=True, tod_checkbox_keep=False, tod_checkbox_dkeep=False):
+    def update_source_osc_tod(checkbox_status):#tod_checkbox_all=True, tod_checkbox_keep=False, tod_checkbox_dkeep=False):
+        print("Checkbox status:", checkbox_status)        
         if DEBUG:print('------------------------update_source_osc_tod-------------------------')
         well = ExperimentalDataset.objects.get(data_name=dropdown_well.value)
         nframes = well.experiment.number_of_frames
@@ -2866,12 +2867,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     # Define a CustomJS callback to trigger the Python callback
     checkbox_tod_callback = bokeh.models.CustomJS(args=dict(checkbox=tod_checkbox, callback=update_source_osc_tod), code="""
-        const checkbox1_status = checkbox1.active.includes(0);
-        const checkbox2_status = checkbox2.active.includes(0);
-        const checkbox3_status = checkbox3.active.includes(0);
+        const checkbox_status = checkbox.active.map(i => i === 0);
         // Trigger the Python callback with the checkbox statuses
-        callback.execute(checkbox1_status, checkbox2_status, checkbox3_status);
+        callback.execute(checkbox_status);
     """)
+
 
     # Attach the CustomJS callback to each checkbox
     tod_checkbox.js_on_change('active',checkbox_tod_callback)
@@ -3629,7 +3629,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      )
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity, plot_markers),
-                                              bokeh.layouts.row(plot_tod, plot_nosc),#tod_checkbox
+                                              bokeh.layouts.row(tod_checkbox,plot_tod, plot_nosc),#tod_checkbox
                                               bokeh.layouts.row(plot_histo_int_mean, plot_histo_int_std),)
 
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
