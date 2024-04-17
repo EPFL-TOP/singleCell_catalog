@@ -2874,7 +2874,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     """)
 
     # Attach the CustomJS callback to each checkbox
-    tod_checkbox.js_on_change(checkbox_tod_callback)
+    tod_checkbox.js_on_change('active',checkbox_tod_callback)
     #tod_checkbox_keep.js_on_click(checkbox_tod_callback)
     #tod_checkbox_dkeep.js_on_click(checkbox_tod_callback)
 
