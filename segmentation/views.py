@@ -649,7 +649,7 @@ def build_ROIs_loop():
     #wscepfl0060, wscepfl0078, wscepfl0086, wscepfl0089, wscepfl0096 = 5
     #reste wscepfl0080 (annotated), wscepfl0081, wscepfl0082, wscepfl0087
         #if exp.name!="ppf005" and exp.name!="ppf008" and exp.name!="ppf009" and exp.name!="wscepfl0060" and exp.name!="wscepfl0078"and exp.name!="wscepfl0089" and exp.name!="wscepfl0096":continue
-        if exp.name!="wscepfl0086":continue
+        if exp.name!="wscepfl0081":continue
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
