@@ -2811,12 +2811,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 end_osc.append(cellid.cell_status.end_oscillation)
                 if cellid.cell_status.time_of_death>0:
                     if cellid.sample.keep_sample:
-                        if tod_checkbox_keep: tod.append(cellid.cell_status.time_of_death)
-                        if tod_checkbox_all: tod_all.append(cellid.cell_status.time_of_death)
+                        #if tod_checkbox_keep: tod.append(cellid.cell_status.time_of_death)
+                        #if tod_checkbox_all: tod_all.append(cellid.cell_status.time_of_death)
+                        tod_all.append(cellid.cell_status.time_of_death)
                     else:
-                        if tod_checkbox_dkeep: tod_dk.append(cellid.cell_status.time_of_death)
-                        if tod_checkbox_all:tod_all.append(cellid.cell_status.time_of_death)
-
+                        #if tod_checkbox_dkeep: tod_dk.append(cellid.cell_status.time_of_death)
+                        #if tod_checkbox_all:tod_all.append(cellid.cell_status.time_of_death)
+                        tod_all.append(cellid.cell_status.time_of_death)
 
 
         max_osc=0
@@ -3556,13 +3557,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     update_source_osc_tod([1,0,0])
     #plot_osc_tod.vbar(x='x', top='top', width=3, source=source_start_osc, alpha=0.5, color='green', line_color=None)
     #plot_osc_tod.vbar(x='x', top='top', width=3, source=source_end_osc, alpha=0.5, color='red', line_color=None)
-    plot_tod.vbar(x='x', top='top', width=28., source=source_tod, alpha=0.25, color='green', line_color=None, legend_label='keep')
-    plot_tod.vbar(x='x', top='top', width=28., source=source_tod_dk, alpha=0.25, color='red', line_color=None, legend_label='don\'t keep')
+    
+    #Commment for now on tod keep and don't keep and only display all
+    #plot_tod.vbar(x='x', top='top', width=28., source=source_tod, alpha=0.25, color='green', line_color=None, legend_label='keep')
+    #plot_tod.vbar(x='x', top='top', width=28., source=source_tod_dk, alpha=0.25, color='red', line_color=None, legend_label='don\'t keep')
     plot_tod.vbar(x='x', top='top', width=28., source=source_tod_all, alpha=0.25, color='black', line_color=None, legend_label='all')
 
+    #Comment for now don't keep and all nosc and only show the ones we keep
     plot_nosc.vbar(x='x', top='top', width=0.9, source=source_nosc, alpha=0.25, color='green', line_color=None, legend_label='keep')
-    plot_nosc.vbar(x='x', top='top', width=0.9, source=source_nosc_dk, alpha=0.25, color='red', line_color=None, legend_label='don\'t keep')
-    plot_nosc.vbar(x='x', top='top', width=0.9, source=source_nosc_all, alpha=0.25, color='black', line_color=None, legend_label='all')
+    #plot_nosc.vbar(x='x', top='top', width=0.9, source=source_nosc_dk, alpha=0.25, color='red', line_color=None, legend_label='don\'t keep')
+    #plot_nosc.vbar(x='x', top='top', width=0.9, source=source_nosc_all, alpha=0.25, color='black', line_color=None, legend_label='all')
 
     prepare_intensity() 
 
