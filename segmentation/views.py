@@ -2810,6 +2810,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     print('---------------  ', cellid.cell_status)
                 end_osc.append(cellid.cell_status.end_oscillation)
                 if cellid.cell_status.time_of_death>0:
+                    
                     if cellid.sample.keep_sample:
                         #if tod_checkbox_keep: tod.append(cellid.cell_status.time_of_death)
                         #if tod_checkbox_all: tod_all.append(cellid.cell_status.time_of_death)
@@ -2821,8 +2822,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
         max_osc=0
-        if max(n_osc, default=-999)>0:
-            max_osc=max(n_osc, default=0)
+        if max(n_osc_all, default=-999)>0:
+            max_osc=max(n_osc_all, default=0)
             max_osc_dk=max(n_osc_dk, default=0)
             if max_osc_dk>max_osc: max_osc=max_osc_dk
         hist, edges = np.histogram(n_osc, bins=max_osc+2, range=(0, max_osc+2))
@@ -2834,8 +2835,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         hist, edges = np.histogram(n_osc_all, bins=max_osc+2, range=(0, max_osc+2))
         source_nosc_all.data={'x': edges[:-1], 'top': hist}
 
-        max_tod=max(tod, default=100.)
-        min_tod=min(tod, default=0.)
+        max_tod=max(tod_all, default=100.)
+        min_tod=min(tod_all, default=0.)
         if max(tod_dk, default=100.)>max_tod:max_tod=max(tod_dk, default=100.)
         if min(tod_dk, default=0.)<min_tod:min_tod=min(tod_dk, default=0.)
 
