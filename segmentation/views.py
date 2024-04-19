@@ -3945,6 +3945,12 @@ def index(request: HttpRequest) -> HttpResponse:
 
     print(download_dict)
                     
+    json_content = json.dumps(download_dict, indent=4)
+    response = HttpResponse(json_content, content_type='application/json')
+    
+    # Set the Content-Disposition header to specify the filename
+    response['Content-Disposition'] = 'attachment; filename="data.json"'
+
     context = {
         #'num_samples': num_samples,
         'select_dict':select_dict,
@@ -3957,7 +3963,7 @@ def index(request: HttpRequest) -> HttpResponse:
         'sample_dict':sample_dict,
     }
 
-    return render(request, 'segmentation/index.html', context=context)
+    return render(request, 'segmentation/index.html', context=context, response=response)
 
     
 

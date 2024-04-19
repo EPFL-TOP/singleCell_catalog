@@ -8,7 +8,7 @@ from .views import image_view, save_selected_region
 urlpatterns = [
     path(r"", views.index, name="index"),
     path(r"bokeh_dashboard", views.bokeh_dashboard, name="bokeh_dashboard"),
-
+    path('download/', views.index, name='download_file'),
     #path("bokeh_template", views.bokeh_server, name="bokeh_template"),
     #path("image_template", views.image_view, name="image_template"),
     #path('', views.index, name='index'),
