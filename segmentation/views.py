@@ -3813,8 +3813,11 @@ def index(request: HttpRequest) -> HttpResponse:
 
     #build the output json
     download_dict = {}
+
     if 'prepare_data' in request.POST:
 
+        print('selected_experiment=',selected_experiment)
+        print('selected_well=',selected_well)
         for exp in Experiment.objects.all():
             if selected_experiment!=None and selected_experiment!=exp.name: continue
             download_dict[exp]={}
@@ -3943,7 +3946,7 @@ def index(request: HttpRequest) -> HttpResponse:
                         download_dict[exp][expds][sample][cellID.name]["ROI"]["number_of_pixels"] = number_of_pixels
                         download_dict[exp][expds][sample][cellID.name]["ROI"]["type"]             = type
 
-    print(download_dict)
+    print('download_dict=',download_dict)
                     
 
 
