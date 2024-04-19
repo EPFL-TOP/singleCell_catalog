@@ -3819,8 +3819,6 @@ def index(request: HttpRequest) -> HttpResponse:
         print('in prepare data')
         print('selected_experiment=',selected_experiment)
         print('selected_well=',selected_well)
-        print('selected_dict ',selected_dict)
-        print('select_dict ',select_dict)
         for experiment in Experiment.objects.all():
             exp=experiment.name
             if selected_experiment!=None and selected_experiment!=exp: continue

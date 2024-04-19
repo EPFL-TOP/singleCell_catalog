@@ -41,7 +41,8 @@
     {% endif %}
  -->
  <br>
- <input type="submit" name="prepare_data" value="Prepare the download">
+ <br>
+ <input type="submit" name="prepare_data" value="Download data">
  <!--a href="{% url 'index' %}?download" download>Download JSON File</a-->
   </form>
 
@@ -159,12 +160,7 @@
 
 <br><br><br><br>
 
-<form method="POST">
-  {% csrf_token %}
-  <input type="submit" name="prepare_data" value="Prepare the download">
 
-  <a href="{% url 'index' %}?download" download>Download JSON File</a>
-</form>
 
 
 <br><br><br><br>
