@@ -3959,23 +3959,18 @@ def index(request: HttpRequest) -> HttpResponse:
         'sample_dict':sample_dict,
     }
 
-    from django.template.loader import render_to_string
-    # Render the HTML template to a string
-    html_content = render_to_string('segmentation/index.html', context=context)
+    if 'download' in request.GET:
     
-    json_content = json.dumps(download_dict, indent=4)
-    response = HttpResponse(json_content, content_type='application/json')
+        json_content = json.dumps(download_dict, indent=4)
+        response = HttpResponse(json_content, content_type='application/json')
     
-    # Set the Content-Disposition header to specify the filename
-    response['Content-Disposition'] = 'attachment; filename="data.json"'
+        # Set the Content-Disposition header to specify the filename
+        response['Content-Disposition'] = 'attachment; filename="data.json"'
 
-    
-    # Add the HTML content to the response
-    response.write(html_content)
-    
-    return response
+        return response
 
-    #return render(request, 'segmentation/index.html', context=context)
+    else:
+        return render(request, 'segmentation/index.html', context=context)
 
     
 
