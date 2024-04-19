@@ -3834,17 +3834,17 @@ def index(request: HttpRequest) -> HttpResponse:
                     cellsID = CellID.objects.select_related().filter(sample=sample)
                     for cellID in cellsID:
                         download_dict[exp][expds][sample][cellID.name]={}
-                        download_dict[exp][expds][sample][cellID.name]["start_oscillation_time"]=cellID.start_oscillation
-                        download_dict[exp][expds][sample][cellID.name]["end_oscillation_time"]=cellID.end_oscillation
-                        download_dict[exp][expds][sample][cellID.name]["start_oscillation_frame"]=cellID.start_oscillation_frame
-                        download_dict[exp][expds][sample][cellID.name]["end_oscillation_frame"]=cellID.end_oscillation_frame
-                        download_dict[exp][expds][sample][cellID.name]["mask"]=cellID.mask
-                        download_dict[exp][expds][sample][cellID.name]["migrating"]=cellID.migrating
-                        download_dict[exp][expds][sample][cellID.name]["n_oscillations"]=cellID.n_oscillations
-                        download_dict[exp][expds][sample][cellID.name]["time_of_death"]=cellID.time_of_death
-                        download_dict[exp][expds][sample][cellID.name]["time_of_death_frame"]=cellID.time_of_death_frame
-                        download_dict[exp][expds][sample][cellID.name]["peaks"]=cellID.peaks
-                        download_dict[exp][expds][sample][cellID.name]["flags"]=cellID.flags
+                        download_dict[exp][expds][sample][cellID.name]["start_oscillation_time"]=cellID.cell_status.start_oscillation
+                        download_dict[exp][expds][sample][cellID.name]["end_oscillation_time"]=cellID.cell_status.end_oscillation
+                        download_dict[exp][expds][sample][cellID.name]["start_oscillation_frame"]=cellID.cell_status.start_oscillation_frame
+                        download_dict[exp][expds][sample][cellID.name]["end_oscillation_frame"]=cellID.cell_status.end_oscillation_frame
+                        download_dict[exp][expds][sample][cellID.name]["mask"]=cellID.cell_status.mask
+                        download_dict[exp][expds][sample][cellID.name]["migrating"]=cellID.cell_status.migrating
+                        download_dict[exp][expds][sample][cellID.name]["n_oscillations"]=cellID.cell_status.n_oscillations
+                        download_dict[exp][expds][sample][cellID.name]["time_of_death"]=cellID.cell_status.time_of_death
+                        download_dict[exp][expds][sample][cellID.name]["time_of_death_frame"]=cellID.cell_status.time_of_death_frame
+                        download_dict[exp][expds][sample][cellID.name]["peaks"]=cellID.cell_status.peaks
+                        download_dict[exp][expds][sample][cellID.name]["flags"]=cellID.cell_status.flags
                         download_dict[exp][expds][sample][cellID.name]["ROI"]={}
 
                         download_dict[exp][expds][sample][cellID.name]["segmentation"]={}
