@@ -3815,9 +3815,11 @@ def index(request: HttpRequest) -> HttpResponse:
     download_dict = {}
 
     if 'prepare_data' in request.POST:
-
+        print('in prepare data')
         print('selected_experiment=',selected_experiment)
         print('selected_well=',selected_well)
+        print('selected_dict ',selected_dict)
+        print('select_dict ',select_dict)
         for exp in Experiment.objects.all():
             if selected_experiment!=None and selected_experiment!=exp.name: continue
             download_dict[exp]={}
