@@ -3691,6 +3691,7 @@ def index(request: HttpRequest) -> HttpResponse:
     """View function for home page of site."""
     print('The visualisation request method is:', request.method)
     print('The visualisation POST data is:     ', request.POST)
+    print('The visualisation GET data is:      ', request.GET)
     cell_dict={}
 
     #THIS BUILDS THE FRAMES FROM THE RAWDATASET CATALOG WITH TAG "SEGMENTME", CREATES UP TO FRAMES
