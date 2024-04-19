@@ -161,10 +161,19 @@
   {% csrf_token %}
   <input type="submit" name="prepare_data" value="Prepare the download">
 </form>
-<h1>Download File</h1>
-<a href="{% url 'download_file' %}" download>
-    <button>Download File</button>
-</a>
+    <!-- Add a download link for the JSON file -->
+    <a href="#" id="downloadLink">Download JSON File</a>
+    
+    <script>
+        // JavaScript to trigger the download when the link is clicked
+        document.getElementById('downloadLink').addEventListener('click', function() {
+            // Create a dummy link element
+            var link = document.createElement('a');
+            link.setAttribute('href', '{% url "index" %}');  // URL of your Django view
+            link.setAttribute('download', 'data.json');  // Filename for the downloaded file
+            link.click();  // Simulate a click on the link
+        });
+    </script>
 
 
 <br><br><br><br>
