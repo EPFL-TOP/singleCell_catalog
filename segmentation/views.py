@@ -3814,7 +3814,7 @@ def index(request: HttpRequest) -> HttpResponse:
     #build the output json
     download_dict = {}
 
-    if 'prepare_data' in request.POST:
+    if 'prepare_data' in request.POST or 'download' in request.GET:
         print('in prepare data')
         print('selected_experiment=',selected_experiment)
         print('selected_well=',selected_well)
