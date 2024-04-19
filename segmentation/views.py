@@ -2583,7 +2583,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellstatus.start_oscillation = frame[0].time/60000.
         cellstatus.save()
         if start_oscillation_position.location>=0 and end_oscillation_position.location>0:
-            find_peaks_slider_callback('','',30)
+            find_peaks_slider_callback('','',slider_find_peaks.value)
     button_start_oscillation = bokeh.models.Button(label="Osc. Start")
     button_start_oscillation.on_click(start_oscillation_callback)
     #___________________________________________________________________________________________
@@ -2601,7 +2601,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellstatus.end_oscillation = frame[0].time/60000.
         cellstatus.save()
         if start_oscillation_position.location>=0 and end_oscillation_position.location>0:
-            find_peaks_slider_callback('','',30)
+            find_peaks_slider_callback('','',slider_find_peaks.value)
     button_end_oscillation = bokeh.models.Button(label="Osc. End")
     button_end_oscillation.on_click(end_oscillation_callback)
     #___________________________________________________________________________________________
