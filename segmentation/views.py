@@ -3815,7 +3815,7 @@ def index(request: HttpRequest) -> HttpResponse:
     #build the output json
     download_dict = {}
 
-    if 'prepare_data' in request.POST or 'download' in request.GET:
+    if 'prepare_data' in request.POST:
         print('in prepare data')
         print('selected_experiment=',selected_experiment)
         print('selected_well=',selected_well)
@@ -3949,7 +3949,15 @@ def index(request: HttpRequest) -> HttpResponse:
                         download_dict[exp][expds][sample][cellID.name]["ROI"]["number_of_pixels"] = number_of_pixels
                         download_dict[exp][expds][sample][cellID.name]["ROI"]["type"]             = type
 
-    print('download_dict=',download_dict)
+        json_content = json.dumps(download_dict, indent=4)
+        print('download_dict=',download_dict)
+        response = HttpResponse(json_content, content_type='application/json')
+        
+        # Set the Content-Disposition header to specify the filename
+        response['Content-Disposition'] = 'attachment; filename="data.json"'
+
+        return response
+
                     
 
 
