@@ -3821,17 +3821,21 @@ def index(request: HttpRequest) -> HttpResponse:
         print('selected_well=',selected_well)
         print('selected_dict ',selected_dict)
         print('select_dict ',select_dict)
-        for exp in Experiment.objects.all():
-            if selected_experiment!=None and selected_experiment!=exp.name: continue
+        for experiment in Experiment.objects.all():
+            exp=experiment.name
+            if selected_experiment!=None and selected_experiment!=exp: continue
             download_dict[exp]={}
-            print(' ---- Experiment name ',exp.name)
-            experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-            for expds in experimentaldataset:
-                if selected_well!=None and selected_well!=expds.data_name: continue
+            print(' ---- Experiment name ',exp)
+            experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = experiment)
+            for exerimentalpds in experimentaldataset:
+                expds=exerimentalpds.data_name
+                if selected_well!=None and selected_well!=expds: continue
                 download_dict[exp][expds]={}
-                print('    ---- experimental dataset name ',expds.data_name)
+                print('    ---- experimental dataset name ',expds)
                 samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-                for sample in samples:
+                for samp in samples:
+                    sample=samp.file_name.split('/')[-1]
+                    print('       ---- sample ',sample)
                     download_dict[exp][expds][sample]={}
                     download_dict[exp][expds][sample]['keep_sample']=sample.keep_sample
                     download_dict[exp][expds][sample]['sample_quality']=sample.sample_quality
