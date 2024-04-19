@@ -3785,32 +3785,6 @@ def index(request: HttpRequest) -> HttpResponse:
 
     # Render the HTML template index.html with the data in the context variable
 
-    print('===========================================',cell_dict)
-    uri=None
-    if cell_dict != None:
-        fig = plt.figure(figsize=(15,5))    
-        for cell in cell_dict: 
-            channels=[]
-            for ch in cell_dict[cell]:
-                if ch in channels:continue
-                if 'intensity_' not in ch: continue
-                channels.append(ch)
-            print('channels  ',channels)
-            for ch in channels:
-                normint=[]
-                for p in range(len(cell_dict[cell][ch])):
-                    normint.append(cell_dict[cell][ch][p]/cell_dict[cell]['npixels'][p])
-                if '_BF' in ch:continue
-                plt.plot(cell_dict[cell]['time'], normint)
-                print('channel ================== ',ch)
-                print(normint)
-        fig.tight_layout()
-        fig = plt.gcf()
-        buf = io.BytesIO()
-        fig.savefig(buf, format='png')
-        buf.seek(0)
-        string = base64.b64encode(buf.read())
-        uri = urllib.parse.quote(string)
 
     experiment_dict={}
     contribution_dict=[]
@@ -3835,11 +3809,142 @@ def index(request: HttpRequest) -> HttpResponse:
         sample_dict = get_sample_details(selected_well)
     
 
-    script = None
 
-    script = bokeh.embed.server_document(request.build_absolute_uri())
-    print("request.build_absolute_uri() ",request.build_absolute_uri())
 
+    #build the output json
+    download_dict = {}
+    if 'prepare_data' in request.POST:
+
+        for exp in Experiment.objects.all():
+            if selected_experiment!=None and selected_experiment!=exp.name: continue
+            download_dict[exp]={}
+            print(' ---- Experiment name ',exp.name)
+            experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+            for expds in experimentaldataset:
+                if selected_well!=None and selected_well!=expds.data_name: continue
+                download_dict[exp][expds]={}
+                print('    ---- experimental dataset name ',expds.data_name)
+                samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+                for sample in samples:
+                    download_dict[exp][expds][sample]={}
+                    download_dict[exp][expds][sample]['keep_sample']=sample.keep_sample
+                    download_dict[exp][expds][sample]['sample_quality']=sample.sample_quality
+                    download_dict[exp][expds][sample]['peaks_tod_div_validated']=sample.peaks_tod_div_validated
+                    download_dict[exp][expds][sample]['bf_features_validated']=sample.bf_features_validated
+                    cellsID = CellID.objects.select_related().filter(sample=sample)
+                    for cellID in cellsID:
+                        download_dict[exp][expds][sample][cellID.name]={}
+                        download_dict[exp][expds][sample][cellID.name]["start_oscillation_time"]=cellID.start_oscillation
+                        download_dict[exp][expds][sample][cellID.name]["end_oscillation_time"]=cellID.end_oscillation
+                        download_dict[exp][expds][sample][cellID.name]["start_oscillation_frame"]=cellID.start_oscillation_frame
+                        download_dict[exp][expds][sample][cellID.name]["end_oscillation_frame"]=cellID.end_oscillation_frame
+                        download_dict[exp][expds][sample][cellID.name]["mask"]=cellID.mask
+                        download_dict[exp][expds][sample][cellID.name]["migrating"]=cellID.migrating
+                        download_dict[exp][expds][sample][cellID.name]["n_oscillations"]=cellID.n_oscillations
+                        download_dict[exp][expds][sample][cellID.name]["time_of_death"]=cellID.time_of_death
+                        download_dict[exp][expds][sample][cellID.name]["time_of_death_frame"]=cellID.time_of_death_frame
+                        download_dict[exp][expds][sample][cellID.name]["peaks"]=cellID.peaks
+                        download_dict[exp][expds][sample][cellID.name]["flags"]=cellID.flags
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]={}
+
+                        download_dict[exp][expds][sample][cellID.name]["segmentation"]={}
+
+                        alive          = []
+                        oscillating    = []
+                        maximum        = []
+                        minimum        = []
+                        falling        = []
+                        rising         = []
+                        last_osc       = []
+                        mask           = []
+                        dividing       = []
+                        double_nuclei  = []
+                        multiple_cells = []
+                        pair_cell      = []
+                        flat           = []
+                        round          = []
+                        elongated      = []
+                        time           = []
+
+                        center_x_mic     = []
+                        center_y_mic     = []
+                        center_x_pix     = []
+                        center_y_pix     = []
+                        file_name        = []
+                        intensity_max    = []
+                        intensity_mean   = []
+                        intensity_std    = []
+                        intensity_sum    = []
+                        mode             = []
+                        number_of_pixels = []
+                        type             = []
+
+                        cellsROI = CellROI.objects.select_related().filter(cell_id=cellID)
+                        for cellROI in cellsROI:
+                            time.append(cellROI.frame.time)
+                            alive.append(cellROI.cellflag_cellroi.alive)
+                            oscillating.append(cellROI.cellflag_cellroi.oscillating)
+                            maximum.append(cellROI.cellflag_cellroi.maximum)
+                            minimum.append(cellROI.cellflag_cellroi.minimum)
+                            falling.append(cellROI.cellflag_cellroi.falling)
+                            rising.append(cellROI.cellflag_cellroi.rising)
+                            last_osc.append(cellROI.cellflag_cellroi.last_osc)
+                            mask.append(cellROI.cellflag_cellroi.mask)
+                            dividing.append(cellROI.cellflag_cellroi.dividing)
+                            double_nuclei.append(cellROI.cellflag_cellroi.double_nuclei)
+                            multiple_cells.append(cellROI.cellflag_cellroi.multiple_cells)
+                            pair_cell.append(cellROI.cellflag_cellroi.pair_cell)
+                            flat.append(cellROI.cellflag_cellroi.flat)
+                            round.append(cellROI.cellflag_cellroi.round)
+                            elongated.append(cellROI.cellflag_cellroi.elongated)
+
+                            center_x_mic.append(cellROI.contour_cellroi.center_x_mic)
+                            center_y_mic.append(cellROI.contour_cellroi.center_y_mic)
+                            center_x_pix.append(cellROI.contour_cellroi.center_x_pix)
+                            center_y_pix.append(cellROI.contour_cellroi.center_y_pix)
+                            file_name.append(cellROI.contour_cellroi.file_name)
+                            intensity_max.append(cellROI.contour_cellroi.intensity_max)
+                            intensity_mean.append(cellROI.contour_cellroi.intensity_mean)
+                            intensity_std.append(cellROI.contour_cellroi.intensity_std)
+                            intensity_sum.append(cellROI.contour_cellroi.intensity_sum)
+                            mode.append(cellROI.contour_cellroi.mode)
+                            number_of_pixels.append(cellROI.contour_cellroi.number_of_pixels)
+                            type.append(cellROI.contour_cellroi.type)
+
+                        sorted_lists = sorted(zip(time, alive, oscillating, maximum, minimum, falling, rising, last_osc, mask, dividing, double_nuclei, multiple_cells, pair_cell, flat, round, elongated)) 
+                        time_sorted, alive_sorted, oscillating_sorted, maximum_sorted, minimum_sorted, falling_sorted, rising_sorted, last_osc_sorted, mask_sorted, dividing_sorted, double_nuclei_sorted, multiple_cells_sorted, pair_cell_sorted, flat_sorted, round_sorted, elongated_sorted = zip(*sorted_lists) 
+                        download_dict[exp][expds][sample][cellID.name]["time"]           = time_sorted
+                        download_dict[exp][expds][sample][cellID.name]["alive"]          = alive_sorted
+                        download_dict[exp][expds][sample][cellID.name]["oscillating"]    = oscillating_sorted
+                        download_dict[exp][expds][sample][cellID.name]["maximum"]        = maximum_sorted
+                        download_dict[exp][expds][sample][cellID.name]["minimum"]        = minimum_sorted
+                        download_dict[exp][expds][sample][cellID.name]["falling"]        = falling_sorted
+                        download_dict[exp][expds][sample][cellID.name]["rising"]         = rising_sorted
+                        download_dict[exp][expds][sample][cellID.name]["last_osc"]       = last_osc_sorted
+                        download_dict[exp][expds][sample][cellID.name]["mask"]           = mask_sorted
+                        download_dict[exp][expds][sample][cellID.name]["dividing"]       = dividing_sorted
+                        download_dict[exp][expds][sample][cellID.name]["double_nuclei"]  = double_nuclei_sorted
+                        download_dict[exp][expds][sample][cellID.name]["multiple_cells"] = multiple_cells_sorted
+                        download_dict[exp][expds][sample][cellID.name]["pair_cell"]      = pair_cell_sorted
+                        download_dict[exp][expds][sample][cellID.name]["flat"]           = flat_sorted
+                        download_dict[exp][expds][sample][cellID.name]["round"]          = round_sorted
+                        download_dict[exp][expds][sample][cellID.name]["elongated"]      = elongated_sorted
+                        
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["center_x_mic"]     = center_x_mic
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["center_y_mic"]     = center_y_mic
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["center_x_pix"]     = center_x_pix
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["center_y_pix"]     = center_y_pix
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["file_name"]        = file_name
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_max"]    = intensity_max
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_mean"]   = intensity_mean
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_std"]    = intensity_std
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_sum"]    = intensity_sum
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["mode"]             = mode
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["number_of_pixels"] = number_of_pixels
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["type"]             = type
+
+    print(download_dict)
+                    
     context = {
         #'num_samples': num_samples,
         'select_dict':select_dict,
@@ -3850,7 +3955,6 @@ def index(request: HttpRequest) -> HttpResponse:
         'injection_dict':injection_dict,
         'instrumental_dict':instrumental_dict,
         'sample_dict':sample_dict,
-        #'script': script
     }
 
     return render(request, 'segmentation/index.html', context=context)

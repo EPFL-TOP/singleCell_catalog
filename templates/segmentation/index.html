@@ -157,6 +157,18 @@
 
 <br><br><br><br>
 
+<form method="POST">
+  {% csrf_token %}
+  <input type="submit" name="prepare_data" value="Prepare the download">
+</form>
+<h1>Download File</h1>
+<a href="{% url 'download_file' %}" download>
+    <button>Download File</button>
+</a>
+
+
+<br><br><br><br>
+
 
 <form method="POST">
   {% csrf_token %}
