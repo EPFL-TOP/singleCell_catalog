@@ -3953,8 +3953,8 @@ def index(request: HttpRequest) -> HttpResponse:
                         download_dict[exp][expds][sample][cellID.name]["ROI"]["number_of_pixels"] = number_of_pixels
                         download_dict[exp][expds][sample][cellID.name]["ROI"]["type"]             = type
 
-        json_content = json.dumps(download_dict, indent=4)
-        print('download_dict=',download_dict)
+        json_content = json.dumps(download_dict)#, indent=4)
+        #print('download_dict=',download_dict)
         response = HttpResponse(json_content, content_type='application/json')
         
         # Set the Content-Disposition header to specify the filename
