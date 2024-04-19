@@ -3832,7 +3832,7 @@ def index(request: HttpRequest) -> HttpResponse:
                 if selected_well!=None and selected_well!=expds: continue
                 download_dict[exp][expds]={}
                 print('    ---- experimental dataset name ',expds)
-                samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+                samples = Sample.objects.select_related().filter(experimental_dataset = exerimentalpds)
                 for samp in samples:
                     sample=samp.file_name.split('/')[-1]
                     print('       ---- sample ',sample)
