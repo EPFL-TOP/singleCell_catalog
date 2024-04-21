@@ -4047,6 +4047,7 @@ def index(request: HttpRequest) -> HttpResponse:
                                             ]
 
                                     writer.writerow(towrite)
+            f.close()
 
 
         file_path = '/home/helsens/Software/singleCell_catalog/laurel.csv'  # Update with your actual file path
