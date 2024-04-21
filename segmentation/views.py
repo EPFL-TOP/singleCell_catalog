@@ -4047,7 +4047,6 @@ def index(request: HttpRequest) -> HttpResponse:
                                             ]
 
                                     writer.writerow(towrite)
-            f.close()
 
 
         file_path = '/home/helsens/Software/singleCell_catalog/laurel.csv'  # Update with your actual file path
@@ -4057,7 +4056,7 @@ def index(request: HttpRequest) -> HttpResponse:
             with open(file_path, 'rb') as file:
                 response = FileResponse(file)
                 # Set the content type for the response
-                response['Content-Type'] = 'application/octet-stream'
+                response['Content-Type'] = 'text/csv'
                 # Set the Content-Disposition header to specify the filename
                 response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(file_path)
                 return response
