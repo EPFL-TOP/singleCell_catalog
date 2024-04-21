@@ -638,13 +638,11 @@ def build_ROIs_loop():
     #ALREADY DONE WITH NEW 
     #bleb001, bleb002 = 2
     #ppf001, ppf003, ppf005, ppf008 ppf009 = 5
-    #wscepfl0060, wscepfl0078, wscepfl0081, wscepfl0082, wscepfl0086, wscepfl0089, wscepfl0096 = 7
-    #reste wscepfl0080 (annotated), wscepfl0087 (annotated)
-        if exp.name!="wscepfl0080":continue
+    #wscepfl0060, wscepfl0078, wscepfl0080, wscepfl0081, wscepfl0082, wscepfl0086, wscepfl0089, wscepfl0096 = 7
+    #reste wscepfl0087 (annotated)
+        if exp.name!="wscepfl0087":continue
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
-            if expds.data_name!="wscepfl0080_well1":continue
-
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
                 build_ROIs(sample=s, force=True)
@@ -3940,18 +3938,20 @@ def index(request: HttpRequest) -> HttpResponse:
                         download_dict[exp][expds][sample][cellID.name]["round"]          = round_sorted
                         download_dict[exp][expds][sample][cellID.name]["elongated"]      = elongated_sorted
                         
-                        download_dict[exp][expds][sample][cellID.name]["ROI"]["center_x_mic"]     = center_x_mic
-                        download_dict[exp][expds][sample][cellID.name]["ROI"]["center_y_mic"]     = center_y_mic
-                        download_dict[exp][expds][sample][cellID.name]["ROI"]["center_x_pix"]     = center_x_pix
-                        download_dict[exp][expds][sample][cellID.name]["ROI"]["center_y_pix"]     = center_y_pix
-                        download_dict[exp][expds][sample][cellID.name]["ROI"]["file_name"]        = file_name
-                        download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_max"]    = intensity_max
-                        download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_mean"]   = intensity_mean
-                        download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_std"]    = intensity_std
-                        download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_sum"]    = intensity_sum
-                        download_dict[exp][expds][sample][cellID.name]["ROI"]["mode"]             = mode
-                        download_dict[exp][expds][sample][cellID.name]["ROI"]["number_of_pixels"] = number_of_pixels
-                        download_dict[exp][expds][sample][cellID.name]["ROI"]["type"]             = type
+                        sorted_lists2 = sorted(zip(time, center_x_mic, center_y_mic, center_x_pix, center_y_pix, file_name, intensity_max, intensity_mean, intensity_std, intensity_sum, mode, number_of_pixels, type))
+                        time_sorted, center_x_mic_sorted, center_y_mic_sorted, center_x_pix_sorted, center_y_pix_sorted, file_name_sorted, intensity_max_sorted, intensity_mean_sorted, intensity_std_sorted, intensity_sum_sorted, mode_sorted, number_of_pixels_sorted, type_sorted = zip(*sorted_lists2)
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["center_x_mic"]     = center_x_mic_sorted
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["center_y_mic"]     = center_y_mic_sorted
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["center_x_pix"]     = center_x_pix_sorted
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["center_y_pix"]     = center_y_pix_sorted
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["file_name"]        = file_name_sorted
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_max"]    = intensity_max_sorted
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_mean"]   = intensity_mean_sorted
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_std"]    = intensity_std_sorted
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_sum"]    = intensity_sum_sorted
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["mode"]             = mode_sorted
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["number_of_pixels"] = number_of_pixels_sorted
+                        download_dict[exp][expds][sample][cellID.name]["ROI"]["type"]             = type_sorted
 
         json_content = json.dumps(download_dict)#, indent=4)
         #print('download_dict=',download_dict)
@@ -3963,7 +3963,47 @@ def index(request: HttpRequest) -> HttpResponse:
         return response
 
                     
+    #build the output json
+    download_dict_laurel = {}
 
+    if 'prepare_data_laurel' in request.POST:
+        print('in prepare data laurel')
+        print('selected_experiment=',selected_experiment)
+        print('selected_well=',selected_well)
+        for exp in Experiment.objects.all():
+            if 'wscepfl' not in exp.name: continue
+            download_dict_laurel[exp.name]={}
+            print(' ---- Experiment name ',exp.name)
+            experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+            for expds in experimentaldataset:
+                download_dict_laurel[exp.name][expds.data_name]={}
+                print('    ---- experimental dataset name ',expds.data_name)
+                samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+                for samp in samples:
+                    sample=samp.file_name.split('/')[-1]
+                    print('       ---- sample ',sample)
+                    download_dict_laurel[exp.name][expds.data_name][sample]={}            
+
+                    if samp.keep_sample==False: continue
+                    if samp.peaks_tod_div_validated==False: continue
+                    
+                    cellsID = CellID.objects.select_related().filter(sample=samp)
+                    for cellID in cellsID:
+                        download_dict_laurel[exp.name][expds.data_name][sample][cellID.name]={}
+
+
+                        cellsROI = CellROI.objects.select_related().filter(cell_id=cellID)
+                        time             = []
+                        intensity_max    = []
+                        intensity_mean   = []
+                        intensity_std    = []
+                        intensity_sum    = []
+                        number_of_pixels = []
+
+                        for cellROI in cellsROI:
+                            if cellROI.cellflag_cellroi.alive==False: break
+                            time.append(cellROI.frame.time)
+                            
 
     context = {
         #'num_samples': num_samples,
