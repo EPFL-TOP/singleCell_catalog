@@ -4053,13 +4053,13 @@ def index(request: HttpRequest) -> HttpResponse:
         # Check if the file exists
         if os.path.exists(file_path):
             # Open the file
-            with open(file_path, 'rb') as file:
-                response = FileResponse(file)
-                # Set the content type for the response
-                response['Content-Type'] = 'text/csv'
-                # Set the Content-Disposition header to specify the filename
-                response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(file_path)
-                return response
+            file = open(file_path, 'rb')
+            response = FileResponse(file)
+            # Set the content type for the response
+            response['Content-Type'] = 'text/csv'
+            # Set the Content-Disposition header to specify the filename
+            response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(file_path)
+            return response
 
     context = {
         #'num_samples': num_samples,
