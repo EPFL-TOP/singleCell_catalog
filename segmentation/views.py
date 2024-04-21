@@ -530,7 +530,7 @@ def build_segmentation():
                 print('    sample ',s.file_name)
                 cellids = CellID.objects.select_related().filter(sample=s)
                 print('build segments sample: ',s.file_name)
-                if 'wscepfl0080' not in s.file_name :continue
+                if 'wscepfl0080_well1' not in s.file_name :continue
 
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 #images are t, c, x, y 
