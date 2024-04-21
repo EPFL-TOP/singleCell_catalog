@@ -3990,9 +3990,8 @@ def index(request: HttpRequest) -> HttpResponse:
                     
                     cellsID = CellID.objects.select_related().filter(sample=samp)
                     for cellID in cellsID:
+                        print('           ---- cellid ',cellID.name)
                         download_dict_laurel[exp.name][expds.data_name][sample][cellID.name]={}
-
-
                         cellsROI = CellROI.objects.select_related().filter(cell_id=cellID)
                         time             = []
                         intensity_max    = []
@@ -4019,7 +4018,7 @@ def index(request: HttpRequest) -> HttpResponse:
                             download_dict_laurel[exp.name][expds.data_name][sample][cellID.name]["intensity_std"]    = intensity_std_sorted
                             download_dict_laurel[exp.name][expds.data_name][sample][cellID.name]["intensity_sum"]    = intensity_sum_sorted
                             download_dict_laurel[exp.name][expds.data_name][sample][cellID.name]["number_of_pixels"] = number_of_pixels_sorted
-                    break
+                    
                 break
             break
         print(download_dict_laurel)
