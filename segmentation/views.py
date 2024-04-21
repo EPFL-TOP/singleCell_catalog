@@ -1395,6 +1395,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         
 
         for m in range(len(max_list)):
+            print('start_oscillation_position.location=',start_oscillation_position.location)
+            print('source_intensity_ch1.data["time"]=',source_intensity_ch1.data["time"])
             min_val=source_intensity_ch1.data["time"].index(start_oscillation_position.location)
             for n in range(len(min_list)):
                 if min_list[n]<max_list[m]: 
@@ -4020,7 +4022,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
         import csv
         header=['experiment', 'well', 'position', 'cell', 'time', 'channel', 'number_of_pixels', 'intensity_max', 'intensity_mean', 'intensity_std', 'intensity_sum']
-        with open('countries.csv', 'w', encoding='UTF8') as f:
+        with open('laurel.csv', 'w', encoding='UTF8') as f:
             writer = csv.writer(f)
             writer.writerow(header)
             for exp in download_dict_laurel:
