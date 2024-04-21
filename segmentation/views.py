@@ -1889,6 +1889,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('dropdown_cell.value = ',dropdown_cell.value)
             print('dropdown_cell.options = ',dropdown_cell.options)
 
+        prepare_intensity()
         slider_find_peaks.end   = 30
         if len(source_intensity_ch1.data['intensity'])>0:
             slider_find_peaks.end   = int(np.max(source_intensity_ch1.data['intensity'])-np.min(source_intensity_ch1.data['intensity']))
