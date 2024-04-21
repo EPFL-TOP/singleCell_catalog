@@ -1395,8 +1395,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         
 
         for m in range(len(max_list)):
-            print('start_oscillation_position.location=',start_oscillation_position.location)
-            print('source_intensity_ch1.data["time"]=',source_intensity_ch1.data["time"])
             min_val=source_intensity_ch1.data["time"].index(start_oscillation_position.location)
             for n in range(len(min_list)):
                 if min_list[n]<max_list[m]: 
@@ -4011,15 +4009,16 @@ def index(request: HttpRequest) -> HttpResponse:
                             intensity_std.append(cellROI.contour_cellroi.intensity_std)
                             intensity_sum.append(cellROI.contour_cellroi.intensity_sum)
                             number_of_pixels.append(cellROI.contour_cellroi.number_of_pixels)
-                        sorted_lists = sorted(zip(time, intensity_max, intensity_mean, intensity_std, intensity_sum, number_of_pixels))
-                        time_sorted, intensity_max_sorted, intensity_mean_sorted, intensity_std_sorted, intensity_sum_sorted, number_of_pixels_sorted = zip(*sorted_lists)
+                        if len(time)>0:
+                            sorted_lists = sorted(zip(time, intensity_max, intensity_mean, intensity_std, intensity_sum, number_of_pixels))
+                            time_sorted, intensity_max_sorted, intensity_mean_sorted, intensity_std_sorted, intensity_sum_sorted, number_of_pixels_sorted = zip(*sorted_lists)
 
-                        download_dict_laurel[exp][expds][sample][cellID.name]["time"]             = time_sorted
-                        download_dict_laurel[exp][expds][sample][cellID.name]["intensity_max"]    = intensity_max_sorted
-                        download_dict_laurel[exp][expds][sample][cellID.name]["intensity_mean"]   = intensity_mean_sorted
-                        download_dict_laurel[exp][expds][sample][cellID.name]["intensity_std"]    = intensity_std_sorted
-                        download_dict_laurel[exp][expds][sample][cellID.name]["intensity_sum"]    = intensity_sum_sorted
-                        download_dict_laurel[exp][expds][sample][cellID.name]["number_of_pixels"] = number_of_pixels_sorted
+                            download_dict_laurel[exp][expds][sample][cellID.name]["time"]             = time_sorted
+                            download_dict_laurel[exp][expds][sample][cellID.name]["intensity_max"]    = intensity_max_sorted
+                            download_dict_laurel[exp][expds][sample][cellID.name]["intensity_mean"]   = intensity_mean_sorted
+                            download_dict_laurel[exp][expds][sample][cellID.name]["intensity_std"]    = intensity_std_sorted
+                            download_dict_laurel[exp][expds][sample][cellID.name]["intensity_sum"]    = intensity_sum_sorted
+                            download_dict_laurel[exp][expds][sample][cellID.name]["number_of_pixels"] = number_of_pixels_sorted
 
         import csv
         header=['experiment', 'well', 'position', 'cell', 'time', 'channel', 'number_of_pixels', 'intensity_max', 'intensity_mean', 'intensity_std', 'intensity_sum']
