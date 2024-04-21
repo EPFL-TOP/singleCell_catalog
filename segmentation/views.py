@@ -4019,22 +4019,18 @@ def index(request: HttpRequest) -> HttpResponse:
                             download_dict_laurel[exp.name][expds.data_name][sample][cellID.name]["intensity_sum"]    = intensity_sum_sorted
                             download_dict_laurel[exp.name][expds.data_name][sample][cellID.name]["number_of_pixels"] = number_of_pixels_sorted
                     
-        print(download_dict_laurel)
         import csv
+        from django.http import FileResponse
         header=['experiment', 'well', 'position', 'cell', 'time', 'channel', 'number_of_pixels', 'intensity_max', 'intensity_mean', 'intensity_std', 'intensity_sum']
         with open('laurel.csv', 'w', encoding='UTF8') as f:
             writer = csv.writer(f)
             writer.writerow(header)
             for exp in download_dict_laurel:
-                print('exp=',exp)
                 for expds in download_dict_laurel[exp]:
-                    print('  expds=',expds)
                     for sample in download_dict_laurel[exp][expds]:
-                        print('    sample=',sample)
 
                         for cell in download_dict_laurel[exp][expds][sample]:
                             if len(download_dict_laurel[exp][expds][sample][cell])==0:continue
-                            print('---------------------------------------------------',download_dict_laurel[exp][expds][sample][cell])
                             for ch in download_dict_laurel[exp][expds][sample][cell]["intensity_max"][0]:
                                 for timef in range(len(download_dict_laurel[exp][expds][sample][cell]["time"])):
                                     towrite=[exp, 
@@ -4052,6 +4048,18 @@ def index(request: HttpRequest) -> HttpResponse:
 
                                     writer.writerow(towrite)
 
+
+        file_path = '/home/helsens/Software/singleCell_catalog/laurel.csv'  # Update with your actual file path
+        # Check if the file exists
+        if os.path.exists(file_path):
+            # Open the file
+            with open(file_path, 'rb') as file:
+                response = FileResponse(file)
+                # Set the content type for the response
+                response['Content-Type'] = 'application/octet-stream'
+                # Set the Content-Disposition header to specify the filename
+                response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(file_path)
+                return response
 
     context = {
         #'num_samples': num_samples,
