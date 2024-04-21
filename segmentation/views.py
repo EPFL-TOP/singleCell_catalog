@@ -1185,10 +1185,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if len(cellids[0].cell_status.peaks)>=6:
                 source_intensity_max.data={'time':cellids[0].cell_status.peaks["max_time"], 
                                            #'intensity':cellids[0].cell_status.peaks["max_int"]}
-                                           'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.peaks["min_frame"]]}
+                                           'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.peaks["max_frame"]]}
                 source_intensity_min.data={'time':cellids[0].cell_status.peaks["min_time"], 
                                            #'intensity':cellids[0].cell_status.peaks["min_int"]}
-                                           'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.peaks["max_frame"]]}
+                                           'intensity':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.peaks["min_frame"]]}
 
             else:
                 source_intensity_max.data={'time':[], 'intensity':[]}
