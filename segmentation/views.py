@@ -4020,6 +4020,7 @@ def index(request: HttpRequest) -> HttpResponse:
                             download_dict_laurel[exp.name][expds.data_name][sample][cellID.name]["intensity_sum"]    = intensity_sum_sorted
                             download_dict_laurel[exp.name][expds.data_name][sample][cellID.name]["number_of_pixels"] = number_of_pixels_sorted
 
+        print(download_dict_laurel)
         import csv
         header=['experiment', 'well', 'position', 'cell', 'time', 'channel', 'number_of_pixels', 'intensity_max', 'intensity_mean', 'intensity_std', 'intensity_sum']
         with open('laurel.csv', 'w', encoding='UTF8') as f:
@@ -4029,6 +4030,7 @@ def index(request: HttpRequest) -> HttpResponse:
                 for expds in download_dict_laurel[exp]:
                     for sample in download_dict_laurel[exp][expds]:
                         for cell in download_dict_laurel[exp][expds][sample]:
+                            print(download_dict_laurel[exp][expds][sample][cell])
                             for ch in download_dict_laurel[exp][expds][sample][cell]["intensity_max"][0]:
                                 for timef in range(len(download_dict_laurel[exp][expds][sample][cell]["time"])):
                                     towrite=[exp, 
