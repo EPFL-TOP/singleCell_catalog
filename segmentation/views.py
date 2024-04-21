@@ -4033,6 +4033,7 @@ def index(request: HttpRequest) -> HttpResponse:
                         print('    sample=',sample)
 
                         for cell in download_dict_laurel[exp][expds][sample]:
+                            if len(download_dict_laurel[exp][expds][sample][cell])==0:continue
                             print('---------------------------------------------------',download_dict_laurel[exp][expds][sample][cell])
                             for ch in download_dict_laurel[exp][expds][sample][cell]["intensity_max"][0]:
                                 for timef in range(len(download_dict_laurel[exp][expds][sample][cell]["time"])):
