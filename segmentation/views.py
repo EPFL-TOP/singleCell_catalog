@@ -4019,8 +4019,6 @@ def index(request: HttpRequest) -> HttpResponse:
                             download_dict_laurel[exp.name][expds.data_name][sample][cellID.name]["intensity_sum"]    = intensity_sum_sorted
                             download_dict_laurel[exp.name][expds.data_name][sample][cellID.name]["number_of_pixels"] = number_of_pixels_sorted
                     
-                break
-            break
         print(download_dict_laurel)
         import csv
         header=['experiment', 'well', 'position', 'cell', 'time', 'channel', 'number_of_pixels', 'intensity_max', 'intensity_mean', 'intensity_std', 'intensity_sum']
