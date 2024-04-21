@@ -53,7 +53,13 @@
     <input type="submit" name="reset" value="Reset">
   </form>
 
+  <br>
+  <br>
 
+  <form method="POST">
+    {% csrf_token %}
+    <input type="submit" name="prepare_data_laurel" value="Download data Laurel">
+  </form>
 
 <br>
 

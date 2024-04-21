@@ -1886,7 +1886,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:
             print('dropdown_cell.value = ',dropdown_cell.value)
             print('dropdown_cell.options = ',dropdown_cell.options)
-        prepare_intensity()
 
         slider_find_peaks.end   = 30
         if len(source_intensity_ch1.data['intensity'])>0:
@@ -1904,6 +1903,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             slider_find_peaks.step = 50
         if slider_find_peaks.end>=10000:
             slider_find_peaks.step = 100
+
+        prepare_intensity()
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
     #___________________________________________________________________________________________
@@ -3965,7 +3966,6 @@ def index(request: HttpRequest) -> HttpResponse:
                     
     #build the output json
     download_dict_laurel = {}
-
     if 'prepare_data_laurel' in request.POST:
         print('in prepare data laurel')
         print('selected_experiment=',selected_experiment)
@@ -4003,7 +4003,47 @@ def index(request: HttpRequest) -> HttpResponse:
                         for cellROI in cellsROI:
                             if cellROI.cellflag_cellroi.alive==False: break
                             time.append(cellROI.frame.time)
-                            
+                            intensity_max.append(cellROI.contour_cellroi.intensity_max)
+                            intensity_mean.append(cellROI.contour_cellroi.intensity_mean)
+                            intensity_std.append(cellROI.contour_cellroi.intensity_std)
+                            intensity_sum.append(cellROI.contour_cellroi.intensity_sum)
+                            number_of_pixels.append(cellROI.contour_cellroi.number_of_pixels)
+                        sorted_lists = sorted(zip(time, intensity_max, intensity_mean, intensity_std, intensity_sum, number_of_pixels))
+                        time_sorted, intensity_max_sorted, intensity_mean_sorted, intensity_std_sorted, intensity_sum_sorted, number_of_pixels_sorted = zip(*sorted_lists)
+
+                        download_dict_laurel[exp][expds][sample][cellID.name]["time"]             = time_sorted
+                        download_dict_laurel[exp][expds][sample][cellID.name]["intensity_max"]    = intensity_max_sorted
+                        download_dict_laurel[exp][expds][sample][cellID.name]["intensity_mean"]   = intensity_mean_sorted
+                        download_dict_laurel[exp][expds][sample][cellID.name]["intensity_std"]    = intensity_std_sorted
+                        download_dict_laurel[exp][expds][sample][cellID.name]["intensity_sum"]    = intensity_sum_sorted
+                        download_dict_laurel[exp][expds][sample][cellID.name]["number_of_pixels"] = number_of_pixels_sorted
+
+        import csv
+        header=['experiment', 'well', 'position', 'cell', 'time', 'channel', 'number_of_pixels', 'intensity_max', 'intensity_mean', 'intensity_std', 'intensity_sum']
+        with open('countries.csv', 'w', encoding='UTF8') as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+            for exp in download_dict_laurel:
+                for expds in download_dict_laurel[exp]:
+                    for sample in download_dict_laurel[exp][expds]:
+                        for cell in download_dict_laurel[exp][expds][sample]:
+                            for ch in download_dict_laurel[exp][expds][sample][cell]["intensity_max"][0]:
+                                for timef in range(len(download_dict_laurel[exp][expds][sample][cell]["time"])):
+                                    towrite=[exp, 
+                                             expds, 
+                                             sample, 
+                                             cell, 
+                                             download_dict_laurel[exp][expds][sample][cell]["time"][timef], 
+                                             ch,
+                                             download_dict_laurel[exp][expds][sample][cell]["number_of_pixels"][timef], 
+                                             download_dict_laurel[exp][expds][sample][cell]["intensity_max"][timef][ch], 
+                                             download_dict_laurel[exp][expds][sample][cell]["intensity_mean"][timef][ch], 
+                                             download_dict_laurel[exp][expds][sample][cell]["intensity_std"][timef][ch], 
+                                             download_dict_laurel[exp][expds][sample][cell]["intensity_sum"][timef][ch], 
+                                            ]
+
+                                    writer.writerow(towrite)
+
 
     context = {
         #'num_samples': num_samples,
