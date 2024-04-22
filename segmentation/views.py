@@ -3751,7 +3751,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
     if 'fix_tod' in request.POST:
         fix_alive_status()
-        
+
     #dictionary to provide possible selection choices
     select_dict={
         'experiment_list':[],
@@ -4049,6 +4049,13 @@ def index(request: HttpRequest) -> HttpResponse:
                             intensity_sum.append(cellROI.contour_cellroi.intensity_sum)
                             number_of_pixels.append(cellROI.contour_cellroi.number_of_pixels)
                         if len(time)>0:
+                            print('time={}'.format(time))
+                            print('intensity_max={}'.format(intensity_max))
+                            print('intensity_mean={}'.format(intensity_mean))
+                            print('intensity_std={}'.format(intensity_std))
+                            print('intensity_sum={}'.format(intensity_sum))
+                            print('number_of_pixels={}'.format(number_of_pixels))
+                            
                             sorted_lists = sorted(zip(time, intensity_max, intensity_mean, intensity_std, intensity_sum, number_of_pixels))
                             time_sorted, intensity_max_sorted, intensity_mean_sorted, intensity_std_sorted, intensity_sum_sorted, number_of_pixels_sorted = zip(*sorted_lists)
 
