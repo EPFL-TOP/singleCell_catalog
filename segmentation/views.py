@@ -2640,7 +2640,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             framenumber = cellroi.frame.number
             print('frame=',framenumber, '  cellstatus.time_of_death_frame= ',cellstatus.time_of_death_frame)
             cellflag = cellroi.cellflag_cellroi
-            if framenumber>=cellstatus.time_of_death_frame:
+            if framenumber>=cellstatus.time_of_death_frame and cellstatus.time_of_death_frame>=0:
                 cellflag.alive = False
             else:
                 cellflag.alive = True
