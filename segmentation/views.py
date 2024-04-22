@@ -2638,13 +2638,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         for cellroi in cellrois:
             framenumber = cellroi.frame.number
-            cellflag = cellroi.cellflag_cellroi.alive
+            print('frame=',framenumber, '  cellstatus.time_of_death_frame= ',cellstatus.time_of_death_frame)
+            cellflag = cellroi.cellflag_cellroi
             if framenumber>=cellstatus.time_of_death_frame:
-                cellflag = False
+                cellflag.alive = False
             else:
-                cellflag = True
+                cellflag.alive = True
             cellflag.save()
-
+            print('frame=',framenumber, '  cellflag.alive= ',cellflag.alive )
         update_source_osc_tod()
     button_time_of_death = bokeh.models.Button(label="Dead")
     button_time_of_death.on_click(time_of_death_callback)
