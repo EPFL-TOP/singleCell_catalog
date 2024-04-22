@@ -1634,7 +1634,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     cellflag.oscillating = True
                 else: cellflag.oscillating = False
 
-                if framenumber>=cellid.cell_status.time_of_death_frame and cellid.cell_status.time_of_death_frame>0: cellflag.alive = False
+                if framenumber>=cellid.cell_status.time_of_death_frame and cellid.cell_status.time_of_death>0: cellflag.alive = False
                 else: cellflag.alive = True
 
                 #print('framenumber = ',framenumber, '   cellflag.alive = ',cellflag.alive)
