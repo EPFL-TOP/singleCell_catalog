@@ -2642,7 +2642,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if framenumber>=cellstatus.time_of_death_frame:
                 cellflag = False
             else:
-                cellflag = False
+                cellflag = True
             cellflag.save()
 
         update_source_osc_tod()
