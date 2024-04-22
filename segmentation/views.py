@@ -629,7 +629,34 @@ def build_segmentation():
                         out_file.close() 
                         contourseg.file_name = out_file_name
                         contourseg.save()
-                
+
+
+#___________________________________________________________________________________________
+def fix_alive_status():
+    exp_list = Experiment.objects.all()
+    for exp in exp_list:
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        for expds in experimentaldataset:
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            for sample in samples:
+                cellsid = CellID.objects.select_related().filter(sample=sample)
+                for cellid in cellsid:
+                    cellstatus = cellid.cell_status
+                    if cellstatus.time_of_death<0:
+                        cellstatus.time_of_death_frame = -999
+                        cellstatus.save()
+
+                    cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
+                    for cellroi in cellrois:
+                        framenumber = cellroi.frame.number
+                        print('frame=',framenumber, '  cellstatus.time_of_death_frame= ',cellstatus.time_of_death_frame)
+                        cellflag = cellroi.cellflag_cellroi
+                        if framenumber>=cellstatus.time_of_death_frame and cellstatus.time_of_death_frame>=0:
+                            cellflag.alive = False
+                        else:
+                            cellflag.alive = True
+                        cellflag.save()
+                        print('frame=',framenumber, '  cellflag.alive= ',cellflag.alive )
 
 #___________________________________________________________________________________________
 def build_ROIs_loop():
@@ -2638,14 +2665,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         for cellroi in cellrois:
             framenumber = cellroi.frame.number
-            print('frame=',framenumber, '  cellstatus.time_of_death_frame= ',cellstatus.time_of_death_frame)
             cellflag = cellroi.cellflag_cellroi
             if framenumber>=cellstatus.time_of_death_frame and cellstatus.time_of_death_frame>=0:
                 cellflag.alive = False
             else:
                 cellflag.alive = True
             cellflag.save()
-            print('frame=',framenumber, '  cellflag.alive= ',cellflag.alive )
         update_source_osc_tod()
     button_time_of_death = bokeh.models.Button(label="Dead")
     button_time_of_death.on_click(time_of_death_callback)
@@ -3724,7 +3749,9 @@ def index(request: HttpRequest) -> HttpResponse:
     if 'build_cells' in request.POST:
         build_cells_all_exp()
 
-
+    if 'fix_tod' in request.POST:
+        fix_alive_status()
+        
     #dictionary to provide possible selection choices
     select_dict={
         'experiment_list':[],
