@@ -668,6 +668,7 @@ def build_ROIs_loop():
     #wscepfl0060, wscepfl0078, wscepfl0080, wscepfl0081, wscepfl0082, wscepfl0086, wscepfl0089, wscepfl0096 = 7
     #reste wscepfl0087 (annotated)
         if exp.name!="wscepfl0099" and exp.name!="wscepfl0100":continue
+
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
@@ -3734,6 +3735,15 @@ def index(request: HttpRequest) -> HttpResponse:
     print('The visualisation GET data is:      ', request.GET)
     cell_dict={}
 
+    #CLEMENT DOES NOT work yet
+    #try to reconnect the cnx cursor
+    #if LOCAL==False:
+    #    try:
+    #        mycursor = cnx.cursor()
+    #    except connector.Error as err:
+    #        print('err: ',err)
+    #        cnx.reconnect()
+    
     #THIS BUILDS THE FRAMES FROM THE RAWDATASET CATALOG WITH TAG "SEGMENTME", CREATES UP TO FRAMES
     if 'register_rawdataset' in request.POST and LOCAL==False:
         register_rawdataset()
@@ -3831,25 +3841,27 @@ def index(request: HttpRequest) -> HttpResponse:
 
     experiment_dict={}
     contribution_dict=[]
-    if selected_experiment != None:
-        #GET THE LIST OF EXPERIMENTS
-        experiment_dict=get_experiement_details(selected_experiment)
-        #GET THE CONTRIBUTION TO THE EXPERIMENT 
-        contribution_dict=get_contribution_details(selected_experiment)
+    ##CLEMENT UNCOMMENT WHEN DB CONNECTION UNDERSTOOD
+    #if selected_experiment != None:
+        ##GET THE LIST OF EXPERIMENTS
+        #experiment_dict=get_experiement_details(selected_experiment)
+        ##GET THE CONTRIBUTION TO THE EXPERIMENT 
+        #contribution_dict=get_contribution_details(selected_experiment)
 
     treatment_dict=[]
     injection_dict=[]
     instrumental_dict=[]
     sample_dict=[]
-    if selected_well != None:
-        #GET THE EXPERIMENTAL DATASET DETAILS: TREATMENT
-        treatment_dict = get_treatment_details(selected_well)
-        #GET THE EXPERIMENTAL DATASET DETAILS: INSTRUMENTAL CONDITIONS
-        injection_dict = get_injection_details(selected_well)
-        #GET THE EXPERIMENTAL DATASET DETAILS: INJECTION
-        instrumental_dict = get_instrumental_details(selected_well)
-        #GET THE EXPERIMENTAL DATASET DETAILS: SAMPLE
-        sample_dict = get_sample_details(selected_well)
+    ##CLEMENT UNCOMMENT WHEN DB CONNECTION UNDERSTOOD
+    #if selected_well != None:
+        ##GET THE EXPERIMENTAL DATASET DETAILS: TREATMENT
+        #treatment_dict = get_treatment_details(selected_well)
+        ##GET THE EXPERIMENTAL DATASET DETAILS: INSTRUMENTAL CONDITIONS
+        #injection_dict = get_injection_details(selected_well)
+        ##GET THE EXPERIMENTAL DATASET DETAILS: INJECTION
+        #instrumental_dict = get_instrumental_details(selected_well)
+        ##GET THE EXPERIMENTAL DATASET DETAILS: SAMPLE
+        #sample_dict = get_sample_details(selected_well)
     
 
 
