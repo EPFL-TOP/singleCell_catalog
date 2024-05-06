@@ -3737,14 +3737,15 @@ def index(request: HttpRequest) -> HttpResponse:
     print('The visualisation GET data is:      ', request.GET)
     cell_dict={}
 
+
     #CLEMENT DOES NOT work yet
     #try to reconnect the cnx cursor
-    #if LOCAL==False:
-    #    try:
-    #        mycursor = cnx.cursor()
-    #    except connector.Error as err:
-    #        print('err: ',err)
-    #        cnx.reconnect()
+    if LOCAL==False:
+        try:
+            mycursor = cnx.cursor()
+        except mysql.connector.Error as err:
+            print('err: ',err)
+            cnx.reconnect()
     
     #THIS BUILDS THE FRAMES FROM THE RAWDATASET CATALOG WITH TAG "SEGMENTME", CREATES UP TO FRAMES
     if 'register_rawdataset' in request.POST and LOCAL==False:
