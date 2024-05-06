@@ -3845,26 +3845,26 @@ def index(request: HttpRequest) -> HttpResponse:
     experiment_dict={}
     contribution_dict=[]
     ##CLEMENT UNCOMMENT WHEN DB CONNECTION UNDERSTOOD
-    #if selected_experiment != None:
+    if selected_experiment != None:
         ##GET THE LIST OF EXPERIMENTS
-        #experiment_dict=get_experiement_details(selected_experiment)
+        experiment_dict=get_experiement_details(selected_experiment)
         ##GET THE CONTRIBUTION TO THE EXPERIMENT 
-        #contribution_dict=get_contribution_details(selected_experiment)
+        contribution_dict=get_contribution_details(selected_experiment)
 
     treatment_dict=[]
     injection_dict=[]
     instrumental_dict=[]
     sample_dict=[]
     ##CLEMENT UNCOMMENT WHEN DB CONNECTION UNDERSTOOD
-    #if selected_well != None:
+    if selected_well != None:
         ##GET THE EXPERIMENTAL DATASET DETAILS: TREATMENT
-        #treatment_dict = get_treatment_details(selected_well)
+        treatment_dict = get_treatment_details(selected_well)
         ##GET THE EXPERIMENTAL DATASET DETAILS: INSTRUMENTAL CONDITIONS
-        #injection_dict = get_injection_details(selected_well)
+        injection_dict = get_injection_details(selected_well)
         ##GET THE EXPERIMENTAL DATASET DETAILS: INJECTION
-        #instrumental_dict = get_instrumental_details(selected_well)
+        instrumental_dict = get_instrumental_details(selected_well)
         ##GET THE EXPERIMENTAL DATASET DETAILS: SAMPLE
-        #sample_dict = get_sample_details(selected_well)
+        sample_dict = get_sample_details(selected_well)
     
 
 
