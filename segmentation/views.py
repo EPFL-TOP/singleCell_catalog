@@ -556,7 +556,7 @@ def build_segmentation():
                             image=BF_images[cellroi.frame.number]
                             contour=None
                             if 'localthresholding' in flag:
-                                contour = segtools.segmentation_localthresholding(image, float(flag.split('-')[-1]), 
+                                contour = segtools.segmentation_localthresholding(image, float(flag.split('_')[-1]), 
                                                                                   cellroi.min_row,
                                                                                   cellroi.min_col, 
                                                                                   cellroi.max_row, 
