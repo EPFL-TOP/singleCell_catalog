@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 TEST=False
 from pathlib import Path
 import os#, sys
-from bokeh.settings import bokehjsdir, settings as bokeh_settings
+from bokeh.settings import bokehjs_path, settings as bokeh_settings
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 #VMachine
@@ -166,7 +166,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
    os.path.join(BASE_DIR, "static"),
-   bokehjsdir()
+   bokehjs_path()
 ]
 
 STATICFILES_FINDERS = (
