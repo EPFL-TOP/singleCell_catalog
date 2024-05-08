@@ -12,11 +12,13 @@ dependencies:
   - conda-forge::scipy
   - scikit-image
   - conda-forge::nd2reader
+  - conda-forge::nd2
   - numba::numba
   - conda-forge::opencv
   - conda-forge::apoc-backend
   - conda-forge::ocl-icd-system
   - conda-forge::pims>=0.6.1
+  - pocl
   - pip
   - pip:
     - Django==4.2.7
@@ -34,3 +36,17 @@ dependencies:
     - django-debug-toolbar
     - memory_profiler
     - bokeh
+    - django-cors-headers
+    - channels
+    - bokeh-django
+    - pymysql
+    - mysqlclient
+    - mysql-connector-python
+
+
+#TO SOLVE ERROR       
+#Exception: Can not find valid pkg-config name.
+#Specify MYSQLCLIENT_CFLAGS and MYSQLCLIENT_LDFLAGS env vars manually
+
+#export MYSQLCLIENT_CFLAGS="$(mysql_config --cflags)"
+#export MYSQLCLIENT_LDFLAGS="$(mysql_config --libs)"
