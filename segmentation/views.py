@@ -3770,9 +3770,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
     #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
     if 'segment' in request.POST:
-        build_segmentation_localthr(1.0)
-        build_segmentation_localthr(1.5)
-        build_segmentation_localthr(2.0)
+        build_segmentation()
 
     if 'build_cells' in request.POST:
         build_cells_all_exp()
