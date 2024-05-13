@@ -562,6 +562,7 @@ def build_segmentation():
                                                                                   cellroi.max_row, 
                                                                                   cellroi.max_col)
                             if 'apoc' in flag:
+                                print('apoc image shape=',image.shape)
                                 contour = apocseg.segmentation(image)
 
                             build_contours(contour, contourseg, cellroi, image.shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
