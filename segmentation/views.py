@@ -249,7 +249,7 @@ def register_rawdataset():
     myresult = mycursor.fetchall()
 
     for x in myresult:
-        print('=======================',x)
+        print('111111111=======================>',x,'<=========================================')
 
     experiments = Experiment.objects.values()
     list_experiments = [entry for entry in experiments] 
@@ -258,6 +258,7 @@ def register_rawdataset():
     for x in myresult:
         if x[1] in list_experiments_uid: continue
         unsplit_file = glob.glob(os.path.join('/mnt/nas_rcp/raw_data/microscopy/cell_culture/',x[1],'*.nd2'))
+        if DEBUG: print('=========unsplit_file ===',unsplit_file)
         if len(unsplit_file)!=1:
             print('====================== ERROR, unsplit_file not 1, exit ',unsplit_file,'  in ',os.path.join('/mnt/nas_rcp/raw_data/microscopy/cell_culture/',x[1],'*.nd2'))
             sys.exit(3)
