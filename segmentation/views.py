@@ -32,7 +32,7 @@ import base64
 from PIL import Image
 
 LOCAL=True
-DEBUG=False
+DEBUG=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 
 #MY macbook
@@ -249,7 +249,7 @@ def register_rawdataset():
     myresult = mycursor.fetchall()
 
     for x in myresult:
-        print(x)
+        print('=======================',x)
 
     experiments = Experiment.objects.values()
     list_experiments = [entry for entry in experiments] 
@@ -853,12 +853,8 @@ def build_ROIs(sample=None, force=False):
     print('about to build cells')
     build_cells_sample(s)
     removeROIs(s)
+
 #___________________________________________________________________________________________
-
-
-
-
-
 async def saveROI(request):
     #roi = sync_to_async(ROI)(min_row=1, max_row=1, roi_number=10000)
     samples = Sample.objects.all()
@@ -870,7 +866,6 @@ async def saveROI(request):
     roi = CellROI(min_row=1, max_row=1, roi_number=10000, sample=sample)
     roi.asave()
     print('----',roi)
-
 
 
 def with_request(f):
