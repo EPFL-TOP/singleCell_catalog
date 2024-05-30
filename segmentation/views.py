@@ -1121,7 +1121,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         current_file  = ''
         current_file_index = -9999
-
+        indexed_file_index = -9999
         for f in range(len(current_files)):
 
             if dropdown_pos.value.split(' - ')[0] in current_files[f]:
