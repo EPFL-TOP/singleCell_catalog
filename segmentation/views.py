@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, CellID, CellROI, CellStatus, CellFlag, ContourSeg
 
 import os, sys, json, glob, gc
-import time
+import time, datetime
 
 from memory_profiler import profile
 from sklearn.cluster import DBSCAN
@@ -1099,7 +1099,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to get the image stack
     def get_current_stack():
         if DEBUG: print('****************************  get_current_stack ****************************')
-        start=time.now()
+        start=datetime.now()
         current_file=get_current_file(index=0)
         current_pos=current_file.split('/')[-1]
         
@@ -1108,7 +1108,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
         
 
-        end=time.now()
+        end=datetime.now()
         print('=================================================')
         print('=================================================')
         print('deltaT = ',end-start)
