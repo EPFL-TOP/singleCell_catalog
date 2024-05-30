@@ -921,6 +921,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         positions[i] = sorted(positions[i])
         files[i]     = sorted(files[i])
 
+    for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
+        image_stack_dict[pos]=None
+
+
     dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])
     dropdown_pos  = bokeh.models.Select(value=positions['{0}_{1}'.format(experiments[0], wells[experiments[0]][0])][0],title='Position', options=positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)])
