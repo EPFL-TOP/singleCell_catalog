@@ -3736,7 +3736,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 #___________________________________________________________________________________________
-#@login_required
+@login_required
 def index(request: HttpRequest) -> HttpResponse:
 #def index(request):
 
@@ -4155,7 +4155,7 @@ def index(request: HttpRequest) -> HttpResponse:
     
 
 #___________________________________________________________________________________________
-#@login_required
+@login_required
 def bokeh_dashboard(request: HttpRequest) -> HttpResponse:
 
     script = bokeh.embed.server_document(request.build_absolute_uri())
