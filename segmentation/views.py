@@ -1071,6 +1071,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to get the image data stack
     def get_stack_data(current_file):
 
+        if 'bleb001_well1' in current_file:
+            current_file.replace('/mnt/nas_rcp','/data/testcopy')
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         ind_images_list=[]
@@ -1177,11 +1179,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             current_file = current_files[indexed_file_index]
         else:
             current_file = current_files[current_file_index]
-
-        print('--------------- get_current_file() current file index ',current_file_index)
-        print('--------------- get_current_file() indexed file index ',indexed_file_index)
-        print('--------------- get_current_file() index              ',index)
-        print('--------------- get_current_file() current file  ',current_file)
 
         if DEBUG: print('--------------- get_current_file() current file  ',current_file)
         return current_file
