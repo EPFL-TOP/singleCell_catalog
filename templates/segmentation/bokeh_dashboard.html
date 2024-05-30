@@ -12,6 +12,7 @@
   <li>   User: {{ user.get_username }}
     <form id="logout-form" method="post" action="{% url 'logout' %}">
       {% csrf_token %}
+      User: {{ user.get_username }}
       <button type="submit" class="btn btn-link">Logout</button>
     </form>
   </li>
