@@ -7,6 +7,17 @@
   <title>UPOATES Single Cell dashboard</title>
   {% endblock %}
       
+  {% if user.is_authenticated %}
+  <li>User: {{ user.get_username }}</li>
+  <li>
+    <form id="logout-form" method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-link">Logout</button>
+    </form>
+  </li>
+{% else %}
+  <li><a href="{% url 'login' %}?next={{ request.path }}">Login</a></li>
+{% endif %}
 
 
   <meta charset="utf-8">
@@ -30,20 +41,6 @@
 
   <div class="footer">
     <h8>Created by clement.helsens@epfl.ch for the UPOATES lab</h8>
-
-        
-
-    {% if user.is_authenticated %}
-    <li>User: {{ user.get_username }}</li>
-    <li>
-      <form id="logout-form" method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-link">Logout</button>
-      </form>
-    </li>
-  {% else %}
-    <li><a href="{% url 'login' %}?next={{ request.path }}">Login</a></li>
-  {% endif %}
 
   </div>
   
