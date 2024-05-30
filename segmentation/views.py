@@ -1069,13 +1069,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     # Function to get the image stack
-    def get_current_stack(index=0):
+    def get_current_stack():
         if DEBUG: print('****************************  get_current_stack ****************************')
-        current_file=get_current_file(index=index)
+        current_file=get_current_file(index=0)
         current_pos=current_file.split('/')[-1]
         print('image_stack_dict  =  ',image_stack_dict)
         print('image_stack_dict[current_pos]  =  ',image_stack_dict[current_pos])
         
+        #if image_stack_dict[current_pos]==None
+
+
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         ind_images_list=[]
@@ -1776,12 +1779,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to update the position depending on the experiment and the well
     def update_dropdown_pos(attr, old, new):
         if DEBUG:print('****************************  update_dropdown_pos ****************************')
-        dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
-        dropdown_pos.value = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
 
         image_stack_dict.clear
         for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
             image_stack_dict[pos]=None
+
+        dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        dropdown_pos.value   = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
 
         print('update_dropdown_pos image_stack_dict=',image_stack_dict)
         update_position_select()
