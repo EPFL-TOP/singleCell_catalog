@@ -32,7 +32,7 @@ import base64
 from PIL import Image
 
 LOCAL=True
-DEBUG=True
+DEBUG=False
 BASEPATH="/mnt/nas_rcp/raw_data"
 
 #MY macbook
@@ -887,6 +887,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     wells={}
     positions={}
     files={}
+    image_stack_dict={}
 
     flags_dict = {'mask':0,
                   'dividing':50,
@@ -1067,6 +1068,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def get_current_stack(index=0):
         if DEBUG: print('****************************  get_current_stack ****************************')
         current_file=get_current_file(index=index)
+        print('image_stack_dict  =  ',image_stack_dict)
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         ind_images_list=[]
@@ -1136,16 +1138,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('--------------- get_current_file() current file index ',current_file_index)
         print('--------------- get_current_file() indexed file index ',indexed_file_index)
         print('--------------- get_current_file() index              ',index)
+        print('--------------- get_current_file() current file  ',current_file)
 
-        print('--------------- get_current_file() current file  ',current_file)
-        print('--------------- get_current_file() current file  ',current_file)
-        print('--------------- get_current_file() current file  ',current_file)
         if DEBUG: print('--------------- get_current_file() current file  ',current_file)
         return current_file
     #___________________________________________________________________________________________
 
 
-    ind_images_list,  ind_images_list_norm = get_current_stack(index=-1)
+    ind_images_list,  ind_images_list_norm = get_current_stack()
 
     #current images (current index and list of channels)
     data_img_ch={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
@@ -1787,6 +1787,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         slider.start = 0
         slider.end=len(source_imgs.data['images'][0]) - 1
         #update_source_osc_tod()
+
+        image_stack_dict.clear
+        for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
+            image_stack_dict[pos]=None
+
 
         #slider_find_peaks.value = 30
     dropdown_well.on_change('value', update_dropdown_pos)
