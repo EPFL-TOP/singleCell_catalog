@@ -42,6 +42,7 @@ dependencies:
     - pymysql
     - mysqlclient
     - mysql-connector-python
+    - django-cprofile-middleware
 
 
 #TO SOLVE ERROR       

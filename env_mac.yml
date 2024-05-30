@@ -37,3 +37,4 @@ dependencies:
     - channels
     - bokeh-django
     - panel
+    - django-cprofile-middleware
