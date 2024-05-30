@@ -1098,8 +1098,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG: print('****************************  get_current_stack ****************************')
         current_file=get_current_file(index=0)
         current_pos=current_file.split('/')[-1]
-        print('image_stack_dict  =  ',image_stack_dict)
-        print('image_stack_dict[current_pos]  =  ',image_stack_dict[current_pos])
         
         if image_stack_dict[current_pos]==None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
