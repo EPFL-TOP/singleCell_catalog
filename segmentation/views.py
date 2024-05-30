@@ -1108,6 +1108,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def get_adjacent_stack():
+        print('----------------------------------------------get_adjacent_stack--------------------------------------------------')
         current_file_m1=get_current_file(index=-1)
         current_pos_m1=current_file_m1.split('/')[-1]
         if image_stack_dict[current_pos_m1]==None:
@@ -1425,7 +1426,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         ###plot_intensity.y_range.trigger('start', 'end')
         #plot_intensity.y_range.update(start=plot_intensity.y_range.start, end=plot_intensity.y_range.end)
         if DEBUG: print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
-
+        get_adjacent_stack()
     #___________________________________________________________________________________________
 
 
