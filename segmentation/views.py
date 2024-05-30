@@ -32,7 +32,7 @@ import base64
 from PIL import Image
 
 LOCAL=True
-DEBUG=False
+DEBUG=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 
 #MY macbook
@@ -1102,7 +1102,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if image_stack_dict[current_pos]==None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
             image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
+        
+        return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
+    #___________________________________________________________________________________________
 
+    #___________________________________________________________________________________________
+    def get_adjacent_stack():
         current_file_m1=get_current_file(index=-1)
         current_pos_m1=current_file_m1.split('/')[-1]
         if image_stack_dict[current_pos_m1]==None:
@@ -1115,8 +1120,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file_p1)
             image_stack_dict[current_pos_p1]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
 
+        current_file_m2=get_current_file(index=-2)
+        current_pos_m2=current_file_m2.split('/')[-1]
+        if image_stack_dict[current_pos_m2]!=None:
+            image_stack_dict[current_pos_m2]=None
 
-        return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
+        current_file_p2=get_current_file(index=2)
+        current_pos_p2=current_file_p2.split('/')[-1]
+        if image_stack_dict[current_pos_p2]!=None:
+            image_stack_dict[current_pos_p2]=None
+
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
