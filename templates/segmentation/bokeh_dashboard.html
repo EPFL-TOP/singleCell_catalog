@@ -8,11 +8,10 @@
   {% endblock %}
       
   {% if user.is_authenticated %}
-  <li> User: {{ user.get_username }}</li>
-  <li>   User: {{ user.get_username }}
+  <li>   
     <form id="logout-form" method="post" action="{% url 'logout' %}">
       {% csrf_token %}
-      User: {{ user.get_username }}
+       User: {{ user.get_username }}
       <button type="submit" class="btn btn-link">Logout</button>
     </form>
   </li>
