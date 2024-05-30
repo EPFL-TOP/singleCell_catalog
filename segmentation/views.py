@@ -1772,6 +1772,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
 
+        image_stack_dict.clear
+        for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
+            image_stack_dict[pos]=None
+            
         update_position_select()
 
         if slider.value == 0:
@@ -1788,9 +1792,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         slider.end=len(source_imgs.data['images'][0]) - 1
         #update_source_osc_tod()
 
-        image_stack_dict.clear
-        for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
-            image_stack_dict[pos]=None
+
 
 
         #slider_find_peaks.value = 30
