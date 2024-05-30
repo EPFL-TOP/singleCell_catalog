@@ -882,6 +882,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     print('****************************  segmentation_handler ****************************')
     print('****************************  segmentation_handler ****************************')
     #TO BE CHANGED WITH ASYNC?????
+    start_time=datetime.datetime.now()
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
     experiments=[]
     wells={}
@@ -1099,7 +1100,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to get the image stack
     def get_current_stack():
         if DEBUG: print('****************************  get_current_stack ****************************')
-        start=datetime.datetime.now()
+        now=datetime.datetime.now()
+        print('get_current_stack begin deltaT = ',now-start_time)
+
         current_file=get_current_file(index=0)
         current_pos=current_file.split('/')[-1]
         
@@ -1109,17 +1112,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         
 
         end=datetime.datetime.now()
-        print('=================================================')
-        print('=================================================')
-        print('deltaT = ',end-start)
-        print('=================================================')
-        print('=================================================')
+        print('get_current_stack end deltaT = ',end-start_time)
         return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     def get_adjacent_stack():
         print('----------------------------------------------get_adjacent_stack--------------------------------------------------')
+        now=datetime.datetime.now()
+        print('get_adjacent_stack begin deltaT = ',now-start_time)
         current_file_m1=get_current_file(index=-1)
         current_pos_m1=current_file_m1.split('/')[-1]
         if image_stack_dict[current_pos_m1]==None:
@@ -1141,7 +1142,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_pos_p2=current_file_p2.split('/')[-1]
         if image_stack_dict[current_pos_p2]!=None:
             image_stack_dict[current_pos_p2]=None
-
+        end=datetime.datetime.now()
+        print('get_adjacent_stack end deltaT = ',end-start_time)
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
