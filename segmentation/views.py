@@ -1128,7 +1128,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('--------------- get_current_file() index              ',index)
             if dropdown_pos.value.split(' - ')[0] in current_files[current_file_index]:
                 current_file = current_files[current_file_index]
-
+                break
+        print('--------------- get_current_file() current file  ',current_file)
+        print('--------------- get_current_file() current file  ',current_file)
         print('--------------- get_current_file() current file  ',current_file)
         if DEBUG: print('--------------- get_current_file() current file  ',current_file)
         return current_file
