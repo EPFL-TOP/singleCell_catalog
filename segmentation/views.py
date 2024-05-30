@@ -911,13 +911,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             files['{0}_{1}'.format(exp.name, expds.data_name)] = []
             for samp in samples:
                 positions['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name.split('/')[-1])
-                files['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name)
+                files    ['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name)
 
     experiments=sorted(experiments)
     for i in wells:
         wells[i] = sorted(wells[i])
     for i in positions:
         positions[i] = sorted(positions[i])
+        files[i]     = sorted(files[i])
 
     dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])
@@ -1112,16 +1113,23 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     # Function to get the current file
-    def get_current_file():
+    def get_current_file(index=0):
         if DEBUG:
             print('****************************  get_current_file ****************************')
             print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   dropdown_well.value',dropdown_well.value, '  dropdown_pos.value',dropdown_pos.value)
 
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
-        current_file = ''
-        for f in current_files:
-            if dropdown_pos.value.split(' - ')[0] in f:
-                current_file = f
+        current_file  = ''
+        
+        for f in range(len(current_files)):
+
+            current_file_index = (f + index) % len(current_files)
+            print('--------------- get_current_file() current file index ',current_file_index)
+            print('--------------- get_current_file() index              ',index)
+            if dropdown_pos.value.split(' - ')[0] in current_files[current_file_index]:
+                current_file = current_files[current_file_index]
+
+        print('--------------- get_current_file() current file  ',current_file)
         if DEBUG: print('--------------- get_current_file() current file  ',current_file)
         return current_file
     #___________________________________________________________________________________________
