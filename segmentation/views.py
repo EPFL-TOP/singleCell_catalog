@@ -1101,7 +1101,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def get_current_stack():
         if DEBUG: print('****************************  get_current_stack ****************************')
         now=datetime.datetime.now()
-        print('get_current_stack begin deltaT = ',now-start_time)
+        print('\033[94m get_current_stack begin deltaT = \033[0m',now-start_time)
 
         current_file=get_current_file(index=0)
         current_pos=current_file.split('/')[-1]
@@ -1112,7 +1112,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         
 
         end=datetime.datetime.now()
-        print('get_current_stack end deltaT = ',end-start_time)
+        print('\033[94m get_current_stack end deltaT = \033[0m',end-start_time)
         return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
     #___________________________________________________________________________________________
 
@@ -1120,7 +1120,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def get_adjacent_stack():
         print('----------------------------------------------get_adjacent_stack--------------------------------------------------')
         now=datetime.datetime.now()
-        print('\033[96m get_adjacent_stack begin deltaT =  \033[0m',now-start_time)
+        print('\033[94m get_adjacent_stack begin deltaT =  \033[0m',now-start_time)
         current_file_m1=get_current_file(index=-1)
         current_pos_m1=current_file_m1.split('/')[-1]
         if image_stack_dict[current_pos_m1]==None:
@@ -1143,7 +1143,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if image_stack_dict[current_pos_p2]!=None:
             image_stack_dict[current_pos_p2]=None
         end=datetime.datetime.now()
-        print('\033[96m get_adjacent_stack end deltaT = \033[0m',end-start_time)
+        print('\033[94m get_adjacent_stack end deltaT = \033[0m',end-start_time)
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
@@ -2773,9 +2773,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 int_array[int]=0
             if source_intensity_ch1.data["time"][int]>end_oscillation_position.location:
                 int_array[int]=0
-        if DEBUG:
-            print('source_intensity_ch1 ',source_intensity_ch1.data["intensity"])
-            print('int_array            ',int_array)
+
         peaksmax, _ = find_peaks(np.array(int_array),  prominence=new)
         peaksmin, _ = find_peaks(-np.array(int_array), prominence=new)
 
@@ -3582,7 +3580,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 #time_list[ch].append((roi.frame.time/60000))
                 #intensity_list[ch].append(roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels)
                 intensity_list[ch][roi.frame.number]= roi.contour_cellroi.intensity_sum[ch]/roi.contour_cellroi.number_of_pixels
-        print('------------------------- time lisrt',time_list)
 
 
     plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
