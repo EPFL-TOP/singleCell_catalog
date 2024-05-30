@@ -1775,7 +1775,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         image_stack_dict.clear
         for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
             image_stack_dict[pos]=None
-            
+
+        print('update_dropdown_pos image_stack_dict=',image_stack_dict)
         update_position_select()
 
         if slider.value == 0:
