@@ -1068,7 +1068,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def get_current_stack(index=0):
         if DEBUG: print('****************************  get_current_stack ****************************')
         current_file=get_current_file(index=index)
+        current_pos=current_file.split('/')[-1]
         print('image_stack_dict  =  ',image_stack_dict)
+        print('image_stack_dict[current_pos]  =  ',image_stack_dict[current_pos])
+        
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         ind_images_list=[]
@@ -1792,9 +1795,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         slider.start = 0
         slider.end=len(source_imgs.data['images'][0]) - 1
         #update_source_osc_tod()
-
-
-
 
         #slider_find_peaks.value = 30
     dropdown_well.on_change('value', update_dropdown_pos)
