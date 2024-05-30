@@ -1068,16 +1068,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     update_position_select()
 
     #___________________________________________________________________________________________
-    # Function to get the image stack
-    def get_current_stack():
-        if DEBUG: print('****************************  get_current_stack ****************************')
-        current_file=get_current_file(index=0)
-        current_pos=current_file.split('/')[-1]
-        print('image_stack_dict  =  ',image_stack_dict)
-        print('image_stack_dict[current_pos]  =  ',image_stack_dict[current_pos])
-        
-        #if image_stack_dict[current_pos]==None
-
+    # Function to get the image data stack
+    def get_stack_data():
 
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
@@ -1098,6 +1090,35 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             ind_images_list_norm.append(ind_images_norm)
             
         return ind_images_list, ind_images_list_norm
+    #___________________________________________________________________________________________
+
+    #___________________________________________________________________________________________
+    # Function to get the image stack
+    def get_current_stack():
+        if DEBUG: print('****************************  get_current_stack ****************************')
+        current_file=get_current_file(index=0)
+        current_pos=current_file.split('/')[-1]
+        print('image_stack_dict  =  ',image_stack_dict)
+        print('image_stack_dict[current_pos]  =  ',image_stack_dict[current_pos])
+        
+        if image_stack_dict[current_pos]==None:
+            ind_images_list, ind_images_list_norm = get_stack_data(current_file)
+            image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
+
+        current_file_m1=get_current_file(index=-1)
+        current_pos_m1=current_file_m1.split('/')[-1]
+        if image_stack_dict[current_pos_m1]==None:
+            ind_images_list, ind_images_list_norm = get_stack_data(current_file_m1)
+            image_stack_dict[current_pos_m1]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
+
+        current_file_p1=get_current_file(index=1)
+        current_pos_p1=current_file_p1.split('/')[-1]
+        if image_stack_dict[current_pos_p1]==None:
+            ind_images_list, ind_images_list_norm = get_stack_data(current_file_p1)
+            image_stack_dict[current_pos_p1]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
+
+
+        return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
