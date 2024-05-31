@@ -1827,7 +1827,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value   = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
 
-        print('update_dropdown_pos image_stack_dict=',image_stack_dict)
+        #print('update_dropdown_pos image_stack_dict=',image_stack_dict)
         update_position_select()
 
         if slider.value == 0:
@@ -2154,7 +2154,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     int_min.append(source_intensity_ch1.data["intensity"][i])
                 source_intensity_min.data={'time':peaks['min_time'], 'intensity':int_min}  
 
-    seg_type_list = ["roi", "localthresholding_1.5", "localthresholding_1.9", "apoc"]
+    seg_type_list = ["roi", "localthresholding_1.5", "localthresholding_2.0", "apoc"]
     dropdown_segmentation_type = bokeh.models.Select(value=seg_type_list[0], title="segmentation", options=seg_type_list)
     dropdown_segmentation_type.on_change('value', segmentation_type_callback)
     #___________________________________________________________________________________________
@@ -2218,7 +2218,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #print(cellids,'  dropdown_cell.value ',dropdown_cell.value)
         if len(cellids)==0:return
         cellid=cellids[0]
-        #print('cellid=',cellid)
+        print('cellid=',cellid)
         cellrois = CellROI.objects.select_related().filter(cell_id=cellid, frame=frame)
         if len(cellrois)==0:
             print('----------cellrois= ',cellrois)
@@ -2227,14 +2227,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             return
         cellroi = cellrois[0]
-        #print('cellroi=',cellroi)
+        print('cellroi=',cellroi)
         algo = dropdown_segmentation_type.value
+        print('algo  ',algo)
         if algo != 'roi':
             contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo=dropdown_segmentation_type.value)
+            print(' contours ',contours)
             if len(contours)!=1:return
             contour = contours[0]
+            print('contour ',contour)
             f = open(contour.file_name)
             data = json.load(f)
+            print('data  = ',data)
             mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
             for i in range(data['npixels']):
                 mask0[frame.height-data['x'][i]][data['y'][i]]=True
