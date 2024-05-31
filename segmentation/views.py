@@ -3708,6 +3708,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Remove the axes
     plot_image.axis.visible = False
     plot_image.grid.visible = False
+    plot_img_mask.axis.visible = False
+    plot_img_mask.grid.visible = False
 
     source_histo_int_mean_bkg        = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_histo_int_mean_sig_sel    = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
