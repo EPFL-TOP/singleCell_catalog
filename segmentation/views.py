@@ -2227,18 +2227,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             return
         cellroi = cellrois[0]
-        print('cellroi=',cellroi)
         algo = dropdown_segmentation_type.value
-        print('algo  ',algo)
         if algo != 'roi':
             contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo=dropdown_segmentation_type.value)
-            print(' contours ',contours)
             if len(contours)!=1:return
             contour = contours[0]
-            print('contour ',contour)
             f = open(contour.file_name)
             data = json.load(f)
-            print('data  = ',data)
             mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
             for i in range(data['npixels']):
                 mask0[frame.height-data['x'][i]][data['y'][i]]=True
