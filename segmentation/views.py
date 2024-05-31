@@ -1422,7 +1422,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_segments_cell.data      = {'time':[], 'intensity':[]}
 
             set_rising_falling(None)
-
+            update_source_segment(slider.value)
 
         #if len(source_intensity_ch1.data["intensity"])>0:
         #    plot_intensity.y_range = bokeh.models.Range1d(max(source_intensity_ch1.data["intensity"])*0.4, max(source_intensity_ch1.data["intensity"])*1.2, bounds="auto")
@@ -2154,7 +2154,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     int_min.append(source_intensity_ch1.data["intensity"][i])
                 source_intensity_min.data={'time':peaks['min_time'], 'intensity':int_min}  
 
-        update_source_segment(slider.value)
     seg_type_list = ["roi", "localthresholding_1.5", "localthresholding_2.0", "apoc"]
     dropdown_segmentation_type = bokeh.models.Select(value=seg_type_list[0], title="segmentation", options=seg_type_list)
     dropdown_segmentation_type.on_change('value', segmentation_type_callback)
