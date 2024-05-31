@@ -532,7 +532,7 @@ def build_segmentation():
                 print('    sample ',s.file_name)
                 cellids = CellID.objects.select_related().filter(sample=s)
                 print('build segments sample: ',s.file_name)
-                if 'ppf003_well1' not in s.file_name :continue
+                if 'ppf003_xy_001.nd2' not in s.file_name :continue
 
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 #images are t, c, x, y 
@@ -563,7 +563,6 @@ def build_segmentation():
                                                                                   cellroi.max_row, 
                                                                                   cellroi.max_col)
                             if 'apoc' in flag:
-                                print('apoc image shape=',image.shape)
                                 contour = apocseg.segmentation(image)
 
                             build_contours(contour, contourseg, cellroi, image.shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
@@ -1945,8 +1944,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         elif   dropdown_intensity_type.value == 'std': 
                             intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_std')[ch]
 
-                if dropdown_segmentation_type.value == 'localthr-1.9':
-                    contours = ContourSeg.objects.select_related().filter(cell_roi=roi, algo='localthresholding_1.9')
+                if dropdown_segmentation_type.value == 'localthresholding_1.5':
+                    contours = ContourSeg.objects.select_related().filter(cell_roi=roi, algo='localthresholding_1.5')
                     if len(contours)==0:return
                     contour  = contours[0]
                     for ch in contour.intensity_sum:
@@ -2155,7 +2154,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     int_min.append(source_intensity_ch1.data["intensity"][i])
                 source_intensity_min.data={'time':peaks['min_time'], 'intensity':int_min}  
 
-    seg_type_list = ["roi", "localthr-1.9"]
+    seg_type_list = ["roi", "localthresholding_1.5", "localthresholding_1.9", "apoc"]
     dropdown_segmentation_type = bokeh.models.Select(value=seg_type_list[0], title="segmentation", options=seg_type_list)
     dropdown_segmentation_type.on_change('value', segmentation_type_callback)
     #___________________________________________________________________________________________
