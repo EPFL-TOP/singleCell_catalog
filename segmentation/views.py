@@ -1860,6 +1860,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         new_image = source_imgs_norm.data['images'][int(dropdown_channel.value)][slider.value]
         source_img.data   = {'img':[new_image]}
 
+        update_source_segment(slider.value)
         #img_min = new_image.min()
         #img_max = new_image.max()
         #color_mapper.low  = img_min
@@ -3523,7 +3524,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_img_mask  = bokeh.models.ColumnDataSource(data=data_img_mask)
 
     #plot_img_mask     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
-    plot_img_mask.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img_mask)
+    plot_img_mask.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img_mask, color_mapper=color_mapper)
 
        # Create a ColumnDataSource to store image data
     #source_url = bokeh.models.ColumnDataSource({'url': [''], 'x': [0], 'y': [0], 'dw': [0], 'dh': [0]})
