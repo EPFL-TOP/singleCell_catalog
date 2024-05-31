@@ -2078,7 +2078,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         update_source_osc_tod()
         update_dropdown_channel('','','')
         intensity_type_callback('','','')
-        #update_source_segment()
+        update_source_segment()
 
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
@@ -2205,13 +2205,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
-    def update_source_segment():
+    def update_source_segment(tp=0):
         if DEBUG:print('****************************  update_source_segment ****************************')
         current_file=get_current_file()
 
         sample = Sample.objects.get(file_name=current_file)
         #print('sample=',sample)
-        frames  = Frame.objects.select_related().filter(sample=sample, number=slider.value)
+        frames  = Frame.objects.select_related().filter(sample=sample, number=tp)
         frame = frames[0]
         #print('frame=',frame)
         cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
@@ -2228,23 +2228,26 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             return
         cellroi = cellrois[0]
         #print('cellroi=',cellroi)
-        contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo='localthresholding')
-        if len(contours)==0:return
+        algo = dropdown_segmentation_type.value
+        if algo != 'roi':
+            contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo=dropdown_segmentation_type.value)
+            if len(contours)!=1:return
+            contour = contours[0]
+            f = open(contour.file_name)
+            data = json.load(f)
+            mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
+            for i in range(data['npixels']):
+                mask0[frame.height-data['x'][i]][data['y'][i]]=True
+            source_img_mask.data = {'img':[mask0]}
 
-        contour = contours[0]
-        #print('contour=',contour)
-        source_segmentation.data={'x':contour.pixels['x'], 'y':[frame.height-c for c in contour.pixels['y']]}
+            #source_segmentation.data={'x':contour.pixels['x'], 'y':[frame.height-c for c in contour.pixels['y']]}
 
-        #print('update_source_segment source_segmentation.data=',source_segmentation.data)
 
-        #mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
         #f = open(contour.file_name)
         #data = json.load(f)
 
-        #for i in range(data['npixels']):
-        #    mask0[frame.height-data['x'][i]][data['y'][i]]=True
 
-        #source_img_mask.data = {'img':[mask0]}
+
 
     #___________________________________________________________________________________________
 
@@ -2269,7 +2272,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             line_position.location = -999
         else:
             line_position.location = source_intensity_ch1.data["time"][time_point]
-        #update_source_segment()
+        update_source_segment(time_point)
 
     slider.on_change('value', callback_slider)
     #___________________________________________________________________________________________
@@ -3696,7 +3699,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     prepare_intensity() 
 
-    #update_source_segment()
+    update_source_segment()
 
     # Add the rectangle glyph after adding the image
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
