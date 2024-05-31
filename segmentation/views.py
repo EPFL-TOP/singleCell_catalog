@@ -2237,7 +2237,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
             for i in range(data['npixels']):
                 mask0[frame.height-data['x'][i]][data['y'][i]]=True
-            source_img_mask.data = {'img':[mask0]}
+            source_img_mask.data = {'img':[mask0*source_img_ch.data['img'][0]]}
 
             #source_segmentation.data={'x':contour.pixels['x'], 'y':[frame.height-c for c in contour.pixels['y']]}
 
