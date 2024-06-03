@@ -32,7 +32,7 @@ import base64
 from PIL import Image
 
 LOCAL=True
-DEBUG=True
+DEBUG=False
 BASEPATH="/mnt/nas_rcp/raw_data"
 
 #MY macbook
@@ -532,7 +532,7 @@ def build_segmentation():
                 print('    sample ',s.file_name)
                 cellids = CellID.objects.select_related().filter(sample=s)
                 print('build segments sample: ',s.file_name)
-                if 'ppf003_xy_001.nd2' not in s.file_name :continue
+                if 'ppf003' not in s.file_name :continue
 
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 #images are t, c, x, y 
