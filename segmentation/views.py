@@ -565,7 +565,8 @@ def build_segmentation():
                             if 'apoc' in flag:
                                 contour = apocseg.segmentation(image)
 
-                            build_contours(contour, contourseg, cellroi, image.shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
+                            if contour!=None:
+                                build_contours(contour, contourseg, cellroi, image.shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
 
 #___________________________________________________________________________________________
 def build_contours(contour, contourseg, cellroi, img_shape, segname, images, channels, exp_name, expds_data_name, s_file_name):
