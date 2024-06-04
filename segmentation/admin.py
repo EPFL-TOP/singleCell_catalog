@@ -23,6 +23,10 @@ class CellStatusAdmin(admin.ModelAdmin):
 class FrameAdmin(admin.ModelAdmin):
     search_fields = ["sample__file_name"]
 
+
+class SampleAdmin(admin.ModelAdmin):
+    search_fields = ["file_name"]
+
 admin.site.register(Experiment)
 admin.site.register(ExperimentalDataset)
 admin.site.register(Sample)
