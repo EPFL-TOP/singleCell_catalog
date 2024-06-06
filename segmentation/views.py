@@ -675,6 +675,7 @@ def fix_alive_status():
 
 #___________________________________________________________________________________________
 def build_ROIs_loop(exp_name):
+    print('build_ROIs_loop exp_name=',exp_name)
     exp_list = Experiment.objects.all()
     for exp in exp_list:
     #ALREADY DONE WITH NEW 
