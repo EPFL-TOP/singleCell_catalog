@@ -674,7 +674,7 @@ def fix_alive_status():
                         print('frame=',framenumber, '  cellflag.alive= ',cellflag.alive )
 
 #___________________________________________________________________________________________
-def build_ROIs_loop():
+def build_ROIs_loop(exp_name):
     exp_list = Experiment.objects.all()
     for exp in exp_list:
     #ALREADY DONE WITH NEW 
@@ -682,7 +682,7 @@ def build_ROIs_loop():
     #ppf001, ppf003, ppf005, ppf008 ppf009 = 5
     #wscepfl0060, wscepfl0078, wscepfl0080, wscepfl0081, wscepfl0082, wscepfl0086, wscepfl0089, wscepfl0096 = 7
     #reste wscepfl0087 (annotated)
-        if exp.name!="fzn31052024":
+        if exp_name!='' and exp.name!=exp_name:
             continue
 
 
@@ -3838,9 +3838,7 @@ def index(request: HttpRequest) -> HttpResponse:
     if 'register_rawdataset' in request.POST and LOCAL==False:
         register_rawdataset()
 
-    #THIS BUILDS THE ROIS FOR ALL THE EXISTING SAMPLES
-    if 'build_ROIs' in request.POST:
-        build_ROIs_loop()
+
 
     #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
     if 'segment' in request.POST:
@@ -3903,6 +3901,11 @@ def index(request: HttpRequest) -> HttpResponse:
     selected_dict['segmentation']=selected_segmentation
     selected_segmentation_channel=request.POST.get('select_segmentation_channel')
     selected_dict['segmentation_channel']=selected_segmentation_channel
+
+
+    #THIS BUILDS THE ROIS FOR ALL THE EXISTING SAMPLES
+    if 'build_ROIs' in request.POST:
+        build_ROIs_loop(selected_experiment)
 
     if selected_experiment!='':
         for e in experiment_dict['experiments']:
