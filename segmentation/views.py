@@ -3813,6 +3813,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
+selected_dict={
+    'experiment':'',
+    'well':'',
+    'position':'',
+    'segmentation':'',
+    'segmentation_channel':''
+}
+
 #___________________________________________________________________________________________
 @login_required
 def index(request: HttpRequest) -> HttpResponse:
@@ -3884,16 +3892,10 @@ def index(request: HttpRequest) -> HttpResponse:
 
 
     #dictionary to keep the selected choices, this is for the front end page
-    selected_dict={
-        'experiment':'',
-        'well':'',
-        'position':'',
-        'segmentation':'',
-        'segmentation_channel':''
-    }
+
 
     selected_experiment=request.POST.get('select_experiment')
-    selected_dict['experiment']=selected_experiment
+    if selected_experiment!=None:selected_dict['experiment']=selected_experiment
     selected_well=request.POST.get('select_well')
     selected_dict['well']=selected_well
     selected_position=request.POST.get('select_position')
@@ -3906,7 +3908,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
     #THIS BUILDS THE ROIS FOR ALL THE EXISTING SAMPLES
     if 'build_ROIs' in request.POST:
-        build_ROIs_loop(selected_experiment)
+        build_ROIs_loop(selected_dict['experiment'])
 
     if selected_experiment!='':
         for e in experiment_dict['experiments']:
