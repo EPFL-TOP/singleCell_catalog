@@ -3813,6 +3813,55 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
+
+#___________________________________________________________________________________________
+def summary_handler(doc: bokeh.document.Document) -> None:
+    print('****************************  summary_handler ****************************')
+    #TO BE CHANGED WITH ASYNC?????
+    start_time=datetime.datetime.now()
+    os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+    experiments=[]
+    wells={}
+    positions={}
+    files={}
+
+    for exp in Experiment.objects.all():
+        experiments.append(exp.name)
+        wells[exp.name] = []
+        experimentaldatasets = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        for expds in experimentaldatasets:
+            wells[exp.name].append(expds.data_name)
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            positions['{0}_{1}'.format(exp.name, expds.data_name)] = []
+            files['{0}_{1}'.format(exp.name, expds.data_name)] = []
+            for samp in samples:
+                positions['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name.split('/')[-1])
+                files    ['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name)
+
+    experiments=sorted(experiments)
+    for i in wells:
+        wells[i] = sorted(wells[i])
+    for i in positions:
+        positions[i] = sorted(positions[i])
+        files[i]     = sorted(files[i])
+
+
+    dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
+    dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])
+
+
+
+
+    exp_color_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
+                                         bokeh.layouts.row(dropdown_well))
+
+
+
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(exp_color_col))
+
+    doc.add_root(norm_layout)
+
+
 selected_dict={
     'experiment':'',
     'well':'',
@@ -4246,3 +4295,14 @@ def bokeh_dashboard(request: HttpRequest) -> HttpResponse:
     context = {'script': script}
 
     return render(request, 'segmentation/bokeh_dashboard.html', context=context)
+
+
+#___________________________________________________________________________________________
+@login_required
+def bokeh_summary_dashboard(request: HttpRequest) -> HttpResponse:
+
+    script = bokeh.embed.server_document(request.build_absolute_uri())
+    print("request.build_absolute_uri() ",request.build_absolute_uri())
+    context = {'script': script}
+
+    return render(request, 'segmentation/bokeh_summary_dashboard.html', context=context)

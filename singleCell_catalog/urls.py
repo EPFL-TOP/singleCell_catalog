@@ -29,6 +29,7 @@ from bokeh_django import autoload, directory, document, static_extensions
 urlpatterns = [
     path(r"segmentation/", views.index, name="index"),
     path(r"segmentation/bokeh_dashboard", views.bokeh_dashboard, name="bokeh_dashboard"),
+    path(r"segmentation/bokeh_summary_dashboard", views.bokeh_summary_dashboard, name="bokeh_summary_dashboard"),
     path('admin/', admin.site.urls),
 ]
 
@@ -37,6 +38,7 @@ urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 bokeh_apps = [
     autoload("segmentation/bokeh_dashboard", views.segmentation_handler),
+    autoload("segmentation/bokeh_summary_dashboard", views.summary_handler),
 ]
 
 urlpatterns += [
