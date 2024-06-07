@@ -3919,7 +3919,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
             sorted_lists3 = sorted(zip(time,  intensity_sum)) 
             sorted_lists4 = sorted(zip(time,  intensity_std)) 
 
-            time_sorted, intensity_max_sorted  = zip(*sorted_lists1)
+            #time_sorted, intensity_max_sorted  = zip(*sorted_lists1)
             time_sorted, intensity_mean_sorted = zip(*sorted_lists2)
             time_sorted, intensity_sum_sorted  = zip(*sorted_lists3)
             time_sorted, intensity_std_sorted  = zip(*sorted_lists4)
