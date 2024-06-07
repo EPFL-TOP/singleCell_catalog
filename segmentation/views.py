@@ -1840,8 +1840,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             slider.value = 0
         slider.start = 0
         slider.end=len(source_imgs.data['images'][0]) - 1
-        #update_source_osc_tod()
-
+        #CLEMENT TEST TIME
+        update_source_osc_tod()
         #slider_find_peaks.value = 30
     dropdown_well.on_change('value', update_dropdown_pos)
     #___________________________________________________________________________________________
@@ -2075,22 +2075,26 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             slider.value = 0
             slider.start = 0
             slider.end   = len(source_imgs.data['images'][0]) - 1
-
         print_time('------- prepare_pos 2 ', local_time)
 
-        if DEBUG:print('prepare_pos after slider')
         update_dropdown_cell('','','')
         print_time('------- prepare_pos 3 ', local_time)
+
         slider.end=len(source_imgs.data['images'][0]) - 1
         print_time('------- prepare_pos 4 ', local_time)
+
         reset_tap_tool()
         print_time('------- prepare_pos 5 ', local_time)
-        update_source_osc_tod()
-        print_time('------- prepare_pos 6 ', local_time)
+
+        #update_source_osc_tod()
+        #print_time('------- prepare_pos 6 ', local_time)
+
         update_dropdown_channel('','','')
         print_time('------- prepare_pos 7 ', local_time)
+
         intensity_type_callback('','','')
         print_time('------- prepare_pos 8 ', local_time)
+
         update_source_segment()
         print_time('------- prepare_pos end ', local_time)
 
@@ -2925,7 +2929,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def update_source_osc_tod():#checkbox_status):#tod_checkbox_all=True, tod_checkbox_keep=False, tod_checkbox_dkeep=False):
-        #print("Checkbox status:", checkbox_status)        
         if DEBUG:print('------------------------update_source_osc_tod-------------------------')
         well = ExperimentalDataset.objects.get(data_name=dropdown_well.value)
         nframes = well.experiment.number_of_frames
@@ -3700,7 +3703,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    #update_source_osc_tod([1,0,0])
     update_source_osc_tod()
     #plot_osc_tod.vbar(x='x', top='top', width=3, source=source_start_osc, alpha=0.5, color='green', line_color=None)
     #plot_osc_tod.vbar(x='x', top='top', width=3, source=source_end_osc, alpha=0.5, color='red', line_color=None)
