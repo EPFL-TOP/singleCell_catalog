@@ -3936,17 +3936,17 @@ def summary_handler(doc: bokeh.document.Document) -> None:
         new_plots = []
         for i in range(selected_num_plots):
             p = bokeh.plotting.figure(width=400, height=200, title=f"{dropdown_exp.value} {selected_positons[i].split('_')[-1].replace('.nd2','')}")
-            print('selected_positons=',selected_positons[i], '  ncells ',len(intensity_traces[selected_positons[i]]))
+            #print('selected_positons=',selected_positons[i], '  ncells ',len(intensity_traces[selected_positons[i]]))
             
             for cell in intensity_traces[selected_positons[i]]:
                 time_list=[]
                 int_list = {}
                 for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][0]:
                     int_list[ch]=[]
-                print('cell=',cell)
-                print('intensity_traces[selected_positons[i]]=',intensity_traces[selected_positons[i]])
+                #print('cell=',cell)
+                #print('intensity_traces[selected_positons[i]]=',intensity_traces[selected_positons[i]])
                 
-                print(intensity_traces[selected_positons[i]][cell]['ROI'])
+                #print(intensity_traces[selected_positons[i]][cell]['ROI'])
                 for t in range(len(intensity_traces[selected_positons[i]][cell]['ROI']['time'])):
                     time_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['time'][t]/60000.)
                     for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t]:
