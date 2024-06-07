@@ -1076,7 +1076,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     # Function to get the image data stack
-    def get_stack_data(current_file):
+    def get_stack_data(current_file, text=''):
         local_time=datetime.datetime.now()
 
         #if 'bleb001_well1' in current_file:
@@ -1099,7 +1099,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 ind_images_norm.append(intensity_normalized)
             ind_images_list.append(ind_images)
             ind_images_list_norm.append(ind_images_norm)
-        print_time('------- get_stack_data ', local_time)
+        print_time(f'------- get_stack_data {text}', local_time)
 
         return ind_images_list, ind_images_list_norm
     #___________________________________________________________________________________________
@@ -1135,7 +1135,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for k in image_stack_dict:
             if k in current_pos_list:
                 if image_stack_dict[k]==None:
-                    ind_images_list, ind_images_list_norm = get_stack_data(current_file_list[current_pos_list.index(k)])
+                    ind_images_list, ind_images_list_norm = get_stack_data(current_file_list[current_pos_list.index(k)], 'get_adjacent_stack')
                     image_stack_dict[k]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
 
             else:
