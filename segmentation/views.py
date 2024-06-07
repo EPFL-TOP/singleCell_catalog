@@ -3876,10 +3876,148 @@ def summary_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def update_plot(attr, old, new):
-        selected_experiment  = dropdown_exp.value
-        selected_positons    = positions['{0}_{1}'.format(selected_experiment, dropdown_well.value)]
+        selected_experiment  = Experiment.objects.get(name=dropdown_exp.value)
+        experimentaldataset  = ExperimentalDataset.objects.select_related().filter(experiment = selected_experiment).get(data_name = dropdown_well.value)
+        selected_positons    = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         selected_num_plots  = len(selected_positons)
         print('selected_num_plots=',selected_num_plots)
+        print('selected_experiment=',selected_experiment)
+        print('experimentaldataset=',experimentaldataset)
+
+    # for experiment in Experiment.objects.all():
+    #     exp=experiment.name
+    #     if selected_experiment!=None and selected_experiment!=exp: continue
+    #     download_dict[exp]={}
+    #     print(' ---- Experiment name ',exp)
+    #     experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = experiment)
+    #     for exerimentalpds in experimentaldataset:
+    #         expds=exerimentalpds.data_name
+    #         if selected_well!=None and selected_well!=expds: continue
+    #         download_dict[exp][expds]={}
+    #         print('    ---- experimental dataset name ',expds)
+    #         samples = Sample.objects.select_related().filter(experimental_dataset = exerimentalpds)
+    #         for samp in samples:
+    #             sample=samp.file_name.split('/')[-1]
+    #             print('       ---- sample ',sample)
+    #             download_dict[exp][expds][sample]={}
+    #             download_dict[exp][expds][sample]['keep_sample']=samp.keep_sample
+    #             download_dict[exp][expds][sample]['sample_quality']=samp.sample_quality
+    #             download_dict[exp][expds][sample]['peaks_tod_div_validated']=samp.peaks_tod_div_validated
+    #             download_dict[exp][expds][sample]['bf_features_validated']=samp.bf_features_validated
+    #             cellsID = CellID.objects.select_related().filter(sample=samp)
+    #             for cellID in cellsID:
+    #                 download_dict[exp][expds][sample][cellID.name]={}
+    #                 download_dict[exp][expds][sample][cellID.name]["start_oscillation_time"]=cellID.cell_status.start_oscillation
+    #                 download_dict[exp][expds][sample][cellID.name]["end_oscillation_time"]=cellID.cell_status.end_oscillation
+    #                 download_dict[exp][expds][sample][cellID.name]["start_oscillation_frame"]=cellID.cell_status.start_oscillation_frame
+    #                 download_dict[exp][expds][sample][cellID.name]["end_oscillation_frame"]=cellID.cell_status.end_oscillation_frame
+    #                 download_dict[exp][expds][sample][cellID.name]["mask"]=cellID.cell_status.mask
+    #                 download_dict[exp][expds][sample][cellID.name]["migrating"]=cellID.cell_status.migrating
+    #                 download_dict[exp][expds][sample][cellID.name]["n_oscillations"]=cellID.cell_status.n_oscillations
+    #                 download_dict[exp][expds][sample][cellID.name]["time_of_death"]=cellID.cell_status.time_of_death
+    #                 download_dict[exp][expds][sample][cellID.name]["time_of_death_frame"]=cellID.cell_status.time_of_death_frame
+    #                 download_dict[exp][expds][sample][cellID.name]["peaks"]=cellID.cell_status.peaks
+    #                 download_dict[exp][expds][sample][cellID.name]["flags"]=cellID.cell_status.flags
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]={}
+
+    #                 download_dict[exp][expds][sample][cellID.name]["segmentation"]={}
+
+    #                 alive          = []
+    #                 oscillating    = []
+    #                 maximum        = []
+    #                 minimum        = []
+    #                 falling        = []
+    #                 rising         = []
+    #                 last_osc       = []
+    #                 mask           = []
+    #                 dividing       = []
+    #                 double_nuclei  = []
+    #                 multiple_cells = []
+    #                 pair_cell      = []
+    #                 flat           = []
+    #                 round          = []
+    #                 elongated      = []
+    #                 time           = []
+
+    #                 center_x_mic     = []
+    #                 center_y_mic     = []
+    #                 center_x_pix     = []
+    #                 center_y_pix     = []
+    #                 file_name        = []
+    #                 intensity_max    = []
+    #                 intensity_mean   = []
+    #                 intensity_std    = []
+    #                 intensity_sum    = []
+    #                 mode             = []
+    #                 number_of_pixels = []
+    #                 type             = []
+
+    #                 cellsROI = CellROI.objects.select_related().filter(cell_id=cellID)
+    #                 for cellROI in cellsROI:
+    #                     time.append(cellROI.frame.time)
+    #                     alive.append(cellROI.cellflag_cellroi.alive)
+    #                     oscillating.append(cellROI.cellflag_cellroi.oscillating)
+    #                     maximum.append(cellROI.cellflag_cellroi.maximum)
+    #                     minimum.append(cellROI.cellflag_cellroi.minimum)
+    #                     falling.append(cellROI.cellflag_cellroi.falling)
+    #                     rising.append(cellROI.cellflag_cellroi.rising)
+    #                     last_osc.append(cellROI.cellflag_cellroi.last_osc)
+    #                     mask.append(cellROI.cellflag_cellroi.mask)
+    #                     dividing.append(cellROI.cellflag_cellroi.dividing)
+    #                     double_nuclei.append(cellROI.cellflag_cellroi.double_nuclei)
+    #                     multiple_cells.append(cellROI.cellflag_cellroi.multiple_cells)
+    #                     pair_cell.append(cellROI.cellflag_cellroi.pair_cell)
+    #                     flat.append(cellROI.cellflag_cellroi.flat)
+    #                     round.append(cellROI.cellflag_cellroi.round)
+    #                     elongated.append(cellROI.cellflag_cellroi.elongated)
+
+    #                     center_x_mic.append(cellROI.contour_cellroi.center_x_mic)
+    #                     center_y_mic.append(cellROI.contour_cellroi.center_y_mic)
+    #                     center_x_pix.append(cellROI.contour_cellroi.center_x_pix)
+    #                     center_y_pix.append(cellROI.contour_cellroi.center_y_pix)
+    #                     file_name.append(cellROI.contour_cellroi.file_name)
+    #                     intensity_max.append(cellROI.contour_cellroi.intensity_max)
+    #                     intensity_mean.append(cellROI.contour_cellroi.intensity_mean)
+    #                     intensity_std.append(cellROI.contour_cellroi.intensity_std)
+    #                     intensity_sum.append(cellROI.contour_cellroi.intensity_sum)
+    #                     mode.append(cellROI.contour_cellroi.mode)
+    #                     number_of_pixels.append(cellROI.contour_cellroi.number_of_pixels)
+    #                     type.append(cellROI.contour_cellroi.type)
+
+    #                 sorted_lists = sorted(zip(time, alive, oscillating, maximum, minimum, falling, rising, last_osc, mask, dividing, double_nuclei, multiple_cells, pair_cell, flat, round, elongated)) 
+    #                 time_sorted, alive_sorted, oscillating_sorted, maximum_sorted, minimum_sorted, falling_sorted, rising_sorted, last_osc_sorted, mask_sorted, dividing_sorted, double_nuclei_sorted, multiple_cells_sorted, pair_cell_sorted, flat_sorted, round_sorted, elongated_sorted = zip(*sorted_lists) 
+    #                 download_dict[exp][expds][sample][cellID.name]["time"]           = time_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["alive"]          = alive_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["oscillating"]    = oscillating_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["maximum"]        = maximum_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["minimum"]        = minimum_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["falling"]        = falling_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["rising"]         = rising_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["last_osc"]       = last_osc_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["mask"]           = mask_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["dividing"]       = dividing_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["double_nuclei"]  = double_nuclei_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["multiple_cells"] = multiple_cells_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["pair_cell"]      = pair_cell_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["flat"]           = flat_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["round"]          = round_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["elongated"]      = elongated_sorted
+                    
+    #                 sorted_lists2 = sorted(zip(time, center_x_mic, center_y_mic, center_x_pix, center_y_pix, file_name, intensity_max, intensity_mean, intensity_std, intensity_sum, mode, number_of_pixels, type))
+    #                 time_sorted, center_x_mic_sorted, center_y_mic_sorted, center_x_pix_sorted, center_y_pix_sorted, file_name_sorted, intensity_max_sorted, intensity_mean_sorted, intensity_std_sorted, intensity_sum_sorted, mode_sorted, number_of_pixels_sorted, type_sorted = zip(*sorted_lists2)
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]["center_x_mic"]     = center_x_mic_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]["center_y_mic"]     = center_y_mic_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]["center_x_pix"]     = center_x_pix_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]["center_y_pix"]     = center_y_pix_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]["file_name"]        = file_name_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_max"]    = intensity_max_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_mean"]   = intensity_mean_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_std"]    = intensity_std_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]["intensity_sum"]    = intensity_sum_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]["mode"]             = mode_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]["number_of_pixels"] = number_of_pixels_sorted
+    #                 download_dict[exp][expds][sample][cellID.name]["ROI"]["type"]             = type_sorted
+
         # Update the plots data
         #if selected_dataset == 'Dataset 1':
         data_x = [1, 2, 3]
@@ -3891,7 +4029,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
         # Create new plots based on the selected number of plots
         new_plots = []
         for i in range(selected_num_plots):
-            p = bokeh.plotting.figure(width=400, height=200, title=f"{selected_experiment} {selected_positons[i].split('_')[-1].replace('.nd2','')}")
+            p = bokeh.plotting.figure(width=400, height=200, title=f"{dropdown_exp.value} {selected_positons[i].split('_')[-1].replace('.nd2','')}")
             p.circle(data_x, data_y)
             new_plots.append(p)
 
