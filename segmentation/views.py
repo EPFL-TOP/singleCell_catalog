@@ -3878,11 +3878,13 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     def update_plot(attr, old, new):
         selected_experiment  = Experiment.objects.get(name=dropdown_exp.value)
         experimentaldataset  = ExperimentalDataset.objects.select_related().filter(experiment = selected_experiment).get(data_name = dropdown_well.value)
+        samples = Sample.objects.select_related().filter(experimental_dataset = experimentaldataset)
         selected_positons    = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         selected_num_plots  = len(selected_positons)
         print('selected_num_plots=',selected_num_plots)
         print('selected_experiment=',selected_experiment)
         print('experimentaldataset=',experimentaldataset)
+        print('samples=',samples)
 
     # for experiment in Experiment.objects.all():
     #     exp=experiment.name
