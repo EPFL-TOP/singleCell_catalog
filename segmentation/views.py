@@ -1122,9 +1122,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def get_adjacent_stack(number=3):
-        print('----------------------------------------------get_adjacent_stack--------------------------------------------------')
-        now=datetime.datetime.now()
-        print('\033[94m get_adjacent_stack begin deltaT =  \033[0m',now-start_time)
 
         current_pos_list=[]
         current_file_list=[]
@@ -1144,8 +1141,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if image_stack_dict[k]!=None:
                     image_stack_dict[k]==None
 
-        end=datetime.datetime.now()
-        print('\033[94m get_adjacent_stack end deltaT = \033[0m',end-start_time)
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
