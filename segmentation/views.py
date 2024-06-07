@@ -3898,7 +3898,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
         new_grid = create_grid(new_plots, grid_size)
         
         # Update the layout
-        norm_layout.children[1] = new_grid
+        norm_layout.children[0] = new_grid
 
     dropdown_well.on_change('value', update_plot)
     #___________________________________________________________________________________________
@@ -3922,8 +3922,8 @@ def summary_handler(doc: bokeh.document.Document) -> None:
 
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(exp_color_col, grid))
 
-    print('==========norm   ',norm_layout.children)
-    print('==========norm  len ',len(norm_layout))
+    print('==========norm norm_layout.children[0]  ',norm_layout.children[0])
+    print('==========norm  len ',len(norm_layout.children[0]))
 
     doc.add_root(norm_layout)
 
