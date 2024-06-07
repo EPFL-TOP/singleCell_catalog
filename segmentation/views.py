@@ -3856,7 +3856,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     def create_plots(num):
         plots = []
         for i in range(num):
-            p = bokeh.plotting.figure(width=250, height=250, title=f"Plot {i+1}")
+            p = bokeh.plotting.figure(width=450, height=250, title=f"Plot {i+1}")
             p.circle([1, 2, 3], [1, 4, 9])
             plots.append(p)
         return plots
@@ -3890,7 +3890,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
         # Create new plots based on the selected number of plots
         new_plots = []
         for i in range(selected_num_plots):
-            p = bokeh.layouts.figure(width=250, height=250, title=f"{selected_experiment} Plot {i + 1}")
+            p = bokeh.plotting.figure(width=250, height=250, title=f"{selected_experiment} Plot {i + 1}")
             p.circle(data_x, data_y)
             new_plots.append(p)
 
