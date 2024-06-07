@@ -3850,7 +3850,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])
     dropdown_grid = bokeh.models.Select(value='5', title='Grid', options=['3','4','5','6','7','8'])
     dropdown_intensity_type = bokeh.models.Select(value='mean', title='intensity', options=['mean','max','std','sum'])
-
+    checkbox_yrange = bokeh.models.CheckboxGroup(labels=["Same y-range"], active=[1])
     intensity_map = {'max':'intensity_max', 
                      'mean':'intensity_mean',
                      'std':'intensity_std',
@@ -3947,7 +3947,10 @@ def summary_handler(doc: bokeh.document.Document) -> None:
 
         for i in range(selected_num_plots):
 
-            p = bokeh.plotting.figure(width=400, height=200, y_range=shared_y_range, title=f"{dropdown_exp.value} {selected_positons[i].split('_')[-1].replace('.nd2','')} ncells={len(intensity_traces[selected_positons[i]])}")
+            if 1 in checkbox_yrange.active:
+                p = bokeh.plotting.figure(width=400, height=200, y_range=shared_y_range, title=f"{dropdown_exp.value} {selected_positons[i].split('_')[-1].replace('.nd2','')} ncells={len(intensity_traces[selected_positons[i]])}")
+            else:
+                p = bokeh.plotting.figure(width=400, height=200, title=f"{dropdown_exp.value} {selected_positons[i].split('_')[-1].replace('.nd2','')} ncells={len(intensity_traces[selected_positons[i]])}")
             #print('selected_positons=',selected_positons[i], '  ncells ',len(intensity_traces[selected_positons[i]]))
             
             for cell in intensity_traces[selected_positons[i]]:
@@ -3998,11 +4001,17 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
+    #___________________________________________________________________________________________
+    def select_y_range(attr, old, new):
+        update_plot('','','')
+    checkbox_yrange.on_change('active', select_y_range)
+    #___________________________________________________________________________________________
 
     exp_color_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
                                          bokeh.layouts.row(dropdown_well),
                                          bokeh.layouts.row(dropdown_grid), 
-                                         bokeh.layouts.row(dropdown_intensity_type))
+                                         bokeh.layouts.row(dropdown_intensity_type),
+                                         bokeh.layouts.row(checkbox_yrange))
 
 
 
