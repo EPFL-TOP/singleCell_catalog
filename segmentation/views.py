@@ -3935,7 +3935,21 @@ def summary_handler(doc: bokeh.document.Document) -> None:
 
         new_plots = []
         for i in range(selected_num_plots):
-            p = bokeh.plotting.figure(width=400, height=200, title=f"{dropdown_exp.value} {selected_positons[i].split('_')[-1].replace('.nd2','')}")
+
+            
+            y_min=9999999999999
+            y_max=0
+            shared_y_range = bokeh.models.Range1d(start=y_min, end=y_max)
+
+            for cell in intensity_traces[selected_positons[i]]:
+                for t in range(len(intensity_traces[selected_positons[i]][cell]['ROI']['time'])):
+                    for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t]:
+                        if 'BF' in ch:continue
+                        val=intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t][ch]                        
+                        if val<y_min: y_min=val
+                        if val>y_max: y_max=val
+
+            p = bokeh.plotting.figure(width=400, height=200, y_range=shared_y_range, title=f"{dropdown_exp.value} {selected_positons[i].split('_')[-1].replace('.nd2','')} ncells={len(intensity_traces[selected_positons[i]])}")
             #print('selected_positons=',selected_positons[i], '  ncells ',len(intensity_traces[selected_positons[i]]))
             
             for cell in intensity_traces[selected_positons[i]]:
@@ -3943,10 +3957,6 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 int_list = {}
                 for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][0]:
                     int_list[ch]=[]
-                #print('cell=',cell)
-                #print('intensity_traces[selected_positons[i]]=',intensity_traces[selected_positons[i]])
-                
-                #print(intensity_traces[selected_positons[i]][cell]['ROI'])
                 for t in range(len(intensity_traces[selected_positons[i]][cell]['ROI']['time'])):
                     time_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['time'][t]/60000.)
                     for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t]:
