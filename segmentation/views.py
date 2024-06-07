@@ -3898,7 +3898,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
         new_grid = create_grid(new_plots, grid_size)
         
         # Update the layout
-        norm_layout.children[0] = new_grid
+        norm_layout.children[1] = new_grid
 
     dropdown_well.on_change('value', update_plot)
     #___________________________________________________________________________________________
