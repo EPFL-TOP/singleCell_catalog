@@ -3909,21 +3909,20 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                     intensity_std.append(cellROI.contour_cellroi.intensity_std)
                     intensity_sum.append(cellROI.contour_cellroi.intensity_sum)
 
-            sorted_lists    = list(zip(time, intensity_max,intensity_mean, intensity_sum, intensity_std)) 
-            sorted_combined = sorted(sorted_lists, key=lambda x: x[0])
+                sorted_lists    = list(zip(time, intensity_max,intensity_mean, intensity_sum, intensity_std)) 
+                sorted_combined = sorted(sorted_lists, key=lambda x: x[0])
 
-            #time_sorted, intensity_max_sorted  = zip(*sorted_lists1)
-            time_sorted           = [x[0] for x in sorted_combined]
-            intensity_max_sorted  = [x[1] for x in sorted_combined]
-            intensity_mean_sorted = [x[2] for x in sorted_combined]
-            intensity_sum_sorted  = [x[3] for x in sorted_combined]
-            intensity_std_sorted  = [x[4] for x in sorted_combined]
+                time_sorted           = [x[0] for x in sorted_combined]
+                intensity_max_sorted  = [x[1] for x in sorted_combined]
+                intensity_mean_sorted = [x[2] for x in sorted_combined]
+                intensity_sum_sorted  = [x[3] for x in sorted_combined]
+                intensity_std_sorted  = [x[4] for x in sorted_combined]
 
-            intensity_traces[sample][cellID.name]["ROI"]["time"]           = time_sorted
-            intensity_traces[sample][cellID.name]["ROI"]["intensity_max"]  = intensity_max_sorted
-            intensity_traces[sample][cellID.name]["ROI"]["intensity_mean"] = intensity_mean_sorted
-            intensity_traces[sample][cellID.name]["ROI"]["intensity_std"]  = intensity_std_sorted
-            intensity_traces[sample][cellID.name]["ROI"]["intensity_sum"]  = intensity_sum_sorted
+                intensity_traces[sample][cellID.name]["ROI"]["time"]           = time_sorted
+                intensity_traces[sample][cellID.name]["ROI"]["intensity_max"]  = intensity_max_sorted
+                intensity_traces[sample][cellID.name]["ROI"]["intensity_mean"] = intensity_mean_sorted
+                intensity_traces[sample][cellID.name]["ROI"]["intensity_std"]  = intensity_std_sorted
+                intensity_traces[sample][cellID.name]["ROI"]["intensity_sum"]  = intensity_sum_sorted
 
 
                 
