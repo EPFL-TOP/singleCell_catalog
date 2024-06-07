@@ -932,8 +932,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         image_stack_dict[pos]=None
 
 
-    get_adjacent_stack()
-
     initial_position=-9999
 
     start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
@@ -3508,6 +3506,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_segment_cell = bokeh.models.Button(label="Segment cell")
     button_segment_cell.on_click(segment_cell_callback)
     #___________________________________________________________________________________________
+
+
+    get_adjacent_stack()
+
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
