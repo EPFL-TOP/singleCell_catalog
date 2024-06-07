@@ -3930,16 +3930,12 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 intensity_traces[sample][cellID.name]["ROI"]["intensity_std"]  = intensity_std_sorted
                 intensity_traces[sample][cellID.name]["ROI"]["intensity_sum"]  = intensity_sum_sorted
 
-
-                
-
         new_plots = []
+
+        #get min/max
+        y_min=9999999999999
+        y_max=0
         for i in range(selected_num_plots):
-
-            
-            y_min=9999999999999
-            y_max=0
-
             for cell in intensity_traces[selected_positons[i]]:
                 for t in range(len(intensity_traces[selected_positons[i]][cell]['ROI']['time'])):
                     for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t]:
@@ -3947,7 +3943,9 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                         val=intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t][ch]
                         if val<y_min: y_min=val
                         if val>y_max: y_max=val
-            shared_y_range = bokeh.models.Range1d(start=y_min, end=y_max)
+        shared_y_range = bokeh.models.Range1d(start=y_min, end=y_max)
+
+        for i in range(selected_num_plots):
 
             p = bokeh.plotting.figure(width=400, height=200, y_range=shared_y_range, title=f"{dropdown_exp.value} {selected_positons[i].split('_')[-1].replace('.nd2','')} ncells={len(intensity_traces[selected_positons[i]])}")
             #print('selected_positons=',selected_positons[i], '  ncells ',len(intensity_traces[selected_positons[i]]))
