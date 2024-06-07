@@ -3925,7 +3925,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
             time_sorted, intensity_std_sorted  = zip(*sorted_lists4)
 
             intensity_traces[sample][cellID.name]["ROI"]["time"]           = time_sorted
-            intensity_traces[sample][cellID.name]["ROI"]["intensity_max"]  = intensity_max_sorted
+            #intensity_traces[sample][cellID.name]["ROI"]["intensity_max"]  = intensity_max_sorted
             intensity_traces[sample][cellID.name]["ROI"]["intensity_mean"] = intensity_mean_sorted
             intensity_traces[sample][cellID.name]["ROI"]["intensity_std"]  = intensity_std_sorted
             intensity_traces[sample][cellID.name]["ROI"]["intensity_sum"]  = intensity_sum_sorted
