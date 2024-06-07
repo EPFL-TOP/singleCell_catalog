@@ -3926,25 +3926,17 @@ def summary_handler(doc: bokeh.document.Document) -> None:
 
 
                 
-        # Update the plots data
-        #if selected_dataset == 'Dataset 1':
-        data_x = [1, 2, 3]
-        data_y = [1, 4, 9]
-        #else:
-        #    data_x = [1, 2, 3]
-        #    data_y = [3, 6, 9]
 
-        # Create new plots based on the selected number of plots
         new_plots = []
         for i in range(selected_num_plots):
             p = bokeh.plotting.figure(width=400, height=200, title=f"{dropdown_exp.value} {selected_positons[i].split('_')[-1].replace('.nd2','')}")
             print('selected_positons=',selected_positons[i], '  ncells ',len(intensity_traces[selected_positons[i]]))
-            time_list=[]
-            int_ch1_list = []
-            int_ch2_list = []
-            int_ch3_list = []
             
             for cell in intensity_traces[selected_positons[i]]:
+                time_list=[]
+                int_ch1_list = []
+                int_ch2_list = []
+                int_ch3_list = []
                 print('cell=',cell)
                 print('intensity_traces[selected_positons[i]]=',intensity_traces[selected_positons[i]])
                 
