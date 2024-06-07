@@ -3877,7 +3877,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_plot(attr, old, new):
         selected_experiment = dropdown_exp.value
-        selected_num_plots  = positions['{0}_{1}'.format(selected_experiment, dropdown_well.value)]
+        selected_num_plots  = len(positions['{0}_{1}'.format(selected_experiment, dropdown_well.value)])
         print('selected_num_plots=',selected_num_plots)
         # Update the plots data
         #if selected_dataset == 'Dataset 1':
