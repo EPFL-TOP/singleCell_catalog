@@ -3871,7 +3871,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
 
 
     plots = create_plots(num_plots)
-    grid = create_grid(plots, grid_size)
+    grid  = create_grid(plots, grid_size)
 
 
     #___________________________________________________________________________________________
@@ -3913,7 +3913,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     dropdown_exp.on_change('value', update_dropdown_well)
     #___________________________________________________________________________________________
 
-
+    update_plot('','','')
 
 
     exp_color_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
