@@ -1121,31 +1121,29 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
-    def get_adjacent_stack():
+    def get_adjacent_stack(number=3):
         print('----------------------------------------------get_adjacent_stack--------------------------------------------------')
         now=datetime.datetime.now()
         print('\033[94m get_adjacent_stack begin deltaT =  \033[0m',now-start_time)
-        current_file_m1=get_current_file(index=-1)
-        current_pos_m1=current_file_m1.split('/')[-1]
-        if image_stack_dict[current_pos_m1]==None:
-            ind_images_list, ind_images_list_norm = get_stack_data(current_file_m1)
-            image_stack_dict[current_pos_m1]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
 
-        current_file_p1=get_current_file(index=1)
-        current_pos_p1=current_file_p1.split('/')[-1]
-        if image_stack_dict[current_pos_p1]==None:
-            ind_images_list, ind_images_list_norm = get_stack_data(current_file_p1)
-            image_stack_dict[current_pos_p1]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
+        current_pos_list=[]
+        current_file_list=[]
+        for n in range(-number, number+1):
+            if n==0:continue
+            current_file = get_current_file(index=n)
+            current_file_list.append(current_file)
+            current_pos_list.append(current_file.split('/')[-1])
 
-        current_file_m2=get_current_file(index=-2)
-        current_pos_m2=current_file_m2.split('/')[-1]
-        if image_stack_dict[current_pos_m2]!=None:
-            image_stack_dict[current_pos_m2]=None
+        for k in image_stack_dict:
+            if k in current_pos_list:
+                if image_stack_dict[k]==None:
+                    ind_images_list, ind_images_list_norm = get_stack_data(current_file_list[current_pos_list.index(k)])
+                    image_stack_dict[k]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
 
-        current_file_p2=get_current_file(index=2)
-        current_pos_p2=current_file_p2.split('/')[-1]
-        if image_stack_dict[current_pos_p2]!=None:
-            image_stack_dict[current_pos_p2]=None
+            else:
+                if image_stack_dict[k]!=None:
+                    image_stack_dict[k]==None
+
         end=datetime.datetime.now()
         print('\033[94m get_adjacent_stack end deltaT = \033[0m',end-start_time)
     #___________________________________________________________________________________________
