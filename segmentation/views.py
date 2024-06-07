@@ -3953,6 +3953,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                         int_list[ch].append(intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t][ch])
                 
                 for ch in int_list:
+                    if 'BF' in ch:continue
                     p.line(time_list, int_list[ch])
             new_plots.append(p)
     #plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
