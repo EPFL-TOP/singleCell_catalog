@@ -1115,7 +1115,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
             image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
         
-        print_time('------- get_current_stack end ', local_time)
+        print_time('------- get_current_stack ', local_time)
 
         return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
     #___________________________________________________________________________________________
@@ -1438,7 +1438,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         ###plot_intensity.y_range.trigger('start', 'end')
         #plot_intensity.y_range.update(start=plot_intensity.y_range.start, end=plot_intensity.y_range.end)
         if DEBUG: print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
-        #get_adjacent_stack()
     #___________________________________________________________________________________________
 
 
@@ -2051,6 +2050,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:print('****************************  prepare_pos ****************************')
         local_time=datetime.datetime.now()
         images, images_norm    = get_current_stack()
+        import threading
+        threading.Thread(target=get_adjacent_stack).start()
+                #get_adjacent_stack()
+
         source_imgs.data       = {'images':images}
         source_imgs_norm.data  = {'images':images_norm}
         source_img_ch.data     = {'img':[images[ch][0] for ch in range(len(images))]}
@@ -2060,7 +2063,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_channel.value = dropdown_channel.options[0]
         dropdown_color.value   = dropdown_color.options[0]
 
-        print_time('------- prepare_pos 1 ', local_time)
+        print_time('------- prepare_pos get_current_stack ', local_time)
 
 
         if DEBUG:
