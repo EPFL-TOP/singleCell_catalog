@@ -2056,7 +2056,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to update the position
     def prepare_pos(attr, old, new):
         if DEBUG:print('****************************  prepare_pos ****************************')
-        
+        local_time=datetime.datetime.now()
         images, images_norm    = get_current_stack()
         source_imgs.data       = {'images':images}
         source_imgs_norm.data  = {'images':images_norm}
@@ -2093,6 +2093,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         update_dropdown_channel('','','')
         intensity_type_callback('','','')
         update_source_segment()
+        print_time('------- prepare_pos ', local_time)
 
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
