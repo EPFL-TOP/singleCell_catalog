@@ -3849,6 +3849,12 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])
     dropdown_grid = bokeh.models.Select(value='5', title='Grid', options=['3','4','5','6','7','8'])
+    dropdown_intensity_type = bokeh.models.Select(value='mean', title='intensity', options=['mean','max','std','sum'])
+
+    intensity_map = {'max':'intensity_max', 
+                     'mean':'intensity_mean',
+                     'std':'intensity_std',
+                     'sum':'intensity_sum'}
 
     num_plots = len(wells[dropdown_exp.value])
     grid_size = 5
@@ -3934,17 +3940,20 @@ def summary_handler(doc: bokeh.document.Document) -> None:
             
             for cell in intensity_traces[selected_positons[i]]:
                 time_list=[]
-                int_ch1_list = []
-                int_ch2_list = []
-                int_ch3_list = []
+                int_list = {}
+                for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][0]:
+                    int_list[ch]=[]
                 print('cell=',cell)
                 print('intensity_traces[selected_positons[i]]=',intensity_traces[selected_positons[i]])
                 
                 print(intensity_traces[selected_positons[i]][cell]['ROI'])
                 for t in range(len(intensity_traces[selected_positons[i]][cell]['ROI']['time'])):
-                    time_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['time'][t])
-                    int_ch1_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['intensity_max'][t]['YFP_LR'])
-                p.line(time_list, int_ch1_list)
+                    time_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['time'][t]/60000.)
+                    for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t]:
+                        int_list[ch].append(intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t][ch])
+                
+                for ch in int_list:
+                    p.line(time_list, int_list[ch])
             new_plots.append(p)
     #plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
 
@@ -3962,6 +3971,13 @@ def summary_handler(doc: bokeh.document.Document) -> None:
         update_plot('','','')
     dropdown_grid.on_change('value', select_grid_size)
     #___________________________________________________________________________________________
+
+    #___________________________________________________________________________________________
+    def select_intensity_type(attr, old, new):
+        update_plot('','','')
+    dropdown_intensity_type.on_change('value', select_intensity_type)
+    #___________________________________________________________________________________________
+
     #___________________________________________________________________________________________
     def update_dropdown_well(attr, old, new):
         if DEBUG: print('****************************  update_dropdown_well ****************************')
@@ -3974,7 +3990,8 @@ def summary_handler(doc: bokeh.document.Document) -> None:
 
     exp_color_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
                                          bokeh.layouts.row(dropdown_well),
-                                         bokeh.layouts.row(dropdown_grid))
+                                         bokeh.layouts.row(dropdown_grid), 
+                                         bokeh.layouts.row(dropdown_intensity_type))
 
 
 
