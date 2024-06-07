@@ -3909,11 +3909,6 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                     intensity_std.append(cellROI.contour_cellroi.intensity_std)
                     intensity_sum.append(cellROI.contour_cellroi.intensity_sum)
 
-            print('time          =',time)
-            print('intensity_max =',intensity_max)
-            print('intensity_mean=',intensity_mean)
-            print('intensity_std =',intensity_std)
-            print('intensity_sum =',intensity_sum)
             sorted_lists    = list(zip(time, intensity_max,intensity_mean, intensity_sum, intensity_std)) 
             sorted_combined = sorted(sorted_lists, key=lambda x: x[0])
 
@@ -3931,7 +3926,6 @@ def summary_handler(doc: bokeh.document.Document) -> None:
             intensity_traces[sample][cellID.name]["ROI"]["intensity_sum"]  = intensity_sum_sorted
 
 
-        print(intensity_traces)
                 
         # Update the plots data
         #if selected_dataset == 'Dataset 1':
@@ -3945,6 +3939,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
         new_plots = []
         for i in range(selected_num_plots):
             p = bokeh.plotting.figure(width=400, height=200, title=f"{dropdown_exp.value} {selected_positons[i].split('_')[-1].replace('.nd2','')}")
+            print('selected_positons=',selected_positons, '  ncells ',len(intensity_traces[selected_positons]))
             p.circle(data_x, data_y)
             new_plots.append(p)
     #plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
