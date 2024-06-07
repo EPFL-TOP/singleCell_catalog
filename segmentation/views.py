@@ -1179,9 +1179,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to get the current file
     def get_current_file(index=0):
-        now=datetime.datetime.now()
-        print('\033[94m get_current_file begin deltaT = \033[0m',now-start_time)
-
         if DEBUG:
             print('****************************  get_current_file ****************************')
             print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   dropdown_well.value',dropdown_well.value, '  dropdown_pos.value',dropdown_pos.value)
@@ -1202,8 +1199,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             current_file = current_files[current_file_index]
 
         if DEBUG: print('--------------- get_current_file() current file  ',current_file)
-        now=datetime.datetime.now()
-        print('\033[94m get_current_file end deltaT = \033[0m',now-start_time)
 
         return current_file
     #___________________________________________________________________________________________
