@@ -876,6 +876,11 @@ def with_request(f):
     return wrapper
 
 
+
+def print_time(text, prev):
+    now=datetime.datetime.now()
+    if DEBUG: print(f'\033[91m {text} deltaT = \033[0m',now-prev)
+
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document) -> None:
     print('****************************  segmentation_handler ****************************')
@@ -900,8 +905,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     for exp in Experiment.objects.all():
         experiments.append(exp.name)
-        #experiments.append(f'<span style="color:red">{exp.name}</span>')
-    #formatted_options = [f'<span style="color: {conditions[opt]}">{opt}</span>' for opt in options]
         wells[exp.name] = []
         experimentaldatasets = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldatasets:
@@ -919,7 +922,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     for i in positions:
         positions[i] = sorted(positions[i])
         files[i]     = sorted(files[i])
-
 
     dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])
@@ -980,6 +982,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
 
     dropdown_filter_position_keep  = bokeh.models.Select(value='all', title='keep', options=['all', 'keep', 'do not keep'])
+
+    print_time('------- PREPARE 1', start_time)
+
+
 
     #___________________________________________________________________________________________
     def filter_position_keep_callback(attr, old, new):
@@ -1069,6 +1075,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to get the image data stack
     def get_stack_data(current_file):
+        local_time=datetime.datetime.now()
 
         #if 'bleb001_well1' in current_file:
         #    current_file=current_file.replace('/mnt/nas_rcp','/data/testcopy')
@@ -1090,7 +1097,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 ind_images_norm.append(intensity_normalized)
             ind_images_list.append(ind_images)
             ind_images_list_norm.append(ind_images_norm)
-            
+        print_time('------- get_stack_data ', local_time)
+
         return ind_images_list, ind_images_list_norm
     #___________________________________________________________________________________________
 
@@ -2048,15 +2056,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to update the position
     def prepare_pos(attr, old, new):
         if DEBUG:print('****************************  prepare_pos ****************************')
-        images, images_norm = get_current_stack()
-        source_imgs.data      = {'images':images}
-        source_imgs_norm.data = {'images':images_norm}
-        source_img_ch.data    = {'img':[images[ch][0] for ch in range(len(images))]}
+        
+        images, images_norm    = get_current_stack()
+        source_imgs.data       = {'images':images}
+        source_imgs_norm.data  = {'images':images_norm}
+        source_img_ch.data     = {'img':[images[ch][0] for ch in range(len(images))]}
 
-        new_image = images_norm[int(dropdown_channel.value)][0]
-        source_img.data = {'img':[new_image]}
+        new_image              = images_norm[int(dropdown_channel.value)][0]
+        source_img.data        = {'img':[new_image]}
         dropdown_channel.value = dropdown_channel.options[0]
-        dropdown_color.value = dropdown_color.options[0]
+        dropdown_color.value   = dropdown_color.options[0]
 
 
         if DEBUG:
@@ -2066,9 +2075,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if slider.value == 0:
             if DEBUG:print('in the if prepare_pos')
             left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
-            source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
+            source_roi.data    = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
             source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
-            source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+            source_cells.data  = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         else:
             if DEBUG:print('in the else prepare_pos')
             slider.value = 0
