@@ -1107,9 +1107,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to get the image stack
     def get_current_stack():
         if DEBUG: print('****************************  get_current_stack ****************************')
-        now=datetime.datetime.now()
-        print('\033[94m get_current_stack begin deltaT = \033[0m',now-start_time)
-
+        local_time=datetime.datetime.now()
         current_file=get_current_file(index=0)
         current_pos=current_file.split('/')[-1]
         
@@ -1117,9 +1115,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
             image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
         
+        print_time('------- get_current_stack end ', local_time)
 
-        end=datetime.datetime.now()
-        print('\033[94m get_current_stack end deltaT = \033[0m',end-start_time)
         return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
     #___________________________________________________________________________________________
 
