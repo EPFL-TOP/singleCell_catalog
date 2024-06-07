@@ -3849,28 +3849,28 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])
 
-    # Initial setup
-    num_plots = 20
+    num_plots = len(wells[dropdown_exp.value])
+    grid_size = 5
 
-    # Function to create a list of figures
+    #___________________________________________________________________________________________
     def create_plots(num):
         plots = []
         for i in range(num):
             p = bokeh.plotting.figure(width=450, height=250, title=f"Plot {i+1}")
+
             p.circle([1, 2, 3], [1, 4, 9])
             plots.append(p)
         return plots
+    #___________________________________________________________________________________________
 
-    # Initial list of plots
-    plots = create_plots(num_plots)
 
-    # Determine the grid size (e.g., 5 columns)
-    grid_size = 5
-
-    # Arrange the plots into a grid
+    #___________________________________________________________________________________________
     def create_grid(plots, grid_size):
         return bokeh.layouts.gridplot([plots[i:i + grid_size] for i in range(0, len(plots), grid_size)])
+    #___________________________________________________________________________________________
 
+
+    plots = create_plots(num_plots)
     grid = create_grid(plots, grid_size)
 
 
@@ -3921,6 +3921,8 @@ def summary_handler(doc: bokeh.document.Document) -> None:
 
 
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(exp_color_col, grid))
+
+    print(norm_layout.children)
 
     doc.add_root(norm_layout)
 
