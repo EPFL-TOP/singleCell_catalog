@@ -3877,7 +3877,8 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_plot(attr, old, new):
         selected_experiment = dropdown_exp.value
-        selected_num_plots  = len(positions['{0}_{1}'.format(selected_experiment, dropdown_well.value)])
+        positions = positions['{0}_{1}'.format(selected_experiment, dropdown_well.value)]
+        selected_num_plots  = len(positions)
         print('selected_num_plots=',selected_num_plots)
         # Update the plots data
         #if selected_dataset == 'Dataset 1':
@@ -3890,7 +3891,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
         # Create new plots based on the selected number of plots
         new_plots = []
         for i in range(selected_num_plots):
-            p = bokeh.plotting.figure(width=450, height=250, title=f"{selected_experiment} Plot {i + 1}")
+            p = bokeh.plotting.figure(width=450, height=250, title=f"{selected_experiment} {positions.split('_')[-1].replace('.nd2','')}")
             p.circle(data_x, data_y)
             new_plots.append(p)
 
