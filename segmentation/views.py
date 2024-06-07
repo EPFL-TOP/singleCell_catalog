@@ -3946,6 +3946,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
             int_ch3_list = []
             
             for cell in intensity_traces[selected_positons[i]]:
+                print(intensity_traces[selected_positons[i]][cell]['ROI'])
                 for t in range(len(intensity_traces[selected_positons[i]][cell]['ROI']['time'])):
                     time_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['time'][t])
                     int_ch1_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['intensity_max'][t]['YFP_LR'])
