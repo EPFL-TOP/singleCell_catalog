@@ -3914,18 +3914,19 @@ def summary_handler(doc: bokeh.document.Document) -> None:
             print('intensity_mean=',intensity_mean)
             print('intensity_std =',intensity_std)
             print('intensity_sum =',intensity_sum)
-            #sorted_lists1  = sorted(zip(time, intensity_max)) 
-            sorted_lists2  = sorted(zip(time, intensity_mean)) 
-            sorted_lists3 = sorted(zip(time,  intensity_sum)) 
-            sorted_lists4 = sorted(zip(time,  intensity_std)) 
+            sorted_lists  = sorted(zip(time, intensity_max,intensity_mean, intensity_sum, intensity_std)) 
+
+            sorted_combined = sorted(sorted_lists, key=lambda x: x[0])
 
             #time_sorted, intensity_max_sorted  = zip(*sorted_lists1)
-            time_sorted, intensity_mean_sorted = zip(*sorted_lists2)
-            time_sorted, intensity_sum_sorted  = zip(*sorted_lists3)
-            time_sorted, intensity_std_sorted  = zip(*sorted_lists4)
+            time_sorted           = [x[0] for x in sorted_combined]
+            intensity_max_sorted  = [x[1] for x in sorted_combined]
+            intensity_mean_sorted = [x[2] for x in sorted_combined]
+            intensity_sum_sorted  = [x[3] for x in sorted_combined]
+            intensity_std_sorted  = [x[4] for x in sorted_combined]
 
             intensity_traces[sample][cellID.name]["ROI"]["time"]           = time_sorted
-            #intensity_traces[sample][cellID.name]["ROI"]["intensity_max"]  = intensity_max_sorted
+            intensity_traces[sample][cellID.name]["ROI"]["intensity_max"]  = intensity_max_sorted
             intensity_traces[sample][cellID.name]["ROI"]["intensity_mean"] = intensity_mean_sorted
             intensity_traces[sample][cellID.name]["ROI"]["intensity_std"]  = intensity_std_sorted
             intensity_traces[sample][cellID.name]["ROI"]["intensity_sum"]  = intensity_sum_sorted
