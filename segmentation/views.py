@@ -3855,7 +3855,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                      'mean':'intensity_mean',
                      'std':'intensity_std',
                      'sum':'intensity_sum'}
-
+    color_map=['blue', 'red']
     num_plots = len(wells[dropdown_exp.value])
     grid_size = 5
 
@@ -3952,9 +3952,11 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                     for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t]:
                         int_list[ch].append(intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t][ch])
                 
+                ch_num=0
                 for ch in int_list:
                     if 'BF' in ch:continue
-                    p.line(time_list, int_list[ch])
+                    p.line(time_list, int_list[ch], line_color=color_map[ch_num])
+                    ch_num+=1
             new_plots.append(p)
     #plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
 
