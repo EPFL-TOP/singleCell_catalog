@@ -3939,15 +3939,15 @@ def summary_handler(doc: bokeh.document.Document) -> None:
             
             y_min=9999999999999
             y_max=0
-            shared_y_range = bokeh.models.Range1d(start=y_min, end=y_max)
 
             for cell in intensity_traces[selected_positons[i]]:
                 for t in range(len(intensity_traces[selected_positons[i]][cell]['ROI']['time'])):
                     for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t]:
                         if 'BF' in ch:continue
-                        val=intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t][ch]                        
+                        val=intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t][ch]
                         if val<y_min: y_min=val
                         if val>y_max: y_max=val
+            shared_y_range = bokeh.models.Range1d(start=y_min, end=y_max)
 
             p = bokeh.plotting.figure(width=400, height=200, y_range=shared_y_range, title=f"{dropdown_exp.value} {selected_positons[i].split('_')[-1].replace('.nd2','')} ncells={len(intensity_traces[selected_positons[i]])}")
             #print('selected_positons=',selected_positons[i], '  ncells ',len(intensity_traces[selected_positons[i]]))
