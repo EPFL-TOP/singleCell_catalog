@@ -3914,8 +3914,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
             print('intensity_mean=',intensity_mean)
             print('intensity_std =',intensity_std)
             print('intensity_sum =',intensity_sum)
-            sorted_lists  = sorted(zip(time, intensity_max,intensity_mean, intensity_sum, intensity_std)) 
-
+            sorted_lists    = list(zip(time, intensity_max,intensity_mean, intensity_sum, intensity_std)) 
             sorted_combined = sorted(sorted_lists, key=lambda x: x[0])
 
             #time_sorted, intensity_max_sorted  = zip(*sorted_lists1)
