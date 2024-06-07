@@ -3849,6 +3849,69 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     dropdown_exp  = bokeh.models.Select(value=experiments[0], title='Experiment', options=experiments)
     dropdown_well = bokeh.models.Select(value=wells[experiments[0]][0], title='Well', options=wells[dropdown_exp.value])
 
+    # Initial setup
+    num_plots = 20
+
+    # Function to create a list of figures
+    def create_plots(num):
+        plots = []
+        for i in range(num):
+            p = bokeh.layouts.figure(width=250, height=250, title=f"Plot {i+1}")
+            p.circle([1, 2, 3], [1, 4, 9])
+            plots.append(p)
+        return plots
+
+    # Initial list of plots
+    plots = create_plots(num_plots)
+
+    # Determine the grid size (e.g., 5 columns)
+    grid_size = 5
+
+    # Arrange the plots into a grid
+    def create_grid(plots, grid_size):
+        return bokeh.layouts.gridplot([plots[i:i + grid_size] for i in range(0, len(plots), grid_size)])
+
+    grid = create_grid(plots, grid_size)
+
+
+    #___________________________________________________________________________________________
+    def update_plot(attr, old, new):
+        selected_experiment = dropdown_exp.value
+        selected_num_plots = int(len(dropdown_well.options))
+
+        # Update the plots data
+        #if selected_dataset == 'Dataset 1':
+        data_x = [1, 2, 3]
+        data_y = [1, 4, 9]
+        #else:
+        #    data_x = [1, 2, 3]
+        #    data_y = [3, 6, 9]
+
+        # Create new plots based on the selected number of plots
+        new_plots = []
+        for i in range(selected_num_plots):
+            p = bokeh.layouts.figure(width=250, height=250, title=f"{selected_experiment} Plot {i + 1}")
+            p.circle(data_x, data_y)
+            new_plots.append(p)
+
+        # Create a new grid with the updated number of plots
+        new_grid = create_grid(new_plots, grid_size)
+        
+        # Update the layout
+        norm_layout.children[1] = new_grid
+
+    dropdown_well.on_change('value', update_plot)
+    #___________________________________________________________________________________________
+
+
+    #___________________________________________________________________________________________
+    def update_dropdown_well(attr, old, new):
+        if DEBUG: print('****************************  update_dropdown_well ****************************')
+        dropdown_well.options = wells[dropdown_exp.value]
+        dropdown_well.value   = wells[dropdown_exp.value][0]
+    dropdown_exp.on_change('value', update_dropdown_well)
+    #___________________________________________________________________________________________
+
 
 
 
@@ -3857,7 +3920,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    norm_layout = bokeh.layouts.column(bokeh.layouts.row(exp_color_col))
+    norm_layout = bokeh.layouts.column(bokeh.layouts.row(exp_color_col, grid))
 
     doc.add_root(norm_layout)
 
