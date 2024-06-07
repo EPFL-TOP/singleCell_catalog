@@ -1881,6 +1881,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_dropdown_cell(attr, old, new):
         if DEBUG:print('****************************  update_dropdown_cell ****************************')
+        local_time=datetime.datetime.now()
+
         source_intensity_ch0.data={'time':[], 'intensity':[]}
         source_intensity_ch1.data={'time':[], 'intensity':[]}
         source_intensity_ch2.data={'time':[], 'intensity':[]}
@@ -1909,9 +1911,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             position_keep_div.text  = "<b style='color:red; ; font-size:18px;'> Do not Keep Position (dk)</b>"
             position_keep_button.label = "Keep Position"
 
+        print_time('------- update_dropdown_cell 1 ', local_time)
+
 
         cellIDs = CellID.objects.select_related().filter(sample=sample)
-
 
         if DEBUG:print('dropdown_cell.value = ',dropdown_cell.value)
         cell_list=[]
@@ -1982,6 +1985,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     source_intensity_ch2.data={'time':time_sorted, 'intensity':intensity_sorted}
         dropdown_cell.options=cell_list
 
+        print_time('------- update_dropdown_cell 2 ', local_time)
+
+
         #plot_intensity.y_range = bokeh.models.Range1d(max(source_intensity_ch1.data["intensity"])*0.4, max(source_intensity_ch1.data["intensity"])*1.2, bounds="auto")
 
         if dropdown_cell.value=='':
@@ -1999,6 +2005,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:
             print('dropdown_cell.value = ',dropdown_cell.value)
             print('dropdown_cell.options = ',dropdown_cell.options)
+
+        print_time('------- update_dropdown_cell 3 ', local_time)
+
 
         prepare_intensity()
         slider_find_peaks.end   = 30
@@ -2018,7 +2027,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if slider_find_peaks.end>=10000:
             slider_find_peaks.step = 100
 
+        print_time('------- update_dropdown_cell 4 ', local_time)
+
         prepare_intensity()
+        print_time('------- update_dropdown_cell 5 ', local_time)
+
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
     #___________________________________________________________________________________________
