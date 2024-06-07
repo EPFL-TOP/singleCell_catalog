@@ -3939,8 +3939,17 @@ def summary_handler(doc: bokeh.document.Document) -> None:
         new_plots = []
         for i in range(selected_num_plots):
             p = bokeh.plotting.figure(width=400, height=200, title=f"{dropdown_exp.value} {selected_positons[i].split('_')[-1].replace('.nd2','')}")
-            print('selected_positons=',selected_positons, '  ncells ',len(intensity_traces[selected_positons[i]]))
-            p.circle(data_x, data_y)
+            print('selected_positons=',selected_positons[i], '  ncells ',len(intensity_traces[selected_positons[i]]))
+            time_list=[]
+            int_ch1_list = []
+            int_ch2_list = []
+            int_ch3_list = []
+            
+            for cell in intensity_traces[selected_positons[i]]:
+                for t in range(len(cell['ROI']['time'])):
+                    time_list.append(cell['ROI']['time'][t])
+                    int_ch1_list.append(cell['ROI']['intensity_max'][t]['YFP_LR'])
+                p.line(time_list, int_ch1_list)
             new_plots.append(p)
     #plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
 
