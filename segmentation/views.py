@@ -3915,7 +3915,9 @@ def summary_handler(doc: bokeh.document.Document) -> None:
             print('intensity_std =',intensity_std)
             print('intensity_sum =',intensity_sum)
             sorted_lists  = sorted(zip(time, intensity_max, intensity_mean)) 
-            sorted_lists2 = sorted(zip(time, intensity_std, intensity_sum)) 
+            sorted_lists2 = sorted(zip(time, intensity_sum)) 
+            sorted_lists3 = sorted(zip(time, intensity_std)) 
+            time_sorted, intensity_sum_sorted = zip(*sorted_lists3)
             time_sorted, intensity_std_sorted, intensity_sum_sorted= zip(*sorted_lists2)
             time_sorted, intensity_max_sorted, intensity_mean_sorted = zip(*sorted_lists)
             intensity_traces[sample][cellID.name]["ROI"]["time"]           = time_sorted
