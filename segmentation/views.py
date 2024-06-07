@@ -879,9 +879,6 @@ def with_request(f):
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document) -> None:
     print('****************************  segmentation_handler ****************************')
-    print('****************************  segmentation_handler ****************************')
-    print('****************************  segmentation_handler ****************************')
-    print('****************************  segmentation_handler ****************************')
     #TO BE CHANGED WITH ASYNC?????
     start_time=datetime.datetime.now()
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
@@ -1434,7 +1431,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         ###plot_intensity.y_range.trigger('start', 'end')
         #plot_intensity.y_range.update(start=plot_intensity.y_range.start, end=plot_intensity.y_range.end)
         if DEBUG: print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
-        get_adjacent_stack()
+        #get_adjacent_stack()
     #___________________________________________________________________________________________
 
 
