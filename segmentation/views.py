@@ -931,6 +931,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
         image_stack_dict[pos]=None
 
+
+    get_adjacent_stack()
+
     initial_position=-9999
 
     start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
