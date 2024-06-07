@@ -3922,7 +3922,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
 
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(exp_color_col, grid))
 
-    print(norm_layout.children)
+    print('==========norm   ',norm_layout.children)
 
     doc.add_root(norm_layout)
 
