@@ -3913,7 +3913,6 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     dropdown_exp.on_change('value', update_dropdown_well)
     #___________________________________________________________________________________________
 
-    update_plot('','','')
 
 
     exp_color_col = bokeh.layouts.column(bokeh.layouts.row(dropdown_exp),
@@ -3922,6 +3921,9 @@ def summary_handler(doc: bokeh.document.Document) -> None:
 
 
     norm_layout = bokeh.layouts.row(exp_color_col, grid)
+
+    update_plot('','','')
+
 
     print('==========norm norm_layout.children[1]  ',norm_layout.children[1])
 
