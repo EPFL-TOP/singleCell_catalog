@@ -32,7 +32,8 @@ import base64
 from PIL import Image
 
 LOCAL=True
-DEBUG=True
+DEBUG=False
+DEBUG_TIME=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 
 #MY macbook
@@ -879,7 +880,7 @@ def with_request(f):
 
 def print_time(text, prev):
     now=datetime.datetime.now()
-    if DEBUG: print(f'\033[91m {text} deltaT = \033[0m',now-prev)
+    if DEBUG_TIME: print(f'\033[91m {text} deltaT = \033[0m',now-prev)
 
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document) -> None:
@@ -2067,6 +2068,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_channel.value = dropdown_channel.options[0]
         dropdown_color.value   = dropdown_color.options[0]
 
+        print_time('------- prepare_pos 1 ', local_time)
+
 
         if DEBUG:
             print('prepare_pos dropdown_channel.value ',dropdown_channel.value)
@@ -2084,16 +2087,23 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             slider.start = 0
             slider.end   = len(source_imgs.data['images'][0]) - 1
 
+        print_time('------- prepare_pos 2 ', local_time)
+
         if DEBUG:print('prepare_pos after slider')
         update_dropdown_cell('','','')
+        print_time('------- prepare_pos 3 ', local_time)
         slider.end=len(source_imgs.data['images'][0]) - 1
         #prepare_intensity()
         reset_tap_tool()
+        print_time('------- prepare_pos 4 ', local_time)
         update_source_osc_tod()
+        print_time('------- prepare_pos 5 ', local_time)
         update_dropdown_channel('','','')
+        print_time('------- prepare_pos 6 ', local_time)
         intensity_type_callback('','','')
+        print_time('------- prepare_pos 7 ', local_time)
         update_source_segment()
-        print_time('------- prepare_pos ', local_time)
+        print_time('------- prepare_pos end ', local_time)
 
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
