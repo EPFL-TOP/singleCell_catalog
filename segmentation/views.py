@@ -2090,7 +2090,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             slider.end   = len(source_imgs.data['images'][0]) - 1
         print_time('------- prepare_pos 2 ', local_time)
 
-        update_dropdown_cell('','','')
+        #update_dropdown_cell('','','')
         print_time('------- prepare_pos 3 ', local_time)
 
         slider.end=len(source_imgs.data['images'][0]) - 1
