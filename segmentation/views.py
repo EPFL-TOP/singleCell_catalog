@@ -2008,8 +2008,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         print_time('------- update_dropdown_cell 3 ', local_time)
 
-
-        prepare_intensity()
+        #CLEMENT TEST COMMENTED
+        #prepare_intensity()
         slider_find_peaks.end   = 30
         if len(source_intensity_ch1.data['intensity'])>0:
             slider_find_peaks.end   = int(np.max(source_intensity_ch1.data['intensity'])-np.min(source_intensity_ch1.data['intensity']))
@@ -2090,6 +2090,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             slider.end   = len(source_imgs.data['images'][0]) - 1
         print_time('------- prepare_pos 2 ', local_time)
 
+        #CLEMENT COMMENTED TEST SPEED
         #update_dropdown_cell('','','')
         print_time('------- prepare_pos 3 ', local_time)
 
