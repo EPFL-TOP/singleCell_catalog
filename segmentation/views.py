@@ -983,6 +983,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     source_osc_period  = bokeh.models.ColumnDataSource(data=dict(cycle=[], time=[]))
     source_osc_period_err = bokeh.models.ColumnDataSource(data=dict(base=[], upper=[], lower=[]))
+    source_osc_period_line = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
     ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
 
     dropdown_filter_position_keep  = bokeh.models.Select(value='all', title='keep', options=['all', 'keep', 'do not keep'])
@@ -1853,13 +1854,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             tmp_dict[cycle[i]].append(time[i])
         upper=[]
         lower=[]
+        mean=[]
         for c in range(1, len(classes)+1):
             array = np.array(tmp_dict[c])
             upper.append(np.mean(array)+np.std(array)/2)
             lower.append(np.mean(array)-np.std(array)/2)
-
+            mean.append(np.mean(array))
         source_osc_period_err.data=dict(base=classes, upper=upper, lower=lower)
-
+        source_osc_period_line.data=dict(x=classes, y=mean)
 
         print('source_osc_period=',source_osc_period.data)
         print('source_osc_period_err=',source_osc_period_err.data)
@@ -3821,12 +3823,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     plot_oscillation_cycle  = bokeh.plotting.figure(title="Osc Cycle", x_axis_label='cycle number', y_axis_label='Period [min]',width=500, height=400)
-    whisker = bokeh.models.Whisker(base=bokeh.transform.jitter('base', width=0.5, range=plot_oscillation_cycle.x_range),
+    whisker = bokeh.models.Whisker(base=bokeh.transform.jitter('base', width=0.25, range=plot_oscillation_cycle.x_range),
                                    upper='upper', lower='lower', source=source_osc_period_err, level="annotation", line_width=2)
     #whisker.upper_head.size=20
     #whisker.lower_head.size=20
     plot_oscillation_cycle.add_layout(whisker)
-    plot_oscillation_cycle.scatter(x=bokeh.transform.jitter('cycle', width=0.5, range=plot_oscillation_cycle.x_range), y='time', source=source_osc_period, size=8)
+    plot_oscillation_cycle.scatter(x=bokeh.transform.jitter('cycle', width=0.25, range=plot_oscillation_cycle.x_range), y='time', source=source_osc_period, size=8)
+    plot_oscillation_cycle.line('x', 'y', source=source_osc_period_line, line_color='black')
+
+
 
     # Sample data
     from bokeh.palettes import Category20c
