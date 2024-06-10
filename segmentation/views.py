@@ -3799,6 +3799,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_oscillation_cycle.scatter('cycle', 'time', source=source_osc_period, size=8)
     whisker = bokeh.models.Whisker(base='cycle', upper='time', lower='time', upper_head=None, lower_head=None, source=source_osc_period, dimension='height')
     plot_oscillation_cycle.add_layout(whisker)
+
     # Sample data
     from bokeh.palettes import Category20c
     from bokeh.transform import cumsum
@@ -3862,7 +3863,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity, plot_markers),
                                               bokeh.layouts.row(plot_tod, plot_nosc),tod_checkbox,
-                                              bokeh.layouts.row(plot_oscillation_cycle)
+                                              bokeh.layouts.row(plot_oscillation_cycle),
                                               bokeh.layouts.row(plot_histo_int_mean, plot_histo_int_std),)
 
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
