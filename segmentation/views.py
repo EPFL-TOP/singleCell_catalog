@@ -1125,7 +1125,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
-    def get_adjacent_stack(number=4):
+    def get_adjacent_stack(number=3):
 
         current_pos_list=[]
         current_file_list=[]
