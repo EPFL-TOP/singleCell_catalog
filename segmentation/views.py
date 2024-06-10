@@ -3823,7 +3823,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     plot_oscillation_cycle  = bokeh.plotting.figure(title="Osc Cycle", x_axis_label='cycle number', y_axis_label='Period [min]',width=500, height=400)
-    whisker = bokeh.models.Whisker(base=bokeh.transform.jitter('base', width=0.25, range=plot_oscillation_cycle.x_range),
+    #whisker = bokeh.models.Whisker(base=bokeh.transform.jitter('base', width=0.25, range=plot_oscillation_cycle.x_range),
+    whisker = bokeh.models.Whisker(base='base',
                                    upper='upper', lower='lower', source=source_osc_period_err, level="annotation", line_width=2)
     #whisker.upper_head.size=20
     #whisker.lower_head.size=20
