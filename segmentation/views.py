@@ -1832,7 +1832,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellIDs = CellID.objects.select_related().filter(sample=s)
             for cellID in cellIDs:
                 peaks = cellID.cell_status.peaks
-                max_time = peaks["max_time"]
+                max_time=[]
+                try:
+                    max_time = peaks["max_time"]
+                except KeyError:
+                    continue
                 print('peaks ',peaks)
                 if len(max_time)<2: break
                 for i in range(len(max_time)-1):
