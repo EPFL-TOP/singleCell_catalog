@@ -893,7 +893,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     positions={}
     files={}
     image_stack_dict={}
-    oscillation_cycle_dict={1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 7:[], 8:[], 9:[], 10:[]}
 
     flags_dict = {'mask':0,
                   'dividing':50,
@@ -1816,6 +1815,33 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     dropdown_exp.on_change('value', update_dropdown_well)
     #___________________________________________________________________________________________
 
+
+    #___________________________________________________________________________________________
+    def update_oscillation_cycle():
+        current_file = get_current_file()
+        sample       = Sample.objects.get(file_name=current_file)
+        expds        = ExperimentalDataset.objects.get(id=sample.experimental_dataset.id)
+        samples = expds.sample
+        print('samples  ',samples)
+        cycle=[]
+        time=[]
+        for s in samples:
+            if not s.peaks_tod_div_validated: continue
+            if not s.keep_sample:continue
+            cellIDs = CellID.objects.select_related().filter(sample=s)
+            for cellID in cellIDs:
+                peaks = cellID.cell_status.peaks
+                max_time = peaks["max_time"]
+                for i in range(len(max_time-1)):
+                    cycle.append(i+1)
+                    time.append(max_time[i+1]-max_time[i])
+        source_osc_period.data=dict(cycle=cycle, time=time)
+        
+        print(source_osc_period.data)
+    #___________________________________________________________________________________________
+
+
+
     #___________________________________________________________________________________________
     # Function to update the position depending on the experiment and the well
     def update_dropdown_pos(attr, old, new):
@@ -1825,8 +1851,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
             image_stack_dict[pos]=None
 
-        for cycle in oscillation_cycle_dict:
-            oscillation_cycle_dict[cycle]=[]
+        source_osc_period.data=dict(cycle=[], time=[])
+
+        update_oscillation_cycle()
 
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value   = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
@@ -3768,6 +3795,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_histo_int_std.vbar(x='x', top='top', width=4., source=source_histo_int_std_sig_notsel, alpha=0.3, color='red', line_color=None)
 
 
+    plot_oscillation_cycle  = bokeh.plotting.figure(title="Osc Cycle", x_axis_label='cycle number', y_axis_label='Period [min]',width=500, height=400)
+    plot_oscillation_cycle.scatter('cycle', 'time', source=source_osc_period, size=8)
+    whisker = bokeh.models.Whisker(base='cycle', upper='time', lower='time', upper_head=None, lower_head=None, source=source_osc_period, dimension='height')
+    plot_oscillation_cycle.add_layout(whisker)
     # Sample data
     from bokeh.palettes import Category20c
     from bokeh.transform import cumsum
@@ -3821,7 +3852,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_cell ),
                                      bokeh.layouts.row(button_inspect, button_build_cells, button_delete_cell),
                                      bokeh.layouts.row(button_start_oscillation,button_end_oscillation,button_time_of_death),
-                                     bokeh.layouts.row(button_save_peaks, button_delete_peaks, dropdown_intensity_type, dropdown_segmentation_type),
+                                     bokeh.layouts.row(button_save_peaks, button_delete_peaks) ,
+                                     bokeh.layouts.row(dropdown_intensity_type, dropdown_segmentation_type),
                                      bokeh.layouts.row(slider_find_peaks),
                                      bokeh.layouts.row(button_mask_cells, button_dividing_cells, button_double_nuclei_cells),
                                      bokeh.layouts.row(button_multiple_cells, button_pair_cell),
@@ -3830,6 +3862,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity, plot_markers),
                                               bokeh.layouts.row(plot_tod, plot_nosc),tod_checkbox,
+                                              bokeh.layouts.row(plot_oscillation_cycle)
                                               bokeh.layouts.row(plot_histo_int_mean, plot_histo_int_std),)
 
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
