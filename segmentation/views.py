@@ -1129,7 +1129,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         current_pos_list=[]
         current_file_list=[]
-        for n in range(-number, number+1):
+        for n in range(-1, number+1):
             if n==0:continue
             current_file = get_current_file(index=n)
             current_file_list.append(current_file)
