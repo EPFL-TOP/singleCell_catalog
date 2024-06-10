@@ -982,7 +982,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_tod_all   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
 
     source_osc_period  = bokeh.models.ColumnDataSource(data=dict(cycle=[], time=[]))
-
+    source_osc_period_err = bokeh.models.ColumnDataSource(data=dict(base=[], upper=[], lower=[]))
     ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
 
     dropdown_filter_position_keep  = bokeh.models.Select(value='all', title='keep', options=['all', 'keep', 'do not keep'])
@@ -1844,6 +1844,23 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     time.append(max_time[i+1]-max_time[i])
         source_osc_period.data=dict(cycle=cycle, time=time)
         
+
+        classes = list(set(cycle))
+        tmp_dict={}
+        for cl in classes:
+            tmp_dict[cl]=[]
+        for i in range(len(cycle)):
+            tmp_dict[cycle[i]].append(time[i])
+        upper=[]
+        lower=[]
+        for c in range(1, len(classes)+1):
+            array = np.array(tmp_dict[c])
+            upper.append(np.mean(array)+np.std(array)/2)
+            lower.append(np.mean(array)-np.std(array)/2)
+
+        source_osc_period_err.data=dict(base=classes, upper=upper, lower=lower)
+
+
         print(source_osc_period.data)
     #___________________________________________________________________________________________
 
