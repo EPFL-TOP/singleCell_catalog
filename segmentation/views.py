@@ -1819,6 +1819,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_oscillation_cycle():
         current_file = get_current_file()
+        print('current_file ',current_file)
         sample       = Sample.objects.get(file_name=current_file)
         expds        = ExperimentalDataset.objects.get(id=sample.experimental_dataset.id)
         samples = expds.sample
@@ -1851,12 +1852,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
             image_stack_dict[pos]=None
 
+        dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        dropdown_pos.value   = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
+
         source_osc_period.data=dict(cycle=[], time=[])
 
         update_oscillation_cycle()
-
-        dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
-        dropdown_pos.value   = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
 
         #print('update_dropdown_pos image_stack_dict=',image_stack_dict)
         update_position_select()
