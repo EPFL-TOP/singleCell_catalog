@@ -1820,11 +1820,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_oscillation_cycle():
         current_file = get_current_file()
-        print('current_file ',current_file)
         sample       = Sample.objects.get(file_name=current_file)
         expds        = ExperimentalDataset.objects.get(id=sample.experimental_dataset.id)
         samples = Sample.objects.select_related().filter(experimental_dataset=expds)
-        print('samples  ',samples)
         cycle=[]
         time=[]
         for s in samples:
@@ -1838,7 +1836,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     max_time = peaks["max_time"]
                 except KeyError:
                     continue
-                print('peaks ',peaks)
                 if len(max_time)<2: break
                 for i in range(len(max_time)-1):
                     cycle.append(i+1)
@@ -1863,8 +1860,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_osc_period_err.data=dict(base=classes, upper=upper, lower=lower)
         source_osc_period_line.data=dict(x=classes, y=mean)
 
-        print('source_osc_period=',source_osc_period.data)
-        print('source_osc_period_err=',source_osc_period_err.data)
     #___________________________________________________________________________________________
 
 
@@ -3832,7 +3827,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_oscillation_cycle.scatter(x=bokeh.transform.jitter('cycle', width=0.25, range=plot_oscillation_cycle.x_range), y='time', source=source_osc_period, size=8)
     plot_oscillation_cycle.line('x', 'y', source=source_osc_period_line, line_color='black')
 
-
+    update_oscillation_cycle()
 
     # Sample data
     from bokeh.palettes import Category20c
