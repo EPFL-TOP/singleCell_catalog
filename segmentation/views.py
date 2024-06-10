@@ -33,7 +33,7 @@ from PIL import Image
 
 LOCAL=True
 DEBUG=False
-DEBUG_TIME=True
+DEBUG_TIME=False
 BASEPATH="/mnt/nas_rcp/raw_data"
 
 #MY macbook
