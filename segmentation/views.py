@@ -1822,7 +1822,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('current_file ',current_file)
         sample       = Sample.objects.get(file_name=current_file)
         expds        = ExperimentalDataset.objects.get(id=sample.experimental_dataset.id)
-        samples = expds.sample
+        samples = Sample.objects.select_related.filter(experimental_dataset=expds)
         print('samples  ',samples)
         cycle=[]
         time=[]
