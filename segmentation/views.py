@@ -893,6 +893,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     positions={}
     files={}
     image_stack_dict={}
+    oscillation_cycle_dict={1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 7:[], 8:[], 9:[], 10:[]}
 
     flags_dict = {'mask':0,
                   'dividing':50,
@@ -980,6 +981,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_tod       = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_tod_dk    = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_tod_all   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+
+    source_osc_period  = bokeh.models.ColumnDataSource(data=dict(cycle=[], time=[]))
 
     ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
 
@@ -1122,7 +1125,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
-    def get_adjacent_stack(number=5):
+    def get_adjacent_stack(number=2):
 
         current_pos_list=[]
         current_file_list=[]
@@ -1821,6 +1824,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         image_stack_dict.clear
         for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
             image_stack_dict[pos]=None
+
+        for cycle in oscillation_cycle_dict:
+            oscillation_cycle_dict[cycle]=[]
 
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value   = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
