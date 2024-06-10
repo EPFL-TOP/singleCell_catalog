@@ -1143,7 +1143,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             else:
                 if image_stack_dict[k]!=None:
-                    image_stack_dict[k]==None
+                    image_stack_dict[k]=None
 
     #___________________________________________________________________________________________
 
