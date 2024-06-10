@@ -2009,27 +2009,27 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print_time('------- update_dropdown_cell 3 ', local_time)
 
         #CLEMENT TEST COMMENTED
-        #prepare_intensity()
+        prepare_intensity()
         slider_find_peaks.end   = 30
         if len(source_intensity_ch1.data['intensity'])>0:
             slider_find_peaks.end   = int(np.max(source_intensity_ch1.data['intensity'])-np.min(source_intensity_ch1.data['intensity']))
         slider_find_peaks.value = int(slider_find_peaks.end/3.)
         if slider_find_peaks.end<250:
             slider_find_peaks.step = 1
-        if slider_find_peaks.end>=250:
+        elif slider_find_peaks.end>=250 and slider_find_peaks.end<500:
             slider_find_peaks.step = 5
-        if slider_find_peaks.end>=500:
+        elif slider_find_peaks.end>=500 and slider_find_peaks.end<1000:
             slider_find_peaks.step = 10
-        if slider_find_peaks.end>=1000:
+        elif slider_find_peaks.end>=1000 and slider_find_peaks.end<5000:
             slider_find_peaks.step = 20
-        if slider_find_peaks.end>=5000:
+        elif slider_find_peaks.end>=5000 and slider_find_peaks.end<10000:
             slider_find_peaks.step = 50
-        if slider_find_peaks.end>=10000:
+        elif slider_find_peaks.end>=10000:
             slider_find_peaks.step = 100
 
         print_time('------- update_dropdown_cell 4 ', local_time)
-
-        prepare_intensity()
+        #CLEMENT TEST COMMENTED
+        #prepare_intensity()
         print_time('------- update_dropdown_cell 5 ', local_time)
 
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
