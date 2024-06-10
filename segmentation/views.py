@@ -1833,7 +1833,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             for cellID in cellIDs:
                 peaks = cellID.cell_status.peaks
                 max_time = peaks["max_time"]
-                for i in range(len(max_time-1)):
+                for i in range(len(max_time)-1):
                     cycle.append(i+1)
                     time.append(max_time[i+1]-max_time[i])
         source_osc_period.data=dict(cycle=cycle, time=time)
