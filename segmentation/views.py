@@ -1861,7 +1861,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_osc_period_err.data=dict(base=classes, upper=upper, lower=lower)
 
 
-        print(source_osc_period.data)
+        print('source_osc_period=',source_osc_period.data)
+        print('source_osc_period_err=',source_osc_period_err.data)
     #___________________________________________________________________________________________
 
 
@@ -3822,7 +3823,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_oscillation_cycle  = bokeh.plotting.figure(title="Osc Cycle", x_axis_label='cycle number', y_axis_label='Period [min]',width=500, height=400)
     plot_oscillation_cycle.scatter(x=bokeh.transform.jitter('cycle', width=0.2, range=plot_oscillation_cycle.x_range), y='time', source=source_osc_period, size=8)
     whisker = bokeh.models.Whisker(base=bokeh.transform.jitter('cycle', width=0.2, range=plot_oscillation_cycle.x_range),
-                                   upper='time', lower='time', upper_head=None, lower_head=None, source=source_osc_period_err, dimension='height')
+                                   upper='time', lower='time', source=source_osc_period_err, level="annotation", line_width=2)
     #whisker.upper_head.size=20
     #whisker.lower_head.size=20
     plot_oscillation_cycle.add_layout(whisker)
