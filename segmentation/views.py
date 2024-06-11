@@ -564,7 +564,11 @@ def build_segmentation():
                                                                                   cellroi.max_row, 
                                                                                   cellroi.max_col)
                             if 'apoc' in flag:
-                                contour = apocseg.segmentation(image)
+                                contour = apocseg.segmentation(image, 
+                                                               cellroi.min_row,
+                                                               cellroi.min_col, 
+                                                               cellroi.max_row, 
+                                                               cellroi.max_col)
 
                             if contour!=None:
                                 build_contours(contour, contourseg, cellroi, image.shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
@@ -984,6 +988,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_osc_period  = bokeh.models.ColumnDataSource(data=dict(cycle=[], time=[]))
     source_osc_period_err = bokeh.models.ColumnDataSource(data=dict(base=[], upper=[], lower=[]))
     source_osc_period_line = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
+
+    source_test_dead = bokeh.models.ColumnDataSource(data=dict(top=[], left=[], right=[]))
+
     ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
 
     dropdown_filter_position_keep  = bokeh.models.Select(value='all', title='keep', options=['all', 'keep', 'do not keep'])
@@ -2326,19 +2333,33 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_img_mask.data = {'img':[mask0*source_img.data['img'][0]]}
 
             #source_segmentation.data={'x':contour.pixels['x'], 'y':[frame.height-c for c in contour.pixels['y']]}
-
-
         #f = open(contour.file_name)
         #data = json.load(f)
+    #___________________________________________________________________________________________
 
+    #___________________________________________________________________________________________
+    def roi_diff(time_point):
+        images=source_imgs.data['images']
+        if time_point>0:
+            image1 = images[int(dropdown_channel.value)][time_point]
+            image2 = images[int(dropdown_channel.value)][time_point-1]
+            current_file=get_current_file()
+            sample = Sample.objects.get(file_name=current_file)
+            frame  = Frame.objects.select_related().filter(sample=sample).get(number=time_point)
+            rois   = CellROI.objects.select_related().filter(frame=frame)
 
+            for roi in rois:
+                image1_roi = image1[roi.min_row:roi.max_row][roi.min_col:roi.max_col]
+                image2_roi = image2[roi.min_row:roi.max_row][roi.min_col:roi.max_col]
+                img_diff = (image1_roi-image2_roi)/image2_roi
 
+                hist, edges = np.histogram(img_diff.flatten, bins=30)
+        source_test_dead.data=dict(top=hist, left=edges[:-1], right=edges[1:])
 
     #___________________________________________________________________________________________
 
 
     #___________________________________________________________________________________________
-    # Define a callback to update bf_display with slider
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         if DEBUG:print('****************************  callback_slider ****************************')
         time_point = slider.value
@@ -2358,6 +2379,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         else:
             line_position.location = source_intensity_ch1.data["time"][time_point]
         update_source_segment(time_point)
+        roi_diff(time_point)
 
     slider.on_change('value', callback_slider)
     #___________________________________________________________________________________________
@@ -3438,7 +3460,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 #       eflag=True
                 #if eflag: continue
 
-                contour, bkg_mean_list, bkg_std_list,  sig_mean_list_sel, sig_std_list_sel, sig_mean_list_notsel, sig_std_list_notsel =segtools.segmentation_test(source_img_ch.data['img'][0], 1.9, frame.height-cellROI.max_row, cellROI.min_col, frame.height-cellROI.min_row, cellROI.max_col)
+                contour, bkg_mean_list, bkg_std_list,  sig_mean_list_sel, sig_std_list_sel, sig_mean_list_notsel, sig_std_list_notsel = segtools.segmentation_test(source_img_ch.data['img'][0], 1.9, frame.height-cellROI.max_row, cellROI.min_col, frame.height-cellROI.min_row, cellROI.max_col)
                 print('contour npix=',contour.num_pixels)
                 #contour=segtools.segmentation_test(source_img_ch.data['img'][0], 2., cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
                 x_coords=[]
@@ -3806,6 +3828,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_histo_int_mean.vbar(x='x', top='top', width=5., source=source_histo_int_mean_bkg, alpha=0.3, color='black', line_color=None)
     plot_histo_int_mean.vbar(x='x', top='top', width=5., source=source_histo_int_mean_sig_sel, alpha=0.3, color='blue', line_color=None)
     plot_histo_int_mean.vbar(x='x', top='top', width=5., source=source_histo_int_mean_sig_notsel, alpha=0.3, color='red', line_color=None)
+
+    plot_histo_int_mean.quad(top='top', bottom=0, left='left', right='right', 
+                             source=source_test_dead, fill_color="navy", line_color="white", alpha=0.5)
+
 
     source_histo_int_std_bkg = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_histo_int_std_sig_sel = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
