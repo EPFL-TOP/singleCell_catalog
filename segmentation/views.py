@@ -2348,6 +2348,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             frame  = Frame.objects.select_related().filter(sample=sample).get(number=time_point)
             rois   = CellROI.objects.select_related().filter(frame=frame)
 
+            print('============',rois)
             for roi in rois:
                 image1_roi = image1[roi.min_row:roi.max_row][roi.min_col:roi.max_col]
                 image2_roi = image2[roi.min_row:roi.max_row][roi.min_col:roi.max_col]
