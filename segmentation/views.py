@@ -2353,7 +2353,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 image2_roi = image2[roi.min_row:roi.max_row][roi.min_col:roi.max_col]
                 img_diff = (image1_roi-image2_roi)/image2_roi
 
-                hist, edges = np.histogram(img_diff.flatten, bins=30)
+                hist, edges = np.histogram(img_diff.flatten(), bins=30)
         source_test_dead.data=dict(top=hist, left=edges[:-1], right=edges[1:])
 
     #___________________________________________________________________________________________
