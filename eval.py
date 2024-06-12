@@ -63,6 +63,7 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
                     processed_image = preprocess_image(image_data, target_size)
                     images.append(processed_image)
                     filenames.append(filename)
+                    print(len(images))
     return np.array(images), filenames
 
 
