@@ -44,7 +44,8 @@ def load_and_preprocess_image(json_file, target_size=(150, 150)):
 
 
 # Load the saved model
-model = load_model('cell_classifier_model.keras')
+#model = load_model('cell_classifier_model.keras')
+model = load_model('cell_classifier_model.h5')
 
 # Path to a new image JSON file
 for dirpath, dirnames, filenames in os.walk(json_dir):
