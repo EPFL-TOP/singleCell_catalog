@@ -132,8 +132,8 @@ model.compile(
 
 # Train the model
 history = model.fit(
-    #X_train, y_train,
-    datagen.flow(X_train, y_train, batch_size=32),
+    X_train, y_train,
+    #datagen.flow(X_train, y_train, batch_size=32),
     epochs=20,
     batch_size=20,
     validation_data=(X_val, y_val),
