@@ -117,8 +117,8 @@ history = model.fit(
     validation_data=(X_val, y_val)
 )
 
-model.save('cell_classifier_model.h5')
-
+#model.save('cell_classifier_model.h5')
+model.save('cell_classifier_model.keras')
 
 import matplotlib.pyplot as plt
 
@@ -135,10 +135,11 @@ plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
 plt.title('Training and validation accuracy')
 plt.legend()
 plt.figure()
+plt.savefig('training_acc.png')
 
 plt.plot(epochs, loss, 'r', label='Training loss')
 plt.plot(epochs, val_loss, 'b', label='Validation loss')
 plt.title('Training and validation loss')
 plt.legend()
 
-plt.savefig('training.png')
+plt.savefig('training_loss.png')
