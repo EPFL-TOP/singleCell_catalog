@@ -35,7 +35,8 @@ def pad_image(image, target_size):
     print(padding)
     # Pad the image
     padded_image = np.pad(image, padding, mode='constant', constant_values=0)
-    
+    print(padded_image)
+
     return padded_image
 
 # Function to load JSON data and convert to numpy arrays
@@ -55,6 +56,7 @@ def load_json_data(json_dir):
                     # Pad the image
                     padded_image = pad_image(image_data, target_size)
                     print(image_data)
+                    print(image_data.shape)
                     print(padded_image)
                     print(padded_image.shape)
                     # Normalize the image data to range [0, 1]
