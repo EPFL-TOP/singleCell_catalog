@@ -2,7 +2,7 @@ import os
 import json
 import numpy as np
 import sys
-np.set_printoptions(threshold=sys.maxsize)
+#np.set_printoptions(threshold=sys.maxsize)
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow.keras import layers, models
@@ -16,7 +16,7 @@ labels = []
 
 
 # Target image size (height, width)
-target_size = (52, 52)
+target_size = (100, 100)
 
 def pad_image(image, target_size):
     # Calculate padding
@@ -55,17 +55,13 @@ def load_json_data(json_dir):
                     #images.append(image_data)
                     # Pad the image
                     padded_image = pad_image(image_data, target_size)
-                    print(image_data)
-                    print(image_data.shape)
-                    print(padded_image)
-                    print(padded_image.shape)
+
                     # Normalize the image data to range [0, 1]
                     padded_image = padded_image / np.max(padded_image)
                     
                     # Expand dimensions to match expected input shape (height, width, channels)
                     #padded_image = np.expand_dims(padded_image, axis=-1)
 
-                    sys.exit(3)
                     # Append the image and label to lists
                     images.append(padded_image)
                     labels.append(1 if label == True else 0)  # Assuming 'dead_cell' is labeled as 1, 'live_cell' as 0
