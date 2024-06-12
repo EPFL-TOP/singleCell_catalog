@@ -37,6 +37,8 @@ def load_and_preprocess_image(json_file, target_size=(150, 150)):
 
     with open(json_file, 'r') as f:
         data = json.load(f)
+        print(data)
+        print(json_file)
         image_data = data['image_bf']
         processed_image = preprocess_image(image_data, target_size)
     return processed_image
