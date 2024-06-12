@@ -53,10 +53,7 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
 
     for dirpath, dirnames, filenames in os.walk(json_dir):
         for filename in filenames:
-            print(filenames)
-            print(len(filenames))
-            print(dirpath)
-            sys.exit(2)
+
             if filename.endswith(".json"):
                 print(dirpath,'  ',filename)
                 new_image_json = os.path.join(dirpath, filename)
