@@ -47,10 +47,47 @@ def load_and_preprocess_image(json_file, target_size=(150, 150)):
     return processed_image
 
 
+def load_and_preprocess_images(json_dir, target_size=(150, 150)):
+    images = []
+    filenames = []
+
+    for dirpath, dirnames, filenames in os.walk(json_dir):
+        for filename in filenames:
+           if filename.endswith(".json"):
+                print(dirpath,'  ',filename)
+                new_image_json = os.path.join(dirpath, filename)
+
+                with open(new_image_json, 'r') as f:
+                    data = json.load(f)
+                    image_data = data['image_bf']
+                    processed_image = preprocess_image(image_data, target_size)
+                    images.append(processed_image)
+                    filenames.append(filename)
+    return np.array(images), filenames
+
 
 # Load the saved model
 model = load_model('cell_classifier_model.keras')
 #model = load_model('cell_classifier_model.h5')
+
+new_images, filenames = load_and_preprocess_images(json_dir)
+# Add batch dimension if not already added
+if len(new_images.shape) == 3:
+    new_images = np.expand_dims(new_images, axis=-1)
+
+    # Predict the classes for the batch of images
+    predictions = model.predict(new_images)
+
+    # Interpret the predictions
+    predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
+
+    # Print the results
+    for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
+        print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
+
+
+import sys
+sys.exit(3)
 
 # Path to a new image JSON file
 for dirpath, dirnames, filenames in os.walk(json_dir):
