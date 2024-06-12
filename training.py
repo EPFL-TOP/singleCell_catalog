@@ -28,11 +28,13 @@ def load_json_data(json_dir):
                     images.append(image_data)
                     labels.append(1 if label == True else 0)  # Assuming 'dead_cell' is labeled as 1, 'live_cell' as 0
 
-print(labels)
-print(images)
+
 
 # Load data
 load_json_data(json_dir)
+
+print(labels)
+print(images)
 
 # Convert lists to numpy arrays
 images = np.array(images)
