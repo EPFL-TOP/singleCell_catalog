@@ -73,12 +73,6 @@ def load_json_data(json_dir):
 # Load data
 load_json_data(json_dir)
 
-for img in images:
-    print(img.shape)
-    #assert img.shape == (150, 150, 1), f"Image shape mismatch: {img.shape}"
-
-
-
 # Convert lists to numpy arrays
 images = np.array(images)
 labels = np.array(labels)
@@ -118,12 +112,12 @@ model.compile(
 # Train the model
 history = model.fit(
     X_train, y_train,
-    epochs=30,
+    epochs=20,
     batch_size=20,
     validation_data=(X_val, y_val)
 )
 
-
+model.save('cell_classifier_model.h5')
 
 
 import matplotlib.pyplot as plt
@@ -147,4 +141,4 @@ plt.plot(epochs, val_loss, 'b', label='Validation loss')
 plt.title('Training and validation loss')
 plt.legend()
 
-plt.show()
+plt.savefig('training.png')
