@@ -2,6 +2,7 @@ import tensorflow as tf
 import json, os
 import numpy as np
 json_dir='/data/singleCell_training/wscepfl0080/wscepfl0080_well1/'
+json_dir='/data/singleCell_training/ppf003/ppf003_well1/ppf003_xy023/'
 
 def load_model(model_path):
     return tf.keras.models.load_model(model_path)
