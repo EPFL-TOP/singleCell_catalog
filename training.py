@@ -1,6 +1,8 @@
 import os
 import json
 import numpy as np
+import sys
+np.set_printoptions(threshold=sys.maxsize)
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow.keras import layers, models
@@ -31,17 +33,9 @@ def pad_image(image, target_size):
 
     if delta_h % 2 != 0:
         padding = ((pad_height, pad_height+1), (pad_width, pad_width))
-    
-
-    padding = ((2, 1), (2, 1))
-
-    print(padding)
-
-    print(image)
 
     # Pad the image
     padded_image = np.pad(image, padding, mode='constant', constant_values=0)
-    print(padded_image)
 
     return padded_image
 
