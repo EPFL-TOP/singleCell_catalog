@@ -12,6 +12,23 @@ json_dir = '/data/singleCell_training/'
 images = []
 labels = []
 
+
+# Target image size (height, width)
+target_size = (150, 150)
+
+def pad_image(image, target_size):
+    # Calculate padding
+    delta_w = target_size[1] - image.shape[1]
+    delta_h = target_size[0] - image.shape[0]
+    pad_width = delta_w // 2
+    pad_height = delta_h // 2
+    padding = ((pad_height, pad_height), (pad_width, pad_width))
+    
+    # Pad the image
+    padded_image = np.pad(image, padding, mode='constant', constant_values=0)
+    
+    return padded_image
+
 # Function to load JSON data and convert to numpy arrays
 def load_json_data(json_dir):
 
@@ -25,7 +42,20 @@ def load_json_data(json_dir):
                     label = data['alive']
                     
                     # Append the image and label to lists
-                    images.append(image_data)
+                    #images.append(image_data)
+                    # Pad the image
+                    padded_image = pad_image(image_data, target_size)
+                    
+                    # Normalize the image data to range [0, 1]
+                    padded_image = padded_image / np.max(padded_image)
+                    
+                    # Expand dimensions to match expected input shape (height, width, channels)
+                    padded_image = np.expand_dims(padded_image, axis=-1)
+                    print(image_data)
+                    print(padded_image)
+                    sys.exit(3)
+                    # Append the image and label to lists
+                    images.append(padded_image)
                     labels.append(1 if label == True else 0)  # Assuming 'dead_cell' is labeled as 1, 'live_cell' as 0
 
 
