@@ -71,8 +71,10 @@ def load_json_data(json_dir):
 # Load data
 load_json_data(json_dir)
 
-print(labels)
-print(images)
+for img in images:
+    assert img.shape == (150, 150, 1), f"Image shape mismatch: {img.shape}"
+
+
 
 # Convert lists to numpy arrays
 images = np.array(images)
