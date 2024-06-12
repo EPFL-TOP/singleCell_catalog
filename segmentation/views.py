@@ -85,7 +85,7 @@ def build_mva_samples(exp_name=''):
                         with open(image_file, 'r') as f:
                             data = json.load(f)
                             for key in data:
-                                if 'BF' in key.split('_'):
+                                if 'BF' in key.split('_')[-1]:
                                     bf_image['image_bf']=data[key]
                                 
                         outfile_name = '/data/singleCell_training/{}_{}_frame{}_{}.json'.format(expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''), cellroi.frame.number, cellid.name)
