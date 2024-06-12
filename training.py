@@ -14,7 +14,7 @@ labels = []
 
 
 # Target image size (height, width)
-target_size = (49, 49)
+target_size = (52, 52)
 
 def pad_image(image, target_size):
     # Calculate padding
@@ -32,6 +32,7 @@ def pad_image(image, target_size):
     if delta_h % 2 != 0:
         padding = ((pad_height, pad_height+1), (pad_width, pad_width))
     
+    print(padding)
     # Pad the image
     padded_image = np.pad(image, padding, mode='constant', constant_values=0)
     
