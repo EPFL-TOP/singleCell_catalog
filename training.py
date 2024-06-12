@@ -47,7 +47,7 @@ def load_json_data(json_dir):
     for dirpath, dirnames, filenames in os.walk(json_dir):
         for filename in filenames:
             if filename.endswith(".json"):
-                print(dirpath,'  ',filename)
+                #print(dirpath,'  ',filename)
                 with open(os.path.join(dirpath, filename), 'r') as f:
                     data = json.load(f)
                     image_data = np.array(data['image_bf'], dtype=np.int16)

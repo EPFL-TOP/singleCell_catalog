@@ -3,6 +3,7 @@ import json, os
 import numpy as np
 json_dir='/data/singleCell_training/wscepfl0080/wscepfl0080_well1/'
 json_dir='/data/singleCell_training/ppf003/ppf003_well1'
+json_dir='/data/singleCell_training/bleb001/bleb001_well1/'
 
 def load_model(model_path):
     return tf.keras.models.load_model(model_path)
@@ -48,8 +49,8 @@ def load_and_preprocess_image(json_file, target_size=(150, 150)):
 
 
 # Load the saved model
-#model = load_model('cell_classifier_model.keras')
-model = load_model('cell_classifier_model.h5')
+model = load_model('cell_classifier_model.keras')
+#model = load_model('cell_classifier_model.h5')
 
 # Path to a new image JSON file
 for dirpath, dirnames, filenames in os.walk(json_dir):
@@ -69,5 +70,5 @@ for dirpath, dirnames, filenames in os.walk(json_dir):
             prediction = model.predict(new_image)
 
             # Interpret the prediction
-            predicted_class = 'dead_cell' if prediction[0] > 0.5 else 'live_cell'
+            predicted_class = 'ALIVE' if prediction[0] > 0.5 else 'DEAD'
             print(f'Predicted class: {predicted_class}  weight={prediction[0]}')
