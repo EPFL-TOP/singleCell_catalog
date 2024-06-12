@@ -104,6 +104,7 @@ images = np.expand_dims(images, axis=-1)
 # Split data into training and validation sets
 X_train, X_val, y_train, y_val = train_test_split(images, labels, test_size=0.2, random_state=42)
 
+X_train = np.expand_dims(X_train, axis=-1)
 datagen.fit(X_train)
 
 # Build the model
