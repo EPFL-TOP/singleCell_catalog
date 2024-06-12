@@ -14,7 +14,7 @@ labels = []
 
 
 # Target image size (height, width)
-target_size = (150, 150)
+target_size = (50, 50)
 
 def pad_image(image, target_size):
     # Calculate padding
@@ -59,7 +59,7 @@ def load_json_data(json_dir):
                     
                     # Expand dimensions to match expected input shape (height, width, channels)
                     #padded_image = np.expand_dims(padded_image, axis=-1)
-                    print(image_data.shape)
+                    print(image_data)
                     print(padded_image)
                     sys.exit(3)
                     # Append the image and label to lists
