@@ -63,6 +63,34 @@ import bokeh.embed
 import bokeh.layouts
 
 
+#        
+def build_mva_samples(exp_name=''):
+    print('build_mva_samples exp_name=',exp_name)
+    exp_list = Experiment.objects.all()
+    for exp in exp_list:
+        if exp_name!='' and exp.name!=exp_name:
+            continue
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        for expds in experimentaldataset:
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            for sample in samples:
+                if sample.peaks_tod_div_validated==False:continue
+                cellids = CellID.objects.select_related().filter(sample=sample)
+                for cellid in cellids:
+                    cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
+                    for cellroi in cellrois:
+                        image_file = cellroi.contour_cellroi.file_name
+                        alive = cellroi.cellflag_cellroi.alive
+                        bf_image={'image_bf':None, 'alive':alive}
+                        with open(image_file, 'r') as f:
+                            data = json.load(f)
+                            for key in data:
+                                if 'BF' in key.split('_'):
+                                    bf_image['image_bf']=data[key]
+                                
+                        outfile_name = '/data/singleCell_training/{}_{}_frame{}_{}.json'.format(expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''), cellroi.frame.number, cellid.name)
+                        json.dump(bf_image, outfile_name) 
+
 
 #___________________________________________________________________________________________
 def deltaR(c1, c2):
@@ -4187,8 +4215,6 @@ def index(request: HttpRequest) -> HttpResponse:
     if 'register_rawdataset' in request.POST and LOCAL==False:
         register_rawdataset()
 
-
-
     #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
     if 'segment' in request.POST:
         build_segmentation()
@@ -4249,6 +4275,10 @@ def index(request: HttpRequest) -> HttpResponse:
     #THIS BUILDS THE ROIS FOR ALL THE EXISTING SAMPLES
     if 'build_ROIs' in request.POST:
         build_ROIs_loop(selected_dict['experiment'])
+
+
+    if 'build_mva' in request.POST:
+        build_mva_samples(selected_dict['experiment'])
 
     if selected_experiment!='':
         for e in experiment_dict['experiments']:
