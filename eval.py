@@ -54,14 +54,11 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
     for filename in os.listdir(json_dir):
         if filename.endswith('.json'):
             with open(os.path.join(json_dir, filename), 'r') as f:
-
-
                 data = json.load(f)
                 image_data = data['image_bf']
                 processed_image = preprocess_image(image_data, target_size)
                 images.append(processed_image)
                 filenames.append(filename)
-                print(len(images))
     return np.array(images), filenames
 
 
@@ -74,15 +71,15 @@ new_images, filenames = load_and_preprocess_images(json_dir)
 if len(new_images.shape) == 3:
     new_images = np.expand_dims(new_images, axis=-1)
 
-    # Predict the classes for the batch of images
-    predictions = model.predict(new_images)
+# Predict the classes for the batch of images
+predictions = model.predict(new_images)
 
-    # Interpret the predictions
-    predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
+# Interpret the predictions
+predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
 
-    # Print the results
-    for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
-        print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
+# Print the results
+for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
+    print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
 
 
 import sys
