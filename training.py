@@ -16,7 +16,7 @@ labels = []
 
 
 # Target image size (height, width)
-target_size = (100, 100)
+target_size = (150, 150)
 
 def pad_image(image, target_size):
     # Calculate padding
