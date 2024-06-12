@@ -51,20 +51,17 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
     images = []
     filenames = []
 
-    for dirpath, dirnames, filenames in os.walk(json_dir):
-        for filename in filenames:
+    for filename in os.listdir(json_dir):
+        if filename.endswith('.json'):
+            with open(os.path.join(json_dir, filename), 'r') as f:
 
-            if filename.endswith(".json"):
-                print(dirpath,'  ',filename)
-                new_image_json = os.path.join(dirpath, filename)
 
-                with open(new_image_json, 'r') as f:
-                    data = json.load(f)
-                    image_data = data['image_bf']
-                    processed_image = preprocess_image(image_data, target_size)
-                    images.append(processed_image)
-                    filenames.append(filename)
-                    print(len(images))
+                data = json.load(f)
+                image_data = data['image_bf']
+                processed_image = preprocess_image(image_data, target_size)
+                images.append(processed_image)
+                filenames.append(filename)
+                print(len(images))
     return np.array(images), filenames
 
 
