@@ -4,7 +4,7 @@ import numpy as np
 json_dir='/data/singleCell_training/wscepfl0080/wscepfl0080_well1/'
 json_dir='/data/singleCell_training/ppf003/ppf003_well1'
 json_dir='/data/singleCell_training/bleb001/bleb001_well1/fna-bleb001_xy001'
-
+json_dir='/data/singleCell_training/wscepfl0102/wscepfl0102_well1/wscepfl0102_xy03/'
 def load_model(model_path):
     return tf.keras.models.load_model(model_path)
 
