@@ -9,9 +9,9 @@ def load_model(model_path):
 
 def preprocess_image(image, target_size = (150, 150)):
     # Calculate padding
-    image_data = np.array(image_data, dtype=np.int16)
-    delta_w = target_size[1] - image.shape[1]
-    delta_h = target_size[0] - image.shape[0]
+    image_data = np.array(image, dtype=np.int16)
+    delta_w = target_size[1] - image_data.shape[1]
+    delta_h = target_size[0] - image_data.shape[0]
     pad_width = delta_w // 2
     pad_height = delta_h // 2
 
@@ -29,6 +29,9 @@ def preprocess_image(image, target_size = (150, 150)):
     # Pad the image
     padded_image = np.pad(image, padding, mode='constant', constant_values=0)
 
+    padded_image = padded_image / np.max(padded_image)
+    padded_image = np.expand_dims(padded_image, axis=-1)
+
     return padded_image
 
 
@@ -40,6 +43,7 @@ def load_and_preprocess_image(json_file, target_size=(150, 150)):
         print(data)
         print(json_file)
         image_data = data['image_bf']
+        p
         processed_image = preprocess_image(image_data, target_size)
     return processed_image
 
