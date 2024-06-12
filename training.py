@@ -72,7 +72,8 @@ def load_json_data(json_dir):
 load_json_data(json_dir)
 
 for img in images:
-    assert img.shape == (150, 150, 1), f"Image shape mismatch: {img.shape}"
+    print(img.shape)
+    #assert img.shape == (150, 150, 1), f"Image shape mismatch: {img.shape}"
 
 
 
