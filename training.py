@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorflow.keras import layers, models
 
 # Define the paths
-json_dir = '/data/json_files'
+json_dir = '/data/singleCell_training/'
 
 # Initialize lists to store images and labels
 images = []
@@ -14,16 +14,19 @@ labels = []
 
 # Function to load JSON data and convert to numpy arrays
 def load_json_data(json_dir):
-    for filename in os.listdir(json_dir):
-        if filename.endswith('.json'):
-            with open(os.path.join(json_dir, filename), 'r') as f:
-                data = json.load(f)
-                image_data = np.array(data['image_data'], dtype=np.int16)
-                label = data['label']
-                
-                # Append the image and label to lists
-                images.append(image_data)
-                labels.append(1 if label == 'dead_cell' else 0)  # Assuming 'dead_cell' is labeled as 1, 'live_cell' as 0
+
+    for dirpath, dirnames, filenames in os.walk(json_dir):
+        for filename in filenames:
+            if filename.endswith(".json"):
+                print(dirpath,'  ',filename)
+                with open(os.path.join(json_dir, filename), 'r') as f:
+                    data = json.load(f)
+                    image_data = np.array(data['image_data'], dtype=np.int16)
+                    label = data['label']
+                    
+                    # Append the image and label to lists
+                    images.append(image_data)
+                    labels.append(1 if label == 'dead_cell' else 0)  # Assuming 'dead_cell' is labeled as 1, 'live_cell' as 0
 
 # Load data
 load_json_data(json_dir)
