@@ -22,7 +22,15 @@ def pad_image(image, target_size):
     delta_h = target_size[0] - image.shape[0]
     pad_width = delta_w // 2
     pad_height = delta_h // 2
+
     padding = ((pad_height, pad_height), (pad_width, pad_width))
+
+    # Check if the padding difference is odd and distribute padding accordingly
+    if delta_w % 2 != 0:
+        padding = ((pad_height, pad_height), (pad_width, pad_width+1))
+
+    if delta_h % 2 != 0:
+        padding = ((pad_height, pad_height+1), (pad_width, pad_width))
     
     # Pad the image
     padded_image = np.pad(image, padding, mode='constant', constant_values=0)
