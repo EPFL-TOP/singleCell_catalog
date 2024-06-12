@@ -6,6 +6,14 @@ import sys
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow.keras import layers, models
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
+
+# Reduce learning rate when a metric has stopped improving
+reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.001)
+
+# Stop training when a monitored metric has stopped improving
+early_stopping = EarlyStopping(monitor='val_loss', patience=10)
 
 # Define the paths
 json_dir = '/data/singleCell_training/'
@@ -68,6 +76,15 @@ def load_json_data(json_dir):
                     images.append(padded_image)
                     labels.append(1 if label == True else 0)  # Assuming 'dead_cell' is labeled as 1, 'live_cell' as 0
 
+datagen = ImageDataGenerator(
+    rotation_range=20,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest'
+)
 
 
 # Load data
@@ -87,6 +104,7 @@ images = np.expand_dims(images, axis=-1)
 # Split data into training and validation sets
 X_train, X_val, y_train, y_val = train_test_split(images, labels, test_size=0.2, random_state=42)
 
+datagen.fit(X_train)
 
 # Build the model
 model = models.Sequential([
@@ -100,8 +118,10 @@ model = models.Sequential([
     layers.MaxPooling2D((2, 2)),
     layers.Flatten(),
     layers.Dense(512, activation='relu'),
+    layers.Dropout(0.5),
     layers.Dense(1, activation='sigmoid')
 ])
+
 
 model.compile(
     loss='binary_crossentropy',
@@ -111,10 +131,12 @@ model.compile(
 
 # Train the model
 history = model.fit(
-    X_train, y_train,
+    #X_train, y_train,
+    datagen.flow(X_train, y_train, batch_size=32),
     epochs=20,
     batch_size=20,
-    validation_data=(X_val, y_val)
+    validation_data=(X_val, y_val),
+    callbacks=[reduce_lr, early_stopping]
 )
 
 #model.save('cell_classifier_model.h5')
