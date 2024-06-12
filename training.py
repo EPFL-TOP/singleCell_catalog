@@ -60,7 +60,7 @@ def load_json_data(json_dir):
                     padded_image = padded_image / np.max(padded_image)
                     
                     # Expand dimensions to match expected input shape (height, width, channels)
-                    #padded_image = np.expand_dims(padded_image, axis=-1)
+                    padded_image = np.expand_dims(padded_image, axis=-1)
 
                     # Append the image and label to lists
                     images.append(padded_image)
