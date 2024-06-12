@@ -33,7 +33,7 @@ def pad_image(image, target_size):
         padding = ((pad_height, pad_height+1), (pad_width, pad_width))
     
 
-    padding = ((1, 1), (1, 1))
+    padding = ((2, 1), (2, 1))
 
     print(padding)
 
