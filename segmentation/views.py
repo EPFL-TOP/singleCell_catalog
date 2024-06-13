@@ -928,7 +928,9 @@ def preprocess_image(image, target_size = (150, 150)):
     image_data = np.array(image, dtype=np.int16)
 
     if image_data.shape[1]>target_size[1] or image_data.shape[0]>target_size[0]:
+        print(image_data.shape)
         image_data = image_data.resize(target_size)
+        print(image_data.shape)
         image_data = image_data / np.max(image_data)
         image_data = np.expand_dims(image_data, axis=-1)
         return image_data
@@ -4212,10 +4214,12 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                         int_list[ch].append(intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t][ch])
                 
                 ch_num=0
+                prediction=[]
                 for ch in int_list:
-                    if 'BF' in ch:continue
+                    if 'BF' in ch:
+                        prediction = get_mva_prediction(file_list)
+                        continue
                     p.line(time_list, int_list[ch], line_color=color_map[ch_num])
-                    prediction = get_mva_prediction(file_list)
                     ch_num+=1
                     #labels=get_labels() 
                     #p.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
