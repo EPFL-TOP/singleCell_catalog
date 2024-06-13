@@ -31,6 +31,8 @@ def preprocess_image(image, target_size):
     image = np.clip(image, np.iinfo(np.int16).min, np.iinfo(np.int16).max)
     image = np.array(image, dtype=np.int16)
 
+    if image.shape[0]>target_size[0] or image.shape[1]>target_size[1]: return None 
+
     delta_w = target_size[1] - image.shape[1]
     delta_h = target_size[0] - image.shape[0]
     pad_width = delta_w // 2
@@ -71,7 +73,7 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
                     label = data['alive']
                     
                     processed_image = preprocess_image(image_data, target_size)
-
+                    if processed_image == None: continue
                     # Append the image and label to lists
                     images.append(processed_image)
                     labels.append(1 if label == True else 0)  # Assuming 'dead_cell' is labeled as 1, 'live_cell' as 0
