@@ -77,13 +77,16 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
 
 
 images, labels = load_and_preprocess_images(json_dir)
+images = np.expand_dims(images, axis=-1)
 x_train, x_val, y_train, y_val = train_test_split(images, labels, test_size=0.2, random_state=42)
 
 print(x_train.shape)
 print(y_train.shape)
+print(x_val.shape)
+print(y_val.shape)
 # Ensure the data has the correct shape
-x_train = np.expand_dims(x_train, axis=-1)
-x_val = np.expand_dims(x_val, axis=-1)
+#x_train = np.expand_dims(x_train, axis=-1)
+#x_val = np.expand_dims(x_val, axis=-1)
 
 datagen = ImageDataGenerator(
     rotation_range=20,
