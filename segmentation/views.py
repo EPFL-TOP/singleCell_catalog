@@ -995,9 +995,7 @@ def get_mva_prediction(file_list):
     for pred in range(len(predicted_classes)):
         if predicted_classes[pred]=='DEAD':
             trunc_pred=predictions[pred:]
-            print('trunc_pred ',trunc_pred)
             val=sum(trunc_pred)/len(trunc_pred)
-            print('val=',val)
             if val<0.5:
                 return filenames[pred]
     return None
@@ -4239,6 +4237,9 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                         x = [time_list[t] for t in range(frame_list.index(frame_num), len(frame_list))]
                         y1 = [int_list[ch] for t in range(frame_list.index(frame_num), len(frame_list))]
                         y2 = [0 for t in range(frame_list.index(frame_num), len(frame_list))]
+                        print('x',x)
+                        print('y1',y1)
+                        print('y2',y2)
                         p.varea(x=x, y1=y1, y2=y2, fill_alpha=0.10, fill_color='black')
                     ch_num+=1
 
