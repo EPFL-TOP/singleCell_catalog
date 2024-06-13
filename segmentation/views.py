@@ -960,7 +960,6 @@ def preprocess_image(image, target_size = (150, 150)):
 
 #___________________________________________________________________________________________
 def load_and_preprocess_images(file_list):
-    pred=[]
     images = []
     filenames = []
     for filename in file_list:
@@ -978,6 +977,8 @@ def load_and_preprocess_images(file_list):
 #___________________________________________________________________________________________
 def get_mva_prediction(file_list):
     new_images, filenames = load_and_preprocess_images(file_list)
+    print(filenames)
+    print(len(filenames))
     if len(new_images.shape) == 3:
         new_images = np.expand_dims(new_images, axis=-1)
 
