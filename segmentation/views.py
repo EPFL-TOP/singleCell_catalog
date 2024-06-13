@@ -2397,6 +2397,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
                 hist, edges = np.histogram(img_diff.flatten(), bins=100)
                 print('img_diff.flatten() ',img_diff.flatten())
+                print('img_diff.max ',np.max(img_diff))
+                print('img_diff.min ',np.min(img_diff))
                 print('hist               ', hist)
                 print('edges              ', edges)
                 
