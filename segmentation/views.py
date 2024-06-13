@@ -968,6 +968,7 @@ def load_and_preprocess_images(file_list):
             for key in data:
                 if 'BF' in key.split('_')[-1]:
                     image = data[key]
+                    print('filename========================',filename)
                     processed_image = preprocess_image(image, (150, 150))
                     images.append(processed_image)
                     filenames.append(filename)
@@ -977,8 +978,8 @@ def load_and_preprocess_images(file_list):
 #___________________________________________________________________________________________
 def get_mva_prediction(file_list):
     new_images, filenames = load_and_preprocess_images(file_list)
-    print(filenames)
-    print(len(filenames))
+    print(file_list)
+    print(len(file_list))
     if len(new_images.shape) == 3:
         new_images = np.expand_dims(new_images, axis=-1)
 
