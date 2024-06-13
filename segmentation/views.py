@@ -2384,17 +2384,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             frame  = Frame.objects.select_related().filter(sample=sample).get(number=time_point)
             rois   = CellROI.objects.select_related().filter(frame=frame)
 
-            print('============ image1 ',image1)
-            print('============ image2 ',image2)
 
             for roi in rois:
                 image1_roi = image1[roi.min_row:roi.max_row, roi.min_col:roi.max_col]
                 image2_roi = image2[roi.min_row:roi.max_row, roi.min_col:roi.max_col]
-                print('roi.min_row, roi.max_row, roi.min_col, roi.max_col ',roi.min_row,'  ',roi.max_row,'  ',roi.min_col,'  ',roi.max_col)
-                print('============ image2_roi ',image2_roi)
-                print('============ image1_roi ',image1_roi)
 
-                img_diff = (image1_roi-image2_roi)
+                img_diff = (image1_roi-image2_roi)/image2_roi
 
                 hist, edges = np.histogram(img_diff.flatten(), bins=100)
                 print('img_diff.flatten() ',img_diff.flatten())
