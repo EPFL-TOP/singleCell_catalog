@@ -4131,6 +4131,12 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                     if 'BF' in ch:continue
                     p.line(time_list, int_list[ch], line_color=color_map[ch_num])
                     ch_num+=1
+                    #labels=get_labels() 
+                    #p.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
+
+#                                source_varea_death.data['x']    = [source_intensity_ch1.data["time"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["time"])) ]
+#                source_varea_death.data['y1']   = [source_intensity_ch1.data["intensity"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["intensity"]))]
+#                source_varea_death.data['y2']   = [0 for i in range(len(source_varea_death.data['y1']))]
             new_plots.append(p)
     #plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
 
