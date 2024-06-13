@@ -4200,7 +4200,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                     int_list[ch]=[]
                 for t in range(len(intensity_traces[selected_positons[i]][cell]['ROI']['time'])):
                     time_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['time'][t]/60000.)
-                    file_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['file_name'])
+                    file_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['file_name'][t])
                     for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t]:
                         int_list[ch].append(intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t][ch])
                 
