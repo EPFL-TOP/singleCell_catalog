@@ -6,7 +6,7 @@ json_dir='/data/singleCell_training/ppf003/ppf003_well1'
 json_dir='/data/singleCell_training/bleb001/bleb001_well1/fna-bleb001_xy001'
 json_dir='/data/singleCell_training/wscepfl0102/wscepfl0102_well1/wscepfl0102_xy03/'
 json_dir='/data/singleCell_training/wscepfl0102/wscepfl0102_well1/wscepfl0102_xy03/'
-json_dir='/data/singleCell_training/bleb002/bleb002_well1/fna-bleb002_xy010/'
+json_dir='/data/singleCell_training/bleb002/bleb002_well1/fna-bleb002_xy009/'
 def load_model(model_path):
     return tf.keras.models.load_model(model_path)
 
