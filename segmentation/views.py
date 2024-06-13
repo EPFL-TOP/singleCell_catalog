@@ -979,8 +979,6 @@ def load_and_preprocess_images(file_list):
 #___________________________________________________________________________________________
 def get_mva_prediction(file_list):
     new_images, filenames = load_and_preprocess_images(file_list)
-    print(file_list)
-    print(len(file_list))
     if len(new_images.shape) == 3:
         new_images = np.expand_dims(new_images, axis=-1)
 
@@ -991,10 +989,16 @@ def get_mva_prediction(file_list):
     predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
 
     # Print the results
-    for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
-        print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
+    #for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
+    #    print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
 
-    return predicted_classes
+    for pred in range(len(predicted_classes)):
+        if pred=='DEAD':
+            trunc_pred=predictions[pred:]
+            val=sum(trunc_pred)/len(trunc_pred)
+            if val<0.5:
+                return filenames[pred]
+    return None
 #___________________________________________________________________________________________
 
 
@@ -4148,6 +4152,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 intensity_std  = []
                 intensity_sum  = []
                 file_name      = []
+                frame_number   = []
 
                 cellsROI = CellROI.objects.select_related().filter(cell_id=cellID)
                 for cellROI in cellsROI:
@@ -4157,8 +4162,9 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                     intensity_std.append(cellROI.contour_cellroi.intensity_std)
                     intensity_sum.append(cellROI.contour_cellroi.intensity_sum)
                     file_name.append(cellROI.contour_cellroi.file_name)
+                    frame_number.append(cellROI.frame.number)
 
-                sorted_lists    = list(zip(time, intensity_max,intensity_mean, intensity_sum, intensity_std, file_name)) 
+                sorted_lists    = list(zip(time, intensity_max,intensity_mean, intensity_sum, intensity_std, file_name, frame_number)) 
                 sorted_combined = sorted(sorted_lists, key=lambda x: x[0])
 
                 time_sorted           = [x[0] for x in sorted_combined]
@@ -4167,6 +4173,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 intensity_sum_sorted  = [x[3] for x in sorted_combined]
                 intensity_std_sorted  = [x[4] for x in sorted_combined]
                 file_name_sorted      = [x[5] for x in sorted_combined]
+                frame_number_sorted   = [x[6] for x in sorted_combined]
 
                 intensity_traces[sample][cellID.name]["ROI"]["time"]           = time_sorted
                 intensity_traces[sample][cellID.name]["ROI"]["intensity_max"]  = intensity_max_sorted
@@ -4174,6 +4181,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 intensity_traces[sample][cellID.name]["ROI"]["intensity_std"]  = intensity_std_sorted
                 intensity_traces[sample][cellID.name]["ROI"]["intensity_sum"]  = intensity_sum_sorted
                 intensity_traces[sample][cellID.name]["ROI"]["file_name"]      = file_name_sorted
+                intensity_traces[sample][cellID.name]["ROI"]["frame_number"]   = frame_number_sorted
 
         new_plots = []
 
@@ -4202,26 +4210,35 @@ def summary_handler(doc: bokeh.document.Document) -> None:
             for cell in intensity_traces[selected_positons[i]]:
                 time_list = []
                 int_list  = {}
+                frame_list = []
                 file_list = []
 
                 for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][0]:
                     int_list[ch]=[]
+                    frame_list[ch]=[]
                 for t in range(len(intensity_traces[selected_positons[i]][cell]['ROI']['time'])):
                     time_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['time'][t]/60000.)
                     file_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['file_name'][t])
+                    frame_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['frame_number'][t])
                     for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t]:
                         int_list[ch].append(intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t][ch])
                 
                 ch_num=0
-                prediction=[]
+                frame_num=-9999
                 for ch in int_list:
                     if 'BF' in ch:
                         prediction = get_mva_prediction(file_list)
+                        if prediction!=None:
+                            file_name = prediction.split('/')[-1]
+                            frame_num = int(file_name.split('_')[0].replace('_',''))
                         continue
                     p.line(time_list, int_list[ch], line_color=color_map[ch_num])
+                    if frame_num>-1:
+                        x = [time_list[t] for t in range(frame_list.index(frame_num), len(frame_list))]
+                        y1 = [int_list[ch] for t in range(frame_list.index(frame_num), len(frame_list))]
+                        y2 = [0 for t in range(frame_list.index(frame_num), len(frame_list))]
+                        p.varea(x=x, y1=y1, y2=y2, fill_alpha=0.10, fill_color='black')
                     ch_num+=1
-                    #labels=get_labels() 
-                    #p.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
 
 #                                source_varea_death.data['x']    = [source_intensity_ch1.data["time"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["time"])) ]
 #                source_varea_death.data['y1']   = [source_intensity_ch1.data["intensity"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["intensity"]))]
