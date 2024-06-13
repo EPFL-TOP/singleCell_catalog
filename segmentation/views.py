@@ -4235,7 +4235,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                     p.line(time_list, int_list[ch], line_color=color_map[ch_num])
                     if frame_num>-1:
                         x = [time_list[t] for t in range(frame_list.index(frame_num), len(frame_list))]
-                        y1 = [int_list[ch] for t in range(frame_list.index(frame_num), len(frame_list))]
+                        y1 = [int_list[ch][t] for t in range(frame_list.index(frame_num), len(frame_list))]
                         y2 = [0 for t in range(frame_list.index(frame_num), len(frame_list))]
                         print('x',x)
                         print('y1',y1)
