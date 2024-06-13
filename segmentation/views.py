@@ -30,6 +30,7 @@ from pathlib import Path
 from io import BytesIO
 import base64
 from PIL import Image
+import tensorflow as tf
 
 LOCAL=True
 DEBUG=False
@@ -62,6 +63,10 @@ import bokeh.plotting
 import bokeh.embed
 import bokeh.layouts
 
+def load_model(model_path):
+    return tf.keras.models.load_model(model_path)
+
+model = load_model('cell_classifier_model.keras')
 
 #        
 def build_mva_samples(exp_name=''):
@@ -913,10 +918,75 @@ def with_request(f):
     return wrapper
 
 
-
 def print_time(text, prev):
     now=datetime.datetime.now()
     if DEBUG_TIME: print(f'\033[91m {text} deltaT = \033[0m',now-prev)
+
+#___________________________________________________________________________________________
+def preprocess_image(image, target_size = (150, 150)):
+    # Calculate padding
+    image_data = np.array(image, dtype=np.int16)
+    delta_w = target_size[1] - image_data.shape[1]
+    delta_h = target_size[0] - image_data.shape[0]
+    pad_width = delta_w // 2
+    pad_height = delta_h // 2
+
+    padding = ((pad_height, pad_height), (pad_width, pad_width))
+
+    # Check if the padding difference is odd and distribute padding accordingly
+    if delta_w % 2 != 0:
+        padding = ((pad_height, pad_height), (pad_width, pad_width+1))
+
+    if delta_h % 2 != 0:
+        padding = ((pad_height, pad_height+1), (pad_width, pad_width))
+
+    if delta_h % 2 != 0 and delta_w % 2 != 0:
+        padding = ((pad_height, pad_height+1), (pad_width, pad_width+1))
+    # Pad the image
+    padded_image = np.pad(image, padding, mode='constant', constant_values=0)
+
+    padded_image = padded_image / np.max(padded_image)
+    padded_image = np.expand_dims(padded_image, axis=-1)
+
+    return padded_image
+#___________________________________________________________________________________________
+
+#___________________________________________________________________________________________
+def load_and_preprocess_images(file_list):
+    pred=[]
+    images = []
+    filenames = []
+    for filename in file_list:
+        with open(filename, 'r') as f:
+            data = json.load(f)
+            for key in data:
+                if 'BF' in key.split('_')[-1]:
+                    image = data[key]
+                    processed_image = preprocess_image(image, (150, 150))
+                    images.append(processed_image)
+                    filenames.append(filename)
+    return np.array(images), filenames
+#___________________________________________________________________________________________
+
+#___________________________________________________________________________________________
+def get_mva_prediction(file_list):
+    new_images, filenames = load_and_preprocess_images(file_list)
+    if len(new_images.shape) == 3:
+        new_images = np.expand_dims(new_images, axis=-1)
+
+    # Predict the classes for the batch of images
+    predictions = model.predict(new_images)
+
+    # Interpret the predictions
+    predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
+
+    # Print the results
+    for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
+        print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
+
+    return predicted_classes
+#___________________________________________________________________________________________
+
 
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document) -> None:
@@ -4041,7 +4111,6 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     plots = create_plots(num_plots)
     grid  = create_grid(plots, grid_size)
 
-
     #___________________________________________________________________________________________
     def update_plot(attr, old, new):
         selected_experiment  = Experiment.objects.get(name=dropdown_exp.value)
@@ -4068,6 +4137,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 intensity_mean = []
                 intensity_std  = []
                 intensity_sum  = []
+                file_name      = []
 
                 cellsROI = CellROI.objects.select_related().filter(cell_id=cellID)
                 for cellROI in cellsROI:
@@ -4076,8 +4146,9 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                     intensity_mean.append(cellROI.contour_cellroi.intensity_mean)
                     intensity_std.append(cellROI.contour_cellroi.intensity_std)
                     intensity_sum.append(cellROI.contour_cellroi.intensity_sum)
+                    file_name.append(cellROI.contour_cellroi.file_name)
 
-                sorted_lists    = list(zip(time, intensity_max,intensity_mean, intensity_sum, intensity_std)) 
+                sorted_lists    = list(zip(time, intensity_max,intensity_mean, intensity_sum, intensity_std, file_name)) 
                 sorted_combined = sorted(sorted_lists, key=lambda x: x[0])
 
                 time_sorted           = [x[0] for x in sorted_combined]
@@ -4085,12 +4156,14 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 intensity_mean_sorted = [x[2] for x in sorted_combined]
                 intensity_sum_sorted  = [x[3] for x in sorted_combined]
                 intensity_std_sorted  = [x[4] for x in sorted_combined]
+                file_name_sorted      = [x[5] for x in sorted_combined]
 
                 intensity_traces[sample][cellID.name]["ROI"]["time"]           = time_sorted
                 intensity_traces[sample][cellID.name]["ROI"]["intensity_max"]  = intensity_max_sorted
                 intensity_traces[sample][cellID.name]["ROI"]["intensity_mean"] = intensity_mean_sorted
                 intensity_traces[sample][cellID.name]["ROI"]["intensity_std"]  = intensity_std_sorted
                 intensity_traces[sample][cellID.name]["ROI"]["intensity_sum"]  = intensity_sum_sorted
+                intensity_traces[sample][cellID.name]["ROI"]["file_name"]      = file_name_sorted
 
         new_plots = []
 
@@ -4117,12 +4190,15 @@ def summary_handler(doc: bokeh.document.Document) -> None:
             #print('selected_positons=',selected_positons[i], '  ncells ',len(intensity_traces[selected_positons[i]]))
             
             for cell in intensity_traces[selected_positons[i]]:
-                time_list=[]
-                int_list = {}
+                time_list = []
+                int_list  = {}
+                file_list = []
+
                 for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][0]:
                     int_list[ch]=[]
                 for t in range(len(intensity_traces[selected_positons[i]][cell]['ROI']['time'])):
                     time_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['time'][t]/60000.)
+                    file_list.append(intensity_traces[selected_positons[i]][cell]['ROI']['file_name'])
                     for ch in intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t]:
                         int_list[ch].append(intensity_traces[selected_positons[i]][cell]['ROI'][intensity_map[dropdown_intensity_type.value]][t][ch])
                 
@@ -4130,6 +4206,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 for ch in int_list:
                     if 'BF' in ch:continue
                     p.line(time_list, int_list[ch], line_color=color_map[ch_num])
+                    prediction = get_mva_prediction(file_list)
                     ch_num+=1
                     #labels=get_labels() 
                     #p.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
