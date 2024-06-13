@@ -80,10 +80,7 @@ images, labels = load_and_preprocess_images(json_dir)
 images = np.expand_dims(images, axis=-1)
 x_train, x_val, y_train, y_val = train_test_split(images, labels, test_size=0.2, random_state=42)
 
-print(x_train.shape)
-print(y_train.shape)
-print(x_val.shape)
-print(y_val.shape)
+
 # Ensure the data has the correct shape
 #x_train = np.expand_dims(x_train, axis=-1)
 #x_val = np.expand_dims(x_val, axis=-1)
@@ -99,7 +96,7 @@ datagen = ImageDataGenerator(
 )
 
 # Fit the data generator on the training data
-datagen.fit(x_train)
+#datagen.fit(x_train)
 
 
 # Build the model
@@ -139,22 +136,19 @@ reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr
 early_stopping = EarlyStopping(monitor='val_loss', patience=10)
 
 # Train the model
-history = model.fit(datagen.flow(x_train, y_train, batch_size=32),
+#history = model.fit(datagen.flow(x_train, y_train, batch_size=32),
+#                    epochs=50,
+#                    validation_data=(x_val, y_val),
+#                    callbacks=[reduce_lr, early_stopping])
+
+history = model.fit(x_train, y_train,
                     epochs=50,
+                    batch_size=32,
                     validation_data=(x_val, y_val),
                     callbacks=[reduce_lr, early_stopping])
 
 
 
-# Train the model
-#history = model.fit(
-#    X_train, y_train,
-#    #datagen.flow(X_train, y_train, batch_size=32),
-#    epochs=20,
-#    batch_size=20,
-#    validation_data=(X_val, y_val),
-#    callbacks=[reduce_lr, early_stopping]
-#)
 
 #model.save('cell_classifier_model.h5')
 model.save('cell_classifier_model.keras')
