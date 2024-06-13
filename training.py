@@ -48,7 +48,7 @@ def preprocess_image(image, target_size):
     padded_image = np.pad(image, padding, mode='constant', constant_values=0)
 
     padded_image = padded_image / np.max(padded_image)
-    padded_image = np.expand_dims(padded_image, axis=-1)
+    #padded_image = np.expand_dims(padded_image, axis=-1)
 
     return padded_image
 
