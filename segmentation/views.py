@@ -2374,7 +2374,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         images=source_imgs.data['images']
         if time_point>0:
             image1 = images[int(dropdown_channel.value)][time_point]
+            image1=np.array(image1)
+
             image2 = images[int(dropdown_channel.value)][time_point-1]
+            image2=np.array(image1)
             current_file=get_current_file()
             sample = Sample.objects.get(file_name=current_file)
             frame  = Frame.objects.select_related().filter(sample=sample).get(number=time_point)
