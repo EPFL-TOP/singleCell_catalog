@@ -16,7 +16,9 @@ reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr
 early_stopping = EarlyStopping(monitor='val_loss', patience=10)
 
 # Define the paths
-json_dir = '/data/singleCell_training/'
+json_dir = '/mnt/sdc1/data/singleCell_training/'
+if not os.path.exists('/mnt/sdc1/data/singleCell_training'):
+    json_dir = '/data/singleCell_training/'
 
 # Initialize lists to store images and labels
 images = []
