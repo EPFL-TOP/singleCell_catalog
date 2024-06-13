@@ -4227,6 +4227,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 for ch in int_list:
                     if 'BF' in ch:
                         prediction = get_mva_prediction(file_list)
+                        print('pred=',prediction)
                         if prediction!=None:
                             file_name = prediction.split('/')[-1]
                             frame_num = int(file_name.split('_')[0].replace('_',''))
