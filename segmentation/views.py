@@ -957,6 +957,8 @@ def load_and_preprocess_images(file_list):
     images = []
     filenames = []
     for filename in file_list:
+        print('filename  ---  ',filename)
+        print('file_list      ',file_list)
         with open(filename, 'r') as f:
             data = json.load(f)
             for key in data:
