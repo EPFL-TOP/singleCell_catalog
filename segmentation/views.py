@@ -2389,7 +2389,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 hist, edges = np.histogram(img_diff.flatten(), bins=30)
                 
                 source_test_dead.data=dict(top=hist, left=edges[:-1], right=edges[1:])
-                print(source_test_dead)
+                print(source_test_dead.data)
     #___________________________________________________________________________________________
 
 
