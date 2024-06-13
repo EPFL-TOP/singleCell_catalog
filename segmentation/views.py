@@ -4232,7 +4232,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                         print('pred=',prediction)
                         if prediction!=None:
                             file_name = prediction.split('/')[-1]
-                            frame_num = int(file_name.split('_')[0].replace('_',''))
+                            frame_num = int(file_name.split('_')[0].replace('frame',''))
                         continue
                     p.line(time_list, int_list[ch], line_color=color_map[ch_num])
                     if frame_num>-1:
