@@ -2372,6 +2372,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def roi_diff(time_point):
         images=source_imgs.data['images']
+        print('images=',images)
+        print('len images=',len(images))
+        
         if time_point>0:
             image1 = images[int(dropdown_channel.value)][time_point]
             image1=np.array(image1)
