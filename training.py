@@ -28,6 +28,9 @@ target_size = (150, 150)
 
 def preprocess_image(image, target_size):
     # Calculate padding
+    image = np.clip(image, np.iinfo(np.int16).min, np.iinfo(np.int16).max)
+    image = np.array(image, dtype=np.int16)
+
     delta_w = target_size[1] - image.shape[1]
     delta_h = target_size[0] - image.shape[0]
     pad_width = delta_w // 2
@@ -64,7 +67,7 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
             if filename.endswith(".json"):
                 with open(os.path.join(dirpath, filename), 'r') as f:
                     data = json.load(f)
-                    image_data = np.array(data['image_bf'], dtype=np.int16)
+                    image_data = data['image_bf']
                     label = data['alive']
                     
                     processed_image = preprocess_image(image_data, target_size)
@@ -116,7 +119,8 @@ datagen = ImageDataGenerator(
 #])
 
 model = models.Sequential([
-    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(150, 150, 1)),
+    layers.Input(shape=(150, 150, 1)),
+    layers.Conv2D(32, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
     layers.Conv2D(64, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
