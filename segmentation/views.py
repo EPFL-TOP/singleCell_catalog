@@ -995,7 +995,9 @@ def get_mva_prediction(file_list):
     for pred in range(len(predicted_classes)):
         if pred=='DEAD':
             trunc_pred=predictions[pred:]
+            print('trunc_pred ',trunc_pred)
             val=sum(trunc_pred)/len(trunc_pred)
+            print('val=',val)
             if val<0.5:
                 return filenames[pred]
     return None
