@@ -926,6 +926,13 @@ def print_time(text, prev):
 def preprocess_image(image, target_size = (150, 150)):
     # Calculate padding
     image_data = np.array(image, dtype=np.int16)
+
+    if image_data.shape[1]>target_size[1] or image_data.shape[0]>target_size[0]:
+        image_data = image.resize(target_size)
+        image_data = image_data / np.max(image_data)
+        image_data = np.expand_dims(image_data, axis=-1)
+        return image_data
+
     delta_w = target_size[1] - image_data.shape[1]
     delta_h = target_size[0] - image_data.shape[0]
     pad_width = delta_w // 2
@@ -957,8 +964,6 @@ def load_and_preprocess_images(file_list):
     images = []
     filenames = []
     for filename in file_list:
-        print('filename  ---  ',filename)
-        print('file_list      ',file_list)
         with open(filename, 'r') as f:
             data = json.load(f)
             for key in data:
