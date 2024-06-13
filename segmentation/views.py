@@ -993,8 +993,7 @@ def get_mva_prediction(file_list):
     #    print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
 
     for pred in range(len(predicted_classes)):
-        print(pred)
-        if pred=='DEAD':
+        if predicted_classes[pred]=='DEAD':
             trunc_pred=predictions[pred:]
             print('trunc_pred ',trunc_pred)
             val=sum(trunc_pred)/len(trunc_pred)
