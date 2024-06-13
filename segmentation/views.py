@@ -2387,8 +2387,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('============ image2 ',image2)
 
             for roi in rois:
-                image1_roi = image1[roi.min_row:roi.max_row][roi.min_col:roi.max_col]
-                image2_roi = image2[roi.min_row:roi.max_row][roi.min_col:roi.max_col]
+                image1_roi = image1[roi.min_row:roi.max_row, roi.min_col:roi.max_col]
+                image2_roi = image2[roi.min_row:roi.max_row, roi.min_col:roi.max_col]
                 print('roi.min_row, roi.max_row, roi.min_col, roi.max_col ',roi.min_row,'  ',roi.max_row,'  ',roi.min_col,'  ',roi.max_col)
                 print('============ image2_roi ',image2_roi)
                 print('============ image1_roi ',image1_roi)
