@@ -928,7 +928,7 @@ def preprocess_image(image, target_size = (150, 150)):
     image_data = np.array(image, dtype=np.int16)
 
     if image_data.shape[1]>target_size[1] or image_data.shape[0]>target_size[0]:
-        print(image_data.shape)
+        print('-====================== shape',image_data.shape)
         image_data = image_data.resize(target_size)
         print(image_data.shape)
         image_data = image_data / np.max(image_data)
@@ -970,7 +970,6 @@ def load_and_preprocess_images(file_list):
             for key in data:
                 if 'BF' in key.split('_')[-1]:
                     image = data[key]
-                    print('filename========================',filename)
                     processed_image = preprocess_image(image, (150, 150))
                     images.append(processed_image)
                     filenames.append(filename)
