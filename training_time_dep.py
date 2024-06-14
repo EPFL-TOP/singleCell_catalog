@@ -78,8 +78,9 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
                             image_data = data['image_bf']
                             alive = data['alive']
                             processed_image = preprocess_image(image_data, target_size)
-                            sequence.append(processed_image)
-                            label.append(1 if alive == True else 0)
+                            if len(processed_image)!=0:
+                                sequence.append(processed_image)
+                                label.append(1 if alive == True else 0)
 
                 print('sequence ',sequence)
                 print('label    ',label)
