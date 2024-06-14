@@ -83,7 +83,11 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
 
                 sequences.append(sequence)
                 labels.append(labels)
-
+                print('sequences ',sequences)
+                print('labels    ',labels)
+                print('sequences ',len(sequences))
+                print('labels    ',len(labels))
+                
     return np.array(sequences), np.array(labels)
 
 
