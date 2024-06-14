@@ -83,7 +83,9 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
                             if len(processed_image)!=0:
                                 sequence.append(processed_image)
                                 label.append(1 if alive == True else 0)
-                                frame.append(int(filename.replace("frame","").split("-")[1]))
+                                frame_num=filename.replace("frame","")
+                                frame_num=int(frame_num.split("_")[1])
+                                frame.append(frame_num)
 
                 sorted_lists = sorted(zip(frame, sequence, label)) 
                 frame_sorted, sequence_sorted, label_sorted = zip(*sorted_lists) 
