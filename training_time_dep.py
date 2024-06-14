@@ -62,23 +62,29 @@ def preprocess_image(image, target_size):
 def load_and_preprocess_images(json_dir, target_size=(150, 150)):
 
     # Initialize lists to store images and labels
-    images = []
+    sequences = []
     labels = []
 
-    for dirpath, dirnames, filenames in os.walk(json_dir):
-        for filename in filenames:
-            if filename.endswith(".json"):
-                with open(os.path.join(dirpath, filename), 'r') as f:
-                    data = json.load(f)
-                    image_data = data['image_bf']
-                    label = data['alive']
-                    
-                    processed_image = preprocess_image(image_data, target_size)
-                    if len(processed_image) == 0: continue
-                    # Append the image and label to lists
-                    images.append(processed_image)
-                    labels.append(1 if label == True else 0)  # Assuming 'dead_cell' is labeled as 1, 'live_cell' as 0
-    return np.array(images), np.array(labels)
+    # /data/singleCell_training/ppf003/ppf003_well1/ppf003_xy001
+    for expname in os.listdir(json_dir):
+        for well_name in os.listdir(os.path.join(json_dir,expname)):
+            for pos_name in os.listdir(os.path.join(json_dir, expname, well_name)):
+                sequence = []
+                label = []
+                for filename in os.listdir(os.path.join(json_dir, expname, well_name, pos_name)):
+                    if filename.endswith('.json'):
+                        with open(os.path.join(json_dir, expname, well_name, pos_name, filename), 'r') as f:
+                            data = json.load(f)
+                            image_data = data['image_bf']
+                            alive = data['alive']
+                            processed_image = preprocess_image(image_data, target_size)
+                            sequence.append(processed_image)
+                            label.append(1 if alive == True else 0)
+
+                sequences.append(sequence)
+                labels.append(labels)
+
+    return np.array(sequences), np.array(labels)
 
 
 
@@ -87,43 +93,25 @@ images = np.expand_dims(images, axis=-1)
 x_train, x_val, y_train, y_val = train_test_split(images, labels, test_size=0.2, random_state=42)
 
 
-# Ensure the data has the correct shape
-#x_train = np.expand_dims(x_train, axis=-1)
-#x_val = np.expand_dims(x_val, axis=-1)
-
-datagen = ImageDataGenerator(
-    rotation_range=20,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True,
-    fill_mode='nearest'
-)
-
-# Fit the data generator on the training data
-#datagen.fit(x_train)
-
-
-# Build the model
-#model = models.Sequential([
-#    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(images.shape[1], images.shape[2], 1)),
-#    layers.MaxPooling2D((2, 2)),
-#    layers.Conv2D(64, (3, 3), activation='relu'),
-#    layers.MaxPooling2D((2, 2)),
-#    layers.Conv2D(128, (3, 3), activation='relu'),
-#    layers.MaxPooling2D((2, 2)),
-#    layers.Conv2D(128, (3, 3), activation='relu'),
-#    layers.MaxPooling2D((2, 2)),
-#    layers.Flatten(),
-#    layers.Dense(512, activation='relu'),
-#    layers.Dropout(0.5),
-#    layers.Dense(1, activation='sigmoid')
-#])
-
 data_augmentation = tf.keras.Sequential([
   layers.RandomFlip("horizontal_and_vertical"),
   layers.RandomRotation(0.2),
+])
+
+
+input_shape = (None, 150, 150, 1)  # None allows for variable sequence lengths
+
+model = models.Sequential([
+    layers.TimeDistributed(layers.Conv2D(32, (3, 3), activation='relu'), input_shape=input_shape),
+    layers.TimeDistributed(layers.MaxPooling2D((2, 2))),
+    layers.TimeDistributed(layers.Conv2D(64, (3, 3), activation='relu')),
+    layers.TimeDistributed(layers.MaxPooling2D((2, 2))),
+    layers.TimeDistributed(layers.Conv2D(128, (3, 3), activation='relu')),
+    layers.TimeDistributed(layers.MaxPooling2D((2, 2))),
+    layers.TimeDistributed(layers.Flatten()),
+    layers.LSTM(128, return_sequences=True),
+    layers.Dropout(0.5),
+    layers.TimeDistributed(layers.Dense(1, activation='sigmoid'))
 ])
 
 
