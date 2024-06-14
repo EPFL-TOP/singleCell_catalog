@@ -120,7 +120,15 @@ datagen = ImageDataGenerator(
 #    layers.Dense(1, activation='sigmoid')
 #])
 
+data_augmentation = tf.keras.Sequential([
+  layers.RandomFlip("horizontal_and_vertical"),
+  layers.RandomRotation(0.2),
+])
+
+
 model = models.Sequential([
+    data_augmentation,
+
     layers.Input(shape=(150, 150, 1)),
     layers.Conv2D(32, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
