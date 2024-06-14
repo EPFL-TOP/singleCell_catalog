@@ -70,7 +70,8 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
         for well_name in os.listdir(os.path.join(json_dir,expname)):
             for pos_name in os.listdir(os.path.join(json_dir, expname, well_name)):
                 sequence = []
-                label = []
+                label    = []
+                frame    = []
                 for filename in sorted(os.listdir(os.path.join(json_dir, expname, well_name, pos_name))):
                     if filename.endswith('.json'):
                         with open(os.path.join(json_dir, expname, well_name, pos_name, filename), 'r') as f:
@@ -82,6 +83,7 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
                             if len(processed_image)!=0:
                                 sequence.append(processed_image)
                                 label.append(1 if alive == True else 0)
+                                frame.append(int(filename.replace("frame","").split("-")[1]))
 
                 sys.exit(3)
                 sequences.append(sequence)
