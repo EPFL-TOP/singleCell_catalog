@@ -35,7 +35,36 @@ model_name = 'cell_classifier_model.keras'
 #No TL
 #______________________________________________________________________
 if not use_tl:
-    model = mva_utils.model_complex
+
+
+    model = models.Sequential([
+    mva_utils.data_augmentation_complex,
+    #layers.Input(shape=(150, 150, 1)),
+
+    layers.Conv2D(32, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+    layers.BatchNormalization(),
+    layers.MaxPooling2D((2, 2)),
+
+    layers.Conv2D(64, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+    layers.BatchNormalization(),
+    layers.MaxPooling2D((2, 2)),
+
+    layers.Conv2D(128, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+    layers.BatchNormalization(),
+    layers.MaxPooling2D((2, 2)),
+
+    layers.Conv2D(256, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+    layers.BatchNormalization(),
+    layers.MaxPooling2D((2, 2)),
+
+    layers.GlobalAveragePooling2D(),
+
+    layers.Dense(512, activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+    layers.Dropout(0.5),
+    layers.Dense(1, activation='sigmoid')
+])
+
+
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3), 
                   loss='binary_crossentropy', 
                   metrics=['accuracy'])
@@ -49,6 +78,20 @@ if not use_tl:
 #when TL
 #______________________________________________________________________
 if use_tl:
+
+    base_model_tl = tf.keras.applications.MobileNetV2(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
+
+    model = models.Sequential([
+    mva_utils.data_augmentation_simple,
+    layers.Input(shape=(150, 150, 3)),  # Convert grayscale to RGB if needed
+
+    base_model_tl,
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(512, activation='relu'),
+    layers.Dropout(0.5),
+    layers.Dense(1, activation='sigmoid')
+])
+
     model = mva_utils.model_tl
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
                   loss='binary_crossentropy',

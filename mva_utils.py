@@ -39,46 +39,8 @@ model_simple = models.Sequential([
 
 
 
-model_complex = models.Sequential([
-    data_augmentation_complex,
-    #layers.Input(shape=(150, 150, 1)),
-
-    layers.Conv2D(32, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
-    layers.BatchNormalization(),
-    layers.MaxPooling2D((2, 2)),
-
-    layers.Conv2D(64, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
-    layers.BatchNormalization(),
-    layers.MaxPooling2D((2, 2)),
-
-    layers.Conv2D(128, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
-    layers.BatchNormalization(),
-    layers.MaxPooling2D((2, 2)),
-
-    layers.Conv2D(256, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
-    layers.BatchNormalization(),
-    layers.MaxPooling2D((2, 2)),
-
-    layers.GlobalAveragePooling2D(),
-
-    layers.Dense(512, activation='relu', kernel_regularizer=regularizers.l2(0.01)),
-    layers.Dropout(0.5),
-    layers.Dense(1, activation='sigmoid')
-])
 
 
-base_model_tl = tf.keras.applications.MobileNetV2(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
-
-model_tl = models.Sequential([
-    data_augmentation_simple,
-    layers.Input(shape=(150, 150, 3)),  # Convert grayscale to RGB if needed
-
-    base_model_tl,
-    layers.GlobalAveragePooling2D(),
-    layers.Dense(512, activation='relu'),
-    layers.Dropout(0.5),
-    layers.Dense(1, activation='sigmoid')
-])
 
 #__________________________________________________________________________________
 def scheduler(epoch, lr):
