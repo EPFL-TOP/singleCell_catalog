@@ -9,12 +9,8 @@ from tensorflow.keras import layers, models
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras import regularizers
 
-# Reduce learning rate when a metric has stopped improving
-reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.001)
-
-# Stop training when a monitored metric has stopped improving
-early_stopping = EarlyStopping(monitor='val_loss', patience=10)
 
 # Define the paths
 json_dir = '/mnt/sdc1/data/singleCell_training/'
@@ -22,11 +18,19 @@ if not os.path.exists('/mnt/sdc1/data/singleCell_training'):
     json_dir = '/data/singleCell_training/'
 
 
-
-
 # Target image size (height, width)
 target_size = (150, 150)
 
+
+#__________________________________________________________________________________
+def scheduler(epoch, lr):
+    if epoch < 10:
+        return lr
+    else:
+        return lr * tf.math.exp(-0.1)
+
+
+#__________________________________________________________________________________
 def preprocess_image(image, target_size):
     # Calculate padding
     image = np.clip(image, np.iinfo(np.int16).min, np.iinfo(np.int16).max)
@@ -58,7 +62,7 @@ def preprocess_image(image, target_size):
 
     return padded_image
 
-# Function to load JSON data and convert to numpy arrays
+#__________________________________________________________________________________
 def load_and_preprocess_images(json_dir, target_size=(150, 150)):
 
     # Initialize lists to store images and labels
@@ -86,51 +90,21 @@ images, labels = load_and_preprocess_images(json_dir)
 images = np.expand_dims(images, axis=-1)
 x_train, x_val, y_train, y_val = train_test_split(images, labels, test_size=0.2, random_state=42)
 
+lr_scheduler = tf.keras.callbacks.LearningRateScheduler(scheduler)
 
-# Ensure the data has the correct shape
-#x_train = np.expand_dims(x_train, axis=-1)
-#x_val = np.expand_dims(x_val, axis=-1)
-
-datagen = ImageDataGenerator(
-    rotation_range=20,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True,
-    fill_mode='nearest'
-)
-
-# Fit the data generator on the training data
-#datagen.fit(x_train)
-
-
-# Build the model
-#model = models.Sequential([
-#    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(images.shape[1], images.shape[2], 1)),
-#    layers.MaxPooling2D((2, 2)),
-#    layers.Conv2D(64, (3, 3), activation='relu'),
-#    layers.MaxPooling2D((2, 2)),
-#    layers.Conv2D(128, (3, 3), activation='relu'),
-#    layers.MaxPooling2D((2, 2)),
-#    layers.Conv2D(128, (3, 3), activation='relu'),
-#    layers.MaxPooling2D((2, 2)),
-#    layers.Flatten(),
-#    layers.Dense(512, activation='relu'),
-#    layers.Dropout(0.5),
-#    layers.Dense(1, activation='sigmoid')
-#])
 
 data_augmentation = tf.keras.Sequential([
-  layers.RandomFlip("horizontal_and_vertical"),
-  layers.RandomRotation(0.2),
+    layers.RandomFlip("horizontal_and_vertical"),
+    layers.RandomRotation(0.2),
+    layers.RandomZoom(0.2),
+    layers.RandomContrast(0.2)
 ])
 
 
 model = models.Sequential([
     data_augmentation,
 
-    #layers.Input(shape=(150, 150, 1)),
+    layers.Input(shape=(150, 150, 1)),
     layers.Conv2D(32, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
     layers.Conv2D(64, (3, 3), activation='relu'),
@@ -143,29 +117,57 @@ model = models.Sequential([
     layers.Dense(1, activation='sigmoid')
 ])
 
+model = models.Sequential([
+    data_augmentation,
+    layers.Input(shape=(150, 150, 1)),
 
-model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    layers.Conv2D(32, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+    layers.BatchNormalization(),
+    layers.MaxPooling2D((2, 2)),
+
+    layers.Conv2D(64, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+    layers.BatchNormalization(),
+    layers.MaxPooling2D((2, 2)),
+
+    layers.Conv2D(128, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+    layers.BatchNormalization(),
+    layers.MaxPooling2D((2, 2)),
+
+    layers.Conv2D(256, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+    layers.BatchNormalization(),
+    layers.MaxPooling2D((2, 2)),
+
+    layers.GlobalAveragePooling2D(),
+
+    layers.Dense(512, activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+    layers.Dropout(0.5),
+    layers.Dense(1, activation='sigmoid')
+])
+
+
+
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3), 
+              loss='binary_crossentropy', 
+              metrics=['accuracy'])
+
 
 # Callbacks
-reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.001)
-early_stopping = EarlyStopping(monitor='val_loss', patience=10)
+callbacks = [
+    ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=1e-5),
+    EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True),
+    lr_scheduler,
+]
 
 # Train the model
-#history = model.fit(datagen.flow(x_train, y_train, batch_size=32),
-#                    epochs=50,
-#                    validation_data=(x_val, y_val),
-#                    callbacks=[reduce_lr, early_stopping])
-
 history = model.fit(x_train, y_train,
-                    epochs=50,
+                    epochs=100,
                     batch_size=32,
                     validation_data=(x_val, y_val),
-                    callbacks=[reduce_lr, early_stopping])
+                    callbacks=callbacks)
 
 
 
 
-#model.save('cell_classifier_model.h5')
 model.save('cell_classifier_model.keras')
 
 import matplotlib.pyplot as plt
