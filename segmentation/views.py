@@ -83,7 +83,17 @@ def build_mva_samples(exp_name=''):
                 cellids = CellID.objects.select_related().filter(sample=sample)
                 for cellid in cellids:
                     cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
+                    cellstatus = cellid.cell_status
                     for cellroi in cellrois:
+
+                        framenumber = cellroi.frame.number
+                        cellflag = cellroi.cellflag_cellroi
+                        if cellstatus.start_oscillation_frame>=0 and cellstatus.end_oscillation_frame>=1 and framenumber>=cellstatus.start_oscillation_frame and framenumber<=cellstatus.end_oscillation_frame:
+                            cellflag.oscillating = True
+                        else:
+                            cellflag.oscillating = False
+                        cellflag.save()
+
                         image_file = cellroi.contour_cellroi.file_name
                         bf_image={'image_bf':None, 
                                   'alive':cellroi.cellflag_cellroi.alive,
@@ -2945,6 +2955,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellstatus.save()
         if start_oscillation_position.location>=0 and end_oscillation_position.location>0:
             find_peaks_slider_callback('','',slider_find_peaks.value)
+            cellrois = CellROI.objects.select_related().filter(cell_id=cellsid[0])
+            for cellroi in cellrois:
+                framenumber = cellroi.frame.number
+                cellflag = cellroi.cellflag_cellroi
+            if cellstatus.start_oscillation_frame>=0 and framenumber>=cellstatus.start_oscillation_frame and cellstatus.end_oscillation_frame>=1 and frame<=cellstatus.end_oscillation_frame:
+                cellflag.oscillating = True
+            else:
+                cellflag.oscillating = False
+            cellflag.save()
+
     button_start_oscillation = bokeh.models.Button(label="Osc. Start")
     button_start_oscillation.on_click(start_oscillation_callback)
     #___________________________________________________________________________________________
@@ -2963,6 +2983,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellstatus.save()
         if start_oscillation_position.location>=0 and end_oscillation_position.location>0:
             find_peaks_slider_callback('','',slider_find_peaks.value)
+            cellrois = CellROI.objects.select_related().filter(cell_id=cellsid[0])
+            for cellroi in cellrois:
+                framenumber = cellroi.frame.number
+                cellflag = cellroi.cellflag_cellroi
+            if cellstatus.start_oscillation_frame>=0 and framenumber>=cellstatus.start_oscillation_frame and cellstatus.end_oscillation_frame>=1 and frame<=cellstatus.end_oscillation_frame:
+                cellflag.oscillating = True
+            else:
+                cellflag.oscillating = False
+            cellflag.save()
+
     button_end_oscillation = bokeh.models.Button(label="Osc. End")
     button_end_oscillation.on_click(end_oscillation_callback)
     #___________________________________________________________________________________________
