@@ -107,7 +107,7 @@ def build_mva_samples(exp_name=''):
                                 if 'BF' in key.split('_')[-1]:
                                     bf_image['image_bf']=data[key]
                         outdir_name =  '/data/singleCell_training/{}/{}/{}'.format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
-                        outfile_name = os.path.join(outdir_name, '{}_frame{}_{}.json'.format('alive' if alive == True else 'dead', cellroi.frame.number, cellid.name))
+                        outfile_name = os.path.join(outdir_name, 'frame{}_{}.json'.format(cellroi.frame.number, cellid.name))
                         if not os.path.exists(outdir_name):
                             os.makedirs(outdir_name)
                         out_file = open(outfile_name, "w") 
