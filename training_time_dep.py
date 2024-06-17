@@ -90,13 +90,8 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
                 sorted_lists = sorted(zip(frame, sequence, label)) 
                 frame_sorted, sequence_sorted, label_sorted = zip(*sorted_lists) 
 
-                print(frame_sorted)
-                print(sequence_sorted)
-                print(label_sorted)
-                
-                sys.exit(3)
-                sequences.append(sequence)
-                labels.append(labels)
+                sequences.append(sequence_sorted)
+                labels.append(label_sorted)
 
                 
     return np.array(sequences), np.array(labels)

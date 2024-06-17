@@ -85,8 +85,22 @@ def build_mva_samples(exp_name=''):
                     cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
                     for cellroi in cellrois:
                         image_file = cellroi.contour_cellroi.file_name
-                        alive = cellroi.cellflag_cellroi.alive
-                        bf_image={'image_bf':None, 'alive':alive}
+                        bf_image={'image_bf':None, 
+                                  'alive':cellroi.cellflag_cellroi.alive,
+                                  'oscillating':cellroi.cellflag_cellroi.oscillating,
+                                  'rising':cellroi.cellflag_cellroi.rising,
+                                  'falling':cellroi.cellflag_cellroi.falling,
+                                  'maximum':cellroi.cellflag_cellroi.maximum,
+                                  'minimum':cellroi.cellflag_cellroi.minimum,
+                                  'last_osc':cellroi.cellflag_cellroi.last_osc,
+                                  'dividing':cellroi.cellflag_cellroi.dividing,
+                                  'double_nuclei':cellroi.cellflag_cellroi.double_nuclei,
+                                  'multiple_cells':cellroi.cellflag_cellroi.multiple_cells,
+                                  'pair_cell':cellroi.cellflag_cellroi.pair_cell,
+                                  'flat':cellroi.cellflag_cellroi.flat,
+                                  'round':cellroi.cellflag_cellroi.round,
+                                  'elongated':cellroi.cellflag_cellroi.elongated
+                                  }
                         with open(image_file, 'r') as f:
                             data = json.load(f)
                             for key in data:
