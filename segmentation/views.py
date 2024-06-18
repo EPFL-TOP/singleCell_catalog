@@ -68,7 +68,7 @@ def load_model(model_path):
 
 #model = load_model('cell_classifier_model.keras')
 #trained on GPU with one dense layer more
-model = load_model('cell_classifier_model_simple_alive.keras')
+model_alive = load_model('cell_classifier_model_simple_alive.keras')
 #        
 def build_mva_samples(exp_name=''):
     print('build_mva_samples exp_name=',exp_name)
@@ -1002,27 +1002,27 @@ def load_and_preprocess_images(file_list):
 #___________________________________________________________________________________________
 
 #___________________________________________________________________________________________
-def get_mva_prediction(file_list):
+def get_mva_prediction_alive(file_list):
     new_images, filenames = load_and_preprocess_images(file_list)
     if len(new_images.shape) == 3:
         new_images = np.expand_dims(new_images, axis=-1)
 
     # Predict the classes for the batch of images
-    predictions = model.predict(new_images)
+    predictions = model_alive.predict(new_images)
 
     # Interpret the predictions
-    predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
+    #predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
 
     # Print the results
     #for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
     #    print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
 
-    for pred in range(len(predicted_classes)):
-        if predicted_classes[pred]=='DEAD':
-            trunc_pred=predictions[pred:]
-            val=sum(trunc_pred)/len(trunc_pred)
-            if val<0.5:
-                return filenames[pred]
+    for pred in range(len(predictions)):
+        #if predicted_classes[pred]=='DEAD':
+        trunc_pred=predictions[pred:]
+        val=sum(trunc_pred)/len(trunc_pred)
+        if val<0.5:
+            return filenames[pred]
     return None
 #___________________________________________________________________________________________
 
@@ -4271,20 +4271,16 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 frame_num=-9999
                 for ch in int_list:
                     if 'BF' in ch:
-                        prediction = get_mva_prediction(file_list)
-                        print('pred=',prediction)
+                        prediction = get_mva_prediction_alive(file_list)
                         if prediction!=None:
                             file_name = prediction.split('/')[-1]
                             frame_num = int(file_name.split('_')[0].replace('frame',''))
                         continue
                     p.line(time_list, int_list[ch], line_color=color_map[ch_num])
-                    if frame_num>-1:
+                    if frame_num>-1 and 'BF' in ch:
                         x = [time_list[t] for t in range(frame_list.index(frame_num), len(frame_list))]
                         y1 = [int_list[ch][t] for t in range(frame_list.index(frame_num), len(frame_list))]
                         y2 = [0 for t in range(frame_list.index(frame_num), len(frame_list))]
-                        print('x',x)
-                        print('y1',y1)
-                        print('y2',y2)
                         p.varea(x=x, y1=y1, y2=y2, fill_alpha=0.10, fill_color='black')
                     ch_num+=1
 
