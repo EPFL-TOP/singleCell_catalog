@@ -26,7 +26,7 @@ model       = None
 callbacks   = None
 model_name  = 'cell_classifier_model.keras'
 nbatch = 32
-images, labels = mva_utils.load_and_preprocess_images(json_dir)
+images, labels = mva_utils.load_and_preprocess_images(json_dir, target_size=target_size, property='alive')
 if not use_tl: images = np.expand_dims(images, axis=-1)
 x_train, x_val, y_train, y_val = train_test_split(images, labels, test_size=0.2, random_state=42)
 if use_tl:
