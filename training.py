@@ -73,7 +73,7 @@ if not use_tl:
         model = models.Sequential([
         mva_utils.data_augmentation_simple,
 
-        layers.Input(shape=(150, 150, 1)),
+        #layers.Input(shape=(150, 150, 1)),
         
         layers.Conv2D(32, (3, 3), activation='relu'),
         layers.MaxPooling2D((2, 2)),
