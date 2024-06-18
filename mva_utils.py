@@ -77,7 +77,7 @@ def load_and_preprocess_images(json_dir, target_size, property):
                     image_data = data['image_bf']
                     print(filename)
                     print(property)
-
+                    print('data[property[main]]' ,data[property['main']])
                     sub_lab = True
                     try:
                         for prop in property['conditions']:
@@ -87,7 +87,7 @@ def load_and_preprocess_images(json_dir, target_size, property):
                         pass
 
                     label = data[property['main']]*sub_lab
-
+                    print('label ',label)
                     processed_image = preprocess_image(image_data, target_size)
                     if len(processed_image) == 0: continue
                     # Append the image and label to lists
