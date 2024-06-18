@@ -20,7 +20,8 @@ if not os.path.exists('/mnt/sdc1/data/singleCell_training'):
 
 # Target image size (height, width)
 target_size = (150, 150)
-use_tl      = True
+use_tl      = False
+complex     = False
 model       = None
 callbacks   = None
 model_name  = 'cell_classifier_model.keras'
@@ -40,33 +41,57 @@ lr_scheduler = tf.keras.callbacks.LearningRateScheduler(mva_utils.scheduler)
 #______________________________________________________________________
 if not use_tl:
 
+    if complex:
+        model = models.Sequential([
+        mva_utils.data_augmentation_complex,
+        #layers.Input(shape=(150, 150, 1)),
 
-    model = models.Sequential([
-    mva_utils.data_augmentation_complex,
-    #layers.Input(shape=(150, 150, 1)),
+        layers.Conv2D(32, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+        layers.BatchNormalization(),
+        layers.MaxPooling2D((2, 2)),
 
-    layers.Conv2D(32, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
-    layers.BatchNormalization(),
-    layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(64, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+        layers.BatchNormalization(),
+        layers.MaxPooling2D((2, 2)),
 
-    layers.Conv2D(64, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
-    layers.BatchNormalization(),
-    layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(128, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+        layers.BatchNormalization(),
+        layers.MaxPooling2D((2, 2)),
 
-    layers.Conv2D(128, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
-    layers.BatchNormalization(),
-    layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(256, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+        layers.BatchNormalization(),
+        layers.MaxPooling2D((2, 2)),
 
-    layers.Conv2D(256, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.01)),
-    layers.BatchNormalization(),
-    layers.MaxPooling2D((2, 2)),
+        layers.GlobalAveragePooling2D(),
 
-    layers.GlobalAveragePooling2D(),
+        layers.Dense(512, activation='relu', kernel_regularizer=regularizers.l2(0.01)),
+        layers.Dropout(0.5),
+        layers.Dense(1, activation='sigmoid')
+    ])
 
-    layers.Dense(512, activation='relu', kernel_regularizer=regularizers.l2(0.01)),
-    layers.Dropout(0.5),
-    layers.Dense(1, activation='sigmoid')
-])
+    else:   
+        model = models.Sequential([
+        mva_utils.data_augmentation_simple,
+
+        layers.Input(shape=(150, 150, 1)),
+        
+        layers.Conv2D(32, (3, 3), activation='relu'),
+        layers.MaxPooling2D((2, 2)),
+
+        layers.Conv2D(64, (3, 3), activation='relu'),
+        layers.MaxPooling2D((2, 2)),
+
+        layers.Conv2D(128, (3, 3), activation='relu'),
+        layers.MaxPooling2D((2, 2)),
+
+        layers.Flatten(),
+
+        layers.Dense(512, activation='relu'),
+
+        layers.Dropout(0.5),
+
+        layers.Dense(1, activation='sigmoid')
+    ])
 
 
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3), 
@@ -105,7 +130,7 @@ if use_tl:
     # Train the model
     history = model.fit(x_train, y_train,
                         epochs=100,
-                        batch_size=32,
+                        batch_size=20,
                         validation_data=(x_val, y_val),
                         callbacks=callbacks)
 

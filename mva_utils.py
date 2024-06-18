@@ -10,7 +10,7 @@ from tensorflow.keras import regularizers
 
 data_augmentation_simple = tf.keras.Sequential([
     layers.RandomFlip("horizontal_and_vertical"),
-    layers.RandomRotation(0.2),
+    layers.RandomRotation(0.5),
 ])
 
 data_augmentation_complex = tf.keras.Sequential([
@@ -19,33 +19,6 @@ data_augmentation_complex = tf.keras.Sequential([
     layers.RandomZoom(0.2),
     layers.RandomContrast(0.2)
 ])
-
-
-model_simple = models.Sequential([
-    data_augmentation_simple,
-
-    layers.Input(shape=(150, 150, 1)),
-    
-    layers.Conv2D(32, (3, 3), activation='relu'),
-    layers.MaxPooling2D((2, 2)),
-
-    layers.Conv2D(64, (3, 3), activation='relu'),
-    layers.MaxPooling2D((2, 2)),
-
-    layers.Conv2D(128, (3, 3), activation='relu'),
-    layers.MaxPooling2D((2, 2)),
-
-    layers.Flatten(),
-
-    layers.Dense(512, activation='relu'),
-
-    layers.Dropout(0.5),
-
-    layers.Dense(1, activation='sigmoid')
-])
-
-
-
 
 
 
