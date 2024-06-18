@@ -84,6 +84,7 @@ if not use_tl:
 if use_tl:
 
     base_model_tl = tf.keras.applications.MobileNetV2(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
+    base_model_tl = tf.keras.EfficientNetB0(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
 
     model = models.Sequential([
     mva_utils.data_augmentation_simple,
@@ -100,6 +101,15 @@ if use_tl:
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
+
+    # Train the model
+    history = model.fit(x_train, y_train,
+                        epochs=100,
+                        batch_size=32,
+                        validation_data=(x_val, y_val),
+                        callbacks=callbacks)
+
+
 
     base_model_tl.trainable = True
     for layer in base_model_tl.layers[:-20]:  # Unfreeze the last 20 layers
@@ -120,7 +130,7 @@ if use_tl:
     model_name = 'cell_classifier_model_tl.keras'
 
 history = model.fit(x_train, y_train,
-                    epochs=100,
+                    epochs=50,
                     batch_size=32,
                     validation_data=(x_val, y_val),
                     callbacks=callbacks)
