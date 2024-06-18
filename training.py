@@ -133,11 +133,11 @@ if use_tl:
                   metrics=['accuracy'])
 
     # Train the model
-    history = model.fit(x_train, y_train,
-                        epochs=100,
-                        batch_size=20,
-                        validation_data=(x_val, y_val),
-                        callbacks=callbacks)
+    #history = model.fit(x_train, y_train,
+    #                    epochs=100,
+    #                    batch_size=0,
+    #                    validation_data=(x_val, y_val),
+    #                    callbacks=callbacks)
 
 
 
