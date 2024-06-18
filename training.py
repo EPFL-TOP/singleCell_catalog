@@ -84,7 +84,7 @@ if not use_tl:
 if use_tl:
 
     base_model_tl = tf.keras.applications.MobileNetV2(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
-    base_model_tl = tf.keras.EfficientNetB0(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
+    base_model_tl = tf.keras.applications.EfficientNetB0(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
 
     model = models.Sequential([
     mva_utils.data_augmentation_simple,
