@@ -25,11 +25,13 @@ complex     = False
 model       = None
 callbacks   = None
 model_name  = 'cell_classifier_model.keras'
+plot_name   = 'training_acc_loss.png'
 nbatch      = 32
-property    = 'alive'
-property    = 'oscillating'
+property    = {'main':'alive'}
+property    = {'main':'oscillating', 'conditions':{'alive':True}}
 
 images, labels = mva_utils.load_and_preprocess_images(json_dir, target_size=target_size, property=property)
+sys.exit(3)
 if not use_tl: images = np.expand_dims(images, axis=-1)
 x_train, x_val, y_train, y_val = train_test_split(images, labels, test_size=0.2, random_state=42)
 if use_tl:
@@ -72,7 +74,8 @@ if not use_tl:
         layers.Dense(1, activation='sigmoid')
     ])
 
-        model_name = 'cell_classifier_model_complex_{}.keras'.format(property)
+        model_name = 'cell_classifier_model_complex_{}.keras'.format(property['main'])
+        plot_name  = 'training_acc_loss_complex_{}.png'.format(property['main'])
 
 
     else:   
@@ -102,7 +105,8 @@ if not use_tl:
         layers.Dense(1, activation='sigmoid')
     ])
 
-        model_name = 'cell_classifier_model_simple_{}.keras'.format(property)
+        model_name = 'cell_classifier_model_simple_{}.keras'.format(property['main'])
+        plot_name  = 'training_acc_loss_simple_{}.png'.format(property['main'])
 
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3), 
                   loss='binary_crossentropy', 
@@ -164,8 +168,8 @@ if use_tl:
     ]
 
 
-
-    model_name = 'cell_classifier_model_tl_{}.keras'.format(property)
+    model_name = 'cell_classifier_model_tl_{}.keras'.format(property['main'])
+    plot_name  = 'training_acc_loss_tl_{}.png'.format(property['main'])
 
 history = model.fit(x_train, y_train,
                     epochs=100,

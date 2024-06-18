@@ -63,7 +63,7 @@ def preprocess_image(image, target_size):
     return padded_image
 
 #__________________________________________________________________________________
-def load_and_preprocess_images(json_dir, target_size=(150, 150), property='alive'):
+def load_and_preprocess_images(json_dir, target_size, property):
 
     # Initialize lists to store images and labels
     images = []
@@ -75,8 +75,19 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150), property='alive
                 with open(os.path.join(dirpath, filename), 'r') as f:
                     data = json.load(f)
                     image_data = data['image_bf']
-                    label = data[property]
-                    
+                    print(filename)
+                    print(property)
+
+                    sub_lab = True
+                    try:
+                        for prop in property['conditions']:
+                            sub_lab = sub_lab*(data[prop]==property['conditions'][prop])
+                            print('  ',prop, '  ', property['conditions'][prop])
+                    except KeyError:
+                        pass
+
+                    label = data[property['main']]*sub_lab
+
                     processed_image = preprocess_image(image_data, target_size)
                     if len(processed_image) == 0: continue
                     # Append the image and label to lists
