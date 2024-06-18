@@ -20,18 +20,22 @@ if not os.path.exists('/mnt/sdc1/data/singleCell_training'):
 
 # Target image size (height, width)
 target_size = (150, 150)
-
+use_tl      = True
+model       = None
+callbacks   = None
+model_name  = 'cell_classifier_model.keras'
 
 images, labels = mva_utils.load_and_preprocess_images(json_dir)
-images = np.expand_dims(images, axis=-1)
+if not use_tl: images = np.expand_dims(images, axis=-1)
 x_train, x_val, y_train, y_val = train_test_split(images, labels, test_size=0.2, random_state=42)
-
+if use_tl:
+    print(x_train.shape)
+    x_train = np.repeat(x_train[..., np.newaxis], 3, -1)
+    x_val = np.repeat(x_val[..., np.newaxis], 3, -1)
+    print(x_train.shape)
 lr_scheduler = tf.keras.callbacks.LearningRateScheduler(mva_utils.scheduler)
 
-use_tl=True
-model = None
-callbacks = None
-model_name = 'cell_classifier_model.keras'
+
 #No TL
 #______________________________________________________________________
 if not use_tl:
@@ -111,10 +115,7 @@ if use_tl:
         EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True),
     ]
 
-    print(x_train.shape)
-    x_train = np.repeat(x_train[..., np.newaxis], 3, -1)
-    x_val = np.repeat(x_val[..., np.newaxis], 3, -1)
-    print(x_train.shape)
+
 
     model_name = 'cell_classifier_model_tl.keras'
 
