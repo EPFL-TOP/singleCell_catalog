@@ -1010,17 +1010,17 @@ def get_mva_prediction_alive(file_list):
 
     predictions = model_alive.predict(new_images)
 
-    #predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
+    predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
 
-    #for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
-    #    print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
+    for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
+        print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
 
     for pred in range(len(predictions)):
-        #if predicted_classes[pred]=='DEAD':
-        trunc_pred=predictions[pred:]
-        val=sum(trunc_pred)/len(trunc_pred)
-        if val<0.5:
-            return filenames[pred]
+        if predicted_classes[pred]=='DEAD':
+            trunc_pred=predictions[pred:]
+            val=sum(trunc_pred)/len(trunc_pred)
+            if val<0.5:
+                return filenames[pred]
     return None
 #___________________________________________________________________________________________
 
