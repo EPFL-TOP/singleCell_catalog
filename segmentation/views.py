@@ -66,8 +66,9 @@ import bokeh.layouts
 def load_model(model_path):
     return tf.keras.models.load_model(model_path)
 
-model = load_model('cell_classifier_model.keras')
-
+#model = load_model('cell_classifier_model.keras')
+#trained on GPU with one dense layer more
+model = load_model('cell_classifier_model_simple_alive.keras')
 #        
 def build_mva_samples(exp_name=''):
     print('build_mva_samples exp_name=',exp_name)
