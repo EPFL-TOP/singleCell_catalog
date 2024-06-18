@@ -69,6 +69,7 @@ def load_model(model_path):
 #model = load_model('cell_classifier_model.keras')
 #trained on GPU with one dense layer more
 model_alive = load_model('cell_classifier_model_simple_alive.keras')
+model_oscillating = load_model('cell_classifier_model_simple_oscillating.keras')
 #        
 def build_mva_samples(exp_name=''):
     print('build_mva_samples exp_name=',exp_name)
@@ -1007,13 +1008,10 @@ def get_mva_prediction_alive(file_list):
     if len(new_images.shape) == 3:
         new_images = np.expand_dims(new_images, axis=-1)
 
-    # Predict the classes for the batch of images
     predictions = model_alive.predict(new_images)
 
-    # Interpret the predictions
     #predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
 
-    # Print the results
     #for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
     #    print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
 
@@ -1033,15 +1031,12 @@ def get_mva_prediction_oscillating(file_list):
     if len(new_images.shape) == 3:
         new_images = np.expand_dims(new_images, axis=-1)
 
-    # Predict the classes for the batch of images
-    predictions = model_alive.predict(new_images)
+    predictions = model_oscillating.predict(new_images)
 
-    # Interpret the predictions
-    #predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
+    predicted_classes = ['OSC' if pred > 0.5 else 'NOT OSC' for pred in predictions]
 
-    # Print the results
-    #for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
-    #    print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
+    for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
+        print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
 
     for pred in range(len(predictions)):
         #if predicted_classes[pred]=='DEAD':
@@ -4298,6 +4293,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 for ch in int_list:
                     if 'BF' in ch:
                         prediction = get_mva_prediction_alive(file_list)
+                        prediction_osc = get_mva_prediction_oscillating(file_list)
                         if prediction!=None:
                             file_name = prediction.split('/')[-1]
                             frame_num = int(file_name.split('_')[0].replace('frame',''))
