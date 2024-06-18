@@ -9,6 +9,7 @@ from tensorflow.keras import layers, models
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 # Reduce learning rate when a metric has stopped improving
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.001)
@@ -93,7 +94,10 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
                 sequences.append(sequence_sorted)
                 labels.append(label_sorted)
 
-                
+    max_seq_length = max(len(seq) for seq in sequences)
+    sequences = pad_sequences(sequences, maxlen=max_seq_length, padding='post', dtype='float32')
+    labels = pad_sequences(labels, maxlen=max_seq_length, padding='post', dtype='int')
+
     return np.array(sequences), np.array(labels)
 
 
