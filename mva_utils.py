@@ -78,7 +78,10 @@ def load_and_preprocess_images(json_dir, target_size, property):
                     sub_lab = True
                     try:
                         for prop in property['conditions']:
+                            if data[prop]!=property['conditions'][prop]:
+                                continue
                             sub_lab = sub_lab*(data[prop]==property['conditions'][prop])
+                            
                     except KeyError:
                         pass
 
