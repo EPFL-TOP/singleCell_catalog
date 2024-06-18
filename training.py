@@ -20,12 +20,12 @@ if not os.path.exists('/mnt/sdc1/data/singleCell_training'):
 
 # Target image size (height, width)
 target_size = (150, 150)
-use_tl      = False
+use_tl      = True
 complex     = False
 model       = None
 callbacks   = None
 model_name  = 'cell_classifier_model.keras'
-
+nbatch = 32
 images, labels = mva_utils.load_and_preprocess_images(json_dir)
 if not use_tl: images = np.expand_dims(images, axis=-1)
 x_train, x_val, y_train, y_val = train_test_split(images, labels, test_size=0.2, random_state=42)
@@ -113,6 +113,8 @@ if use_tl:
 
     base_model_tl = tf.keras.applications.MobileNetV2(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
     base_model_tl = tf.keras.applications.EfficientNetB0(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
+    base_model_tl = tf.keras.applications.VGG16(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
+    nbatch = 24
 
     model = models.Sequential([
     mva_utils.data_augmentation_simple,
@@ -159,7 +161,7 @@ if use_tl:
 
 history = model.fit(x_train, y_train,
                     epochs=50,
-                    batch_size=32,
+                    batch_size=nbatch,
                     validation_data=(x_val, y_val),
                     callbacks=callbacks)
 
