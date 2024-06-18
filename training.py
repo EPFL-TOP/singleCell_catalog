@@ -28,7 +28,7 @@ x_train, x_val, y_train, y_val = train_test_split(images, labels, test_size=0.2,
 
 lr_scheduler = tf.keras.callbacks.LearningRateScheduler(mva_utils.scheduler)
 
-use_tl=False
+use_tl=True
 model = None
 callbacks = None
 model_name = 'cell_classifier_model.keras'
