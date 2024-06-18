@@ -71,6 +71,7 @@ def load_and_preprocess_images(json_dir, target_size, property):
 
     for dirpath, dirnames, filenames in os.walk(json_dir):
         for filename in filenames:
+            keepfile=True
             if filename.endswith(".json"):
                 with open(os.path.join(dirpath, filename), 'r') as f:
                     data = json.load(f)
@@ -79,12 +80,13 @@ def load_and_preprocess_images(json_dir, target_size, property):
                     try:
                         for prop in property['conditions']:
                             if data[prop]!=property['conditions'][prop]:
-                                continue
+                                keepfile=False
                             sub_lab = sub_lab*(data[prop]==property['conditions'][prop])
                             
                     except KeyError:
                         pass
 
+                    if not keepfile: continue
                     label = data[property['main']]*sub_lab
                     processed_image = preprocess_image(image_data, target_size)
                     if len(processed_image) == 0: continue
