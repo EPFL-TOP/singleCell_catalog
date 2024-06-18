@@ -92,13 +92,13 @@ if use_tl:
     layers.Dense(1, activation='sigmoid')
 ])
 
-    model = mva_utils.model_tl
+
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
 
-    mva_utils.base_model_tl.trainable = True
-    for layer in mva_utils.base_model_tl.layers[:-20]:  # Unfreeze the last 20 layers
+    base_model_tl.trainable = True
+    for layer in base_model_tl.layers[:-20]:  # Unfreeze the last 20 layers
         layer.trainable = False
 
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5),
