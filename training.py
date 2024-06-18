@@ -20,7 +20,7 @@ if not os.path.exists('/mnt/sdc1/data/singleCell_training'):
 
 # Target image size (height, width)
 target_size = (150, 150)
-use_tl      = True
+use_tl      = False
 complex     = False
 model       = None
 callbacks   = None
