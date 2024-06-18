@@ -111,8 +111,10 @@ if use_tl:
         EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True),
     ]
 
+    print(x_train.shape)
     x_train = np.repeat(x_train[..., np.newaxis], 3, -1)
     x_val = np.repeat(x_val[..., np.newaxis], 3, -1)
+    print(x_train.shape)
 
     model_name = 'cell_classifier_model_tl.keras'
 
