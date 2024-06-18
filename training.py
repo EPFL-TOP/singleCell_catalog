@@ -83,7 +83,7 @@ if use_tl:
 
     model = models.Sequential([
     mva_utils.data_augmentation_simple,
-    layers.Input(shape=(150, 150, 3)),  # Convert grayscale to RGB if needed
+    #layers.Input(shape=(150, 150, 3)),  # Convert grayscale to RGB if needed
 
     base_model_tl,
     layers.GlobalAveragePooling2D(),
