@@ -161,7 +161,7 @@ if use_tl:
     model_name = 'cell_classifier_model_tl.keras'
 
 history = model.fit(x_train, y_train,
-                    epochs=50,
+                    epochs=100,
                     batch_size=nbatch,
                     validation_data=(x_val, y_val),
                     callbacks=callbacks)
