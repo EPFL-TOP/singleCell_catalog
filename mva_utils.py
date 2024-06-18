@@ -63,7 +63,7 @@ def preprocess_image(image, target_size):
     return padded_image
 
 #__________________________________________________________________________________
-def load_and_preprocess_images(json_dir, target_size=(150, 150)):
+def load_and_preprocess_images(json_dir, target_size=(150, 150), label='alive'):
 
     # Initialize lists to store images and labels
     images = []
@@ -75,7 +75,7 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
                 with open(os.path.join(dirpath, filename), 'r') as f:
                     data = json.load(f)
                     image_data = data['image_bf']
-                    label = data['alive']
+                    label = data[label]
                     
                     processed_image = preprocess_image(image_data, target_size)
                     if len(processed_image) == 0: continue

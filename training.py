@@ -111,6 +111,7 @@ if not use_tl:
 #______________________________________________________________________
 if use_tl:
 
+    os.environ['TF_GPU_ALLOCATOR'] = 'cuda_malloc_async'
     base_model_tl = tf.keras.applications.MobileNetV2(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
     base_model_tl = tf.keras.applications.EfficientNetB0(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
     base_model_tl = tf.keras.applications.VGG16(input_shape=(150, 150, 3), include_top=False, weights='imagenet')
