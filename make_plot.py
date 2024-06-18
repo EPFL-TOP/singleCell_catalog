@@ -4,7 +4,8 @@ import os, sys
 if len(sys.argv)!=2:
     print('usage python make_plot.py model')
     sys.exit(3)
-history = tf.keras.models.load_model(sys.argv[1])
+model = tf.keras.models.load_model(sys.argv[1])
+print(model)
 
 # Plot training & validation accuracy values
 acc = history.history['accuracy']

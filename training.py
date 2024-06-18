@@ -27,6 +27,7 @@ callbacks   = None
 model_name  = 'cell_classifier_model.keras'
 nbatch      = 32
 property    = 'alive'
+property    = 'oscillating'
 
 images, labels = mva_utils.load_and_preprocess_images(json_dir, target_size=target_size, property=property)
 if not use_tl: images = np.expand_dims(images, axis=-1)
