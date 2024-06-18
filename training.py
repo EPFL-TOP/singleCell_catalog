@@ -84,6 +84,9 @@ if not use_tl:
         layers.Conv2D(128, (3, 3), activation='relu'),
         layers.MaxPooling2D((2, 2)),
 
+        layers.Conv2D(256, (3, 3), activation='relu'),
+        layers.MaxPooling2D((2, 2)),
+
         layers.Flatten(),
 
         layers.Dense(512, activation='relu'),
