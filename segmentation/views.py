@@ -1028,6 +1028,31 @@ def get_mva_prediction_alive(file_list):
 
 
 #___________________________________________________________________________________________
+def get_mva_prediction_oscillating(file_list):
+    new_images, filenames = load_and_preprocess_images(file_list)
+    if len(new_images.shape) == 3:
+        new_images = np.expand_dims(new_images, axis=-1)
+
+    # Predict the classes for the batch of images
+    predictions = model_alive.predict(new_images)
+
+    # Interpret the predictions
+    #predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
+
+    # Print the results
+    #for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
+    #    print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
+
+    for pred in range(len(predictions)):
+        #if predicted_classes[pred]=='DEAD':
+        trunc_pred=predictions[pred:]
+        val=sum(trunc_pred)/len(trunc_pred)
+        if val<0.5:
+            return filenames[pred]
+    return None
+#___________________________________________________________________________________________
+
+#___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document) -> None:
     print('****************************  segmentation_handler ****************************')
     #TO BE CHANGED WITH ASYNC?????
@@ -4269,6 +4294,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 
                 ch_num=0
                 frame_num=-9999
+                added_ch=False
                 for ch in int_list:
                     if 'BF' in ch:
                         prediction = get_mva_prediction_alive(file_list)
@@ -4277,18 +4303,15 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                             frame_num = int(file_name.split('_')[0].replace('frame',''))
                         continue
                     p.line(time_list, int_list[ch], line_color=color_map[ch_num])
-                    if frame_num>-1 and 'BF' in ch:
+                    if frame_num>-1 and added_ch==False:
+                        added_ch=True
                         x = [time_list[t] for t in range(frame_list.index(frame_num), len(frame_list))]
                         y1 = [int_list[ch][t] for t in range(frame_list.index(frame_num), len(frame_list))]
                         y2 = [0 for t in range(frame_list.index(frame_num), len(frame_list))]
                         p.varea(x=x, y1=y1, y2=y2, fill_alpha=0.10, fill_color='black')
                     ch_num+=1
 
-#                                source_varea_death.data['x']    = [source_intensity_ch1.data["time"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["time"])) ]
-#                source_varea_death.data['y1']   = [source_intensity_ch1.data["intensity"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["intensity"]))]
-#                source_varea_death.data['y2']   = [0 for i in range(len(source_varea_death.data['y1']))]
             new_plots.append(p)
-    #plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
 
         # Create a new grid with the updated number of plots
         new_grid = create_grid(new_plots, int(dropdown_grid.value))
