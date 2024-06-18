@@ -70,29 +70,39 @@ def load_and_preprocess_images(json_dir, target_size=(150, 150)):
     for expname in os.listdir(json_dir):
         for well_name in os.listdir(os.path.join(json_dir,expname)):
             for pos_name in os.listdir(os.path.join(json_dir, expname, well_name)):
-                sequence = []
-                label    = []
-                frame    = []
+
+                cells = []
                 for filename in sorted(os.listdir(os.path.join(json_dir, expname, well_name, pos_name))):
                     if filename.endswith('.json'):
-                        with open(os.path.join(json_dir, expname, well_name, pos_name, filename), 'r') as f:
-                            data = json.load(f)
-                            image_data = data['image_bf']
-                            alive = data['alive']
-                            processed_image = preprocess_image(image_data, target_size)
-                            print(os.path.join(json_dir, expname, well_name, pos_name, filename),  '  alive=',alive)
-                            if len(processed_image)!=0:
-                                sequence.append(processed_image)
-                                label.append(1 if alive == True else 0)
-                                frame_num=filename.replace("frame","")
-                                frame_num=int(frame_num.split("_")[1])
-                                frame.append(frame_num)
+                        cellname=filename.split("_")[-1]
+                        cellname=cellname.replace('.json','')
+                        if cellname not in cells: cells.append(cellname)
 
-                sorted_lists = sorted(zip(frame, sequence, label)) 
-                frame_sorted, sequence_sorted, label_sorted = zip(*sorted_lists) 
+                for cell in cells:
+                    sequence = []
+                    label    = []
+                    frame    = []
+                    for filename in sorted(os.listdir(os.path.join(json_dir, expname, well_name, pos_name))):
+                        if filename.endswith('.json'):
+                            if cell not in filename: continue
+                            with open(os.path.join(json_dir, expname, well_name, pos_name, filename), 'r') as f:
+                                data = json.load(f)
+                                image_data = data['image_bf']
+                                alive = data['alive']
+                                processed_image = preprocess_image(image_data, target_size)
+                                print(os.path.join(json_dir, expname, well_name, pos_name, filename),  '  alive=',alive)
+                                if len(processed_image)!=0:
+                                    sequence.append(processed_image)
+                                    label.append(1 if alive == True else 0)
+                                    frame_num=filename.replace("frame","")
+                                    frame_num=int(frame_num.split("_")[0])
+                                    frame.append(frame_num)
 
-                sequences.append(sequence_sorted)
-                labels.append(label_sorted)
+                    sorted_lists = sorted(zip(frame, sequence, label)) 
+                    frame_sorted, sequence_sorted, label_sorted = zip(*sorted_lists) 
+
+                    sequences.append(sequence_sorted)
+                    labels.append(label_sorted)
 
     max_seq_length = max(len(seq) for seq in sequences)
     sequences = pad_sequences(sequences, maxlen=max_seq_length, padding='post', dtype='float32')
