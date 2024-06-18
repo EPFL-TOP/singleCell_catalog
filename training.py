@@ -25,8 +25,10 @@ complex     = False
 model       = None
 callbacks   = None
 model_name  = 'cell_classifier_model.keras'
-nbatch = 32
-images, labels = mva_utils.load_and_preprocess_images(json_dir, target_size=target_size, property='alive')
+nbatch      = 32
+property    = 'alive'
+
+images, labels = mva_utils.load_and_preprocess_images(json_dir, target_size=target_size, property=property)
 if not use_tl: images = np.expand_dims(images, axis=-1)
 x_train, x_val, y_train, y_val = train_test_split(images, labels, test_size=0.2, random_state=42)
 if use_tl:
@@ -69,6 +71,9 @@ if not use_tl:
         layers.Dense(1, activation='sigmoid')
     ])
 
+        model_name = 'cell_classifier_model_complex_{}.keras'.format(property)
+
+
     else:   
         model = models.Sequential([
         mva_utils.data_augmentation_simple,
@@ -96,6 +101,7 @@ if not use_tl:
         layers.Dense(1, activation='sigmoid')
     ])
 
+        model_name = 'cell_classifier_model_simple_{}.keras'.format(property)
 
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3), 
                   loss='binary_crossentropy', 
@@ -158,7 +164,7 @@ if use_tl:
 
 
 
-    model_name = 'cell_classifier_model_tl.keras'
+    model_name = 'cell_classifier_model_tl_{}.keras'.format(property)
 
 history = model.fit(x_train, y_train,
                     epochs=100,
