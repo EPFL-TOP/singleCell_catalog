@@ -4162,6 +4162,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     dropdown_grid = bokeh.models.Select(value='5', title='Grid', options=['3','4','5','6','7','8'])
     dropdown_intensity_type = bokeh.models.Select(value='mean', title='intensity', options=['mean','max','std','sum'])
     checkbox_yrange = bokeh.models.CheckboxGroup(labels=["Same y-range"], active=[1])
+    checkbox_tod    = bokeh.models.CheckboxGroup(labels=["Predict ToD"], active=[1])
     intensity_map = {'max':'intensity_max', 
                      'mean':'intensity_mean',
                      'std':'intensity_std',
@@ -4292,14 +4293,15 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 added_ch=False
                 for ch in int_list:
                     if 'BF' in ch:
-                        prediction = get_mva_prediction_alive(file_list)
-                        prediction_osc = get_mva_prediction_oscillating(file_list)
-                        if prediction!=None:
-                            file_name = prediction.split('/')[-1]
-                            frame_num = int(file_name.split('_')[0].replace('frame',''))
+                        if checkbox_tod.active:
+                            prediction = get_mva_prediction_alive(file_list)
+                        #prediction_osc = get_mva_prediction_oscillating(file_list)
+                            if prediction!=None:
+                                file_name = prediction.split('/')[-1]
+                                frame_num = int(file_name.split('_')[0].replace('frame',''))
                         continue
                     p.line(time_list, int_list[ch], line_color=color_map[ch_num])
-                    if frame_num>-1 and added_ch==False:
+                    if frame_num>-1 and added_ch==False and checkbox_tod.active:
                         added_ch=True
                         x = [time_list[t] for t in range(frame_list.index(frame_num), len(frame_list))]
                         y1 = [int_list[ch][t] for t in range(frame_list.index(frame_num), len(frame_list))]
@@ -4315,6 +4317,13 @@ def summary_handler(doc: bokeh.document.Document) -> None:
         # Update the layout
         norm_layout.children[1] = new_grid
     dropdown_well.on_change('value', update_plot)
+    #___________________________________________________________________________________________
+
+
+    #___________________________________________________________________________________________
+    def predict_tod_button(attr, old, new):
+        update_plot('','','')
+    checkbox_tod.on_change('active', predict_tod_button)
     #___________________________________________________________________________________________
 
 
