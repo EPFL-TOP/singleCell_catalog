@@ -4162,7 +4162,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     dropdown_grid = bokeh.models.Select(value='5', title='Grid', options=['3','4','5','6','7','8'])
     dropdown_intensity_type = bokeh.models.Select(value='mean', title='intensity', options=['mean','max','std','sum'])
     checkbox_yrange = bokeh.models.CheckboxGroup(labels=["Same y-range"], active=[1])
-    checkbox_tod    = bokeh.models.CheckboxGroup(labels=["Predict ToD"], active=[1])
+    checkbox_tod    = bokeh.models.CheckboxGroup(labels=["Predict ToD"], active=[0])
     intensity_map = {'max':'intensity_max', 
                      'mean':'intensity_mean',
                      'std':'intensity_std',
@@ -4358,7 +4358,8 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                                          bokeh.layouts.row(dropdown_well),
                                          bokeh.layouts.row(dropdown_grid), 
                                          bokeh.layouts.row(dropdown_intensity_type),
-                                         bokeh.layouts.row(checkbox_yrange))
+                                         bokeh.layouts.row(checkbox_yrange),
+                                         bokeh.layouts.row(checkbox_tod))
 
 
 
