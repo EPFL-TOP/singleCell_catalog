@@ -4294,7 +4294,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 for ch in int_list:
                     if 'BF' in ch:
                         print('checkbox_tod.active: ',checkbox_tod.active)
-                        if checkbox_tod.active:
+                        if 0 in checkbox_tod.active:
                             prediction = get_mva_prediction_alive(file_list)
                         #prediction_osc = get_mva_prediction_oscillating(file_list)
                             if prediction!=None:
@@ -4302,7 +4302,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                                 frame_num = int(file_name.split('_')[0].replace('frame',''))
                         continue
                     p.line(time_list, int_list[ch], line_color=color_map[ch_num])
-                    if frame_num>-1 and added_ch==False and checkbox_tod.active:
+                    if frame_num>-1 and added_ch==False and 0 in checkbox_tod.active:
                         added_ch=True
                         x = [time_list[t] for t in range(frame_list.index(frame_num), len(frame_list))]
                         y1 = [int_list[ch][t] for t in range(frame_list.index(frame_num), len(frame_list))]
