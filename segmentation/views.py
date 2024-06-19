@@ -4162,7 +4162,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
     dropdown_grid = bokeh.models.Select(value='5', title='Grid', options=['3','4','5','6','7','8'])
     dropdown_intensity_type = bokeh.models.Select(value='mean', title='intensity', options=['mean','max','std','sum'])
     checkbox_yrange = bokeh.models.CheckboxGroup(labels=["Same y-range"], active=[1])
-    checkbox_tod    = bokeh.models.CheckboxGroup(labels=["Predict ToD"], active=[0])
+    checkbox_tod    = bokeh.models.CheckboxGroup(labels=["Predict ToD"], active=[1])
     intensity_map = {'max':'intensity_max', 
                      'mean':'intensity_mean',
                      'std':'intensity_std',
@@ -4293,6 +4293,7 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 added_ch=False
                 for ch in int_list:
                     if 'BF' in ch:
+                        print('checkbox_tod.active: ',checkbox_tod.active)
                         if checkbox_tod.active:
                             prediction = get_mva_prediction_alive(file_list)
                         #prediction_osc = get_mva_prediction_oscillating(file_list)
