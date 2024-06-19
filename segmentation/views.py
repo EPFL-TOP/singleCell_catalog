@@ -4293,7 +4293,6 @@ def summary_handler(doc: bokeh.document.Document) -> None:
                 added_ch=False
                 for ch in int_list:
                     if 'BF' in ch:
-                        print('checkbox_tod.active: ',checkbox_tod.active)
                         if 0 in checkbox_tod.active:
                             prediction = get_mva_prediction_alive(file_list)
                         #prediction_osc = get_mva_prediction_oscillating(file_list)
