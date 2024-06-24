@@ -69,8 +69,11 @@ def load_model(model_path):
 #model = load_model('cell_classifier_model.keras')
 #trained on GPU with one dense layer more
 model_alive = load_model('cell_classifier_model_simple_alive.keras')
-model_oscillating = load_model('cell_classifier_model_simple_oscillating.keras')
+#model_oscillating = load_model('cell_classifier_model_simple_oscillating.keras')
 #        
+
+
+#___________________________________________________________________________________________
 def build_mva_samples(exp_name=''):
     print('build_mva_samples exp_name=',exp_name)
     exp_list = Experiment.objects.all()
@@ -125,6 +128,45 @@ def build_mva_samples(exp_name=''):
                         out_file = open(outfile_name, "w") 
                         json.dump(bf_image, out_file) 
                         out_file.close() 
+
+#___________________________________________________________________________________________
+def build_mva_detection(exp_name=''):
+    print('build_mva_detection exp_name=',exp_name)
+    exp_list = Experiment.objects.all()
+    for exp in exp_list:
+        if exp_name!='' and exp.name!=exp_name:
+            continue
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        for expds in experimentaldataset:
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            for sample in samples:
+                if sample.peaks_tod_div_validated==False:continue
+                images, channels = read.nd2reader_getFrames(sample.file_name)
+                #images are t, c, x, y 
+                images=images.transpose(1,0,2,3)
+                BF_images=images[0]
+
+                frames = Frame.objects.select_related().filter(sample=sample)
+                for frame in frames:
+                    im = Image.fromarray(images[frame.number])
+                    outdir_name  = "/data/singleCell_training_images/{}/{}/{}".format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
+                    outfile_name = os.path.join(outdir_name, 'frame{}.jpg'.format(frame.number))
+                    im.save(outfile_name)
+                    cellrois = CellROI.objects.select_related().filter(frame=frame)
+                    outdict = {}
+                    outdict["image"]={"file_name":'frame{}.jpg'.format(frame.number),
+                                                  "height": frame.height,
+                                                  "width": frame.width}                    
+                    outdict["annotations"]=[]
+                    outfile_name = os.path.join(outdir_name, 'frame{}.json'.format(frame.number))
+                    for cellroi in cellrois:
+
+                        tmpdict={"bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row]}
+                        outdict["annotations"].append(tmpdict)
+
+                    out_file = open(outfile_name, "w") 
+                    json.dump(tmpdict, out_file) 
+   
 
 
 #___________________________________________________________________________________________
