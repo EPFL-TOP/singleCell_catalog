@@ -152,6 +152,8 @@ def build_mva_detection(exp_name=''):
                     im = Image.fromarray(BF_images[frame.number])
                     outdir_name  = "/data/singleCell_training_images/{}/{}/{}".format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
                     outfile_name = os.path.join(outdir_name, 'frame{}.jpg'.format(frame.number))
+                    if not os.path.exists(outdir_name):
+                        os.makedirs(outdir_name)
                     im.save(outfile_name)
                     cellrois = CellROI.objects.select_related().filter(frame=frame)
                     outdict = {}
