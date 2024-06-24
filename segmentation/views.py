@@ -149,9 +149,9 @@ def build_mva_detection(exp_name=''):
                 frames = Frame.objects.select_related().filter(sample=sample)
                 for frame in frames:
                     image = BF_images[frame.number]
-                    converted = tf.image.grayscale_to_rgb(image)
+                    stacked_img = np.stack((image,)*3, axis=-1)
                     
-                    im = Image.fromarray(converted.numpy())
+                    im = Image.fromarray(stacked_img)
                     outdir_name  = "/data/singleCell_training_images/{}/{}/{}".format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
                     outfile_name = os.path.join(outdir_name, 'frame{}.jpg'.format(frame.number))
                     if not os.path.exists(outdir_name):
