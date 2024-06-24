@@ -149,6 +149,11 @@ def build_mva_detection(exp_name=''):
                 frames = Frame.objects.select_related().filter(sample=sample)
                 for frame in frames:
                     image = BF_images[frame.number]
+                    print(type(image))
+                    print(image.shape)
+                    im = Image.fromarray(image)
+
+
                     stacked_img = np.stack((image,)*3, axis=-1)
                     
                     im = Image.fromarray(stacked_img)
