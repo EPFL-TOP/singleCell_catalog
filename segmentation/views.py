@@ -150,17 +150,19 @@ def build_mva_detection(exp_name=''):
                 for frame in frames:
                     image = BF_images[frame.number]
 
-                    im = Image.fromarray(image)
-                    im = im.convert("RGB")
+
+                    #im = Image.fromarray(image)
+                    #im = im.convert("RGB")
 
                     #stacked_img = np.stack((image,)*3, axis=-1)
                     
                     #im = Image.fromarray(stacked_img)
                     outdir_name  = "/data/singleCell_training_images/{}/{}/{}".format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
-                    outfile_name = os.path.join(outdir_name, 'frame{}.png'.format(frame.number))
+                    outfile_name = os.path.join(outdir_name, 'frame{}.jpeg'.format(frame.number))
                     if not os.path.exists(outdir_name):
                         os.makedirs(outdir_name)
-                    im.save(outfile_name)
+#                    im.save(outfile_name)
+                    plt.imsave(outfile_name, image, cmap='gray')
                     cellrois = CellROI.objects.select_related().filter(frame=frame)
                     outdict = {}
                     outdict["image"]={"file_name":'frame{}.png'.format(frame.number),
