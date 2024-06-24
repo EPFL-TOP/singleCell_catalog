@@ -151,7 +151,7 @@ def build_mva_detection(exp_name=''):
                     image = BF_images[frame.number]
 
                     im = Image.fromarray(image)
-                    im = im.convert("L")
+                    im = im.convert("RGB")
 
                     #stacked_img = np.stack((image,)*3, axis=-1)
                     
