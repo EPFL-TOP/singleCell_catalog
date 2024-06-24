@@ -4514,6 +4514,9 @@ def index(request: HttpRequest) -> HttpResponse:
     if 'build_mva' in request.POST:
         build_mva_samples(selected_dict['experiment'])
 
+    if 'build_mva_detection' in request.POST:
+        build_mva_detection(selected_dict['experiment'])
+
     if selected_experiment!='':
         for e in experiment_dict['experiments']:
             if e['name']!=selected_experiment:continue
