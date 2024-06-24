@@ -144,6 +144,7 @@ def build_mva_detection(exp_name=''):
                 images, channels = read.nd2reader_getFrames(sample.file_name)
                 #images are t, c, x, y 
                 images=images.transpose(1,0,2,3)
+                print(images.shape)
                 BF_images=images[0]
 
                 frames = Frame.objects.select_related().filter(sample=sample)
