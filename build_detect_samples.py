@@ -40,7 +40,8 @@ def make_inputs(files, outdir):
     
     for f_idx, f in enumerate(files):
         uid = uuid.uuid4().hex
-        outfile_name = '{}_{}.jpg'.format(f.replace('.jpg',''), uid)
+        outfile_name = '{}_{}.jpg'.format(f.split('/')[-1].replace('.jpg',''), uid)
+        print('----------',outfile_name)
         shutil.copy(f, os.path.join(outdir,outfile_name))
         print(f, '  ---  ', os.path.join(outdir,outfile_name))
         data = None
