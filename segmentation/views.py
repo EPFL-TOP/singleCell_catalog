@@ -150,19 +150,10 @@ def build_mva_detection(exp_name=''):
                 for frame in frames:
                     image = BF_images[frame.number]
 
-
-                    #im = Image.fromarray(image)
-                    #im = im.convert("RGB")
-
-                    #stacked_img = np.stack((image,)*3, axis=-1)
-                    
-                    #im = Image.fromarray(stacked_img)
                     outdir_name  = "/data/singleCell_training_images/{}/{}/{}".format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
                     outfile_name = os.path.join(outdir_name, 'frame{}.jpg'.format(frame.number))
                     if not os.path.exists(outdir_name):
                         os.makedirs(outdir_name)
-#                    im.save(outfile_name)
-                    plt.imsave(outfile_name, image, cmap='gray')
                     cellrois = CellROI.objects.select_related().filter(frame=frame)
                     outdict = {}
                     outdict["image"]={"file_name":'frame{}.jpg'.format(frame.number),
@@ -175,8 +166,11 @@ def build_mva_detection(exp_name=''):
                         tmpdict={"bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row], "area":cellroi.contour_cellroi.number_of_pixels}
                         outdict["annotations"].append(tmpdict)
 
-                    out_file = open(outfile_name, "w") 
-                    json.dump(outdict, out_file) 
+                    if len(outdict["annotations"])>0:
+                        out_file = open(outfile_name, "w") 
+                        json.dump(outdict, out_file)
+                        plt.imsave(outfile_name, image, cmap='gray')
+
    
 
 
