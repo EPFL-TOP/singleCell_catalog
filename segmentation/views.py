@@ -172,7 +172,7 @@ def build_mva_detection(exp_name=''):
                     outfile_name = os.path.join(outdir_name, 'frame{}.json'.format(frame.number))
                     for cellroi in cellrois:
 
-                        tmpdict={"bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row]}
+                        tmpdict={"bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row], "area":cellroi.contour_cellroi.number_of_pixels}
                         outdict["annotations"].append(tmpdict)
 
                     out_file = open(outfile_name, "w") 
