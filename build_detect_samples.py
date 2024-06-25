@@ -19,11 +19,12 @@ valid_list = []
 for expname in os.listdir(inputdir):
     for wellname in os.listdir(os.path.join(inputdir, expname)):
         for posname in os.listdir(os.path.join(inputdir, expname, wellname)):
-            if np.random.uniform(low=0.0, high=1.0)>fraction_valid:
-                if '.jpeg' in posname: 
-                    train_list.append(os.path.join(inputdir, expname, wellname, posname))
-                else:
-                    valid_list.append(os.path.join(inputdir, expname, wellname, posname))
+            for filename in  os.listdir(os.path.join(inputdir, expname, wellname, posname)):
+                if '.jpeg' in filename: 
+                    if np.random.uniform(low=0.0, high=1.0)>fraction_valid:
+                        train_list.append(os.path.join(inputdir, expname, wellname, posname, filename))
+                    else:
+                        valid_list.append(os.path.join(inputdir, expname, wellname, posname, filename))
 
 
 
