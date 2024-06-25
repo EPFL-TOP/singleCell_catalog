@@ -175,7 +175,7 @@ def build_mva_detection(exp_name=''):
                         out_file = open(outfile_name, "w") 
                         json.dump(outdict, out_file)
                         outfile_name = os.path.join(outdir_name, 'frame{}.png'.format(frame.number))
-                        norm_image = (image / 256).astype(np.uint8)
+                        norm_image = ((image - image.min()) / (image.max() - image.min()) * 255).astype(np.uint8)
                         #plt.imsave(outfile_name, norm_image, cmap='gray')
                         im = Image.fromarray(norm_image, mode='L')
                         im.save(outfile_name)
