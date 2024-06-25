@@ -113,3 +113,4 @@ for expname in os.listdir(inputdir):
 
 print(len(valid_list),'  ',len(train_list))
 make_inputs(valid_list, outdir_valid)
+make_inputs(train_list, outdir_train)
