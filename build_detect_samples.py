@@ -40,10 +40,10 @@ def make_inputs(files, outdir):
     
     for f_idx, f in enumerate(files):
         uid = uuid.uuid4().hex
-        outfile_name = '{}_{}.tiff'.format(f.split('/')[-1].replace('.tiff',''), uid)
+        outfile_name = '{}_{}.png'.format(f.split('/')[-1].replace('.png',''), uid)
         shutil.copy(f, os.path.join(outdir,outfile_name))
         data = None
-        with open(f.replace('.tiff','.json'), 'r') as f:
+        with open(f.replace('.png','.json'), 'r') as f:
             data = json.load(f)
 
         image = {"id":f_idx,
@@ -112,7 +112,7 @@ for expname in os.listdir(inputdir):
     for wellname in os.listdir(os.path.join(inputdir, expname)):
         for posname in os.listdir(os.path.join(inputdir, expname, wellname)):
             for filename in  os.listdir(os.path.join(inputdir, expname, wellname, posname)):
-                if '.tiff' in filename: 
+                if '.png' in filename: 
                     uniform = np.random.uniform(low=0.0, high=1.0)
                     if uniform>1-fraction_test:
                         test_list.append(os.path.join(inputdir, expname, wellname, posname, filename))
