@@ -61,7 +61,7 @@ def make_inputs(files, outdir):
                           "image_id":f_idx,
                           "category_id":1,
                           "bbox":a["bbox"],
-                          "area":a["area"]
+                          "area":a["area"],
                           "segmentation": [],
                           "iscrowd": 0}
             outdict["annotations"].append(annotation)
