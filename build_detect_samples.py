@@ -42,7 +42,7 @@ def make_inputs(files, outdir):
         uid = uuid.uuid4().hex
         outfile_name = '{}_{}.jpg'.format(f.split('/')[-1].replace('.jpg',''), uid)
         print('----------',outfile_name)
-        shutil.copy(f, os.path.join(outdir,outfile_name))
+        #shutil.copy(f, os.path.join(outdir,outfile_name))
         print(f, '  ---  ', os.path.join(outdir,outfile_name))
         data = None
         with open(f.replace('.jpg','.json'), 'r') as f:
