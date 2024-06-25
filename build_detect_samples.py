@@ -40,10 +40,10 @@ def make_inputs(files, outdir):
     
     for f_idx, f in enumerate(files):
         uid = uuid.uuid4().hex
-        outfile_name = '{}_{}.jpg'.format(f.split('/')[-1].replace('.jpg',''), uid)
+        outfile_name = '{}_{}.tiff'.format(f.split('/')[-1].replace('.tiff',''), uid)
         shutil.copy(f, os.path.join(outdir,outfile_name))
         data = None
-        with open(f.replace('.jpg','.json'), 'r') as f:
+        with open(f.replace('.tiff','.json'), 'r') as f:
             data = json.load(f)
 
         image = {"id":f_idx,
