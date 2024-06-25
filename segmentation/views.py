@@ -149,7 +149,8 @@ def build_mva_detection(exp_name=''):
                 frames = Frame.objects.select_related().filter(sample=sample)
                 for frame in frames:
                     image = BF_images[frame.number]
-
+                    print(image.shape)
+                    print(image.type)
                     outdir_name  = "/data/singleCell_training_images/{}/{}/{}".format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
                     if not os.path.exists(outdir_name):
                         os.makedirs(outdir_name)
