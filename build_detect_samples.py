@@ -1,5 +1,10 @@
 import json, os
 import numpy as np
+
+def make_inputs(files, outdir):
+    for f in files:
+
+
 inputdir = '/data/singleCell_training_images/'
 outdir   = '/data/singleCell_training_images_tf/'
 outname  = 'testDetectDS'
@@ -27,8 +32,5 @@ for expname in os.listdir(inputdir):
                         valid_list.append(os.path.join(inputdir, expname, wellname, posname, filename))
 
 
-
-
-print(valid_list)
-print(train_list)
 print(len(valid_list),'  ',len(train_list))
+make_inputs(valid_list, outdir_valid)
