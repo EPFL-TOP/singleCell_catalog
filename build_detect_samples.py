@@ -60,8 +60,13 @@ def make_inputs(files, outdir):
             annotation = {"id":a_idx,
                           "image_id":f_idx,
                           "category_id":1,
-                          "bbox":a["bbox"],
+                          #"bbox":a["bbox"],
+                          "bbox":[a["bbox"][0], a["bbox"][2], a["bbox"][1]-a["bbox"][0],  a["bbox"][3]-a["bbox"][2]],
+
                           "area":a["area"],
+                        #tmpdict={"bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row], "area":cellroi.contour_cellroi.number_of_pixels}
+
+
                           "segmentation": [],
                           "iscrowd": 0}
             outdict["annotations"].append(annotation)
