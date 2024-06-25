@@ -112,7 +112,7 @@ for expname in os.listdir(inputdir):
     for wellname in os.listdir(os.path.join(inputdir, expname)):
         for posname in os.listdir(os.path.join(inputdir, expname, wellname)):
             for filename in  os.listdir(os.path.join(inputdir, expname, wellname, posname)):
-                if '.jpg' in filename: 
+                if '.tiff' in filename: 
                     uniform = np.random.uniform(low=0.0, high=1.0)
                     if uniform>1-fraction_test:
                         test_list.append(os.path.join(inputdir, expname, wellname, posname, filename))
