@@ -41,9 +41,7 @@ def make_inputs(files, outdir):
     for f_idx, f in enumerate(files):
         uid = uuid.uuid4().hex
         outfile_name = '{}_{}.jpg'.format(f.split('/')[-1].replace('.jpg',''), uid)
-        print('----------',outfile_name)
         shutil.copy(f, os.path.join(outdir,outfile_name))
-        print(f, '  ---  ', os.path.join(outdir,outfile_name))
         data = None
         with open(f.replace('.jpg','.json'), 'r') as f:
             data = json.load(f)
@@ -125,7 +123,7 @@ for expname in os.listdir(inputdir):
                         
 
 
-print(len(valid_list),'  ',len(train_list))
+print(len(valid_list),'  ',len(train_list), '   ' ,len(test_list))
 make_inputs(valid_list, outdir_valid)
 make_inputs(train_list, outdir_train)
-make_inputs(test_list, outdir_train)
+make_inputs(test_list, outdir_test)
