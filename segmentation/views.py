@@ -151,7 +151,6 @@ def build_mva_detection(exp_name=''):
                     image = BF_images[frame.number]
 
                     outdir_name  = "/data/singleCell_training_images/{}/{}/{}".format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
-                    outfile_name = os.path.join(outdir_name, 'frame{}.jpg'.format(frame.number))
                     if not os.path.exists(outdir_name):
                         os.makedirs(outdir_name)
                     cellrois = CellROI.objects.select_related().filter(frame=frame)
@@ -169,6 +168,7 @@ def build_mva_detection(exp_name=''):
                     if len(outdict["annotations"])>0:
                         out_file = open(outfile_name, "w") 
                         json.dump(outdict, out_file)
+                        outfile_name = os.path.join(outdir_name, 'frame{}.jpg'.format(frame.number))
                         plt.imsave(outfile_name, image, cmap='gray')
 
    
