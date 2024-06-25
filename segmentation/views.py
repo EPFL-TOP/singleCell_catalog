@@ -165,7 +165,7 @@ def build_mva_detection(exp_name=''):
                     plt.imsave(outfile_name, image, cmap='gray')
                     cellrois = CellROI.objects.select_related().filter(frame=frame)
                     outdict = {}
-                    outdict["image"]={"file_name":'frame{}.png'.format(frame.number),
+                    outdict["image"]={"file_name":'frame{}.jpeg'.format(frame.number),
                                                   "height": frame.height,
                                                   "width": frame.width}                    
                     outdict["annotations"]=[]
