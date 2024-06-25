@@ -42,6 +42,7 @@ def make_inputs(files, outdir):
         uid = uuid.uuid4().hex
         outfile_name = '{}_{}.jpg'.format(f.replace('.jpg',''), uid)
         shutil.copy(f, os.path.join(outdir,outfile_name))
+        print(f, '  ---  ', os.path.join(outdir,outfile_name))
         data = None
         with open(f.replace('.jpg','.json'), 'r') as f:
             data = json.load(f)
@@ -63,6 +64,10 @@ def make_inputs(files, outdir):
                           "iscrowd": 0}
             outdict["annotations"].append(annotation)
 
+
+
+    out_file = open(os.path.join(outdir,'annotations.json'), "w") 
+    json.dump(outdict, out_file) 
 #        {"id": 0,
 #            "image_id": 0,
 #            "category_id": 1,
