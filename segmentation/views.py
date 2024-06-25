@@ -176,11 +176,11 @@ def build_mva_detection(exp_name=''):
                         json.dump(outdict, out_file)
                         outfile_name = os.path.join(outdir_name, 'frame{}.png'.format(frame.number))
                         norm_image = ((image - image.min()) / (image.max() - image.min()) * 255).astype(np.uint8)
-                        rgb_image = np.stack((norm_image, norm_image, norm_image), axis=-1)
+                        #rgb_image = np.stack((norm_image, norm_image, norm_image), axis=-1)
 
                         #plt.imsave(outfile_name, norm_image, cmap='gray')
                         im = Image.fromarray(norm_image, mode='L')
-                        im = Image.fromarray(rgb_image, mode='RGB')
+                        #im = Image.fromarray(rgb_image, mode='RGB')
 
                         im.save(outfile_name)
 
