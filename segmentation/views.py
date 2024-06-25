@@ -176,7 +176,7 @@ def build_mva_detection(exp_name=''):
                         outdict["annotations"].append(tmpdict)
 
                     out_file = open(outfile_name, "w") 
-                    json.dump(tmpdict, out_file) 
+                    json.dump(outdict, out_file) 
    
 
 
