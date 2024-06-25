@@ -96,25 +96,33 @@ outname  = 'testDetectDS'
 
 outdir_train = os.path.join(outdir, outname, 'train')
 outdir_valid = os.path.join(outdir, outname, 'valid')
+outdir_test  = os.path.join(outdir, outname, 'test')
 fraction_valid=0.2  
+fraction_test=0.02
 
 if not os.path.exists(outdir_train):
     os.makedirs(outdir_train)
 if not os.path.exists(outdir_valid):
     os.makedirs(outdir_valid)
-
+if not os.path.exists(outdir_test):
+    os.makedirs(outdir_test)
 train_list = []
 valid_list = []
+test_list = []
 
 for expname in os.listdir(inputdir):
     for wellname in os.listdir(os.path.join(inputdir, expname)):
         for posname in os.listdir(os.path.join(inputdir, expname, wellname)):
             for filename in  os.listdir(os.path.join(inputdir, expname, wellname, posname)):
                 if '.jpg' in filename: 
-                    if np.random.uniform(low=0.0, high=1.0)>fraction_valid:
+                    uniform = np.random.uniform(low=0.0, high=1.0)
+                    if uniform>1-fraction_test:
+                        test_list.append(os.path.join(inputdir, expname, wellname, posname, filename))
+                    elif uniform>fraction_valid and uniform<=1-fraction_test:
                         train_list.append(os.path.join(inputdir, expname, wellname, posname, filename))
                     else:
                         valid_list.append(os.path.join(inputdir, expname, wellname, posname, filename))
+                        
 
 
 print(len(valid_list),'  ',len(train_list))
