@@ -59,7 +59,7 @@ def make_inputs(files, outdir):
         for a_idx, a in enumerate(data["annotations"]):
             annotation = {"id":a_idx,
                           "image_id":f_idx,
-                          "category":1,
+                          "category_id":1,
                           "bbox":a["bbox"],
                           "segmentation": [],
                           "iscrowd": 0}
