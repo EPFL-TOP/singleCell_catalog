@@ -142,7 +142,8 @@ def build_mva_detection(exp_name=''):
             for sample in samples:
                 if sample.peaks_tod_div_validated==False:continue
                 images, channels = read.nd2reader_getFrames(sample.file_name)
-                images = nd2.imread(sample.file_name.as_posix())
+
+                images = nd2.imread(Path(sample.file_name.as_posix()))
                 #images are t, c, x, y 
                 images=images.transpose(1,0,2,3)
                 BF_images=images[0]
