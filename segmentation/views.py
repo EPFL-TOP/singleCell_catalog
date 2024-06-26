@@ -161,7 +161,7 @@ def build_mva_detection(exp_name=''):
                         os.makedirs(outdir_name)
                     cellrois = CellROI.objects.select_related().filter(frame=frame)
                     outdict = {}
-                    outdict["image"]={"file_name":'frame{}.png'.format(frame.number),
+                    outdict["image"]={"file_name":'frame{}.jpg'.format(frame.number),
                                                   "height": frame.height,
                                                   "width": frame.width}                    
                     outdict["annotations"]=[]
@@ -174,13 +174,17 @@ def build_mva_detection(exp_name=''):
                     if len(outdict["annotations"])>0:
                         out_file = open(outfile_name, "w") 
                         json.dump(outdict, out_file)
-                        outfile_name = os.path.join(outdir_name, 'frame{}.png'.format(frame.number))
+                        outfile_name = os.path.join(outdir_name, 'frame{}.jpg'.format(frame.number))
                         norm_image = ((image - image.min()) / (image.max() - image.min()) * 255).astype(np.uint8)
+                        image_np = np.broadcast_to(norm_image, (norm_image.shape[0], norm_image.shape[1], 3)).copy() # Duplicating the Content
+                        print('image_np ',image_np.shape)
+                        image_np_expanded = np.expand_dims(image_np, axis=0)
+                        print('image_np_expanded ',image_np_expanded.shape)
                         #rgb_image = np.stack((norm_image, norm_image, norm_image), axis=-1)
 
                         #plt.imsave(outfile_name, norm_image, cmap='gray')
-                        im = Image.fromarray(norm_image, mode='L')
-                        #im = Image.fromarray(rgb_image, mode='RGB')
+                        #im = Image.fromarray(norm_image, mode='L')
+                        im = Image.fromarray(image_np_expanded, mode='RGB')
 
                         im.save(outfile_name)
 
