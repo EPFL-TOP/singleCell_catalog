@@ -4742,8 +4742,12 @@ def index(request: HttpRequest) -> HttpResponse:
         #print('download_dict=',download_dict)
         response = HttpResponse(json_content, content_type='application/json')
         
+
+        outfilename_download='data_AllExp.json'
+        if selected_well!='': outfilename_download='data_{}.json'.format(selected_well)
+        if selected_well=='' and selected_experiment!='': outfilename_download='data_{}.json'.format(selected_experiment)
         # Set the Content-Disposition header to specify the filename
-        response['Content-Disposition'] = 'attachment; filename="data_exp{}_well{}.json"'.format(selected_experiment, selected_well)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(outfilename_download)
 
         return response
 
