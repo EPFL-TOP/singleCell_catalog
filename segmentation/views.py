@@ -3078,7 +3078,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             for cellroi in cellrois:
                 framenumber = cellroi.frame.number
                 cellflag = cellroi.cellflag_cellroi
-            if cellstatus.start_oscillation_frame>=0 and framenumber>=cellstatus.start_oscillation_frame and cellstatus.end_oscillation_frame>=1 and frame<=cellstatus.end_oscillation_frame:
+            if cellstatus.start_oscillation_frame>=0 and framenumber>=cellstatus.start_oscillation_frame and cellstatus.end_oscillation_frame>=1 and framenumber<=cellstatus.end_oscillation_frame:
                 cellflag.oscillating = True
             else:
                 cellflag.oscillating = False
@@ -4606,13 +4606,13 @@ def index(request: HttpRequest) -> HttpResponse:
         print('selected_well=',selected_well)
         for experiment in Experiment.objects.all():
             exp=experiment.name
-            if selected_experiment!=None and selected_experiment!=exp: continue
+            if (selected_experiment!='') and selected_experiment!=exp: continue
             download_dict[exp]={}
             print(' ---- Experiment name ',exp)
             experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = experiment)
             for exerimentalpds in experimentaldataset:
                 expds=exerimentalpds.data_name
-                if selected_well!=None and selected_well!=expds: continue
+                if (selected_well!='') and selected_well!=expds: continue
                 download_dict[exp][expds]={}
                 print('    ---- experimental dataset name ',expds)
                 samples = Sample.objects.select_related().filter(experimental_dataset = exerimentalpds)
@@ -4743,7 +4743,7 @@ def index(request: HttpRequest) -> HttpResponse:
         response = HttpResponse(json_content, content_type='application/json')
         
         # Set the Content-Disposition header to specify the filename
-        response['Content-Disposition'] = 'attachment; filename="data.json"'
+        response['Content-Disposition'] = 'attachment; filename="data_exp{}_well{}.json"'.format(selected_experiment, selected_well)
 
         return response
 
