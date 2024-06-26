@@ -4625,7 +4625,9 @@ def index(request: HttpRequest) -> HttpResponse:
                     download_dict[exp][expds][sample]['peaks_tod_div_validated']=samp.peaks_tod_div_validated
                     download_dict[exp][expds][sample]['bf_features_validated']=samp.bf_features_validated
                     cellsID = CellID.objects.select_related().filter(sample=samp)
+                    download_dict[exp][expds][sample]['cells']=[]
                     for cellID in cellsID:
+                        download_dict[exp][expds][sample]['cells'].append(cellID.name)
                         download_dict[exp][expds][sample][cellID.name]={}
                         download_dict[exp][expds][sample][cellID.name]["start_oscillation_time"]=cellID.cell_status.start_oscillation
                         download_dict[exp][expds][sample][cellID.name]["end_oscillation_time"]=cellID.cell_status.end_oscillation
