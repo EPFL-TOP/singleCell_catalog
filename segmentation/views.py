@@ -4641,7 +4641,7 @@ def index(request: HttpRequest) -> HttpResponse:
             if (selected_experiment!='') and selected_experiment!=exp: continue
 
             tardir=os.path.join('/data/singleCell_catalog/contour_data', exp)
-            output_tarball = '/data/tmp/{}_contours.tar.gz'.format(exp)  # The output tarball file name
+            output_tarball = '/data/tmp/data_{}_contours.tar.gz'.format(exp)  # The output tarball file name
             create_tarball(tardir, output_tarball)
             if os.path.exists(output_tarball):
                with open(output_tarball, 'rb') as f:
