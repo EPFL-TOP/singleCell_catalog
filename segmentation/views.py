@@ -4638,6 +4638,8 @@ def index(request: HttpRequest) -> HttpResponse:
         print('selected_well=',selected_well)
         for experiment in Experiment.objects.all():
             exp=experiment.name
+            if (selected_experiment!='') and selected_experiment!=exp: continue
+
             tardir=os.path.join('/data/singleCell_catalog/contour_data', exp)
             output_tarball = '/data/tmp/{}_contours.tar.gz'.format(exp)  # The output tarball file name
             create_tarball(tardir, output_tarball)
