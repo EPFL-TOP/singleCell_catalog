@@ -8,7 +8,8 @@ from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, 
 
 import os, sys, json, glob, gc
 import time, datetime
-
+import threading
+import subprocess
 from memory_profiler import profile
 from sklearn.cluster import DBSCAN
 from skimage import exposure
@@ -652,10 +653,12 @@ def removeROIs(sample):
 
 
 #___________________________________________________________________________________________
-def build_segmentation():
+def build_segmentation(exp_name=''):
     apocseg = segtools.segmentation_apoc()
     exp_list = Experiment.objects.all()
     for exp in exp_list:
+        if exp_name!='' and exp.name!=exp_name:
+            continue
         print('exp ', exp.name)
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
@@ -666,7 +669,7 @@ def build_segmentation():
                 print('    sample ',s.file_name)
                 cellids = CellID.objects.select_related().filter(sample=s)
                 print('build segments sample: ',s.file_name)
-                if 'ppf003' not in s.file_name :continue
+                #if 'ppf003' not in s.file_name :continue
 
                 images, channels = read.nd2reader_getFrames(s.file_name)
                 #images are t, c, x, y 
@@ -2350,7 +2353,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:print('****************************  prepare_pos ****************************')
         local_time=datetime.datetime.now()
         images, images_norm    = get_current_stack()
-        import threading
         threading.Thread(target=get_adjacent_stack).start()
                 #get_adjacent_stack()
 
@@ -4452,6 +4454,24 @@ selected_dict={
 }
 
 #___________________________________________________________________________________________
+def create_tarball(input_path, output_tarball):
+    # Construct the tar command
+    tar_command = ['tar', '-czf', output_tarball, '-C', input_path, '.']
+    
+    # Start the subprocess
+    process = subprocess.Popen(tar_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    
+    # Wait for the process to complete and get the output and errors
+    stdout, stderr = process.communicate()
+    
+    # Check if the process was successful
+    if process.returncode == 0:
+        print(f'Tarball created successfully at {output_tarball}')
+    else:
+        print(f'Error creating tarball: {stderr.decode("utf-8")}')
+        
+
+#___________________________________________________________________________________________
 @login_required
 def index(request: HttpRequest) -> HttpResponse:
 #def index(request):
@@ -4477,9 +4497,7 @@ def index(request: HttpRequest) -> HttpResponse:
     if 'register_rawdataset' in request.POST and LOCAL==False:
         register_rawdataset()
 
-    #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
-    if 'segment' in request.POST:
-        build_segmentation()
+
 
     if 'build_cells' in request.POST:
         build_cells_all_exp()
@@ -4538,12 +4556,16 @@ def index(request: HttpRequest) -> HttpResponse:
     if 'build_ROIs' in request.POST:
         build_ROIs_loop(selected_dict['experiment'])
 
-
     if 'build_mva' in request.POST:
         build_mva_samples(selected_dict['experiment'])
 
     if 'build_mva_detection' in request.POST:
         build_mva_detection(selected_dict['experiment'])
+
+    #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
+    if 'segment' in request.POST:
+        build_segmentation(selected_dict['experiment'])
+
 
     if selected_experiment!='':
         for e in experiment_dict['experiments']:
@@ -4595,6 +4617,23 @@ def index(request: HttpRequest) -> HttpResponse:
         sample_dict = get_sample_details(selected_well)
     
 
+    if 'prepare_data_files' in request.POST:
+        print('in prepare data')
+        print('selected_experiment=',selected_experiment)
+        print('selected_well=',selected_well)
+        for experiment in Experiment.objects.all():
+            exp=experiment.name
+            tardir=os.path.join('/data/singleCell_catalog/contour_data', exp)
+            output_tarball = '/data/tmp/{}_contours.tar.gz'.format(exp)  # The output tarball file name
+            create_tarball(tardir, output_tarball)
+            if os.path.exists(output_tarball):
+               with open(output_tarball, 'rb') as f:
+                response = HttpResponse(f.read(), content_type='application/gzip')
+                response['Content-Disposition'] = 'attachment; filename="{}"'.format(os.path.basename(output_tarball))
+                return response
+            else:
+                return HttpResponse("File not found.", status=404)
+
 
 
     #build the output json
@@ -4606,13 +4645,14 @@ def index(request: HttpRequest) -> HttpResponse:
         print('selected_well=',selected_well)
         for experiment in Experiment.objects.all():
             exp=experiment.name
+
             if (selected_experiment!='') and selected_experiment!=exp: continue
             download_dict[exp]={}
             print(' ---- Experiment name ',exp)
             experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = experiment)
             for exerimentalpds in experimentaldataset:
                 expds=exerimentalpds.data_name
-                if (selected_well!='') and selected_well!=expds: continue
+                #if (selected_well!='') and selected_well!=expds: continue
                 download_dict[exp][expds]={}
                 print('    ---- experimental dataset name ',expds)
                 samples = Sample.objects.select_related().filter(experimental_dataset = exerimentalpds)
