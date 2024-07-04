@@ -4471,6 +4471,19 @@ def create_tarball(input_path, output_tarball):
         print(f'Error creating tarball: {stderr.decode("utf-8")}')
         
 
+def delete_files_in_directory(directory_path):
+   try:
+     files = os.listdir(directory_path)
+     for file in files:
+       file_path = os.path.join(directory_path, file)
+       if os.path.isfile(file_path):
+         os.remove(file_path)
+     print("All files deleted successfully.")
+   except OSError:
+     print("Error occurred while deleting files.")
+
+
+
 #___________________________________________________________________________________________
 @login_required
 def index(request: HttpRequest) -> HttpResponse:
@@ -4617,6 +4630,8 @@ def index(request: HttpRequest) -> HttpResponse:
         sample_dict = get_sample_details(selected_well)
     
 
+
+    delete_files_in_directory('/data/tmp/')
     if 'prepare_data_files' in request.POST:
         print('in prepare data')
         print('selected_experiment=',selected_experiment)
