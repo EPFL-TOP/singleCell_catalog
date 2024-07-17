@@ -74,7 +74,7 @@ import bokeh.layouts
 def load_model(model_path):
     try:
         return tf.keras.models.load_model(model_path)
-    except ModuleNotFoundError:
+    except NameError:
         return None
 #model = load_model('cell_classifier_model.keras')
 #trained on GPU with one dense layer more
