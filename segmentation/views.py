@@ -31,7 +31,10 @@ from pathlib import Path
 from io import BytesIO
 import base64
 from PIL import Image
-import tensorflow as tf
+try:
+    import tensorflow as tf
+except ModuleNotFoundError:
+    pass
 
 LOCAL=True
 DEBUG=False
@@ -69,10 +72,13 @@ import bokeh.embed
 import bokeh.layouts
 
 def load_model(model_path):
-    return tf.keras.models.load_model(model_path)
-
+    try:
+        return tf.keras.models.load_model(model_path)
+    except ModuleNotFoundError:
+        return None
 #model = load_model('cell_classifier_model.keras')
 #trained on GPU with one dense layer more
+
 model_alive = load_model('cell_classifier_model_simple_alive.keras')
 #model_oscillating = load_model('cell_classifier_model_simple_oscillating.keras')
 #        
