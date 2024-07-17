@@ -121,7 +121,7 @@ elif os.path.isdir("/home/helsens/Software/") and TEST==False:
     }
 
 
-elif os.isdir(r"C:\Users\helsens\software"):
+elif os.path.isdir(r"C:\Users\helsens\software"):
     #PROD
     DATABASES = {
         'default': {
