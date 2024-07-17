@@ -54,6 +54,10 @@ if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
                                   port=3306,
                                   database=accesskeys.RD_DB_name)
 
+#HIVE
+if os.path.dir(r'C:\Users\helsens\software\cellgmenter'):
+    sys.path.append(r'C:\Users\helsens\software\cellgmenter')
+
 import reader as read
 import segmentationTools as segtools
 
