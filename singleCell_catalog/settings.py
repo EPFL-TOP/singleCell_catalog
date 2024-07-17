@@ -121,6 +121,18 @@ elif os.path.isdir("/home/helsens/Software/") and TEST==False:
     }
 
 
+elif os.isdir(r"C:\Users\helsens\software"):
+    #PROD
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': accessk.DB_name,
+            'USER': accessk.DB_user,
+            'PASSWORD': accessk.DB_password,
+            'HOST': '127.0.0.1',
+            'PORT': '3305',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
