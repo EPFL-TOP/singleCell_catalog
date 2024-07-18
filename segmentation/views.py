@@ -44,6 +44,7 @@ BASEPATH="/mnt/nas_rcp/raw_data"
 #MY macbook
 if os.path.isdir('/Users/helsens/Software/github/EPFL-TOP/cellgmenter'):
     sys.path.append('/Users/helsens/Software/github/EPFL-TOP/cellgmenter')
+    
 #VMachine
 if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
     sys.path.append('/home/helsens/Software/segmentationTools/cellgmenter/main')
@@ -60,7 +61,15 @@ if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
 #HIVE
 if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
     sys.path.append(r'C:\Users\helsens\software\cellgmenter')
+    LOCAL=False
+    import mysql.connector
+    import accesskeys
 
+    cnx = mysql.connector.connect(user=accesskeys.RD_DB_RO_user, 
+                                  password=accesskeys.RD_DB_RO_password,
+                                  host='127.0.0.1',
+                                  port=3336,
+                                  database=accesskeys.RD_DB_name)
 import reader as read
 import segmentationTools as segtools
 
@@ -159,14 +168,10 @@ def build_mva_detection(exp_name=''):
                 images=images.transpose(1,0,2,3)
                 BF_images=images[0]
 
-
-
-
                 frames = Frame.objects.select_related().filter(sample=sample)
                 for frame in frames:
                     image = BF_images[frame.number]
                     print(image.shape)
-                    print(image.dtype)
                     outdir_name  = "/data/singleCell_training_images/{}/{}/{}".format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
                     if not os.path.exists(outdir_name):
                         os.makedirs(outdir_name)
@@ -394,7 +399,7 @@ def register_rawdataset():
     myresult = mycursor.fetchall()
 
     for x in myresult:
-        print('111111111=======================>',x,'<=========================================')
+        print('=========================================>',x,'<=========================================')
 
     experiments = Experiment.objects.values()
     list_experiments = [entry for entry in experiments] 
@@ -441,11 +446,6 @@ def register_rawdataset():
                 metadata = read.nd2reader_getSampleMetadata(fname)
                 sample = Sample(file_name=fname, 
                                 experimental_dataset=expds,
-#                                number_of_frames=metadata['number_of_frames'], 
-#                                number_of_channels=metadata['number_of_channels'], 
-#                                name_of_channels=metadata['name_of_channels'], 
-#                                experiment_description=metadata['experiment_description'], 
-#                                date=metadata['date'],
                                 keep_sample=True)
                 sample.save()
                 if DEBUG:print('        adding sample with name ',fname)
