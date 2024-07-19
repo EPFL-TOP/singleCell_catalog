@@ -40,11 +40,12 @@ LOCAL=True
 DEBUG=False
 DEBUG_TIME=False
 BASEPATH="/mnt/nas_rcp/raw_data"
+CELLPATH="microscopy/cell_culture"
 
 #MY macbook
 if os.path.isdir('/Users/helsens/Software/github/EPFL-TOP/cellgmenter'):
     sys.path.append('/Users/helsens/Software/github/EPFL-TOP/cellgmenter')
-    
+
 #VMachine
 if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
     sys.path.append('/home/helsens/Software/segmentationTools/cellgmenter/main')
@@ -61,6 +62,8 @@ if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
 #HIVE
 if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
     sys.path.append(r'C:\Users\helsens\software\cellgmenter')
+    BASEPATH=r'D:\raw_data'
+    CELLPATH=r'\microscopy\cell_culture'
     LOCAL=False
     import mysql.connector
     import accesskeys
@@ -407,10 +410,10 @@ def register_rawdataset():
 
     for x in myresult:
         if x[1] in list_experiments_uid: continue
-        unsplit_file = glob.glob(os.path.join('/mnt/nas_rcp/raw_data/microscopy/cell_culture/',x[1],'*.nd2'))
+        unsplit_file = glob.glob(os.path.join(BASEPATH, CELLPATH ,x[1],'*.nd2'))
         if DEBUG: print('=========unsplit_file ===',unsplit_file)
         if len(unsplit_file)!=1:
-            print('====================== ERROR, unsplit_file not 1, exit ',unsplit_file,'  in ',os.path.join('/mnt/nas_rcp/raw_data/microscopy/cell_culture/',x[1],'*.nd2'))
+            print('====================== ERROR, unsplit_file not 1, exit ',unsplit_file,'  in ',os.path.join('raw_data/microscopy/cell_culture/',x[1],'*.nd2'))
             sys.exit(3)
         metadata = read.nd2reader_getSampleMetadata(unsplit_file[0])
         experiment =  Experiment(name=x[1], 
