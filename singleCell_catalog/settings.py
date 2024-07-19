@@ -130,7 +130,8 @@ elif os.path.isdir(r"C:\Users\helsens\software"):
             'USER': accessk.DB_user,
             'PASSWORD': accessk.DB_password,
             'HOST': '127.0.0.1',
-            'PORT': '3306',
+#            'PORT': '3305',#LOCAL HIVE PORT
+            'PORT': '3336', #SV VM Port
         }
     }
 
