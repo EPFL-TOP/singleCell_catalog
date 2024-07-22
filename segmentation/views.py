@@ -2651,7 +2651,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img.data['img'][0] = new_image;
         line_position.location = source_intensity_ch1.data['time'][time_point]
         source_img.change.emit();
-        line_position.change.emit();                                 
+        //line_position.change.emit();                                 
     """)
     slider_test.js_on_change('value', callback_slider_test)
 
