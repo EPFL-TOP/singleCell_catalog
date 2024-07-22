@@ -2642,13 +2642,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     
 
-    callback_slider_test = bokeh.models.CustomJS(args=dict(source_img=source_img, images=source_imgs_norm.data['images'], dropdown_channel=dropdown_channel), code="""
-        var index = cb_obj.value;
-        var channel = parseInt(dropdown_channel.value);
-        var new_image = images[channel][index];
+    callback_slider_test = bokeh.models.CustomJS(args=dict(source_img=source_img, images=source_imgs_norm, dropdown_channel=dropdown_channel), code="""
+        var index     = cb_obj.value;
+        var channel   = parseInt(dropdown_channel.value);
+        var new_image = images.data['images'][channel][index];
                                                  
         //new_data['img'][0] = images.data['images'][dropdown_channel.value][index];
-        image_source.data['img'][0] = new_image;
+        source_img.data['img'][0] = new_image;
         source_img.change.emit();
                                                  
     """)
