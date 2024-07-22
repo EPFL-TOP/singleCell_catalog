@@ -2842,8 +2842,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_image(way=1, number=-9999):
         if DEBUG:print('****************************  update_image ****************************')
         current_index=get_current_index()
-        images=source_imgs.data["images"]
-        current_index = (current_index + 1*way) % len(images[0])
+        #images=source_imgs.data["images"]
+        current_index = (current_index + 1*way) % len(source_imgs.data["images"][0])
         if current_index>slider.end:current_index=slider.start
         if current_index<slider.start:current_index=slider.end
 
