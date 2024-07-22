@@ -2151,15 +2151,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 for roi in rois:
                     image_stack_rois_dict[file_name][frame.number]['left'].append(roi.min_col)
                     image_stack_rois_dict[file_name][frame.number]['right'].append(roi.max_col)
-                    image_stack_rois_dict[file_name][frame.number]['top'].append(frame[0].height-roi.min_row)
-                    image_stack_rois_dict[file_name][frame.number]['bottom'].append(frame[0].height-roi.max_row)
+                    image_stack_rois_dict[file_name][frame.number]['top'].append(frame.height-roi.min_row)
+                    image_stack_rois_dict[file_name][frame.number]['bottom'].append(frame.height-roi.max_row)
 
                     image_stack_labels_dict[file_name][frame.number]['weight'].append(roi.min_col)
-                    image_stack_labels_dict[file_name][frame.number]['height'].append(frame[0].height-roi.min_row)
+                    image_stack_labels_dict[file_name][frame.number]['height'].append(frame.height-roi.min_row)
                     image_stack_labels_dict[file_name][frame.number]['names'].append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
 
                     image_stack_cells_dict[file_name][frame.number]['weight'].append(roi.min_col)
-                    image_stack_cells_dict[file_name][frame.number]['height'].append(frame[0].height-roi.max_row)
+                    image_stack_cells_dict[file_name][frame.number]['height'].append(frame.height-roi.max_row)
                     if roi.cell_id !=None: image_stack_cells_dict[file_name][frame.number]['names'].append(roi.cell_id.name)
                     else:image_stack_cells_dict[file_name][frame.number]['names'].append("none")
 
