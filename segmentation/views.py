@@ -2133,7 +2133,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def fill_rois():
 
         expds = ExperimentalDataset.objects.get(data_name=dropdown_well.value)
-        samples = Sample.objects.select_related(experimental_dataset=expds)
+        samples = Sample.objects.select_related().filter(experimental_dataset=expds)
 
         for sample in samples:
             file_name = os.path.split(sample.file_name)[1]
