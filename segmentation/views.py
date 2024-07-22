@@ -2634,7 +2634,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             line_position.location = -999
         else:
             line_position.location = source_intensity_ch1.data["time"][time_point]
-        update_source_segment(time_point)
+        #update_source_segment(time_point)
         roi_diff(time_point)
 
     slider.on_change('value', callback_slider)
