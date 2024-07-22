@@ -1192,6 +1192,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     initial_position=-9999
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
 
+    source_roi  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
+
     start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
     end_oscillation_position   = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
     time_of_death_position     = bokeh.models.Span(location=initial_position, dimension='height', line_color='black', line_width=2)
@@ -3970,7 +3972,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
 
     left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
-    source_roi  = bokeh.models.ColumnDataSource(data=dict(left=left_rois, right=right_rois, top=top_rois, bottom=bottom_rois))
     source_roi_manual  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
 
     source_labels = bokeh.models.ColumnDataSource(data=dict(height=height_labels,weight=weight_labels,names=names_labels))
