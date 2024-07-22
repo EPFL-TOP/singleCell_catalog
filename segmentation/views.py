@@ -1185,6 +1185,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     initial_position=-9999
+    line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
 
     start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
     end_oscillation_position   = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
@@ -4065,7 +4066,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     initial_position = 0
     if len(source_intensity_ch1.data["time"])!=0:
         initial_position = source_intensity_ch1.data["time"][0]
-    line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
     plot_intensity.add_layout(line_position)
 
     plot_intensity.add_layout(start_oscillation_position)
