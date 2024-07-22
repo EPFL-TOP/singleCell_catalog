@@ -2179,6 +2179,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             image_stack_labels_dict[pos]=None
             image_stack_cells_dict[pos]=None
 
+        fill_rois()
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value   = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
 
@@ -2673,8 +2674,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
-
-        source_roi.data    = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
+        current_file = os.path.split(get_current_file())[1]
+        source_roi.data    = {'left': image_stack_rois_dict[current_file][time_point][index]['left'], 
+                              'right': image_stack_rois_dict[current_file][time_point][index]['right'], 
+                              'top': image_stack_rois_dict[current_file][time_point][index]['top'], 
+                              'bottom': image_stack_rois_dict[current_file][time_point][index]['bottom']}
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
         source_cells.data  = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         if len(source_intensity_ch1.data["time"])==0:
@@ -2699,9 +2703,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img.data['img'][0] = new_image;
         line_position.location = source_intensity_ch1.data['time'][index]
 
-        source_roi.data['left'] = image_stack_rois_dict[current_file][index]['left']
-        source_roi.data['right'] = image_stack_rois_dict[current_file][index]['right']
-        source_roi.data['top'] = image_stack_rois_dict[current_file][index]['top']
+        source_roi.data['left']   = image_stack_rois_dict[current_file][index]['left']
+        source_roi.data['right']  = image_stack_rois_dict[current_file][index]['right']
+        source_roi.data['top']    = image_stack_rois_dict[current_file][index]['top']
         source_roi.data['bottom'] = image_stack_rois_dict[current_file][index]['bottom']
 
 
@@ -3966,7 +3970,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     get_adjacent_stack()
-
+    fill_rois()
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
