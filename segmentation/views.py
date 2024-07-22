@@ -1145,6 +1145,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     positions={}
     files={}
     image_stack_dict={}
+    image_stack_labels_dict={}
+    image_stack_rois_dict={}
+    image_stack_cells_dict={}
 
     flags_dict = {'mask':0,
                   'dividing':50,
@@ -1166,7 +1169,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             positions['{0}_{1}'.format(exp.name, expds.data_name)] = []
             files['{0}_{1}'.format(exp.name, expds.data_name)] = []
             for samp in samples:
-                positions['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name.split('/')[-1])
+                positions['{0}_{1}'.format(exp.name, expds.data_name)].append(os.path.split(samp.file_name)[1])
                 files    ['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name)
 
     experiments=sorted(experiments)
@@ -1182,7 +1185,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
         image_stack_dict[pos]=None
-
+        image_stack_rois_dict[pos]=None
+        image_stack_labels_dict[pos]=None
+        image_stack_cells_dict[pos]=None
 
     initial_position=-9999
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
@@ -2122,6 +2127,42 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
 
+    #___________________________________________________________________________________________
+    def fill_rois():
+
+        exp = Experiment.objects.get(dropdown_exp.value)
+        samples = Sample.objects.select_related(experiment=exp)
+
+        for sample in samples:
+            file_name = os.path.split(sample.file_name)[1]
+            image_stack_rois_dict[file_name]={}
+            image_stack_labels_dict[file_name]={}
+            image_stack_cells_dict[file_name]={}
+            
+            frames    = Frame.objects.select_related().filter(sample=sample)
+            for frame in frames:
+                rois   = CellROI.objects.select_related().filter(frame=frame)
+
+                image_stack_rois_dict[file_name][frame.number]   = {'left':[], 'right':[], 'top':[], 'bottom':[]}
+                image_stack_labels_dict[file_name][frame.number] = {'height':[],'weight':[],'names':[]}
+                image_stack_cells_dict[file_name][frame.number]  = {'height':[],'weight':[],'names':[]}
+                for roi in rois:
+                    image_stack_rois_dict[file_name][frame.number]['left'].append(roi.min_col)
+                    image_stack_rois_dict[file_name][frame.number]['right'].append(roi.max_col)
+                    image_stack_rois_dict[file_name][frame.number]['top'].append(frame[0].height-roi.min_row)
+                    image_stack_rois_dict[file_name][frame.number]['bottom'].append(frame[0].height-roi.max_row)
+
+                    image_stack_labels_dict[file_name][frame.number]['weight'].append(roi.min_col)
+                    image_stack_labels_dict[file_name][frame.number]['height'].append(frame[0].height-roi.min_row)
+                    image_stack_labels_dict[file_name][frame.number]['names'].append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
+
+                    image_stack_cells_dict[file_name][frame.number]['weight'].append(roi.min_col)
+                    image_stack_cells_dict[file_name][frame.number]['height'].append(frame[0].height-roi.max_row)
+                    if roi.cell_id !=None: image_stack_cells_dict[file_name][frame.number]['names'].append(roi.cell_id.name)
+                    else:image_stack_cells_dict[file_name][frame.number]['names'].append("none")
+
+    #___________________________________________________________________________________________
+
 
 
     #___________________________________________________________________________________________
@@ -2132,6 +2173,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         image_stack_dict.clear
         for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
             image_stack_dict[pos]=None
+            image_stack_rois_dict[pos]=None
+            image_stack_labels_dict[pos]=None
+            image_stack_cells_dict[pos]=None
 
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value   = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
@@ -2140,7 +2184,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         update_oscillation_cycle()
 
-        #print('update_dropdown_pos image_stack_dict=',image_stack_dict)
         update_position_select()
 
         if slider.value == 0:
@@ -2643,17 +2686,27 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     
 
-    callback_slider_test = bokeh.models.CustomJS(args=dict(source_img=source_img, line_position=line_position, images=source_imgs_norm, dropdown_channel=dropdown_channel, source_intensity_ch1=source_intensity_ch1), code="""
+    callback_slider_test = bokeh.models.CustomJS(args=dict(source_img=source_img, line_position=line_position, images=source_imgs_norm, 
+                                                           dropdown_channel=dropdown_channel, source_intensity_ch1=source_intensity_ch1,
+                                                           image_stack_rois_dict=image_stack_rois_dict, current_file=os.path.split(get_current_file())[1]), code="""
         var index     = cb_obj.value;
         var channel   = parseInt(dropdown_channel.value);
         var new_image = images.data['images'][channel][index];
                                                  
-        //new_data['img'][0] = images.data['images'][dropdown_channel.value][index];
         source_img.data['img'][0] = new_image;
         line_position.location = source_intensity_ch1.data['time'][index]
+
+        source_roi.data['left'] = image_stack_rois_dict[current_file][index]['left']
+        source_roi.data['right'] = image_stack_rois_dict[current_file][index]['right']
+        source_roi.data['top'] = image_stack_rois_dict[current_file][index]['top']
+        source_roi.data['bottom'] = image_stack_rois_dict[current_file][index]['bottom']
+
+
         source_img.change.emit();
-        //line_position.change.emit();                                 
-    """)
+        source_roi.change.emit();
+        
+
+        """)
     slider_test.js_on_change('value', callback_slider_test)
 
 
@@ -2878,12 +2931,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_index=get_current_index()
         #images=source_imgs.data["images"]
         current_index = (current_index + 1*way) % len(source_imgs.data["images"][0])
-        if current_index>slider.end:current_index=slider.start
-        if current_index<slider.start:current_index=slider.end
+        if current_index>slider_test.end:current_index=slider_test.start
+        if current_index<slider_test.start:current_index=slider_test.end
 
         if number>=0:
             current_index = number
-        slider.value = current_index
+        slider_test.value = current_index
         if len(source_intensity_ch1.data["time"])==0:
             line_position.location = -999
         else:
