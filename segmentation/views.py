@@ -2688,7 +2688,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     callback_slider_test = bokeh.models.CustomJS(args=dict(source_img=source_img, line_position=line_position, images=source_imgs_norm, 
                                                            dropdown_channel=dropdown_channel, source_intensity_ch1=source_intensity_ch1,
-                                                           image_stack_rois_dict=image_stack_rois_dict, current_file=os.path.split(get_current_file())[1]), code="""
+                                                           image_stack_rois_dict=image_stack_rois_dict, current_file=os.path.split(get_current_file())[1], 
+                                                           source_roi=source_roi), code="""
         var index     = cb_obj.value;
         var channel   = parseInt(dropdown_channel.value);
         var new_image = images.data['images'][channel][index];
