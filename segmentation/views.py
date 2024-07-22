@@ -2675,6 +2675,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         current_file = os.path.split(get_current_file())[1]
+        print(image_stack_rois_dict)
         source_roi.data    = {'left': image_stack_rois_dict[current_file][time_point][index]['left'], 
                               'right': image_stack_rois_dict[current_file][time_point][index]['right'], 
                               'top': image_stack_rois_dict[current_file][time_point][index]['top'], 
