@@ -2149,10 +2149,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 image_stack_labels_dict[file_name][frame.number] = {'height':[],'weight':[],'names':[]}
                 image_stack_cells_dict[file_name][frame.number]  = {'height':[],'weight':[],'names':[]}
                 for roi in rois:
-                    image_stack_rois_dict[file_name][frame.number]['left'].append(roi.min_col)
-                    image_stack_rois_dict[file_name][frame.number]['right'].append(roi.max_col)
-                    image_stack_rois_dict[file_name][frame.number]['top'].append(frame.height-roi.min_row)
-                    image_stack_rois_dict[file_name][frame.number]['bottom'].append(frame.height-roi.max_row)
+                    image_stack_rois_dict[file_name][int(frame.number)]['left'].append(roi.min_col)
+                    image_stack_rois_dict[file_name][int(frame.number)]['right'].append(roi.max_col)
+                    image_stack_rois_dict[file_name][int(frame.number)]['top'].append(frame.height-roi.min_row)
+                    image_stack_rois_dict[file_name][int(frame.number)]['bottom'].append(frame.height-roi.max_row)
 
                     image_stack_labels_dict[file_name][frame.number]['weight'].append(roi.min_col)
                     image_stack_labels_dict[file_name][frame.number]['height'].append(frame.height-roi.min_row)
