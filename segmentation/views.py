@@ -2618,11 +2618,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         if DEBUG:print('****************************  callback_slider ****************************')
         time_point = slider.value
-        images_norm=source_imgs_norm.data['images']
-        new_image = images_norm[int(dropdown_channel.value)][time_point]
-        source_img.data = {'img':[new_image]}
-        images=source_imgs.data['images']
-        source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
+        #images_norm=source_imgs_norm.data['images']
+        #new_image = images_norm[int(dropdown_channel.value)][time_point]
+        source_img.data = {'img':[source_imgs_norm.data['images'][int(dropdown_channel.value)][time_point]]}
+        #source_img.data = {'img':[new_image]}
+        #images=source_imgs.data['images']
+        #source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
 
