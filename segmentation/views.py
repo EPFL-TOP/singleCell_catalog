@@ -1494,6 +1494,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Create a Slider widget
     initial_time_point = 0
     slider         = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point", width=250)
+    slider_test    = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point", width=250)
 
     x_range = bokeh.models.Range1d(start=0, end=ind_images_list[0][0].shape[0])
     y_range = bokeh.models.Range1d(start=0, end= ind_images_list[0][0].shape[1])
@@ -2640,6 +2641,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     slider.on_change('value', callback_slider)
     #___________________________________________________________________________________________
     
+
+    callback_slider_test = bokeh.models.CustomJS(args=dict(source=source_img, images=source_imgs_norm.data['images'][int(dropdown_channel.value)]), code="""
+        var index = cb_obj.value;
+        var new_data = source.data;
+        new_data['img'][0] = images[index];
+        source.change.emit();
+    """)
+    slider_test.js_on_change('value', callback_slider_test)
+
 
     #___________________________________________________________________________________________
     # Define a callback function to update the contrast when the slider changes
@@ -4180,6 +4190,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          )
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
+                                     bokeh.layouts.row(slider_test),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_cell ),
                                      bokeh.layouts.row(button_inspect, button_build_cells, button_delete_cell),
