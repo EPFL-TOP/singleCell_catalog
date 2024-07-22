@@ -2675,11 +2675,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         current_file = os.path.split(get_current_file())[1]
-        print(image_stack_rois_dict)
-        source_roi.data    = {'left': image_stack_rois_dict[current_file][time_point][index]['left'], 
-                              'right': image_stack_rois_dict[current_file][time_point][index]['right'], 
-                              'top': image_stack_rois_dict[current_file][time_point][index]['top'], 
-                              'bottom': image_stack_rois_dict[current_file][time_point][index]['bottom']}
+        source_roi.data    = {'left': image_stack_rois_dict[current_file][time_point]['left'], 
+                              'right': image_stack_rois_dict[current_file][time_point]['right'], 
+                              'top': image_stack_rois_dict[current_file][time_point]['top'], 
+                              'bottom': image_stack_rois_dict[current_file][time_point]['bottom']}
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
         source_cells.data  = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         if len(source_intensity_ch1.data["time"])==0:
@@ -2702,12 +2701,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         var new_image = images.data['images'][channel][index];
                                                  
         source_img.data['img'][0] = new_image;
-        line_position.location = source_intensity_ch1.data['time'][index]
+        line_position.location = source_intensity_ch1.data['time'][index];
 
-        source_roi.data['left']   = image_stack_rois_dict[current_file][index]['left']
-        source_roi.data['right']  = image_stack_rois_dict[current_file][index]['right']
-        source_roi.data['top']    = image_stack_rois_dict[current_file][index]['top']
-        source_roi.data['bottom'] = image_stack_rois_dict[current_file][index]['bottom']
+        var new_roi = image_stack_rois_dict[current_file];
+        var new_roi2 = new_roi[index];
+
+        source_roi.data['left']   = new_roi2['left'];
+        source_roi.data['right']  = image_stack_rois_dict[current_file][index]['right'];
+        source_roi.data['top']    = image_stack_rois_dict[current_file][index]['top'];
+        source_roi.data['bottom'] = image_stack_rois_dict[current_file][index]['bottom'];
 
 
         source_img.change.emit();
