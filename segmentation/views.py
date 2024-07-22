@@ -2625,11 +2625,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #images=source_imgs.data['images']
         #source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
-        left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
+        #left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
 
-        source_roi.data    = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
-        source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
-        source_cells.data  = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+        #source_roi.data    = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
+        #source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
+        #source_cells.data  = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         if len(source_intensity_ch1.data["time"])==0:
             line_position.location = -999
         else:
