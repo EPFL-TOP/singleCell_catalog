@@ -2650,7 +2650,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                                  
         //new_data['img'][0] = images.data['images'][dropdown_channel.value][index];
         source_img.data['img'][0] = new_image;
-        line_position.location = source_intensity_ch1.data['time'][time_point]
+        line_position.location = source_intensity_ch1.data['time'][index]
         source_img.change.emit();
         //line_position.change.emit();                                 
     """)
