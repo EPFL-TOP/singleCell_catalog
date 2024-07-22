@@ -2703,6 +2703,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img.data['img'][0] = new_image;
         line_position.location = source_intensity_ch1.data['time'][index];
 
+        console.log("current_file:", current_file);
+
         var new_roi = image_stack_rois_dict[current_file];
         var new_roi2 = new_roi[index];
 
