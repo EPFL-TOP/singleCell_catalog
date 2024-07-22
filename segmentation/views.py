@@ -401,6 +401,7 @@ def register_rawdataset():
     mycursor.execute(query)
     myresult = mycursor.fetchall()
 
+
     for x in myresult:
         print('=========================================>',x,'<=========================================')
 
@@ -445,7 +446,7 @@ def register_rawdataset():
             if DEBUG:print('    adding experimental dataset with name ',os.path.join(x[4], x[5]))
 
             for f in files_json["files"]:
-                fname=os.path.join(BASEPATH, x[4], x[5], "raw_files", f["name"])
+                fname=os.path.join(BASEPATH, CELLPATH, x[5], "raw_files", f["name"])
                 metadata = read.nd2reader_getSampleMetadata(fname)
                 sample = Sample(file_name=fname, 
                                 experimental_dataset=expds,
