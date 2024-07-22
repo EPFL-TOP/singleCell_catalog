@@ -2642,13 +2642,34 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     
 
-    callback_slider_test = bokeh.models.CustomJS(args=dict(source=source_img, images=source_imgs_norm.data['images'][int(dropdown_channel.value)]), code="""
+    callback_slider_test = bokeh.models.CustomJS(args=dict(source_img=source_img, images=source_imgs_norm.data['images'], dropdown_channel=dropdown_channel), code="""
         var index = cb_obj.value;
-        var new_data = source.data;
-        new_data['img'][0] = images[index];
-        source.change.emit();
+        var channel = parseInt(dropdown_channel.value);
+        var new_image = images[channel][index];
+                                                 
+        //new_data['img'][0] = images.data['images'][dropdown_channel.value][index];
+        image_source.data['img'][0] = new_image;
+        source_img.change.emit();
+                                                 
     """)
     slider_test.js_on_change('value', callback_slider_test)
+
+
+# CustomJS callback
+#callback = CustomJS(args=dict(image_source=image_source, roi_source=roi_source, images=images, roi_data=roi_data, select=select), code="""
+#    var index = cb_obj.value;
+#    var channel = parseInt(select.value);
+#    var new_image = images[index][channel];
+#    var new_roi = roi_data[index];
+#
+#    image_source.data['image'][0] = new_image;
+#    roi_source.data['x'] = new_roi['x'];
+#    roi_source.data['y'] = new_roi['y'];
+#    roi_source.data['label'] = new_roi['label'];
+#    
+#    image_source.change.emit();
+#    roi_source.change.emit();
+#""")
 
 
     #___________________________________________________________________________________________
