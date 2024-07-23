@@ -1372,6 +1372,40 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         return ind_images_list, ind_images_list_norm
     #___________________________________________________________________________________________
 
+
+    #___________________________________________________________________________________________
+    def fill_rois_pos(pos):
+        sample = Sample.objects.get(file_name=pos)
+        file_name = os.path.split(sample.file_name)[1]
+        if image_stack_rois_dict[file_name]!=None: return
+
+        image_stack_rois_dict[file_name]={}
+        image_stack_labels_dict[file_name]={}
+        image_stack_cells_dict[file_name]={}
+        
+
+        frames    = Frame.objects.select_related().filter(sample=sample)
+        for frame in frames:
+            rois   = CellROI.objects.select_related().filter(frame=frame)
+
+            image_stack_rois_dict[file_name][str(frame.number)]   = {'left':[], 'right':[], 'top':[], 'bottom':[]}
+            image_stack_labels_dict[file_name][frame.number] = {'height':[],'weight':[],'names':[]}
+            image_stack_cells_dict[file_name][frame.number]  = {'height':[],'weight':[],'names':[]}
+            for roi in rois:
+                image_stack_rois_dict[file_name][str(frame.number)]['left'].append(roi.min_col)
+                image_stack_rois_dict[file_name][str(frame.number)]['right'].append(roi.max_col)
+                image_stack_rois_dict[file_name][str(frame.number)]['top'].append(frame.height-roi.min_row)
+                image_stack_rois_dict[file_name][str(frame.number)]['bottom'].append(frame.height-roi.max_row)
+
+                image_stack_labels_dict[file_name][frame.number]['weight'].append(roi.min_col)
+                image_stack_labels_dict[file_name][frame.number]['height'].append(frame.height-roi.min_row)
+                image_stack_labels_dict[file_name][frame.number]['names'].append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
+
+                image_stack_cells_dict[file_name][frame.number]['weight'].append(roi.min_col)
+                image_stack_cells_dict[file_name][frame.number]['height'].append(frame.height-roi.max_row)
+                if roi.cell_id !=None: image_stack_cells_dict[file_name][frame.number]['names'].append(roi.cell_id.name)
+                else:image_stack_cells_dict[file_name][frame.number]['names'].append("none")
+
     #___________________________________________________________________________________________
     # Function to get the image stack
     def get_current_stack():
@@ -2116,38 +2150,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    #___________________________________________________________________________________________
-    def fill_rois_pos(pos):
-        sample = Sample.objects.get(file_name=pos)
-        file_name = os.path.split(sample.file_name)[1]
-        if image_stack_rois_dict[file_name]!=None: return
 
-        image_stack_rois_dict[file_name]={}
-        image_stack_labels_dict[file_name]={}
-        image_stack_cells_dict[file_name]={}
-        
-
-        frames    = Frame.objects.select_related().filter(sample=sample)
-        for frame in frames:
-            rois   = CellROI.objects.select_related().filter(frame=frame)
-
-            image_stack_rois_dict[file_name][str(frame.number)]   = {'left':[], 'right':[], 'top':[], 'bottom':[]}
-            image_stack_labels_dict[file_name][frame.number] = {'height':[],'weight':[],'names':[]}
-            image_stack_cells_dict[file_name][frame.number]  = {'height':[],'weight':[],'names':[]}
-            for roi in rois:
-                image_stack_rois_dict[file_name][str(frame.number)]['left'].append(roi.min_col)
-                image_stack_rois_dict[file_name][str(frame.number)]['right'].append(roi.max_col)
-                image_stack_rois_dict[file_name][str(frame.number)]['top'].append(frame.height-roi.min_row)
-                image_stack_rois_dict[file_name][str(frame.number)]['bottom'].append(frame.height-roi.max_row)
-
-                image_stack_labels_dict[file_name][frame.number]['weight'].append(roi.min_col)
-                image_stack_labels_dict[file_name][frame.number]['height'].append(frame.height-roi.min_row)
-                image_stack_labels_dict[file_name][frame.number]['names'].append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
-
-                image_stack_cells_dict[file_name][frame.number]['weight'].append(roi.min_col)
-                image_stack_cells_dict[file_name][frame.number]['height'].append(frame.height-roi.max_row)
-                if roi.cell_id !=None: image_stack_cells_dict[file_name][frame.number]['names'].append(roi.cell_id.name)
-                else:image_stack_cells_dict[file_name][frame.number]['names'].append("none")
 
     #___________________________________________________________________________________________
     def fill_rois():
