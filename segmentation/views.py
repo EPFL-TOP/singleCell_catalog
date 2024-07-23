@@ -2814,11 +2814,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             line_position.location = source_intensity_ch1.data['time'][index];
         }
 
-        console.log('source_rois_full.data',source_rois_full.data)
-        source_roi.data['left']   = source_rois_full.data['left'][index];
-        source_roi.data['right']  = source_rois_full.data['right'][index];
-        source_roi.data['top']    = source_rois_full.data['top'][index];
-        source_roi.data['bottom'] = source_rois_full.data['bottom'][index];
+        //console.log('source_rois_full.data',source_rois_full.data)
+        //source_roi.data['left']   = source_rois_full.data['left'][index];
+        //source_roi.data['right']  = source_rois_full.data['right'][index];
+        //source_roi.data['top']    = source_rois_full.data['top'][index];
+        //source_roi.data['bottom'] = source_rois_full.data['bottom'][index];
 
         //source_labels.data['height'] = image_stack_labels_dict[current_file][String(index)]['height']
         //source_labels.data['weight'] = image_stack_labels_dict[current_file][String(index)]['weight']
@@ -2829,12 +2829,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         //source_cells.data['names']  = image_stack_cells_dict[current_file][String(index)]['names']
 
         source_img.change.emit();
-        source_roi.change.emit();
+        //source_roi.change.emit();
         //source_labels.change.emit();
         //source_cells.change.emit();
 
         """)
-    #slider.js_on_change('value', callback_slider_test)
+    slider.js_on_change('value', callback_slider_test)
     #dropdown_pos.js_on_change('value', callback_slider_test)
     
     #PYTHON
