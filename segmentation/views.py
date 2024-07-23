@@ -1552,7 +1552,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Create a Slider widget
     initial_time_point = 0
     slider         = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point", width=250)
-    slider_test    = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point", width=325)
+    #slider_test    = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point", width=325)
 
     x_range = bokeh.models.Range1d(start=0, end=ind_images_list[0][0].shape[0])
     y_range = bokeh.models.Range1d(start=0, end= ind_images_list[0][0].shape[1])
@@ -2615,18 +2615,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_file_name=os.path.split(current_file)[1]
         current_frame_name =    str(frame[0].number)
 
-        image_stack_rois_dict[current_file_name][current_frame_name]['left']   = left_rois
-        image_stack_rois_dict[current_file_name][current_frame_name]['right']  = right_rois
-        image_stack_rois_dict[current_file_name][current_frame_name]['top']    = top_rois
-        image_stack_rois_dict[current_file_name][current_frame_name]['bottom'] = bottom_rois
+        #image_stack_rois_dict[current_file_name][current_frame_name]['left']   = left_rois
+        #image_stack_rois_dict[current_file_name][current_frame_name]['right']  = right_rois
+        #image_stack_rois_dict[current_file_name][current_frame_name]['top']    = top_rois
+        #image_stack_rois_dict[current_file_name][current_frame_name]['bottom'] = bottom_rois
 
-        image_stack_labels_dict[current_file_name][current_frame_name]['height'] = height_labels
-        image_stack_labels_dict[current_file_name][current_frame_name]['weight'] = weight_labels
-        image_stack_labels_dict[current_file_name][current_frame_name]['name']   = names_labels
+        #image_stack_labels_dict[current_file_name][current_frame_name]['height'] = height_labels
+        #image_stack_labels_dict[current_file_name][current_frame_name]['weight'] = weight_labels
+        #image_stack_labels_dict[current_file_name][current_frame_name]['name']   = names_labels
 
-        image_stack_cells_dict[current_file_name][current_frame_name]['height'] = height_cells
-        image_stack_cells_dict[current_file_name][current_frame_name]['weight'] = weight_cells
-        image_stack_cells_dict[current_file_name][current_frame_name]['name']   = names_cells
+        #image_stack_cells_dict[current_file_name][current_frame_name]['height'] = height_cells
+        #image_stack_cells_dict[current_file_name][current_frame_name]['weight'] = weight_cells
+        #image_stack_cells_dict[current_file_name][current_frame_name]['name']   = names_cells
 
         return left_rois,right_rois,top_rois,bottom_rois, height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells
     #___________________________________________________________________________________________
@@ -2702,14 +2702,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         if DEBUG:print('****************************  callback_slider ****************************')
         time_point = slider.value
-        #images_norm=source_imgs_norm.data['images']
-        #new_image = images_norm[int(dropdown_channel.value)][time_point]
         source_img.data = {'img':[source_imgs_norm.data['images'][int(dropdown_channel.value)][time_point]]}
-        #source_img.data = {'img':[new_image]}
-        #images=source_imgs.data['images']
         #source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
-        #left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
+        left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         #current_file = os.path.split(get_current_file())[1]
         #source_roi.data    = {'left': image_stack_rois_dict[current_file][str(time_point)]['left'], 
         #                      'right': image_stack_rois_dict[current_file][str(time_point)]['right'], 
@@ -2723,6 +2719,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #source_cells.data  = {'height':image_stack_cells_dict[current_file][str(time_point)]['height'], 
         #                      'weight':image_stack_cells_dict[current_file][str(time_point)]['weight'], 
         #                      'names':image_stack_cells_dict[current_file][str(time_point)]['names']}
+        source_roi.data    = {'left': left_rois, 
+                              'right': right_rois, 
+                              'top': top_rois, 
+                              'bottom': bottom_rois}
+        
+        source_labels.data = {'height':height_labels,
+                              'weight':weight_labels, 
+                              'names':names_labels}
+        
+        source_cells.data  = {'height':height_cells, 
+                              'weight':weight_cells, 
+                              'names':names_cells}
+
         if len(source_intensity_ch1.data["time"])==0:
             line_position.location = -999
         else:
