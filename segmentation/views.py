@@ -2730,7 +2730,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     callback_slider_test = bokeh.models.CustomJS(args=dict(source_img=source_img, line_position=line_position, images=source_imgs_norm, 
                                                            dropdown_channel=dropdown_channel, source_intensity_ch1=source_intensity_ch1,
                                                            image_stack_rois_dict=image_stack_rois_dict, dropdown_pos=dropdown_pos,
-                                                           source_roi=source_roi), code="""
+                                                           image_stack_cells_dict=image_stack_cells_dict, image_stack_labels_dict=image_stack_labels_dict,
+                                                           source_roi=source_roi, source_labels=source_labels, source_cells=source_cells), code="""
         var index     = cb_obj.value;
         var channel   = parseInt(dropdown_channel.value);
         var new_image = images.data['images'][channel][index];
@@ -2741,25 +2742,30 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img.data['img'][0] = new_image;
         line_position.location = source_intensity_ch1.data['time'][index];
         var file_name = current_file
-        console.log("current_file:", current_file);
-        console.log("file_name:", file_name);
-        console.log(typeof index);
-        console.log("data1:",image_stack_rois_dict[file_name]);
-        console.log("data2:",image_stack_rois_dict[file_name][String(index)]);
-
-        var new_roi = image_stack_rois_dict[current_file];
-        var new_roi2 = new_roi[index];
+        //console.log("current_file:", current_file);
+        //console.log("file_name:", file_name);
+        //console.log(typeof index);
+        //console.log("data1:",image_stack_rois_dict[file_name]);
+        //console.log("data2:",image_stack_rois_dict[file_name][String(index)]);
 
         source_roi.data['left']   = new_roi2['left'];
         source_roi.data['right']  = image_stack_rois_dict[current_file][index]['right'];
         source_roi.data['top']    = image_stack_rois_dict[current_file][index]['top'];
         source_roi.data['bottom'] = image_stack_rois_dict[current_file][index]['bottom'];
 
+        source_labels.data['height'] = image_stack_labels_dict[current_file][index]['height']
+        source_labels.data['weight'] = image_stack_labels_dict[current_file][index]['weight']
+        source_labels.data['names']  = image_stack_labels_dict[current_file][index]['names']
+        
+        source_cells.data['height'] = image_stack_cells_dict[current_file][index]['height']
+        source_cells.data['weight'] = image_stack_cells_dict[current_file][index]['weight']
+        source_cells.data['names']  = image_stack_cells_dict[current_file][index]['names']
 
         source_img.change.emit();
         source_roi.change.emit();
+        source_labels.emit();
+        source_cells.emit();
         
-
         """)
     slider_test.js_on_change('value', callback_slider_test)
 
