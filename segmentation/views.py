@@ -2780,7 +2780,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     
 
-    callback_slider_test = bokeh.models.CustomJS(args=dict(source_img=source_img, line_position=line_position, images=source_imgs_norm, 
+    callback_slider_test = bokeh.models.CustomJS(args=dict(source_img=source_img, line_position=line_position, source_imgs_norm=source_imgs_norm, 
                                                            dropdown_channel=dropdown_channel, source_intensity_ch1=source_intensity_ch1,
     #                                                       image_stack_rois_dict=image_stack_rois_dict, dropdown_pos=dropdown_pos,
     #                                                       image_stack_cells_dict=image_stack_cells_dict, image_stack_labels_dict=image_stack_labels_dict,
@@ -2788,7 +2788,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                                            source_labels=source_labels, source_cells=source_cells), code="""
         var index     = cb_obj.value;
         var channel   = parseInt(dropdown_channel.value);
-        var new_image = images.data['images'][channel][index];
+        var new_image = source_imgs_norm.data['images'][channel][index];
         source_img.data['img'][0] = new_image;
 
         if (source_intensity_ch1.data['time'].length === 0) {
@@ -2797,7 +2797,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             line_position.location = source_intensity_ch1.data['time'][index];
         }
 
-        
+        console.log('source_rois_full.data',source_rois_full.data)
         source_roi.data['left']   = source_rois_full.data['left'][index];
         source_roi.data['right']  = source_rois_full.data['right'][index];
         source_roi.data['top']    = source_rois_full.data['top'][index];
@@ -2817,9 +2817,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         //source_cells.change.emit();
 
         """)
-    #slider.js_on_change('value', callback_slider_test)
+    slider.js_on_change('value', callback_slider_test)
     #PYTHON
-    slider.on_change('value', callback_slider)
+    #slider.on_change('value', callback_slider)
 
 
 
