@@ -1191,9 +1191,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     initial_position=-9999
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
 
-    source_roi  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
-    source_labels = bokeh.models.ColumnDataSource(data=dict(height=height_labels,weight=weight_labels,names=names_labels))
-    source_cells = bokeh.models.ColumnDataSource(data=dict(height=height_cells,weight=weight_cells,names=names_cells))
+    source_roi    = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
+    source_labels = bokeh.models.ColumnDataSource(data=dict(height=[],weight=[],names=[]))
+    source_cells  = bokeh.models.ColumnDataSource(data=dict(height=[],weight=[],names=[]))
 
     start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
     end_oscillation_position   = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
