@@ -1579,7 +1579,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Create a Slider widget
     initial_time_point = 0
     slider         = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point", width=250)
-    #slider_test    = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point", width=325)
+    slider_test    = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point", width=325)
 
     x_range = bokeh.models.Range1d(start=0, end=ind_images_list[0][0].shape[0])
     y_range = bokeh.models.Range1d(start=0, end= ind_images_list[0][0].shape[1])
@@ -2786,14 +2786,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                                            dropdown_channel=dropdown_channel, source_intensity_ch1=source_intensity_ch1,
     #                                                       image_stack_rois_dict=image_stack_rois_dict, dropdown_pos=dropdown_pos,
     #                                                       image_stack_cells_dict=image_stack_cells_dict, image_stack_labels_dict=image_stack_labels_dict,
-                                                           source_roi=source_roi, source_labels=source_labels, source_cells=source_cells), code="""
+                                                           source_roi=source_roi, source_rois_full=source_rois_full,
+                                                           source_labels=source_labels, source_cells=source_cells), code="""
         var index     = cb_obj.value;
         var channel   = parseInt(dropdown_channel.value);
         var new_image = images.data['images'][channel][index];
-                                                 
-        var current_file = dropdown_pos.value.split(' - ')[0];
-        
-
         source_img.data['img'][0] = new_image;
 
         if (source_intensity_ch1.data['time'].length === 0) {
@@ -2802,34 +2799,27 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             line_position.location = source_intensity_ch1.data['time'][index];
         }
 
-        //line_position.location = source_intensity_ch1.data['time'][index];
-        var file_name = current_file
-        console.log("current_file:", current_file);
-        console.log("file_name:", file_name);
-        console.log("data0:",image_stack_rois_dict);
-        console.log("data1:",image_stack_rois_dict[file_name]);
-        console.log("data2:",image_stack_rois_dict[file_name][String(index)]);
-
-        source_roi.data['left']   = image_stack_rois_dict[current_file][String(index)]['left'];
-        source_roi.data['right']  = image_stack_rois_dict[current_file][String(index)]['right'];
-        source_roi.data['top']    = image_stack_rois_dict[current_file][String(index)]['top'];
-        source_roi.data['bottom'] = image_stack_rois_dict[current_file][String(index)]['bottom'];
-
-        source_labels.data['height'] = image_stack_labels_dict[current_file][String(index)]['height']
-        source_labels.data['weight'] = image_stack_labels_dict[current_file][String(index)]['weight']
-        source_labels.data['names']  = image_stack_labels_dict[current_file][String(index)]['names']
         
-        source_cells.data['height'] = image_stack_cells_dict[current_file][String(index)]['height']
-        source_cells.data['weight'] = image_stack_cells_dict[current_file][String(index)]['weight']
-        source_cells.data['names']  = image_stack_cells_dict[current_file][String(index)]['names']
+        source_roi.data['left']   = source_rois_full.data['left'][index];
+        source_roi.data['right']  = source_rois_full.data['right'][index];
+        source_roi.data['top']    = source_rois_full.data['top'][index];
+        source_roi.data['bottom'] = source_rois_full.data['bottom'][index];
+
+        //source_labels.data['height'] = image_stack_labels_dict[current_file][String(index)]['height']
+        //source_labels.data['weight'] = image_stack_labels_dict[current_file][String(index)]['weight']
+        //source_labels.data['names']  = image_stack_labels_dict[current_file][String(index)]['names']
+        
+        //source_cells.data['height'] = image_stack_cells_dict[current_file][String(index)]['height']
+        //source_cells.data['weight'] = image_stack_cells_dict[current_file][String(index)]['weight']
+        //source_cells.data['names']  = image_stack_cells_dict[current_file][String(index)]['names']
 
         source_img.change.emit();
         source_roi.change.emit();
-        source_labels.change.emit();
-        source_cells.change.emit();
+        //source_labels.change.emit();
+        //source_cells.change.emit();
 
         """)
-    #slider_test.js_on_change('value', callback_slider_test)
+    slider_test.js_on_change('value', callback_slider_test)
 
 
 
@@ -4338,7 +4328,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          )
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
-                                     #bokeh.layouts.row(slider_test),
+                                     bokeh.layouts.row(slider_test),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_cell ),
                                      bokeh.layouts.row(button_inspect, button_build_cells, button_delete_cell),
