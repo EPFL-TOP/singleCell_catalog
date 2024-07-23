@@ -2731,7 +2731,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if (source_intensity_ch1.data['time'].length === 0) {
             line_position.location = -999;
         } else {
-            line_position.location = source_intensity_ch1.data['time'][time_point];
+            line_position.location = source_intensity_ch1.data['time'][index];
         }
 
         //line_position.location = source_intensity_ch1.data['time'][index];
