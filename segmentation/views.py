@@ -1579,7 +1579,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Create a Slider widget
     initial_time_point = 0
     slider         = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point", width=250)
-    slider_test    = bokeh.models.Slider(start=0, end=len(ind_images_list[0]) - 1, value=initial_time_point, step=1, title="Time Point", width=325)
 
     x_range = bokeh.models.Range1d(start=0, end=ind_images_list[0][0].shape[0])
     y_range = bokeh.models.Range1d(start=0, end= ind_images_list[0][0].shape[1])
@@ -2778,7 +2777,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #update_source_segment(time_point)
         #roi_diff(time_point)
 
-    slider.on_change('value', callback_slider)
     #___________________________________________________________________________________________
     
 
@@ -2819,7 +2817,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         //source_cells.change.emit();
 
         """)
-    slider_test.js_on_change('value', callback_slider_test)
+    #slider.js_on_change('value', callback_slider_test)
+    #PYTHON
+    slider.on_change('value', callback_slider)
 
 
 
@@ -3026,16 +3026,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def update_image(way=1, number=-9999):
         if DEBUG:print('****************************  update_image ****************************')
         current_index=get_current_index()
-        #images=source_imgs.data["images"]
         current_index = (current_index + 1*way) % len(source_imgs.data["images"][0])
-        #if current_index>slider_test.end:current_index=slider_test.start
-        #if current_index<slider_test.start:current_index=slider_test.end
         if current_index>slider.end:current_index=slider.start
         if current_index<slider.start:current_index=slider.end
 
         if number>=0:
             current_index = number
-#        slider_test.value = current_index
         slider.value = current_index
         if len(source_intensity_ch1.data["time"])==0:
             line_position.location = -999
@@ -4328,7 +4324,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          )
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
-                                     bokeh.layouts.row(slider_test),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_cell ),
                                      bokeh.layouts.row(button_inspect, button_build_cells, button_delete_cell),
