@@ -1388,9 +1388,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for frame in frames:
             rois   = CellROI.objects.select_related().filter(frame=frame)
 
-            image_stack_rois_dict[file_name][str(frame.number)]   = {'left':[], 'right':[], 'top':[], 'bottom':[]}
-            image_stack_labels_dict[file_name][frame.number] = {'height':[],'weight':[],'names':[]}
-            image_stack_cells_dict[file_name][frame.number]  = {'height':[],'weight':[],'names':[]}
+            image_stack_rois_dict[file_name][str(frame.number)] = {'left':[], 'right':[], 'top':[], 'bottom':[]}
+            image_stack_labels_dict[file_name][frame.number]    = {'height':[],'weight':[],'names':[]}
+            image_stack_cells_dict[file_name][frame.number]     = {'height':[],'weight':[],'names':[]}
             for roi in rois:
                 image_stack_rois_dict[file_name][str(frame.number)]['left'].append(roi.min_col)
                 image_stack_rois_dict[file_name][str(frame.number)]['right'].append(roi.max_col)
@@ -1430,7 +1430,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         current_pos_list=[]
         current_file_list=[]
-        for n in range(-1, number+1):
+        for n in range(-number+1, number+2):
             if n==0:continue
             current_file = get_current_file(index=n)
             current_file_list.append(current_file)
@@ -1445,6 +1445,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             else:
                 if image_stack_dict[k]!=None:
                     image_stack_dict[k]=None
+
+        current_pos_list=[]
+        current_file_list=[]
+        for n in range(-number+1, number+2):
+            current_file = get_current_file(index=n)
+            current_file_list.append(current_file)
+            current_pos_list.append(os.path.split(current_file)[1])
 
         for k in image_stack_rois_dict:
             if k in current_pos_list:
@@ -2722,12 +2729,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     callback_slider_test = bokeh.models.CustomJS(args=dict(source_img=source_img, line_position=line_position, images=source_imgs_norm, 
                                                            dropdown_channel=dropdown_channel, source_intensity_ch1=source_intensity_ch1,
-                                                           image_stack_rois_dict=image_stack_rois_dict, current_file=os.path.split(get_current_file())[1], 
+                                                           image_stack_rois_dict=image_stack_rois_dict, 
                                                            source_roi=source_roi), code="""
         var index     = cb_obj.value;
         var channel   = parseInt(dropdown_channel.value);
         var new_image = images.data['images'][channel][index];
                                                  
+        var current_file = dropdown_pos.value.split(' - ')[0];
+        
+
         source_img.data['img'][0] = new_image;
         line_position.location = source_intensity_ch1.data['time'][index];
         var file_name = current_file
