@@ -2781,7 +2781,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_cells.change.emit();
 
         """)
-    slider_test.js_on_change('value', callback_slider_test)
+    #slider_test.js_on_change('value', callback_slider_test)
 
 
 
@@ -2990,12 +2990,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_index=get_current_index()
         #images=source_imgs.data["images"]
         current_index = (current_index + 1*way) % len(source_imgs.data["images"][0])
-        if current_index>slider_test.end:current_index=slider_test.start
-        if current_index<slider_test.start:current_index=slider_test.end
+        #if current_index>slider_test.end:current_index=slider_test.start
+        #if current_index<slider_test.start:current_index=slider_test.end
+        if current_index>slider.end:current_index=slider.start
+        if current_index<slider.start:current_index=slider.end
 
         if number>=0:
             current_index = number
-        slider_test.value = current_index
+#        slider_test.value = current_index
+        slider.value = current_index
         if len(source_intensity_ch1.data["time"])==0:
             line_position.location = -999
         else:
@@ -4287,7 +4290,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          )
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
-                                     bokeh.layouts.row(slider_test),
+                                     #bokeh.layouts.row(slider_test),
                                      bokeh.layouts.row(button_play_stop, button_prev, button_next, dropdown_refresh_time ),
                                      bokeh.layouts.row(button_delete_roi, button_save_roi, dropdown_cell ),
                                      bokeh.layouts.row(button_inspect, button_build_cells, button_delete_cell),
