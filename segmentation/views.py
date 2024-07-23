@@ -2629,18 +2629,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             else:names_cells.append("none")
         if DEBUG:print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
-        image_stack_rois_dict[os.path.split(current_file)[1]][frame.number]['left']   = left_rois
-        image_stack_rois_dict[os.path.split(current_file)[1]][frame.number]['right']  = right_rois
-        image_stack_rois_dict[os.path.split(current_file)[1]][frame.number]['top']    = top_rois
-        image_stack_rois_dict[os.path.split(current_file)[1]][frame.number]['bottom'] = bottom_rois
+        image_stack_rois_dict[os.path.split(current_file)[1]][frame[0].number]['left']   = left_rois
+        image_stack_rois_dict[os.path.split(current_file)[1]][frame[0].number]['right']  = right_rois
+        image_stack_rois_dict[os.path.split(current_file)[1]][frame[0].number]['top']    = top_rois
+        image_stack_rois_dict[os.path.split(current_file)[1]][frame[0].number]['bottom'] = bottom_rois
 
-        image_stack_labels_dict[os.path.split(current_file)[1]][frame.number]['height'] = height_labels
-        image_stack_labels_dict[os.path.split(current_file)[1]][frame.number]['weight'] = weight_labels
-        image_stack_labels_dict[os.path.split(current_file)[1]][frame.number]['name']   = names_labels
+        image_stack_labels_dict[os.path.split(current_file)[1]][frame[0].number]['height'] = height_labels
+        image_stack_labels_dict[os.path.split(current_file)[1]][frame[0].number]['weight'] = weight_labels
+        image_stack_labels_dict[os.path.split(current_file)[1]][frame[0].number]['name']   = names_labels
 
-        image_stack_cells_dict[os.path.split(current_file)[1]][frame.number]['height'] = height_cells
-        image_stack_cells_dict[os.path.split(current_file)[1]][frame.number]['weight'] = weight_cells
-        image_stack_cells_dict[os.path.split(current_file)[1]][frame.number]['name']   = names_cells
+        image_stack_cells_dict[os.path.split(current_file)[1]][frame[0].number]['height'] = height_cells
+        image_stack_cells_dict[os.path.split(current_file)[1]][frame[0].number]['weight'] = weight_cells
+        image_stack_cells_dict[os.path.split(current_file)[1]][frame[0].number]['name']   = names_cells
 
         return left_rois,right_rois,top_rois,bottom_rois, height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells
     #___________________________________________________________________________________________
