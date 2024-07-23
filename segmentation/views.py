@@ -4039,7 +4039,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
 
     source_roi_manual  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
-    fill_rois(dropdown_well.value)
+    #fill_rois(dropdown_well.value)
 
     left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
     source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
