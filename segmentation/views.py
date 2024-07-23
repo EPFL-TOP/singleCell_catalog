@@ -1288,7 +1288,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_pos = dropdown_pos.options.index(dropdown_pos.value)
         next_pos    = (current_pos + 1) % len(dropdown_pos.options)
         dropdown_pos.value = dropdown_pos.options[next_pos]
-
     next_position_button = bokeh.models.Button(label="Next pos")
     next_position_button.on_click(next_position_callback)
     #___________________________________________________________________________________________
@@ -1483,7 +1482,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #if image_stack_cells_dict[current_pos]==None:
         #    fill_rois_pos(current_file)
         print_time('------- get_current_stack ', local_time)
-
+        print('source_rois_full--  ',source_rois_full)
         return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
     #___________________________________________________________________________________________
 
