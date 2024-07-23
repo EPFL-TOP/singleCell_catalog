@@ -1391,8 +1391,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             rois   = CellROI.objects.select_related().filter(frame=frame)
 
             image_stack_rois_dict[file_name][str(frame.number)] = {'left':[], 'right':[], 'top':[], 'bottom':[]}
-            image_stack_labels_dict[file_name][frame.number]    = {'height':[],'weight':[],'names':[]}
-            image_stack_cells_dict[file_name][frame.number]     = {'height':[],'weight':[],'names':[]}
+            image_stack_labels_dict[file_name][str(frame.number)]    = {'height':[],'weight':[],'names':[]}
+            image_stack_cells_dict[file_name][str(frame.number)]     = {'height':[],'weight':[],'names':[]}
             for roi in rois:
                 image_stack_rois_dict[file_name][str(frame.number)]['left'].append(roi.min_col)
                 image_stack_rois_dict[file_name][str(frame.number)]['right'].append(roi.max_col)
