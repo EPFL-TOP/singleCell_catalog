@@ -2727,7 +2727,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         
 
         source_img.data['img'][0] = new_image;
-        line_position.location = source_intensity_ch1.data['time'][index];
+
+        if (source_intensity_ch1.data['time'].length === 0) {
+            line_position.location = -999;
+        } else {
+            line_position.location = source_intensity_ch1.data['time'][time_point];
+        }
+
+        //line_position.location = source_intensity_ch1.data['time'][index];
         var file_name = current_file
         //console.log("current_file:", current_file);
         //console.log("file_name:", file_name);
@@ -2757,21 +2764,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     slider_test.js_on_change('value', callback_slider_test)
 
 
-# CustomJS callback
-#callback = CustomJS(args=dict(image_source=image_source, roi_source=roi_source, images=images, roi_data=roi_data, select=select), code="""
-#    var index = cb_obj.value;
-#    var channel = parseInt(select.value);
-#    var new_image = images[index][channel];
-#    var new_roi = roi_data[index];
-#
-#    image_source.data['image'][0] = new_image;
-#    roi_source.data['x'] = new_roi['x'];
-#    roi_source.data['y'] = new_roi['y'];
-#    roi_source.data['label'] = new_roi['label'];
-#    
-#    image_source.change.emit();
-#    roi_source.change.emit();
-#""")
 
 
     #___________________________________________________________________________________________
