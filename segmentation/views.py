@@ -2590,9 +2590,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         current_file_name=os.path.split(current_file)[1]
         current_frame_name =    str(frame[0].number)
-        print(image_stack_labels_dict)
-        print('--',os.path.split(current_file)[1])
-        print(image_stack_labels_dict[current_file_name])
+
 
 
         image_stack_rois_dict[current_file_name][current_frame_name]['left']   = left_rois
@@ -2757,8 +2755,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         source_img.change.emit();
         source_roi.change.emit();
-        source_labels.emit();
-        source_cells.emit();
+        source_labels.change.emit();
+        source_cells.change.emit();
 
         """)
     slider_test.js_on_change('value', callback_slider_test)
