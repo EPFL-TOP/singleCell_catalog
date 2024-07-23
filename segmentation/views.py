@@ -2630,11 +2630,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
 
+        current_file_name=os.path.split(current_file)[1]
+        current_frame_name =    str(frame[0].number)
+        print(image_stack_rois_dict)
+        print('--',os.path.split(current_file)[1])
+        print(image_stack_rois_dict[current_file_name])
 
-        image_stack_rois_dict[os.path.split(current_file)[1]][str(frame[0].number)]['left']   = left_rois
-        image_stack_rois_dict[os.path.split(current_file)[1]][str(frame[0].number)]['right']  = right_rois
-        image_stack_rois_dict[os.path.split(current_file)[1]][str(frame[0].number)]['top']    = top_rois
-        image_stack_rois_dict[os.path.split(current_file)[1]][str(frame[0].number)]['bottom'] = bottom_rois
+
+        image_stack_rois_dict[current_file_name][current_frame_name]['left']   = left_rois
+        image_stack_rois_dict[current_file_name][current_frame_name]['right']  = right_rois
+        image_stack_rois_dict[current_file_name][current_frame_name]['top']    = top_rois
+        image_stack_rois_dict[current_file_name][current_frame_name]['bottom'] = bottom_rois
 
         image_stack_labels_dict[os.path.split(current_file)[1]][str(frame[0].number)]['height'] = height_labels
         image_stack_labels_dict[os.path.split(current_file)[1]][str(frame[0].number)]['weight'] = weight_labels
