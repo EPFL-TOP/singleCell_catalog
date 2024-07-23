@@ -1493,11 +1493,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 bottom_rois.append(frame.height-roi.max_row)
 
                 weight_labels.append(roi.min_col)
-                height_labels.append(frame[0].height-roi.min_row)
+                height_labels.append(frame.height-roi.min_row)
                 names_labels.append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
 
                 weight_cells.append(roi.min_col)
-                height_cells.append(frame[0].height-roi.max_row)
+                height_cells.append(frame.height-roi.max_row)
                 if roi.cell_id !=None: names_cells.append(roi.cell_id.name)
                 else:names_cells.append("none")
 
