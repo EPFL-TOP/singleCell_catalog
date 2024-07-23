@@ -1460,10 +1460,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         
         sample = Sample.objects.get(file_name=current_file)
         frames = Frame.objects.select_related().filter(sample=sample)
-        source_rois_full.data['left'] = [ [] for f in len(frames)]
-        source_rois_full.data['right'] = [ [] for f in len(frames)]
-        source_rois_full.data['top'] = [ [] for f in len(frames)]
-        source_rois_full.data['bottom'] = [ [] for f in len(frames)]
+        source_rois_full.data['left'] = [ [] for f in range(len(frames))]
+        source_rois_full.data['right'] = [ [] for f in range(len(frames))]
+        source_rois_full.data['top'] = [ [] for f in range(len(frames))]
+        source_rois_full.data['bottom'] = [ [] for f in range(len(frames))]
         for frame in frames:
             rois   = CellROI.objects.select_related().filter(frame=frame)
             left_rois=[]
