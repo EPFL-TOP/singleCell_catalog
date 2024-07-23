@@ -1145,9 +1145,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     positions={}
     files={}
     image_stack_dict={}
-    image_stack_labels_dict={}
-    image_stack_rois_dict={}
-    image_stack_cells_dict={}
+    #image_stack_labels_dict={}
+    #image_stack_rois_dict={}
+    #image_stack_cells_dict={}
 
     flags_dict = {'mask':0,
                   'dividing':50,
@@ -1184,9 +1184,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
         image_stack_dict[pos]=None
-        image_stack_rois_dict[pos]=None
-        image_stack_labels_dict[pos]=None
-        image_stack_cells_dict[pos]=None
+        #image_stack_rois_dict[pos]=None
+        #image_stack_labels_dict[pos]=None
+        #image_stack_cells_dict[pos]=None
 
     initial_position=-9999
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
@@ -1247,6 +1247,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_osc_period_line = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
 
     source_test_dead = bokeh.models.ColumnDataSource(data=dict(top=[], left=[], right=[]))
+
+    source_rois_full = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
 
     ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
 
@@ -1456,6 +1458,28 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
             image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
         
+        sample = Sample.objects.get(file_name=current_file)
+        frames = Frame.objects.select_related().filter(sample=sample)
+        source_rois_full.data['left'] = [ [] for f in len(frames)]
+        source_rois_full.data['right'] = [ [] for f in len(frames)]
+        source_rois_full.data['top'] = [ [] for f in len(frames)]
+        source_rois_full.data['bottom'] = [ [] for f in len(frames)]
+        for frame in frames:
+            rois   = CellROI.objects.select_related().filter(frame=frame)
+            left_rois=[]
+            right_rois=[]
+            top_rois=[]
+            bottom_rois=[]
+            for roi in rois:
+                left_rois.append(roi.min_col)
+                right_rois.append(roi.max_col)
+                top_rois.append(frame.height-roi.min_row)
+                bottom_rois.append(frame.height-roi.max_row)
+        
+            source_rois_full.data['left'][frame.number]=left_rois
+            source_rois_full.data['right'][frame.number]=right_rois
+            source_rois_full.data['top'][frame.number]=top_rois
+            source_rois_full.data['bottom'][frame.number]=bottom_rois
         #if image_stack_cells_dict[current_pos]==None:
         #    fill_rois_pos(current_file)
         print_time('------- get_current_stack ', local_time)
@@ -1527,6 +1551,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #list of all images for all channels
     data_imgs_norm={'images':ind_images_list_norm}
     source_imgs_norm = bokeh.models.ColumnDataSource(data=data_imgs_norm)
+
+
+
 
    #current image to be displayed
     data_img={'img':[data_imgs_norm['images'][0][0]]}
@@ -2188,16 +2215,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:print('****************************  update_dropdown_pos ****************************')
 
         image_stack_dict.clear
-        image_stack_rois_dict.clear
-        image_stack_labels_dict.clear
-        image_stack_cells_dict.clear
+        #image_stack_rois_dict.clear
+        #image_stack_labels_dict.clear
+        #image_stack_cells_dict.clear
         for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
             image_stack_dict[pos]        = None
-            image_stack_rois_dict[pos]   = None
-            image_stack_labels_dict[pos] = None
-            image_stack_cells_dict[pos]  = None
+            #image_stack_rois_dict[pos]   = None
+            #image_stack_labels_dict[pos] = None
+            #image_stack_cells_dict[pos]  = None
 
-        fill_rois(dropdown_well.value)
+        #fill_rois(dropdown_well.value)
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value   = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
 
@@ -2221,7 +2248,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         slider.end=len(source_imgs.data['images'][0]) - 1
         #CLEMENT TEST TIME
         update_source_osc_tod()
-
 
         #slider_find_peaks.value = 30
     dropdown_well.on_change('value', update_dropdown_pos)
@@ -2705,7 +2731,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img.data = {'img':[source_imgs_norm.data['images'][int(dropdown_channel.value)][time_point]]}
         #source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
-        left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
+        #left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         #current_file = os.path.split(get_current_file())[1]
         #source_roi.data    = {'left': image_stack_rois_dict[current_file][str(time_point)]['left'], 
         #                      'right': image_stack_rois_dict[current_file][str(time_point)]['right'], 
@@ -2719,19 +2745,32 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #source_cells.data  = {'height':image_stack_cells_dict[current_file][str(time_point)]['height'], 
         #                      'weight':image_stack_cells_dict[current_file][str(time_point)]['weight'], 
         #                      'names':image_stack_cells_dict[current_file][str(time_point)]['names']}
-        source_roi.data    = {'left': left_rois, 
-                              'right': right_rois, 
-                              'top': top_rois, 
-                              'bottom': bottom_rois}
+        #source_roi.data    = {'left': left_rois, 
+        #                      'right': right_rois, 
+        #                      'top': top_rois, 
+        #                      'bottom': bottom_rois}
         
-        source_labels.data = {'height':height_labels,
-                              'weight':weight_labels, 
-                              'names':names_labels}
+        #source_labels.data = {'height':height_labels,
+        #                      'weight':weight_labels, 
+        #                      'names':names_labels}
         
-        source_cells.data  = {'height':height_cells, 
-                              'weight':weight_cells, 
-                              'names':names_cells}
+        #source_cells.data  = {'height':height_cells, 
+        #                      'weight':weight_cells, 
+        #                      'names':names_cells}
 
+        source_roi.data    = {'left': source_rois_full['left'][time_point], 
+                              'right': source_rois_full['right'][time_point], 
+                              'top': source_rois_full['top'][time_point], 
+                              'bottom': source_rois_full['bottom'][time_point]}
+        
+        #source_labels.data = {'height':height_labels,
+        #                      'weight':weight_labels, 
+        #                      'names':names_labels}
+        
+        #source_cells.data  = {'height':height_cells, 
+        #                      'weight':weight_cells, 
+        #                      'names':names_cells}
+        
         if len(source_intensity_ch1.data["time"])==0:
             line_position.location = -999
         else:
