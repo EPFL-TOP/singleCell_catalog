@@ -2615,8 +2615,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_file_name=os.path.split(current_file)[1]
         current_frame_name =    str(frame[0].number)
 
-
-
         image_stack_rois_dict[current_file_name][current_frame_name]['left']   = left_rois
         image_stack_rois_dict[current_file_name][current_frame_name]['right']  = right_rois
         image_stack_rois_dict[current_file_name][current_frame_name]['top']    = top_rois
@@ -3989,10 +3987,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
 
-    left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
     source_roi_manual  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
+    fill_rois(dropdown_well.value)
 
-
+    left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
     source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
     source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
     source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
