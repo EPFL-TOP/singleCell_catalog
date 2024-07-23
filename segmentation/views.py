@@ -1399,14 +1399,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 image_stack_rois_dict[file_name][str(frame.number)]['top'].append(frame.height-roi.min_row)
                 image_stack_rois_dict[file_name][str(frame.number)]['bottom'].append(frame.height-roi.max_row)
 
-                image_stack_labels_dict[file_name][frame.number]['weight'].append(roi.min_col)
-                image_stack_labels_dict[file_name][frame.number]['height'].append(frame.height-roi.min_row)
-                image_stack_labels_dict[file_name][frame.number]['names'].append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
+                image_stack_labels_dict[file_name][str(frame.number)]['weight'].append(roi.min_col)
+                image_stack_labels_dict[file_name][str(frame.number)]['height'].append(frame.height-roi.min_row)
+                image_stack_labels_dict[file_name][str(frame.number)]['names'].append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
 
-                image_stack_cells_dict[file_name][frame.number]['weight'].append(roi.min_col)
-                image_stack_cells_dict[file_name][frame.number]['height'].append(frame.height-roi.max_row)
-                if roi.cell_id !=None: image_stack_cells_dict[file_name][frame.number]['names'].append(roi.cell_id.name)
-                else:image_stack_cells_dict[file_name][frame.number]['names'].append("none")
+                image_stack_cells_dict[file_name][str(frame.number)]['weight'].append(roi.min_col)
+                image_stack_cells_dict[file_name][str(frame.number)]['height'].append(frame.height-roi.max_row)
+                if roi.cell_id !=None: image_stack_cells_dict[file_name][str(frame.number)]['names'].append(roi.cell_id.name)
+                else:image_stack_cells_dict[file_name][str(frame.number)]['names'].append("none")
 
     #___________________________________________________________________________________________
     # Function to get the image stack
@@ -2160,48 +2160,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-
-    #___________________________________________________________________________________________
-    def fill_rois():
-
-        expds = ExperimentalDataset.objects.get(data_name=dropdown_well.value)
-        samples = Sample.objects.select_related().filter(experimental_dataset=expds)
-
-        for sample in samples:
-            file_name = os.path.split(sample.file_name)[1]
-            if image_stack_rois_dict[file_name]!=None: continue
-            image_stack_rois_dict[file_name]={}
-            image_stack_labels_dict[file_name]={}
-            image_stack_cells_dict[file_name]={}
-            
-
-
-            frames    = Frame.objects.select_related().filter(sample=sample)
-            for frame in frames:
-                rois   = CellROI.objects.select_related().filter(frame=frame)
-
-                image_stack_rois_dict[file_name][str(frame.number)]   = {'left':[], 'right':[], 'top':[], 'bottom':[]}
-                image_stack_labels_dict[file_name][frame.number] = {'height':[],'weight':[],'names':[]}
-                image_stack_cells_dict[file_name][frame.number]  = {'height':[],'weight':[],'names':[]}
-                for roi in rois:
-                    image_stack_rois_dict[file_name][str(frame.number)]['left'].append(roi.min_col)
-                    image_stack_rois_dict[file_name][str(frame.number)]['right'].append(roi.max_col)
-                    image_stack_rois_dict[file_name][str(frame.number)]['top'].append(frame.height-roi.min_row)
-                    image_stack_rois_dict[file_name][str(frame.number)]['bottom'].append(frame.height-roi.max_row)
-
-                    image_stack_labels_dict[file_name][frame.number]['weight'].append(roi.min_col)
-                    image_stack_labels_dict[file_name][frame.number]['height'].append(frame.height-roi.min_row)
-                    image_stack_labels_dict[file_name][frame.number]['names'].append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
-
-                    image_stack_cells_dict[file_name][frame.number]['weight'].append(roi.min_col)
-                    image_stack_cells_dict[file_name][frame.number]['height'].append(frame.height-roi.max_row)
-                    if roi.cell_id !=None: image_stack_cells_dict[file_name][frame.number]['names'].append(roi.cell_id.name)
-                    else:image_stack_cells_dict[file_name][frame.number]['names'].append("none")
-
-    #___________________________________________________________________________________________
-
-
-
     #___________________________________________________________________________________________
     # Function to update the position depending on the experiment and the well
     def update_dropdown_pos(attr, old, new):
@@ -2642,13 +2600,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         image_stack_rois_dict[current_file_name][current_frame_name]['top']    = top_rois
         image_stack_rois_dict[current_file_name][current_frame_name]['bottom'] = bottom_rois
 
-        image_stack_labels_dict[current_file_name][frame[0].number]['height'] = height_labels
-        image_stack_labels_dict[current_file_name][frame[0].number]['weight'] = weight_labels
-        image_stack_labels_dict[current_file_name][frame[0].number]['name']   = names_labels
+        image_stack_labels_dict[current_file_name][current_frame_name]['height'] = height_labels
+        image_stack_labels_dict[current_file_name][current_frame_name]['weight'] = weight_labels
+        image_stack_labels_dict[current_file_name][current_frame_name]['name']   = names_labels
 
-        image_stack_cells_dict[current_file_name][frame[0].number]['height'] = height_cells
-        image_stack_cells_dict[current_file_name][frame[0].number]['weight'] = weight_cells
-        image_stack_cells_dict[current_file_name][frame[0].number]['name']   = names_cells
+        image_stack_cells_dict[current_file_name][current_frame_name]['height'] = height_cells
+        image_stack_cells_dict[current_file_name][current_frame_name]['weight'] = weight_cells
+        image_stack_cells_dict[current_file_name][current_frame_name]['name']   = names_cells
 
         return left_rois,right_rois,top_rois,bottom_rois, height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells
     #___________________________________________________________________________________________
@@ -2733,12 +2691,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         current_file = os.path.split(get_current_file())[1]
-        source_roi.data    = {'left': image_stack_rois_dict[current_file][time_point]['left'], 
-                              'right': image_stack_rois_dict[current_file][time_point]['right'], 
-                              'top': image_stack_rois_dict[current_file][time_point]['top'], 
-                              'bottom': image_stack_rois_dict[current_file][time_point]['bottom']}
-        source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
-        source_cells.data  = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+        source_roi.data    = {'left': image_stack_rois_dict[current_file][str(time_point)]['left'], 
+                              'right': image_stack_rois_dict[current_file][str(time_point)]['right'], 
+                              'top': image_stack_rois_dict[current_file][str(time_point)]['top'], 
+                              'bottom': image_stack_rois_dict[current_file][str(time_point)]['bottom']}
+        
+        source_labels.data = {'height':image_stack_labels_dict[current_file][str(time_point)]['height'],
+                              'weight':image_stack_labels_dict[current_file][str(time_point)]['weight'], 
+                              'names':image_stack_labels_dict[current_file][str(time_point)]['names']}
+        
+        source_cells.data  = {'height':image_stack_cells_dict[current_file][str(time_point)]['height'], 
+                              'weight':image_stack_cells_dict[current_file][str(time_point)]['weight'], 
+                              'names':image_stack_cells_dict[current_file][str(time_point)]['names']}
         if len(source_intensity_ch1.data["time"])==0:
             line_position.location = -999
         else:
@@ -2771,18 +2735,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         //console.log("data1:",image_stack_rois_dict[file_name]);
         //console.log("data2:",image_stack_rois_dict[file_name][String(index)]);
 
-        source_roi.data['left']   = image_stack_rois_dict[current_file][index]['left'];
-        source_roi.data['right']  = image_stack_rois_dict[current_file][index]['right'];
-        source_roi.data['top']    = image_stack_rois_dict[current_file][index]['top'];
-        source_roi.data['bottom'] = image_stack_rois_dict[current_file][index]['bottom'];
+        source_roi.data['left']   = image_stack_rois_dict[current_file][String(index)]['left'];
+        source_roi.data['right']  = image_stack_rois_dict[current_file][String(index)]['right'];
+        source_roi.data['top']    = image_stack_rois_dict[current_file][String(index)]['top'];
+        source_roi.data['bottom'] = image_stack_rois_dict[current_file][String(index)]['bottom'];
 
-        source_labels.data['height'] = image_stack_labels_dict[current_file][index]['height']
-        source_labels.data['weight'] = image_stack_labels_dict[current_file][index]['weight']
-        source_labels.data['names']  = image_stack_labels_dict[current_file][index]['names']
+        source_labels.data['height'] = image_stack_labels_dict[current_file][String(index)]['height']
+        source_labels.data['weight'] = image_stack_labels_dict[current_file][String(index)]['weight']
+        source_labels.data['names']  = image_stack_labels_dict[current_file][String(index)]['names']
         
-        source_cells.data['height'] = image_stack_cells_dict[current_file][index]['height']
-        source_cells.data['weight'] = image_stack_cells_dict[current_file][index]['weight']
-        source_cells.data['names']  = image_stack_cells_dict[current_file][index]['names']
+        source_cells.data['height'] = image_stack_cells_dict[current_file][String(index)]['height']
+        source_cells.data['weight'] = image_stack_cells_dict[current_file][String(index)]['weight']
+        source_cells.data['names']  = image_stack_cells_dict[current_file][String(index)]['names']
 
         source_img.change.emit();
         source_roi.change.emit();
@@ -3543,45 +3507,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     tod_checkbox   = bokeh.models.CheckboxGroup(labels=["All", "Keep", "Don't keep"], active=[1,0,0])
-    ##tod_checkbox_keep  = bokeh.models.CheckboxGroup(labels=["Keep"], active=[0])
-    ##tod_checkbox_dkeep = bokeh.models.CheckboxGroup(labels=["Don't keep"], active=[0])
-
-    ## Define a wrapper function to invoke the Python callback
-    #def checkbox_tod_callback_wrapper(checkbox_status):
-    #    update_source_osc_tod(checkbox_status)
-
-    ## Define a CustomJS callback to trigger the Python callback
-    #checkbox_tod_callback = bokeh.models.CustomJS(args=dict(checkbox=tod_checkbox), code="""
-    #    const checkbox_status = checkbox.active.map(i => i === 0);
-    #    // Trigger the Python callback with the checkbox statuses
-    #    checkbox_tod_callback_wrapper(checkbox_status);
-    #""")
-
-    ## Attach the CustomJS callback to each checkbox
-    #tod_checkbox.js_on_change('active',checkbox_tod_callback)
-    ##tod_checkbox_keep.js_on_click(checkbox_tod_callback)
-    ##tod_checkbox_dkeep.js_on_click(checkbox_tod_callback)
-
-    #checkbox_labels=["All", "Keep", "Don't keep"]
-    #tod_checkbox   = bokeh.models.CheckboxGroup(labels=["All", "Keep", "Don't keep"], active=[1,0,0])
-
-    ## Create a CustomJS callback for each checkbox
-    #checkbox_callbacks = []
-    #for i, label in enumerate(checkbox_labels):
-    #    callback_code = f"""
-    #        const checkbox_status = checkbox.active.includes({i});
-    #        // Trigger the Python callback with the checkbox status
-    #        update_source_osc_tod(checkbox_status);
-    #    """
-    #    callback = bokeh.models.CustomJS(args=dict(checkbox=tod_checkbox), code=callback_code)
-    #    checkbox_callbacks.append(callback)
-
-    ## Attach the CustomJS callbacks to the checkboxes
-    #for i, callback in enumerate(checkbox_callbacks):
-    #    tod_checkbox.js_property_callbacks['active'].append(callback)
-
-
-
 
 
 
@@ -4053,6 +3978,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
     source_roi_manual  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
 
+
+    source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
+    source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
+    source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
 
 
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
