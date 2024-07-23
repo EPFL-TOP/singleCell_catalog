@@ -2629,6 +2629,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             else:names_cells.append("none")
         if DEBUG:print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
+        print(image_stack_rois_dict)
+        print('--',os.path.split(current_file)[1])
+
         image_stack_rois_dict[os.path.split(current_file)[1]][frame[0].number]['left']   = left_rois
         image_stack_rois_dict[os.path.split(current_file)[1]][frame[0].number]['right']  = right_rois
         image_stack_rois_dict[os.path.split(current_file)[1]][frame[0].number]['top']    = top_rois
