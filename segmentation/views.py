@@ -1387,7 +1387,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             image_stack_labels_dict[file_name]={}
             image_stack_cells_dict[file_name]={}
             
-            frames    = Frame.objects.select_related().filter(sample=sample)
+            frames = Frame.objects.select_related().filter(sample=sample)
             for frame in frames:
                 rois   = CellROI.objects.select_related().filter(frame=frame)
 
@@ -1456,8 +1456,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
             image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
         
-        if image_stack_cells_dict[current_pos]==None:
-            fill_rois_pos(current_file)
+        #if image_stack_cells_dict[current_pos]==None:
+        #    fill_rois_pos(current_file)
         print_time('------- get_current_stack ', local_time)
 
         return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
@@ -2711,7 +2711,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #images=source_imgs.data['images']
         #source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
-        left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
+        #left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         current_file = os.path.split(get_current_file())[1]
         source_roi.data    = {'left': image_stack_rois_dict[current_file][str(time_point)]['left'], 
                               'right': image_stack_rois_dict[current_file][str(time_point)]['right'], 
