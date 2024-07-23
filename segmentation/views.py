@@ -2710,19 +2710,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
         #left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
-        current_file = os.path.split(get_current_file())[1]
-        source_roi.data    = {'left': image_stack_rois_dict[current_file][str(time_point)]['left'], 
-                              'right': image_stack_rois_dict[current_file][str(time_point)]['right'], 
-                              'top': image_stack_rois_dict[current_file][str(time_point)]['top'], 
-                              'bottom': image_stack_rois_dict[current_file][str(time_point)]['bottom']}
+        #current_file = os.path.split(get_current_file())[1]
+        #source_roi.data    = {'left': image_stack_rois_dict[current_file][str(time_point)]['left'], 
+        #                      'right': image_stack_rois_dict[current_file][str(time_point)]['right'], 
+        #                      'top': image_stack_rois_dict[current_file][str(time_point)]['top'], 
+        #                      'bottom': image_stack_rois_dict[current_file][str(time_point)]['bottom']}
+        #
+        #source_labels.data = {'height':image_stack_labels_dict[current_file][str(time_point)]['height'],
+        #                      'weight':image_stack_labels_dict[current_file][str(time_point)]['weight'], 
+        #                      'names':image_stack_labels_dict[current_file][str(time_point)]['names']}
         
-        source_labels.data = {'height':image_stack_labels_dict[current_file][str(time_point)]['height'],
-                              'weight':image_stack_labels_dict[current_file][str(time_point)]['weight'], 
-                              'names':image_stack_labels_dict[current_file][str(time_point)]['names']}
-        
-        source_cells.data  = {'height':image_stack_cells_dict[current_file][str(time_point)]['height'], 
-                              'weight':image_stack_cells_dict[current_file][str(time_point)]['weight'], 
-                              'names':image_stack_cells_dict[current_file][str(time_point)]['names']}
+        #source_cells.data  = {'height':image_stack_cells_dict[current_file][str(time_point)]['height'], 
+        #                      'weight':image_stack_cells_dict[current_file][str(time_point)]['weight'], 
+        #                      'names':image_stack_cells_dict[current_file][str(time_point)]['names']}
         if len(source_intensity_ch1.data["time"])==0:
             line_position.location = -999
         else:
