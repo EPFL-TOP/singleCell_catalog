@@ -1446,10 +1446,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if image_stack_dict[k]!=None:
                     image_stack_dict[k]=None
 
-        for k, key in enumerate(image_stack_rois_dict):
-            if key in current_pos_list:
-                if image_stack_rois_dict[key]==None:
-                    fill_rois_pos(current_file_list[k])
+        for k in image_stack_rois_dict:
+            if k in current_pos_list:
+                if image_stack_rois_dict[k]==None:
+                    fill_rois_pos(current_file_list[current_pos_list.index(key)])
 
 
     #___________________________________________________________________________________________
