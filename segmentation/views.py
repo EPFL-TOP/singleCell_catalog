@@ -2758,10 +2758,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #                      'weight':weight_cells, 
         #                      'names':names_cells}
 
-        source_roi.data    = {'left': source_rois_full['left'][time_point], 
-                              'right': source_rois_full['right'][time_point], 
-                              'top': source_rois_full['top'][time_point], 
-                              'bottom': source_rois_full['bottom'][time_point]}
+        source_roi.data    = {'left': source_rois_full.data['left'][time_point], 
+                              'right': source_rois_full.data['right'][time_point], 
+                              'top': source_rois_full.data['top'][time_point], 
+                              'bottom': source_rois_full.data['bottom'][time_point]}
         
         #source_labels.data = {'height':height_labels,
         #                      'weight':weight_labels, 
