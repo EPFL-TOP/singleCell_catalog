@@ -2838,7 +2838,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #dropdown_pos.js_on_change('value', callback_slider_test)
     
     #PYTHON
-    slider.on_change('value', callback_slider)
+    #slider.on_change('value', callback_slider)
 
 
 
