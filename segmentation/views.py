@@ -38,7 +38,7 @@ except ModuleNotFoundError:
 
 LOCAL=True
 DEBUG=False
-DEBUG_TIME=False
+DEBUG_TIME=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 CELLPATH="microscopy/cell_culture"
 
