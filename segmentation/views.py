@@ -1192,6 +1192,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
 
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
+    source_labels = bokeh.models.ColumnDataSource(data=dict(height=height_labels,weight=weight_labels,names=names_labels))
+    source_cells = bokeh.models.ColumnDataSource(data=dict(height=height_cells,weight=weight_cells,names=names_cells))
 
     start_oscillation_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
     end_oscillation_position   = bokeh.models.Span(location=initial_position, dimension='height', line_color='blue', line_width=2)
@@ -2627,6 +2629,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             else:names_cells.append("none")
         if DEBUG:print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
+        image_stack_rois_dict[os.path.split(current_file)[1]][frame.number]['left']   = left_rois
+        image_stack_rois_dict[os.path.split(current_file)[1]][frame.number]['right']  = right_rois
+        image_stack_rois_dict[os.path.split(current_file)[1]][frame.number]['top']    = top_rois
+        image_stack_rois_dict[os.path.split(current_file)[1]][frame.number]['bottom'] = bottom_rois
+
+        image_stack_labels_dict[os.path.split(current_file)[1]][frame.number]['height'] = height_labels
+        image_stack_labels_dict[os.path.split(current_file)[1]][frame.number]['weight'] = weight_labels
+        image_stack_labels_dict[os.path.split(current_file)[1]][frame.number]['name']   = names_labels
+
+        image_stack_cells_dict[os.path.split(current_file)[1]][frame.number]['height'] = height_cells
+        image_stack_cells_dict[os.path.split(current_file)[1]][frame.number]['weight'] = weight_cells
+        image_stack_cells_dict[os.path.split(current_file)[1]][frame.number]['name']   = names_cells
+
         return left_rois,right_rois,top_rois,bottom_rois, height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells
     #___________________________________________________________________________________________
 
@@ -2765,7 +2780,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_roi.change.emit();
         source_labels.emit();
         source_cells.emit();
-        
+
         """)
     slider_test.js_on_change('value', callback_slider_test)
 
@@ -4030,13 +4045,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
     source_roi_manual  = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
 
-    source_labels = bokeh.models.ColumnDataSource(data=dict(height=height_labels,weight=weight_labels,names=names_labels))
+
+
     labels = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
                                    x_offset=0, y_offset=0, source=source_labels, text_color='white', text_font_size="10pt")
 
     plot_image.add_layout(labels)
 
-    source_cells = bokeh.models.ColumnDataSource(data=dict(height=height_cells,weight=weight_cells,names=names_cells))
     labels_cells = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data',
                                          x_offset=0, y_offset=-15, source=source_cells, text_color='white', text_font_size="11pt")
 
