@@ -1248,7 +1248,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     source_test_dead = bokeh.models.ColumnDataSource(data=dict(top=[], left=[], right=[]))
 
-    source_rois_full = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
+    source_rois_full   = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
+    source_labels_full = bokeh.models.ColumnDataSource(data=dict(height=[], weight=[], names=[]))
+    source_cells_full  = bokeh.models.ColumnDataSource(data=dict(height=[], weight=[], names=[]))
 
     ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
 
@@ -1459,30 +1461,63 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         
         sample = Sample.objects.get(file_name=current_file)
         frames = Frame.objects.select_related().filter(sample=sample)
-        source_rois_full.data['left'] = [ [] for f in range(len(frames))]
-        source_rois_full.data['right'] = [ [] for f in range(len(frames))]
-        source_rois_full.data['top'] = [ [] for f in range(len(frames))]
+        source_rois_full.data['left']   = [ [] for f in range(len(frames))]
+        source_rois_full.data['right']  = [ [] for f in range(len(frames))]
+        source_rois_full.data['top']    = [ [] for f in range(len(frames))]
         source_rois_full.data['bottom'] = [ [] for f in range(len(frames))]
+
+        source_labels_full.data['weight'] = [ [] for f in range(len(frames))]
+        source_labels_full.data['height'] = [ [] for f in range(len(frames))]
+        source_labels_full.data['names']  = [ [] for f in range(len(frames))]
+
+        source_cells_full.data['weight']  = [ [] for f in range(len(frames))]
+        source_cells_full.data['height']  = [ [] for f in range(len(frames))]
+        source_cells_full.data['names']   = [ [] for f in range(len(frames))]
+
         for frame in frames:
             rois   = CellROI.objects.select_related().filter(frame=frame)
             left_rois=[]
             right_rois=[]
             top_rois=[]
             bottom_rois=[]
+            height_labels=[]
+            weight_labels=[]
+            names_labels=[]
+            height_cells=[]
+            weight_cells=[]
+            names_cells=[]        
             for roi in rois:
                 left_rois.append(roi.min_col)
                 right_rois.append(roi.max_col)
                 top_rois.append(frame.height-roi.min_row)
                 bottom_rois.append(frame.height-roi.max_row)
-        
-            source_rois_full.data['left'][frame.number]=left_rois
-            source_rois_full.data['right'][frame.number]=right_rois
-            source_rois_full.data['top'][frame.number]=top_rois
-            source_rois_full.data['bottom'][frame.number]=bottom_rois
+
+                weight_labels.append(roi.min_col)
+                height_labels.append(frame[0].height-roi.min_row)
+                names_labels.append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
+
+                weight_cells.append(roi.min_col)
+                height_cells.append(frame[0].height-roi.max_row)
+                if roi.cell_id !=None: names_cells.append(roi.cell_id.name)
+                else:names_cells.append("none")
+
+            source_rois_full.data['left'][frame.number]   = left_rois
+            source_rois_full.data['right'][frame.number]  = right_rois
+            source_rois_full.data['top'][frame.number]    = top_rois
+            source_rois_full.data['bottom'][frame.number] = bottom_rois
+
+            source_cells_full.data['height'][frame.number]  = height_cells
+            source_cells_full.data['weight'][frame.number]  = weight_cells
+            source_cells_full.data['names'][frame.number]   = names_cells
+
+            source_labels_full.data['height'][frame.number]  = height_labels
+            source_labels_full.data['weight'][frame.number]  = weight_labels
+            source_labels_full.data['names'][frame.number]   = names_labels
+
+
         #if image_stack_cells_dict[current_pos]==None:
         #    fill_rois_pos(current_file)
         print_time('------- get_current_stack ', local_time)
-        print('+++++++++++++++++++++++++++++++++++++++++++++++source_rois_full--  ',source_rois_full.data)
         return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
     #___________________________________________________________________________________________
 
@@ -2635,23 +2670,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             else:names_cells.append("none")
         if DEBUG:print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
-
-        current_file_name=os.path.split(current_file)[1]
-        current_frame_name =    str(frame[0].number)
-
-        #image_stack_rois_dict[current_file_name][current_frame_name]['left']   = left_rois
-        #image_stack_rois_dict[current_file_name][current_frame_name]['right']  = right_rois
-        #image_stack_rois_dict[current_file_name][current_frame_name]['top']    = top_rois
-        #image_stack_rois_dict[current_file_name][current_frame_name]['bottom'] = bottom_rois
-
-        #image_stack_labels_dict[current_file_name][current_frame_name]['height'] = height_labels
-        #image_stack_labels_dict[current_file_name][current_frame_name]['weight'] = weight_labels
-        #image_stack_labels_dict[current_file_name][current_frame_name]['name']   = names_labels
-
-        #image_stack_cells_dict[current_file_name][current_frame_name]['height'] = height_cells
-        #image_stack_cells_dict[current_file_name][current_frame_name]['weight'] = weight_cells
-        #image_stack_cells_dict[current_file_name][current_frame_name]['name']   = names_cells
-
         return left_rois,right_rois,top_rois,bottom_rois, height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells
     #___________________________________________________________________________________________
 
@@ -2761,13 +2779,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                               'top': source_rois_full.data['top'][time_point], 
                               'bottom': source_rois_full.data['bottom'][time_point]}
         
-        #source_labels.data = {'height':height_labels,
-        #                      'weight':weight_labels, 
-        #                      'names':names_labels}
+        source_labels.data = {'height':source_labels_full.data['height'][time_point],
+                              'weight':source_labels_full.data['weight'][time_point], 
+                              'names':source_labels_full.data['names'][time_point]}
         
-        #source_cells.data  = {'height':height_cells, 
-        #                      'weight':weight_cells, 
-        #                      'names':names_cells}
+        source_cells.data  = {'height':source_cells_full.data['height'][time_point], 
+                              'weight':source_cells_full.data['weight'][time_point], 
+                              'names':source_cells_full.data['names'][time_point]}
         
         if len(source_intensity_ch1.data["time"])==0:
             line_position.location = -999
