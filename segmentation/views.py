@@ -1482,7 +1482,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #if image_stack_cells_dict[current_pos]==None:
         #    fill_rois_pos(current_file)
         print_time('------- get_current_stack ', local_time)
-        print('source_rois_full--  ',source_rois_full)
+        print('+++++++++++++++++++++++++++++++++++++++++++++++source_rois_full--  ',source_rois_full.data)
         return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
     #___________________________________________________________________________________________
 
