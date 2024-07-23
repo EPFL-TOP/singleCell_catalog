@@ -1158,7 +1158,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                   'round':300,
                   'elongated':350}
     
-
     for exp in Experiment.objects.all():
         experiments.append(exp.name)
         wells[exp.name] = []
@@ -1379,19 +1378,21 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG: print('****************************  get_current_stack ****************************')
         local_time=datetime.datetime.now()
         current_file=get_current_file(index=0)
-        current_pos=current_file.split('/')[-1]
+        current_pos=os.path.split(current_file)[1]
         
         if image_stack_dict[current_pos]==None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
             image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
         
+        if image_stack_cells_dict[current_pos]==None:
+            fill_rois_pos(current_file)
         print_time('------- get_current_stack ', local_time)
 
         return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
-    def get_adjacent_stack(number=3):
+    def get_adjacent_stack(number=4):
 
         current_pos_list=[]
         current_file_list=[]
@@ -1399,7 +1400,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if n==0:continue
             current_file = get_current_file(index=n)
             current_file_list.append(current_file)
-            current_pos_list.append(current_file.split('/')[-1])
+            current_pos_list.append(os.path.split(current_file)[1])
 
         for k in image_stack_dict:
             if k in current_pos_list:
@@ -1411,31 +1412,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if image_stack_dict[k]!=None:
                     image_stack_dict[k]=None
 
-    #___________________________________________________________________________________________
+        for k, key in enumerate(image_stack_rois_dict):
+            if key in current_pos_list:
+                if image_stack_rois_dict[key]==None:
+                    fill_rois_pos(current_file_list[k])
+
 
     #___________________________________________________________________________________________
-    # Function to get the image stack
-    def get_current_stack_url():
-        current_file=get_current_file()
-        time_lapse_path = Path(current_file)
-        time_lapse = nd2.imread(time_lapse_path.as_posix())
-        ind_images_list=[]
-        for nch in range(time_lapse.shape[1]):
-            time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
-            time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
-            ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
-            ind_images_url = []
-            for im in ind_images:
-                image_pil = Image.fromarray(im)
-                buffer = BytesIO()
-                image_pil.save(buffer, format='PNG')
-                image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
-                ind_images_url.append(image_base64)
-            ind_images_list.append(ind_images_url)
-        return ind_images_list
-    #___________________________________________________________________________________________  
+
  
-
     #___________________________________________________________________________________________
     # Function to get the current file
     def get_current_file(index=0):
@@ -2129,6 +2114,41 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
 
+
+
+    #___________________________________________________________________________________________
+    def fill_rois_pos(pos):
+        sample = Sample.objects.get(file_name=pos)
+        file_name = os.path.split(sample.file_name)[1]
+        if image_stack_rois_dict[file_name]!=None: return
+
+        image_stack_rois_dict[file_name]={}
+        image_stack_labels_dict[file_name]={}
+        image_stack_cells_dict[file_name]={}
+        
+
+        frames    = Frame.objects.select_related().filter(sample=sample)
+        for frame in frames:
+            rois   = CellROI.objects.select_related().filter(frame=frame)
+
+            image_stack_rois_dict[file_name][str(frame.number)]   = {'left':[], 'right':[], 'top':[], 'bottom':[]}
+            image_stack_labels_dict[file_name][frame.number] = {'height':[],'weight':[],'names':[]}
+            image_stack_cells_dict[file_name][frame.number]  = {'height':[],'weight':[],'names':[]}
+            for roi in rois:
+                image_stack_rois_dict[file_name][str(frame.number)]['left'].append(roi.min_col)
+                image_stack_rois_dict[file_name][str(frame.number)]['right'].append(roi.max_col)
+                image_stack_rois_dict[file_name][str(frame.number)]['top'].append(frame.height-roi.min_row)
+                image_stack_rois_dict[file_name][str(frame.number)]['bottom'].append(frame.height-roi.max_row)
+
+                image_stack_labels_dict[file_name][frame.number]['weight'].append(roi.min_col)
+                image_stack_labels_dict[file_name][frame.number]['height'].append(frame.height-roi.min_row)
+                image_stack_labels_dict[file_name][frame.number]['names'].append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
+
+                image_stack_cells_dict[file_name][frame.number]['weight'].append(roi.min_col)
+                image_stack_cells_dict[file_name][frame.number]['height'].append(frame.height-roi.max_row)
+                if roi.cell_id !=None: image_stack_cells_dict[file_name][frame.number]['names'].append(roi.cell_id.name)
+                else:image_stack_cells_dict[file_name][frame.number]['names'].append("none")
+
     #___________________________________________________________________________________________
     def fill_rois():
 
@@ -2137,10 +2157,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         for sample in samples:
             file_name = os.path.split(sample.file_name)[1]
+            if image_stack_rois_dict[file_name]!=None: continue
             image_stack_rois_dict[file_name]={}
             image_stack_labels_dict[file_name]={}
             image_stack_cells_dict[file_name]={}
             
+
+
             frames    = Frame.objects.select_related().filter(sample=sample)
             for frame in frames:
                 rois   = CellROI.objects.select_related().filter(frame=frame)
@@ -2173,13 +2196,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:print('****************************  update_dropdown_pos ****************************')
 
         image_stack_dict.clear
+        image_stack_rois_dict.clear
+        image_stack_labels_dict.clear
+        image_stack_cells_dict.clear
         for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
-            image_stack_dict[pos]=None
-            image_stack_rois_dict[pos]=None
-            image_stack_labels_dict[pos]=None
-            image_stack_cells_dict[pos]=None
+            image_stack_dict[pos]        = None
+            image_stack_rois_dict[pos]   = None
+            image_stack_labels_dict[pos] = None
+            image_stack_cells_dict[pos]  = None
 
-        fill_rois()
+        #fill_rois()
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value   = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
 
@@ -2419,7 +2445,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         local_time=datetime.datetime.now()
         images, images_norm    = get_current_stack()
         threading.Thread(target=get_adjacent_stack).start()
-                #get_adjacent_stack()
 
         source_imgs.data       = {'images':images}
         source_imgs_norm.data  = {'images':images_norm}
@@ -3979,7 +4004,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     get_adjacent_stack()
-    fill_rois()
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
