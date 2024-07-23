@@ -2817,9 +2817,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         //source_cells.change.emit();
 
         """)
-    #slider.js_on_change('value', callback_slider_test)
+    slider.js_on_change('value', callback_slider_test)
     #PYTHON
-    slider.on_change('value', callback_slider)
+    #slider.on_change('value', callback_slider)
 
 
 
