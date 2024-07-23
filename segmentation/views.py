@@ -2737,6 +2737,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         var file_name = current_file
         console.log("current_file:", current_file);
         console.log("file_name:", file_name);
+        console.log("data0:",image_stack_rois_dict);
         console.log("data1:",image_stack_rois_dict[file_name]);
         console.log("data2:",image_stack_rois_dict[file_name][String(index)]);
 
