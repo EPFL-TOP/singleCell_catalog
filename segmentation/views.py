@@ -37,7 +37,7 @@ except ModuleNotFoundError:
     pass
 
 LOCAL=True
-DEBUG=False
+DEBUG=True
 DEBUG_TIME=True
 BASEPATH="/mnt/nas_rcp/raw_data"
 CELLPATH="microscopy/cell_culture"
@@ -1377,6 +1377,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def fill_rois_pos(pos):
+        if DEBUG: print('****************************  fill_rois_pos ****************************')
         sample = Sample.objects.get(file_name=pos)
         file_name = os.path.split(sample.file_name)[1]
         if image_stack_rois_dict[file_name]!=None: return
