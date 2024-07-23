@@ -2735,11 +2735,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         //line_position.location = source_intensity_ch1.data['time'][index];
         var file_name = current_file
-        //console.log("current_file:", current_file);
-        //console.log("file_name:", file_name);
-        //console.log(typeof index);
-        //console.log("data1:",image_stack_rois_dict[file_name]);
-        //console.log("data2:",image_stack_rois_dict[file_name][String(index)]);
+        console.log("current_file:", current_file);
+        console.log("file_name:", file_name);
+        console.log("data1:",image_stack_rois_dict[file_name]);
+        console.log("data2:",image_stack_rois_dict[file_name][String(index)]);
 
         source_roi.data['left']   = image_stack_rois_dict[current_file][String(index)]['left'];
         source_roi.data['right']  = image_stack_rois_dict[current_file][String(index)]['right'];
