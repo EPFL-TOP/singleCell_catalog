@@ -1628,6 +1628,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     slider_find_peaks  = bokeh.models.Slider(start=0, end=100, value=30, step=1, title="Peak prominence", width=200)
 
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
+
+
     #___________________________________________________________________________________________
     # Function to prepare the intensity plot
     def prepare_intensity():
@@ -3569,11 +3572,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         hist, edges = np.histogram(end_osc, bins=nframes*10, range=(0, nframes*10))
         source_end_osc.data={'x': edges[:-1], 'top': hist}
-
-        if DEBUG:
-            print('source_nosc = ',source_nosc.data)
-            print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
-
     #___________________________________________________________________________________________
 
 
@@ -4205,7 +4203,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.add_layout(start_oscillation_position)
     plot_intensity.add_layout(end_oscillation_position)
     plot_intensity.add_layout(time_of_death_position)
-    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
 
 
     
