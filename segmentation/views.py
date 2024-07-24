@@ -1517,6 +1517,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     ind_images_list,  ind_images_list_norm = get_current_stack()
 
     #current images (current index and list of channels)
+    print(type(ind_images_list), '  ', ind_images_list.shape)
     data_img_ch={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
     source_img_ch = bokeh.models.ColumnDataSource(data=data_img_ch)
 
