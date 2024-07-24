@@ -1487,9 +1487,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def get_current_file(index=0):
         local_time = datetime.datetime.now()
 
-        if DEBUG:
-            print('****************************  get_current_file **************************** index=',index)
-
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         current_file  = ''
         current_file_index = -9999
@@ -1505,8 +1502,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         else:
             current_file = current_files[current_file_index]
 
-        if DEBUG: print('--------------- get_current_file() current file  ',current_file)
-
+        if DEBUG: print('****************************  get_current_file **************************** index=',index, '  current_file=',current_file)
+        if DEBUG_TIME: print_time('get_current_file END ', local_time)
         return current_file
     #___________________________________________________________________________________________
 
