@@ -1372,11 +1372,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 intensity_normalized = (im - min_value)/(max_value-min_value)*255
                 intensity_normalized = intensity_normalized.astype(np.uint8)
 #                ind_images_norm.append(intensity_normalized)
-                ind_images_norm = np.append(ind_images_norm, intensity_normalized)
+                ind_images_norm = np.vstack((ind_images_norm, intensity_normalized))
             #ind_images_list.append(ind_images)
             #ind_images_list_norm.append(ind_images_norm)
-            ind_images_list = np.append(ind_images_list, ind_images)
-            ind_images_list_norm = np.append(ind_images_list_norm, ind_images_norm)
+            ind_images_list = np.vstack((ind_images_list, ind_images))
+            ind_images_list_norm = np.vstack((ind_images_list_norm, ind_images_norm))
         print_time(f'------- get_stack_data {text}', local_time)
 
         return ind_images_list, ind_images_list_norm
