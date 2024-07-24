@@ -1386,13 +1386,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_pos  = os.path.split(current_file)[1]
         
 
-        print_time('------- get_current_stack 1 ', local_time)
+        if DEBUG_TIME: print_time('------- get_current_stack 1 ', local_time)
 
         if image_stack_dict[current_pos]==None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
             image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
         
-        print_time('------- get_current_stack 2 ', local_time)
+        if DEBUG_TIME: print_time('------- get_current_stack 2 ', local_time)
 
         sample = Sample.objects.get(file_name=current_file)
         frames = Frame.objects.select_related().filter(sample=sample)
@@ -1409,7 +1409,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_cells_full.data['height']  = [ [] for f in range(len(frames))]
         source_cells_full.data['names']   = [ [] for f in range(len(frames))]
 
-        print_time('------- get_current_stack 3 ', local_time)
+        if DEBUG_TIME: print_time('------- get_current_stack 3 ', local_time)
 
         for frame in frames:
             rois   = CellROI.objects.select_related().filter(frame=frame)
@@ -1455,7 +1455,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         #if image_stack_cells_dict[current_pos]==None:
         #    fill_rois_pos(current_file)
-        print_time('------- get_current_stack END ', local_time)
+        if DEBUG_TIME: print_time('------- get_current_stack END ', local_time)
         return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
     #___________________________________________________________________________________________
 
@@ -1485,9 +1485,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to get the current file
     def get_current_file(index=0):
+        local_time = datetime.datetime.now()
+
         if DEBUG:
-            print('****************************  get_current_file ****************************')
-            print('--------------- get_current_file() dropdown_exp.value=', dropdown_exp.value, '   dropdown_well.value',dropdown_well.value, '  dropdown_pos.value',dropdown_pos.value)
+            print('****************************  get_current_file **************************** index=',index)
 
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         current_file  = ''
