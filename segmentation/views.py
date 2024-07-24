@@ -1518,6 +1518,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #current images (current index and list of channels)
     print('len ind_images_list ind_images_list_norm ==  == = = = == = =',len(ind_images_list), '  ',len(ind_images_list_norm),'  ', type(ind_images_list),' ',type(ind_images_list_norm))
+    print('len ',len(ind_images_list[0], '  ',len(ind_images_list_norm[0]))
     data_img_ch={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
     source_img_ch = bokeh.models.ColumnDataSource(data=data_img_ch)
 
