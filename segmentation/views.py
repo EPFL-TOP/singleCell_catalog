@@ -1379,7 +1379,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 #            ind_images_list_norm = np.vstack((ind_images_list_norm, ind_images_norm))
         print_time(f'------- get_stack_data {text}', local_time)
 
-        return ind_images_list, ind_images_list_norm
+            # Convert lists to numpy arrays
+        ind_images_array = np.array(ind_images_list)
+        ind_images_norm_array = np.array(ind_images_list_norm)
+        return ind_images_array, ind_images_norm_array
+        #return ind_images_list, ind_images_list_norm
     #___________________________________________________________________________________________
 
    
