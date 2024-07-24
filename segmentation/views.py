@@ -3349,6 +3349,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 cellflag.alive = True
             cellflag.save()
         update_source_osc_tod()
+        if DEBUG: print('time_of_death_callback  - - - - - - - source_varea_death.data',  source_varea_death.data)
+
     button_time_of_death = bokeh.models.Button(label="Dead")
     button_time_of_death.on_click(time_of_death_callback)
     #___________________________________________________________________________________________
@@ -3490,6 +3492,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_varea_death.data['x']    = []
             source_varea_death.data['y1']   = []
             source_varea_death.data['y2']   = []
+        if DEBUG: print('delete_peaks_callback  - - - - - - - source_varea_death.data',  source_varea_death.data)
+
     button_delete_peaks = bokeh.models.Button(label="Delete Peaks")
     button_delete_peaks.on_click(delete_peaks_callback)
     #___________________________________________________________________________________________
