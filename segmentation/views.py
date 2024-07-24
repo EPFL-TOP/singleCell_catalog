@@ -2550,6 +2550,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         update_source_segment()
         print_time('------- prepare_pos end ', local_time)
 
+        print('prepare pos source_varea_death.data = =  == =  = == =  = ', source_varea_death.data)
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
 
