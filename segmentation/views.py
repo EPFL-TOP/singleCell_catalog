@@ -1184,9 +1184,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
         image_stack_dict[pos]=None
-        #image_stack_rois_dict[pos]=None
-        #image_stack_labels_dict[pos]=None
-        #image_stack_cells_dict[pos]=None
 
     initial_position=-9999
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
@@ -1814,7 +1811,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         ##    plot_intensity.y_range.start=min(source_intensity_ch1.data["intensity"])*0.4
         ###plot_intensity.y_range.trigger('start', 'end')
         #plot_intensity.y_range.update(start=plot_intensity.y_range.start, end=plot_intensity.y_range.end)
-        if DEBUG: print('===============---------------plot_intensity.y_range.start=',plot_intensity.y_range.start,'  plot_intensity.y_range.end=',plot_intensity.y_range.end)
+        if DEBUG: print('prepare intensity - - - - - - - source_varea_death.data',  source_varea_death.data)
     #___________________________________________________________________________________________
 
 
