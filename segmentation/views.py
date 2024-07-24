@@ -1356,21 +1356,27 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
-        ind_images_list=[]
-        ind_images_list_norm=[]
+#        ind_images_list= []
+#        ind_images_list_norm=[]
+        ind_images_list = np.array([]) 
+        ind_images_list_norm= np.array([]) 
         for nch in range(time_lapse.shape[1]):
             time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
             time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
             ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
-            ind_images_norm = []
+#            ind_images_norm = []
+            ind_images_norm =  np.array([]) 
             for im in ind_images:
                 max_value = np.max(im)
                 min_value = np.min(im)
                 intensity_normalized = (im - min_value)/(max_value-min_value)*255
                 intensity_normalized = intensity_normalized.astype(np.uint8)
-                ind_images_norm.append(intensity_normalized)
-            ind_images_list.append(ind_images)
-            ind_images_list_norm.append(ind_images_norm)
+#                ind_images_norm.append(intensity_normalized)
+                ind_images_norm = np.append(ind_images_norm, intensity_normalized)
+            #ind_images_list.append(ind_images)
+            #ind_images_list_norm.append(ind_images_norm)
+            ind_images_list = np.append(ind_images_list, ind_images)
+            ind_images_list_norm = np.append(ind_images_list_norm, ind_images_norm)
         print_time(f'------- get_stack_data {text}', local_time)
 
         return ind_images_list, ind_images_list_norm
