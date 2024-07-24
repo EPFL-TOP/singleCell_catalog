@@ -4355,7 +4355,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      bokeh.layouts.row(button_flat_cell, button_round_cell, button_elongated_cell),
                                      )
     
-    intensity_plot_col = bokeh.layouts.column(#bokeh.layouts.row(plot_intensity, plot_markers),
+    intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity, plot_markers),
                                               bokeh.layouts.row(plot_tod, plot_nosc),tod_checkbox,
                                               bokeh.layouts.row(plot_oscillation_cycle),
                                               bokeh.layouts.row(plot_histo_int_mean, plot_histo_int_std),)
