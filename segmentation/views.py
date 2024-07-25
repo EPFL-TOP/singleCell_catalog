@@ -1136,18 +1136,18 @@ def get_mva_prediction_oscillating(file_list):
 
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document) -> None:
-    print('****************************  segmentation_handler ****************************')
-    #TO BE CHANGED WITH ASYNC?????
     start_time=datetime.datetime.now()
+    print('****************************  segmentation_handler ****************************')
+
+    #TO BE CHANGED WITH ASYNC?????
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
     experiments=[]
     wells={}
     positions={}
     files={}
     image_stack_dict={}
-    #image_stack_labels_dict={}
-    #image_stack_rois_dict={}
-    #image_stack_cells_dict={}
+
 
     flags_dict = {'mask':0,
                   'dividing':50,
@@ -1184,6 +1184,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
         image_stack_dict[pos]=None
+
 
     initial_position=-9999
     line_position = bokeh.models.Span(location=initial_position, dimension='height', line_color='red', line_width=2)
@@ -1348,8 +1349,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def get_stack_data(current_file, text=''):
         local_time=datetime.datetime.now()
 
-        #if 'bleb001_well1' in current_file:
-        #    current_file=current_file.replace('/mnt/nas_rcp','/data/testcopy')
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         if os.path.isdir(r'D:\raw_data\microscopy\cell_culture'):
             current_file=os.path.join('D:',current_file.replace('/mnt/nas_rcp',''))
@@ -1358,35 +1357,52 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         ind_images_list= []
         ind_images_list_norm=[]
-#        ind_images_list = np.array([]) 
-#        ind_images_list_norm= np.array([]) 
         for nch in range(time_lapse.shape[1]):
             time_lapse_tmp = time_lapse[:,nch,:,:] # Assume I(t, c, x, y)
             time_domain = np.asarray(np.linspace(0, time_lapse_tmp.shape[0] - 1, time_lapse_tmp.shape[0]), dtype=np.uint)
             ind_images = [np.flip(time_lapse_tmp[i,:,:],0) for i in time_domain]
             ind_images_norm = []
-#            ind_images_norm =  np.array([]) 
             for im in ind_images:
                 max_value = np.max(im)
                 min_value = np.min(im)
                 intensity_normalized = (im - min_value)/(max_value-min_value)*255
                 intensity_normalized = intensity_normalized.astype(np.uint8)
                 ind_images_norm.append(intensity_normalized)
-#                ind_images_norm = np.vstack((ind_images_norm, intensity_normalized))
             ind_images_list.append(ind_images)
             ind_images_list_norm.append(ind_images_norm)
-#            ind_images_list = np.vstack((ind_images_list, ind_images))
-#            ind_images_list_norm = np.vstack((ind_images_list_norm, ind_images_norm))
-        print_time(f'------- get_stack_data {text}', local_time)
 
-            # Convert lists to numpy arrays
         ind_images_array = np.array(ind_images_list)
         ind_images_norm_array = np.array(ind_images_list_norm)
+        print_time(f'------- END get_stack_data {text}', local_time)
         return ind_images_array, ind_images_norm_array
-        #return ind_images_list, ind_images_list_norm
     #___________________________________________________________________________________________
 
-   
+    #___________________________________________________________________________________________
+    # Function to get the image data stack
+    def get_stack_rois_data(current_file, text=''):
+        local_time=datetime.datetime.now()
+        rois_dict = {'rois':{'left':[], 'right':[], 'top':[], 'bottom':[]}, 'labels':[], 'cells':[]}
+        sample = Sample.objects.get(file_name=current_file)
+        frames = Frame.objects.select_related().filter(sample=sample)
+        for frame in frames:
+            left_rois=[]
+            right_rois=[]
+            top_rois=[]
+            bottom_rois=[]
+            cellrois = CellROI.objects.select_related().filter(frame=frame)
+            for roi in cellrois:
+                left_rois.append(roi.min_col)
+                right_rois.append(roi.max_col)
+                top_rois.append(frame.height-roi.min_row)
+                bottom_rois.append(frame.height-roi.max_row)
+            rois_dict['rois']['left'].append(left_rois)
+            rois_dict['rois']['right'].append(right_rois)
+            rois_dict['rois']['top'].append(top_rois)
+            rois_dict['rois']['bottom'].append(bottom_rois)
+
+
+        print_time(f'------- END get_stack_rois_data {text}', local_time)
+        return rois_dict
     #___________________________________________________________________________________________
     # Function to get the image stack
     def get_current_stack():
@@ -1395,15 +1411,24 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_file = get_current_file(index=0)
         current_pos  = os.path.split(current_file)[1]
         
-
         if DEBUG_TIME: print_time('------- get_current_stack 1 ', local_time)
 
         if image_stack_dict[current_pos]==None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
-            image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
-        
+            roid_data = get_stack_rois_data(current_file)
+
+            image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 
+                                           'ind_images_list_norm':ind_images_list_norm,
+                                           'rois':roid_data['rois']}
+
+
+
         if DEBUG_TIME: print_time('------- get_current_stack 2 ', local_time)
 
+        if DEBUG_TIME: print_time('------- get_current_stack END ', local_time)
+        return image_stack_dict[current_pos]
+        #return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
+    
         sample = Sample.objects.get(file_name=current_file)
         frames = Frame.objects.select_related().filter(sample=sample)
         source_rois_full.data['left']   = [ [] for f in range(len(frames))]
@@ -1465,8 +1490,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         #if image_stack_cells_dict[current_pos]==None:
         #    fill_rois_pos(current_file)
-        if DEBUG_TIME: print_time('------- get_current_stack END ', local_time)
-        return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
+
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
@@ -1484,7 +1508,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if k in current_pos_list:
                 if image_stack_dict[k]==None:
                     ind_images_list, ind_images_list_norm = get_stack_data(current_file_list[current_pos_list.index(k)], 'get_adjacent_stack')
-                    image_stack_dict[k]={'ind_images_list':ind_images_list, 'ind_images_list_norm':ind_images_list_norm}
+                    roid_data = get_stack_rois_data(current_file)
+
+                    image_stack_dict[k]={'ind_images_list':ind_images_list, 
+                                         'ind_images_list_norm':ind_images_list_norm,
+                                         'rois':roid_data['rois']}                    
+
 
             else:
                 if image_stack_dict[k]!=None:
@@ -1518,12 +1547,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    ind_images_list,  ind_images_list_norm = get_current_stack()
+    current_stack_data = get_current_stack()
+    ind_images_list = current_stack_data['ind_images_list']
+    ind_images_list_norm = current_stack_data['ind_images_list_norm']
 
     #current images (current index and list of channels)
-    print('len ind_images_list ind_images_list_norm ==  == = = = == = =',len(ind_images_list), '  ',len(ind_images_list_norm),'  ', type(ind_images_list),' ',type(ind_images_list_norm))
-    print('len ',len(ind_images_list[0]), '  ',len(ind_images_list_norm[0]), '  ', type(ind_images_list[0]),' ',type(ind_images_list_norm[0]))
-    print('len ',len(ind_images_list[0][0]), '  ',len(ind_images_list_norm[0][0]), '  ', type(ind_images_list[0][0]),' ',type(ind_images_list_norm[0][0]))
     data_img_ch={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
     source_img_ch = bokeh.models.ColumnDataSource(data=data_img_ch)
 
@@ -1534,9 +1562,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #list of all images for all channels
     data_imgs_norm={'images':ind_images_list_norm}
     source_imgs_norm = bokeh.models.ColumnDataSource(data=data_imgs_norm)
-
-
-
 
    #current image to be displayed
     data_img={'img':[data_imgs_norm['images'][0][0]]}
@@ -2200,16 +2225,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:print('****************************  update_dropdown_pos ****************************')
 
         image_stack_dict.clear
-        #image_stack_rois_dict.clear
-        #image_stack_labels_dict.clear
-        #image_stack_cells_dict.clear
         for pos in positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]:
-            image_stack_dict[pos]        = None
-            #image_stack_rois_dict[pos]   = None
-            #image_stack_labels_dict[pos] = None
-            #image_stack_cells_dict[pos]  = None
+            image_stack_dict[pos] = None
 
-        #fill_rois(dropdown_well.value)
         dropdown_pos.options = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         dropdown_pos.value   = positions['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)][0]
 
@@ -2447,19 +2465,28 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to update the position
     def prepare_pos(attr, old, new):
         if DEBUG:print('****************************  prepare_pos ****************************')
-        local_time = datetime.datetime.now()
-        images, images_norm     = get_current_stack()
         threading.Thread(target = get_adjacent_stack).start()
+
+        local_time = datetime.datetime.now()
+        current_stack_data = get_current_stack()
+        images      = current_stack_data['ind_images_list']
+        images_norm = current_stack_data['ind_images_list_norm']
+        rois_data   = current_stack_data['rois']
 
         source_imgs.data       = {'images':images}
         source_imgs_norm.data  = {'images':images_norm}
         source_img_ch.data     = {'img':[images[ch][0] for ch in range(len(images))]}
-
         source_img.data        = {'img':[images_norm[int(dropdown_channel.value)][0]]}
+
+        source_rois_full.data['left']   = rois_data['left']
+        source_rois_full.data['right']  = rois_data['right']
+        source_rois_full.data['top']    = rois_data['top']
+        source_rois_full.data['bottom'] = rois_data['bottom']
+
         dropdown_channel.value = dropdown_channel.options[0]
         dropdown_color.value   = dropdown_color.options[0]
 
-        print_time('------- prepare_pos get_current_stack ', local_time)
+        print_time('------- prepare_pos after get_current_stack ', local_time)
 
 
         if DEBUG:
