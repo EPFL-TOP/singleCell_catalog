@@ -2453,20 +2453,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_channel.value = dropdown_channel.options[0]
         dropdown_color.value   = dropdown_color.options[0]
 
-        print_time('------- prepare_pos after get_current_stack ', local_time)
+        print_time('------- prepare_pos 1 ', local_time)
 
-
-        if DEBUG:
-            print('prepare_pos dropdown_channel.value ',dropdown_channel.value)
-            print('prepare_pos dropdown_channel.options ',dropdown_channel.options)
-            print('prepare_pos before slider')
-        if slider.value == 0:
-            if DEBUG:print('in the if prepare_pos')
-            left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
-            source_roi.data    = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
-            source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
-            source_cells.data  = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
-        else:
+        #if slider.value == 0:
+        #    if DEBUG:print('in the if prepare_pos')
+        #    left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
+        #    source_roi.data    = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
+        #    source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
+        #    source_cells.data  = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+        if slider.value != 0:
             if DEBUG:print('in the else prepare_pos')
             slider.value = 0
             slider.start = 0
