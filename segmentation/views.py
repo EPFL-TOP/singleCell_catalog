@@ -2758,13 +2758,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                               'top': source_rois_full.data['top'][time_point], 
                               'bottom': source_rois_full.data['bottom'][time_point]}
         
-        source_labels.data = {'height':source_labels_full.data['height'][time_point],
-                              'weight':source_labels_full.data['weight'][time_point], 
-                              'names':source_labels_full.data['names'][time_point]}
+        #source_labels.data = {'height':source_labels_full.data['height'][time_point],
+        #                      'weight':source_labels_full.data['weight'][time_point], 
+        #                      'names':source_labels_full.data['names'][time_point]}
         
-        source_cells.data  = {'height':source_cells_full.data['height'][time_point], 
-                              'weight':source_cells_full.data['weight'][time_point], 
-                              'names':source_cells_full.data['names'][time_point]}
+        #source_cells.data  = {'height':source_cells_full.data['height'][time_point], 
+        #                      'weight':source_cells_full.data['weight'][time_point], 
+        #                      'names':source_cells_full.data['names'][time_point]}
         
         if len(source_intensity_ch1.data["time"])==0:
             line_position.location = -999
