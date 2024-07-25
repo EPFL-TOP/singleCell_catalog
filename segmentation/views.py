@@ -2394,10 +2394,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         elif slider_find_peaks.end>=10000:
             slider_find_peaks.step = 100
 
-        print_time('------- update_dropdown_cell 4 ', local_time)
         #CLEMENT TEST COMMENTED
         #prepare_intensity()
         #print_time('------- update_dropdown_cell 5 ', local_time)
+        print_time('------- update_dropdown_cell END ', local_time)
 
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
@@ -2422,10 +2422,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to update the position
     def prepare_pos(attr, old, new):
         if DEBUG:print('****************************  prepare_pos ****************************')
-        threading.Thread(target = get_adjacent_stack).start()
 
         local_time = datetime.datetime.now()
         current_stack_data = get_current_stack()
+        threading.Thread(target = get_adjacent_stack).start()
         images      = current_stack_data['ind_images_list']
         images_norm = current_stack_data['ind_images_list_norm']
         rois_data   = current_stack_data['rois']
@@ -2455,37 +2455,32 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         print_time('------- prepare_pos 1 ', local_time)
 
-        #if slider.value == 0:
-        #    if DEBUG:print('in the if prepare_pos')
-        #    left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
-        #    source_roi.data    = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
-        #    source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
-        #    source_cells.data  = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         if slider.value != 0:
             if DEBUG:print('in the else prepare_pos')
             slider.value = 0
             slider.start = 0
             slider.end   = len(source_imgs.data['images'][0]) - 1
+    
         print_time('------- prepare_pos 2 ', local_time)
 
         #CLEMENT COMMENTED TEST SPEED
         #update_dropdown_cell('','','')
-        print_time('------- prepare_pos 3 ', local_time)
+        #print_time('------- prepare_pos 3 ', local_time)
 
         slider.end=len(source_imgs.data['images'][0]) - 1
-        print_time('------- prepare_pos 4 ', local_time)
+        print_time('------- prepare_pos 3 ', local_time)
 
         reset_tap_tool()
-        print_time('------- prepare_pos 5 ', local_time)
+        print_time('------- prepare_pos 4 ', local_time)
 
         #update_source_osc_tod()
         #print_time('------- prepare_pos 6 ', local_time)
 
         update_dropdown_channel('','','')
-        print_time('------- prepare_pos 7 ', local_time)
+        print_time('------- prepare_pos 5 ', local_time)
 
         intensity_type_callback('','','')
-        print_time('------- prepare_pos 8 ', local_time)
+        print_time('------- prepare_pos 6 ', local_time)
 
         update_source_segment()
         print_time('------- prepare_pos end ', local_time)
