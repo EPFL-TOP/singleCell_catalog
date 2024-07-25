@@ -1436,8 +1436,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         
         if DEBUG_TIME: print_time('------- get_current_stack 1 pos={}, image_stack_dict[current_pos]={}'.format(current_pos, None if image_stack_dict[current_pos]==None else '-->NOT NONE'), local_time)
 
+        for k in image_stack_dict:
+            if image_stack_dict[k]==None: print(k,'   NONE')
+            else:print(k,'  ============= NOT NONE')
+
         if image_stack_dict[current_pos]==None:
-            print(image_stack_dict)
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
             rois_data = get_stack_rois_data(current_file)
 
