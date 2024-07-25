@@ -3988,7 +3988,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    get_adjacent_stack()
+    #get_adjacent_stack()
+    threading.Thread(target = get_adjacent_stack).start()
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
