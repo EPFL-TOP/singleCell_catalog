@@ -2450,6 +2450,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_cells_full.data['height'] = cells_data['height']
         source_cells_full.data['names']  = cells_data['names']
 
+        source_roi.data    = {'left': source_rois_full.data['left'][0], 
+                              'right': source_rois_full.data['right'][0], 
+                              'top': source_rois_full.data['top'][0], 
+                              'bottom': source_rois_full.data['bottom'][0]}
+        
+        source_labels.data = {'height':source_labels_full.data['height'][0],
+                              'weight':source_labels_full.data['weight'][0], 
+                              'names':source_labels_full.data['names'][0]}
+        
+        source_cells.data  = {'height':source_cells_full.data['height'][0], 
+                              'weight':source_cells_full.data['weight'][0], 
+                              'names':source_cells_full.data['names'][0]}
+
+
         dropdown_channel.value = dropdown_channel.options[0]
         dropdown_color.value   = dropdown_color.options[0]
 
@@ -2499,6 +2513,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     refresh_time_list = ["100", "200", "300", "400", "500", "1000"]
     dropdown_refresh_time = bokeh.models.Select(value=refresh_time_list[1], title="time (ms)", options=refresh_time_list)
+
     # Callback function to handle menu item click
     #___________________________________________________________________________________________
     def refresh_time_callback(attr, old, new):
