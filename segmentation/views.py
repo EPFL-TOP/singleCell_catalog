@@ -1464,6 +1464,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             current_file_list.append(current_file)
             current_pos_list.append(os.path.split(current_file)[1])
 
+        print('get_adjacent_stack = ',current_pos_list)
         for k in image_stack_dict:
             if k in current_pos_list:
                 if image_stack_dict[k]==None:
