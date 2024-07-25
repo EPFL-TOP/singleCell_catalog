@@ -1246,9 +1246,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     source_test_dead = bokeh.models.ColumnDataSource(data=dict(top=[], left=[], right=[]))
 
-    source_rois_full   = bokeh.models.ColumnDataSource(data=dict(left=[], right=[], top=[], bottom=[]))
-    source_labels_full = bokeh.models.ColumnDataSource(data=dict(height=[], weight=[], names=[]))
-    source_cells_full  = bokeh.models.ColumnDataSource(data=dict(height=[], weight=[], names=[]))
 
     ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
 
@@ -1399,6 +1396,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             rois_dict['rois']['right'].append(right_rois)
             rois_dict['rois']['top'].append(top_rois)
             rois_dict['rois']['bottom'].append(bottom_rois)
+
+            #for roi in rois:
+            #    left_rois.append(roi.min_col)
+            #    right_rois.append(roi.max_col)
+            #    top_rois.append(frame.height-roi.min_row)
+            #    bottom_rois.append(frame.height-roi.max_row)
 
 
         print_time(f'------- END get_stack_rois_data {text}', local_time)
@@ -1563,9 +1566,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data_imgs_norm={'images':ind_images_list_norm}
     source_imgs_norm = bokeh.models.ColumnDataSource(data=data_imgs_norm)
 
-   #current image to be displayed
+    #current image to be displayed
     data_img={'img':[data_imgs_norm['images'][0][0]]}
     source_img = bokeh.models.ColumnDataSource(data=data_img)
+
+
+    source_rois_full   = bokeh.models.ColumnDataSource(data=current_stack_data['rois'])
+    source_labels_full = bokeh.models.ColumnDataSource(data=dict(height=[], weight=[], names=[]))
+    source_cells_full  = bokeh.models.ColumnDataSource(data=dict(height=[], weight=[], names=[]))
 
     source_intensity_ch0 = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_intensity_ch1 = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
