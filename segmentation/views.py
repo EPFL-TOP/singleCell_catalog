@@ -1436,9 +1436,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         
         if DEBUG_TIME: print_time('------- get_current_stack 1 pos={}, image_stack_dict[current_pos]={}'.format(current_pos, None if image_stack_dict[current_pos]==None else '-->NOT NONE'), local_time)
 
-        for k in image_stack_dict:
-            if image_stack_dict[k]==None: print(k,'   NONE')
-            else:print(k,'  ============= NOT NONE')
 
         if image_stack_dict[current_pos]==None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
@@ -1464,7 +1461,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             current_file_list.append(current_file)
             current_pos_list.append(os.path.split(current_file)[1])
 
-        print('get_adjacent_stack = ',current_pos_list)
         for k in image_stack_dict:
             if k in current_pos_list:
                 if image_stack_dict[k]==None:
@@ -2290,7 +2286,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         cellIDs = CellID.objects.select_related().filter(sample=sample)
 
-        if DEBUG:print('dropdown_cell.value = ',dropdown_cell.value)
         cell_list=[]
         for cid in cellIDs:
             cell_list.append(cid.name)
@@ -2376,9 +2371,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 dropdown_cell.value=dropdown_cell.options[0]
             else: 
                 dropdown_cell.value = ''
-        if DEBUG:
-            print('dropdown_cell.value = ',dropdown_cell.value)
-            print('dropdown_cell.options = ',dropdown_cell.options)
+
 
         print_time('------- update_dropdown_cell 3 ', local_time)
 
@@ -2404,7 +2397,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print_time('------- update_dropdown_cell 4 ', local_time)
         #CLEMENT TEST COMMENTED
         #prepare_intensity()
-        print_time('------- update_dropdown_cell 5 ', local_time)
+        #print_time('------- update_dropdown_cell 5 ', local_time)
 
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
@@ -2530,8 +2523,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def intensity_type_callback(attr, old, new):
-        if DEBUG:
-            print('dropdown_intensity_type value=',dropdown_intensity_type.value)
         update_dropdown_cell('','','')
         sample = Sample.objects.get(file_name=get_current_file())
         cellid = CellID.objects.select_related().filter(sample=sample)
