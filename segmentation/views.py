@@ -1428,7 +1428,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         return rois_dict
     
     #___________________________________________________________________________________________
-    # Function to get the image stack
     def get_current_stack():
         if DEBUG: print('****************************  get_current_stack ****************************')
         local_time = datetime.datetime.now()
@@ -1449,75 +1448,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         if DEBUG_TIME: print_time('------- get_current_stack END ', local_time)
         return image_stack_dict[current_pos]
-        #return image_stack_dict[current_pos]['ind_images_list'], image_stack_dict[current_pos]['ind_images_list_norm']
-    
-        sample = Sample.objects.get(file_name=current_file)
-        frames = Frame.objects.select_related().filter(sample=sample)
-        source_rois_full.data['left']   = [ [] for f in range(len(frames))]
-        source_rois_full.data['right']  = [ [] for f in range(len(frames))]
-        source_rois_full.data['top']    = [ [] for f in range(len(frames))]
-        source_rois_full.data['bottom'] = [ [] for f in range(len(frames))]
-
-        source_labels_full.data['weight'] = [ [] for f in range(len(frames))]
-        source_labels_full.data['height'] = [ [] for f in range(len(frames))]
-        source_labels_full.data['names']  = [ [] for f in range(len(frames))]
-
-        source_cells_full.data['weight']  = [ [] for f in range(len(frames))]
-        source_cells_full.data['height']  = [ [] for f in range(len(frames))]
-        source_cells_full.data['names']   = [ [] for f in range(len(frames))]
-
-        if DEBUG_TIME: print_time('------- get_current_stack 3 ', local_time)
-
-        for frame in frames:
-            rois   = CellROI.objects.select_related().filter(frame=frame)
-            left_rois=[]
-            right_rois=[]
-            top_rois=[]
-            bottom_rois=[]
-            height_labels=[]
-            weight_labels=[]
-            names_labels=[]
-            height_cells=[]
-            weight_cells=[]
-            names_cells=[]        
-            for roi in rois:
-                left_rois.append(roi.min_col)
-                right_rois.append(roi.max_col)
-                top_rois.append(frame.height-roi.min_row)
-                bottom_rois.append(frame.height-roi.max_row)
-
-                weight_labels.append(roi.min_col)
-                height_labels.append(frame.height-roi.min_row)
-                names_labels.append('ROI{0} {1}'.format(roi.roi_number,roi.contour_cellroi.mode ))
-
-                weight_cells.append(roi.min_col)
-                height_cells.append(frame.height-roi.max_row)
-                if roi.cell_id !=None: names_cells.append(roi.cell_id.name)
-                else:names_cells.append("none")
-
-
-            source_rois_full.data['left'][frame.number]   = left_rois
-            source_rois_full.data['right'][frame.number]  = right_rois
-            source_rois_full.data['top'][frame.number]    = top_rois
-            source_rois_full.data['bottom'][frame.number] = bottom_rois
-
-            source_cells_full.data['height'][frame.number]  = height_cells
-            source_cells_full.data['weight'][frame.number]  = weight_cells
-            source_cells_full.data['names'][frame.number]   = names_cells
-
-            source_labels_full.data['height'][frame.number]  = height_labels
-            source_labels_full.data['weight'][frame.number]  = weight_labels
-            source_labels_full.data['names'][frame.number]   = names_labels
-
-
-        #if image_stack_cells_dict[current_pos]==None:
-        #    fill_rois_pos(current_file)
-
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
     def get_adjacent_stack(number=4):
-
         current_pos_list=[]
         current_file_list=[]
         for n in range(-number+1, number+2):
@@ -1548,8 +1482,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to get the current file
     def get_current_file(index=0):
-        local_time = datetime.datetime.now()
-
         current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
         current_file  = ''
         current_file_index = -9999
@@ -1565,8 +1497,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         else:
             current_file = current_files[current_file_index]
 
-        if DEBUG: print('****************************  get_current_file **************************** index=',index, '  current_file=',current_file)
-        if DEBUG_TIME: print_time('get_current_file END ', local_time)
         return current_file
     #___________________________________________________________________________________________
 
