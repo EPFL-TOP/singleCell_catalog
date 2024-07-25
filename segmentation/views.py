@@ -1530,11 +1530,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if k in current_pos_list:
                 if image_stack_dict[k]==None:
                     ind_images_list, ind_images_list_norm = get_stack_data(current_file_list[current_pos_list.index(k)], 'get_adjacent_stack')
-                    roid_data = get_stack_rois_data(current_file_list[current_pos_list.index(k)], 'get_adjacent_stack')
+                    rois_data = get_stack_rois_data(current_file_list[current_pos_list.index(k)], 'get_adjacent_stack')
 
                     image_stack_dict[k]={'ind_images_list':ind_images_list, 
                                          'ind_images_list_norm':ind_images_list_norm,
-                                         'rois':roid_data['rois']}                    
+                                         'rois':rois_data['rois'],
+                                         'labels':rois_data['labels'],
+                                         'cells':rois_data['cells']}
 
 
             else:
