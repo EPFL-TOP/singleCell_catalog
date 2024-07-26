@@ -2101,8 +2101,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
         for cellroi in cellrois:
             cellflag = cellroi.cellflag_cellroi
-
-
     #___________________________________________________________________________________________
 
  
@@ -2382,7 +2380,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print_time('------- update_dropdown_cell 3 ', local_time)
 
         #CLEMENT TEST COMMENTED
-        prepare_intensity()
+        threading.Thread(target = prepare_intensity).start()
+        #prepare_intensity()
         slider_find_peaks.end   = 30
         if len(source_intensity_ch1.data['intensity'])>0:
             slider_find_peaks.end   = int(np.max(source_intensity_ch1.data['intensity'])-np.min(source_intensity_ch1.data['intensity']))
