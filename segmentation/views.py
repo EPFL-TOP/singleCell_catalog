@@ -1562,7 +1562,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     slider_find_peaks  = bokeh.models.Slider(start=0, end=100, value=30, step=1, title="Peak prominence", width=200)
 
-    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
+    #plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
 
 
     #___________________________________________________________________________________________
@@ -1746,14 +1746,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             set_rising_falling(None)
 
-        #if len(source_intensity_ch1.data["intensity"])>0:
-        #    plot_intensity.y_range = bokeh.models.Range1d(max(source_intensity_ch1.data["intensity"])*0.4, max(source_intensity_ch1.data["intensity"])*1.2, bounds="auto")
-        ##plot_intensity.y_range.start=0
-        ##if len(source_intensity_ch1.data["intensity"])>0:
-        ##    plot_intensity.y_range.end=max(source_intensity_ch1.data["intensity"])*1.2
-        ##    plot_intensity.y_range.start=min(source_intensity_ch1.data["intensity"])*0.4
-        ###plot_intensity.y_range.trigger('start', 'end')
-        #plot_intensity.y_range.update(start=plot_intensity.y_range.start, end=plot_intensity.y_range.end)
         if DEBUG: print('prepare intensity - - - - - - - source_varea_death.data',  source_varea_death.data)
     #___________________________________________________________________________________________
 
@@ -4185,6 +4177,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.20, fill_color='green', source=source_varea_falling9)
     plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.20, fill_color='green', source=source_varea_falling10)
 
+    plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
 
 
     update_source_osc_tod()
