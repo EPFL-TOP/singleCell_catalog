@@ -2090,6 +2090,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 cellflag.save()
 
         if DEBUG:print('osc_dict=',osc_dict)
+        print('--vfvad-d-vd-vd-q  ',source_varea_death.data)
         cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
         for cellroi in cellrois:
             cellflag = cellroi.cellflag_cellroi
