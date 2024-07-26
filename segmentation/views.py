@@ -1568,6 +1568,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     # Function to prepare the intensity plot
     def prepare_intensity():
+        local_time = datetime.datetime.now()
         if DEBUG:print('----------------prepare_intensity--------------------dropdown_cell.value=',dropdown_cell.value)
         current_file=get_current_file()
         sample = Sample.objects.get(file_name=current_file)
@@ -1575,10 +1576,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         ncells_div.text="<b style='color:black; ; font-size:18px;'> Number of cells={}</b>".format(len(allcellids))
 
+        if DEBUG_TIME:print_time('------- prepare_intensity 1 ', local_time)
+
         if dropdown_cell.value!='':
-            if DEBUG: print('----------------prepare_intensity-------------------- in the if')
 
             cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
+
+            if DEBUG_TIME:print_time('------- prepare_intensity 2 ', local_time)
 
             #Set start of oscilation if it exist, -999 else
             if cellids[0].cell_status.start_oscillation>0: 
@@ -1706,7 +1710,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             except KeyError:
                 source_elongated_cell.data={'time':[], 'intensity':[], 'intensity_full':[]}
 
+            if DEBUG_TIME:print_time('------- prepare_intensity 3 ', local_time)
             set_rising_falling(cellids[0])
+            if DEBUG_TIME: print_time('------- prepare_intensity 4 ', local_time)
 
         else:
             if DEBUG: print('in the else ----------------prepare_intensity-------------------- in the else')
