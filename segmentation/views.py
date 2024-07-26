@@ -2380,7 +2380,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print_time('------- update_dropdown_cell 3 ', local_time)
 
         #CLEMENT TEST COMMENTED
-        threading.Thread(target = prepare_intensity).start()
+        #threading.Thread(target = prepare_intensity).start()
         #prepare_intensity()
         slider_find_peaks.end   = 30
         if len(source_intensity_ch1.data['intensity'])>0:
