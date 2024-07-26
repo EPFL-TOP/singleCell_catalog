@@ -1347,7 +1347,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         local_time=datetime.datetime.now()
 
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
-        if os.path.isdir(r'D:\raw_data\microscopy\cell_culture'):
+        if os.path.isdir(r'C:\Users\helsens'):
 #            current_file=os.path.join('D:',current_file.replace('/mnt/nas_rcp',''))
             current_file=os.path.join('Z:',current_file.replace('/mnt/nas_rcp',''))
         
