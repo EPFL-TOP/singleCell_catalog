@@ -1349,7 +1349,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         if os.path.isdir(r'C:\Users\helsens'):
 #            current_file=os.path.join('D:',current_file.replace('/mnt/nas_rcp',''))
-            current_file=os.path.join('Z:',current_file.replace('/mnt/nas_rcp',''))
+            current_file=os.path.join('Y:',current_file.replace('/mnt/nas_rcp',''))
         
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         time_lapse_path = Path(current_file)
