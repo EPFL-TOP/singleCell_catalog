@@ -196,8 +196,8 @@ def build_mva_detection(exp_name=''):
                         os.makedirs(outdir_name)
                     cellrois = CellROI.objects.select_related().filter(frame=frame)
                     outdict = {}
-                    outdict["image"]={"data":image,
-                                      "height": frame.height,
+                    outdict={"data":image,
+                             "height": frame.height,
                                       "width": frame.width,
                                       "annotations":[]}
                     outfile_name = os.path.join(outdir_name, 'frame{}.json'.format(frame.number))
