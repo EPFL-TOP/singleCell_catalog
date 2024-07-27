@@ -137,7 +137,9 @@ def build_mva_samples(exp_name=''):
                                   'pair_cell':cellroi.cellflag_cellroi.pair_cell,
                                   'flat':cellroi.cellflag_cellroi.flat,
                                   'round':cellroi.cellflag_cellroi.round,
-                                  'elongated':cellroi.cellflag_cellroi.elongated
+                                  'elongated':cellroi.cellflag_cellroi.elongated,
+                                  "bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row], 
+                                  "area":cellroi.contour_cellroi.number_of_pixels
                                   }
                         with open(image_file, 'r') as f:
                             data = json.load(f)
@@ -145,6 +147,8 @@ def build_mva_samples(exp_name=''):
                                 if 'BF' in key.split('_')[-1]:
                                     bf_image['image_bf']=data[key]
                         outdir_name =  '/data/singleCell_training/{}/{}/{}'.format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
+                        if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
+                            outdir_name =  r'D:\single_cells\training\{}\{}\{}'.format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
                         outfile_name = os.path.join(outdir_name, 'frame{}_{}.json'.format(cellroi.frame.number, cellid.name))
                         if not os.path.exists(outdir_name):
                             os.makedirs(outdir_name)
