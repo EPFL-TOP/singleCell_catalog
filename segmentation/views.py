@@ -173,8 +173,10 @@ def build_mva_detection(exp_name=''):
                 if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
                 #images, channels = read.nd2reader_getFrames(sample.file_name)
                     print('ttt',sample_file_name)
-                    sample_file_name=os.path.join(r'Y:', sample_file_name.replace('\mnt\nas_rcp',''))
+                    sample_file_name=os.path.join(r'Y:', sample_file_name.replace('/mnt/nas_rcp',''))
                     print('ttt===',sample_file_name)
+
+                    
                 images = nd2.imread(Path(sample_file_name).as_posix())
                 #images are t, c, x, y 
                 print(images.shape())
