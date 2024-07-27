@@ -196,7 +196,7 @@ def build_mva_detection(exp_name=''):
                         os.makedirs(outdir_name)
                     cellrois = CellROI.objects.select_related().filter(frame=frame)
                     outdict = {}
-                    outdict={"data":image,
+                    outdict={"data":image.tolist(),
                              "height": frame.height,
                                       "width": frame.width,
                                       "annotations":[]}
