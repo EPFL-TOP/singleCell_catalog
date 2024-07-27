@@ -179,8 +179,8 @@ def build_mva_detection(exp_name=''):
                     
                 images = nd2.imread(Path(sample_file_name).as_posix())
                 #images are t, c, x, y 
-                print(images.shape())
-                print(images.type())
+                print(images.shape)
+                print(images.dtype)
 
                 images=images.transpose(1,0,2,3)
                 BF_images=images[0]
