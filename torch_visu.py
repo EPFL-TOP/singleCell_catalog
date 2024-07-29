@@ -1,5 +1,5 @@
 import torch
-import json, os
+import json, os, random
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -62,8 +62,8 @@ def main():
             if file.endswith('.json'):
                 json_files.append(os.path.join(root, file))
 
-
-    nimages=10
+    random.shuffle(json_files)
+    nimages=100
     for idx in range(len(json_files)):
         if idx>=nimages:break
         json_path=json_files[idx]
