@@ -22,10 +22,12 @@ def load_model(model_path, num_classes, device):
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT')
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
-    model.load_state_dict(torch.load(model_path))
+    model.load_state_dict(torch.load(model_path, weights_only=True))
     model.to(device)
     model.eval()
     return model
+
+
 
 def preprocess_image(image_array):
     transform = ToTensorNormalize()
@@ -34,8 +36,8 @@ def preprocess_image(image_array):
 
 def visualize_predictions(image, predictions):
     fig, ax = plt.subplots(1)
-    ax.imshow(image.squeeze(0).cpu().numpy(), cmap='gray')
-    
+    img = image.squeeze(0).squeeze(0).cpu().numpy()
+    ax.imshow(img, cmap='gray')
     for box in predictions[0]['boxes']:
         x_min, y_min, x_max, y_max = box.cpu().numpy()
         rect = patches.Rectangle((x_min, y_min), x_max - x_min, y_max - y_min, linewidth=2, edgecolor='r', facecolor='none')
