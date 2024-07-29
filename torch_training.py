@@ -18,6 +18,7 @@ class CellDataset(Dataset):
             for file in files:
                 if file.endswith('.json'):
                     json_files.append(os.path.join(root, file))
+        print(json_files)
         return json_files
 
     def __len__(self):
