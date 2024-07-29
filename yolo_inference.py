@@ -10,6 +10,8 @@ from pathlib import Path
 def preprocess_image(image_array):
     # Normalize the image
     image = (image_array - image_array.min()) / (image_array.max() - image_array.min())
+    image = np.expand_dims(image, axis=0)  # Add batch dimension
+    image = np.repeat(image, 3, axis=1)    # Repeat the single channel to create 3 channels
     return image
 
 def visualize_predictions(image_array, predictions):
