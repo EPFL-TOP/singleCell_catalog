@@ -222,14 +222,14 @@ def build_mva_detection(exp_name=''):
 
                         #im.save(outfile_name)
                         outdir_name  = r'D:\single_cells\training_cell_detection_YOLO'
-                        uuid=uuid.uuid1()
+                        tmp_uuid=uuid.uuid1()
                         val=random.uniform(0,1)
-                        outdir_file  = os.path.join(outdir_name, 'images\train', '{}_{}.png'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), uuid))
-                        outdir_label = os.path.join(outdir_name, 'labels\train', '{}_{}.txt'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), uuid))
+                        outdir_file  = os.path.join(outdir_name, 'images\train', '{}_{}.png'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), tmp_uuid))
+                        outdir_label = os.path.join(outdir_name, 'labels\train', '{}_{}.txt'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), tmp_uuid))
                         
                         if val>0.8:
-                            outdir_file  = os.path.join(outdir_name, 'images\val', '{}_{}.png'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), uuid))
-                            outdir_label = os.path.join(outdir_name, 'labels\val', '{}_{}.txt'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), uuid))
+                            outdir_file  = os.path.join(outdir_name, 'images\val', '{}_{}.png'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), tmp_uuid))
+                            outdir_label = os.path.join(outdir_name, 'labels\val', '{}_{}.txt'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), tmp_uuid))
 
                         imageio.imwrite(outdir_file,image)
                         f = open(outdir_label, "w")
