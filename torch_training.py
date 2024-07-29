@@ -83,7 +83,7 @@ dataset = CellDataset(base_path=base_path, transform=transform)
 # Split dataset into training and validation sets
 train_size = int(0.8 * len(dataset))
 val_size = len(dataset) - train_size
-batch_size = 16  # Adjust this based on your GPU memory
+batch_size = 32  # Adjust this based on your GPU memory
 train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
 train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=lambda x: tuple(zip(*x)))
@@ -109,7 +109,7 @@ model.to(device)
 params = [p for p in model.parameters() if p.requires_grad]
 optimizer = optim.Adam(params, lr=1e-4)
 
-num_epochs = 25
+num_epochs = 20
 model_save_path = 'cell_detection_model.pth'
 
 for epoch in range(num_epochs):
