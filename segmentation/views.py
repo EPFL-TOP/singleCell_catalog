@@ -10,6 +10,10 @@ import os, sys, json, glob, gc
 import time, datetime
 import threading
 import subprocess
+import imageio
+import uuid
+import random
+
 from memory_profiler import profile
 from sklearn.cluster import DBSCAN
 from skimage import exposure
@@ -211,13 +215,32 @@ def build_mva_detection(exp_name=''):
                         json.dump(outdict, out_file)
                         #outfile_name = os.path.join(outdir_name, 'frame{}.jpg'.format(frame.number))
                         #norm_image = ((image - image.min()) / (image.max() - image.min()) * 255).astype(np.uint8)
-                       
+            
                         #rgb_image = np.stack((norm_image, norm_image, norm_image), axis=-1)
 
                         #im = Image.fromarray(rgb_image, mode='RGB')
 
                         #im.save(outfile_name)
+                        outdir_name  = r'D:\single_cells\training_cell_detection_YOLO'
+                        uuid=uuid.uuid1()
+                        val=random.uniform(0,1)
+                        outdir_file  = os.path.join(outdir_name, 'images\train', '{}_{}.png'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), uuid))
+                        outdir_label = os.path.join(outdir_name, 'labels\train', '{}_{}.txt'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), uuid))
+                        
+                        if val>0.8:
+                            outdir_file  = os.path.join(outdir_name, 'images\val', '{}_{}.png'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), uuid))
+                            outdir_label = os.path.join(outdir_name, 'labels\val', '{}_{}.txt'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), uuid))
 
+                        imageio.imwrite(outdir_file,image)
+                        f = open(outdir_label, "w")
+                        for bbox in outdict["annotations"]:
+                            f.write("0 {} {} {} {}".format((bbox['bbox'][0]+(bbox['bbox'][1]-bbox['bbox'][0])/2.)/outdict["width"], 
+                                                           (bbox['bbox'][2]+(bbox['bbox'][3]-bbox['bbox'][2])/2.)/outdict["height"],
+                                                           (bbox['bbox'][1]-bbox['bbox'][0])/outdict["width"], 
+                                                           (bbox['bbox'][3]-bbox['bbox'][2])/outdict["height"]
+                                                           ))
+
+                        f.close()
 
 
    
@@ -1462,10 +1485,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
-    def get_adjacent_stack(number=4):
+    def get_adjacent_stack(number=6):
         current_pos_list=[]
         current_file_list=[]
-        for n in range(-number+1, number+2):
+        for n in range(-number+4, number+2):
             #if n==0:continue
             current_file = get_current_file(index=n)
             current_file_list.append(current_file)
