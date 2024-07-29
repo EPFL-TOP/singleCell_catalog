@@ -103,6 +103,7 @@ model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+print('using device: ',device)
 model.to(device)
 
 params = [p for p in model.parameters() if p.requires_grad]
