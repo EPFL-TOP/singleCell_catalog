@@ -4,7 +4,6 @@ import json
 import numpy as np
 from torch.utils.data import Dataset
 from torchvision import transforms
-from PIL import Image
 
 class CellDataset(Dataset):
     def __init__(self, base_path, transform=None):
@@ -18,7 +17,6 @@ class CellDataset(Dataset):
             for file in files:
                 if file.endswith('.json'):
                     json_files.append(os.path.join(root, file))
-        print(json_files)
         return json_files
 
     def __len__(self):
@@ -30,7 +28,7 @@ class CellDataset(Dataset):
         with open(json_path, 'r') as f:
             data = json.load(f)
         
-        image_array = np.array(data['data'], dtype=np.int16)
+        image_array = np.array(data['data'], dtype=np.float32)  # Convert to float32 to avoid overflow
         boxes = [ann['bbox'] for ann in data['annotations']]
         
         # Convert bounding boxes from [x_min, y_min, width, height] to [x_min, y_min, x_max, y_max]
@@ -39,8 +37,7 @@ class CellDataset(Dataset):
         labels = torch.ones((len(boxes),), dtype=torch.int64)  # Assuming all cells belong to one class
 
         if self.transform:
-            image = Image.fromarray(image_array)  # Convert numpy array to PIL Image
-            image = self.transform(image)
+            image = self.transform(image_array)
         else:
             image = torch.tensor(image_array, dtype=torch.float32).unsqueeze(0)  # Convert to tensor and add channel dimension
 
@@ -50,22 +47,17 @@ class CellDataset(Dataset):
         }
         return image, target
 
-#class ToTensorNormalize:
-#    def __call__(self, image):
-#        image = torch.tensor(image, dtype=torch.float32)
-#        image = (image - image.min()) / (image.max() - image.min())  # Normalize to [0, 1]
-#        image = image.unsqueeze(0)  # Add channel dimension
-#        return image
 class ToTensorNormalize:
     def __call__(self, image):
+        # If input is a NumPy array
         if isinstance(image, np.ndarray):
-            image = torch.tensor(image, dtype=torch.float32)
-        else:  # Handle PIL Image
+            image = torch.tensor(image, dtype=torch.float32).unsqueeze(0)  # Add channel dimension
+        else:  # Handle PIL Image (if applicable)
             image = transforms.functional.pil_to_tensor(image).float()
         
-        image = (image - image.min()) / (image.max() - image.min())  # Normalize to [0, 1]
-        if image.shape[0] == 1:
-            image = image.unsqueeze(0)  # Add channel dimension if missing
+        # Normalize to [0, 1]
+        image = (image - image.min()) / (image.max() - image.min())
+        
         return image
 
 transform = transforms.Compose([
@@ -77,6 +69,10 @@ base_path = r'D:\single_cells\training_cell_detection'
 
 train_dataset = CellDataset(base_path=base_path, transform=transform)
 train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=4, shuffle=True, collate_fn=lambda x: tuple(zip(*x)))
+
+
+
+
 
 
 import torchvision
