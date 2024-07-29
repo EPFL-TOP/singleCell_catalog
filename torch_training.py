@@ -32,7 +32,8 @@ class CellDataset(Dataset):
         boxes = [ann['bbox'] for ann in data['annotations']]
         
         # Convert bounding boxes from [x_min, y_min, width, height] to [x_min, y_min, x_max, y_max]
-        boxes = [[x, y, x + w, y + h] for x, y, w, h in boxes]
+        #boxes = [[x, y, x + w, y + h] for x, y, w, h in boxes]
+        boxes = [[x_min, y_min, x_max, y_max] for x_min, x_max, y_min, y_max in boxes]
         boxes = torch.tensor(boxes, dtype=torch.float32)
         labels = torch.ones((len(boxes),), dtype=torch.int64)  # Assuming all cells belong to one class
 
