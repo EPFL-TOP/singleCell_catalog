@@ -50,11 +50,22 @@ class CellDataset(Dataset):
         }
         return image, target
 
+#class ToTensorNormalize:
+#    def __call__(self, image):
+#        image = torch.tensor(image, dtype=torch.float32)
+#        image = (image - image.min()) / (image.max() - image.min())  # Normalize to [0, 1]
+#        image = image.unsqueeze(0)  # Add channel dimension
+#        return image
 class ToTensorNormalize:
     def __call__(self, image):
-        image = torch.tensor(image, dtype=torch.float32)
+        if isinstance(image, np.ndarray):
+            image = torch.tensor(image, dtype=torch.float32)
+        else:  # Handle PIL Image
+            image = transforms.functional.pil_to_tensor(image).float()
+        
         image = (image - image.min()) / (image.max() - image.min())  # Normalize to [0, 1]
-        image = image.unsqueeze(0)  # Add channel dimension
+        if image.shape[0] == 1:
+            image = image.unsqueeze(0)  # Add channel dimension if missing
         return image
 
 transform = transforms.Compose([
