@@ -53,7 +53,7 @@ def main():
 
     # Example 2D array image
     #image_array = np.random.randint(0, 256, (512, 512), dtype=np.uint8)  # Replace with your actual 2D numpy array
-    json_path = 'D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well2\wscepfl0080_xy41\frame0.json'
+    json_path = r'D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well2\wscepfl0080_xy41\frame0.json'
     with open(json_path, 'r') as f:
         data = json.load(f)
     image_array = np.array(data['data'], dtype=np.float32)  # Convert to float32 to avoid overflow
