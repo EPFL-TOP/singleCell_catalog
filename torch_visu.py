@@ -1,5 +1,5 @@
 import torch
-import json
+import json, os
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -53,23 +53,34 @@ def main():
     # Load the model
     model = load_model(model_path, num_classes, device)
 
-    # Example 2D array image
-    #image_array = np.random.randint(0, 256, (512, 512), dtype=np.uint8)  # Replace with your actual 2D numpy array
     json_path = r'D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well2\wscepfl0080_xy41\frame0.json'
-    with open(json_path, 'r') as f:
-        data = json.load(f)
-    image_array = np.array(data['data'], dtype=np.float32)  # Convert to float32 to avoid overflow
+    base_path = r'D:\single_cells\training_cell_detection\wscepfl0080'
+
+    json_files = []
+    for root, _, files in os.walk(base_path):
+        for file in files:
+            if file.endswith('.json'):
+                json_files.append(os.path.join(root, file))
 
 
-    # Preprocess the image
-    image = preprocess_image(image_array).to(device)
+    nimages=10
+    for idx in range(len(json_files)):
+        if idx>=nimages:break
+        json_path=json_files[idx]
+        with open(json_path, 'r') as f:
+            data = json.load(f)
+        image_array = np.array(data['data'], dtype=np.float32)  # Convert to float32 to avoid overflow
 
-    # Make predictions
-    with torch.no_grad():
-        predictions = model(image)
 
-    # Visualize the predictions
-    visualize_predictions(image.cpu(), predictions)
+        # Preprocess the image
+        image = preprocess_image(image_array).to(device)
+
+        # Make predictions
+        with torch.no_grad():
+            predictions = model(image)
+
+        # Visualize the predictions
+        visualize_predictions(image.cpu(), predictions)
 
 if __name__ == "__main__":
     main()
