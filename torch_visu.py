@@ -68,6 +68,7 @@ def main():
     random.shuffle(json_files)
     nimages=100
     for idx in range(len(json_files)):
+        print(json_files[idx])
         if idx>=nimages:break
         json_path=json_files[idx]
         with open(json_path, 'r') as f:
