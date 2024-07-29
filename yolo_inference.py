@@ -35,6 +35,8 @@ def preprocess_image(image_array):
     # Add batch dimension
     image = np.expand_dims(image, axis=0)
     
+    print(image_array.shape)
+    print(image_array.dtype)    # Ensure the image is 2D and convert to 3 channels
     return image
 
 
