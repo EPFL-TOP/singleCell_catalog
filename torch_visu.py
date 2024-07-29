@@ -34,15 +34,18 @@ def preprocess_image(image_array):
     image = transform(image_array)
     return image.unsqueeze(0)  # Add batch dimension
 
-def visualize_predictions(image, predictions):
+def visualize_predictions(image, predictions, boxes):
     fig, ax = plt.subplots(1)
     img = image.squeeze(0).squeeze(0).cpu().numpy()
     ax.imshow(img, cmap='gray')
     for box in predictions[0]['boxes']:
         x_min, y_min, x_max, y_max = box.cpu().numpy()
-        rect = patches.Rectangle((x_min, y_min), x_max - x_min, y_max - y_min, linewidth=2, edgecolor='r', facecolor='none')
+        rect = patches.Rectangle((x_min, y_min), x_max - x_min, y_max - y_min, linewidth=1, edgecolor='r', facecolor='none')
         ax.add_patch(rect)
     
+    for box in boxes:
+        rect = patches.Rectangle((box[0], box[2]), box[1] - box[0], box[3] - box[2], linewidth=1, edgecolor='white', facecolor='none')
+        ax.add_patch(rect)
     plt.show()
 
 def main():
@@ -70,6 +73,7 @@ def main():
         with open(json_path, 'r') as f:
             data = json.load(f)
         image_array = np.array(data['data'], dtype=np.float32)  # Convert to float32 to avoid overflow
+        boxes = [ann['bbox'] for ann in data['annotations']]
 
 
         # Preprocess the image
@@ -80,7 +84,7 @@ def main():
             predictions = model(image)
 
         # Visualize the predictions
-        visualize_predictions(image.cpu(), predictions)
+        visualize_predictions(image.cpu(), predictions, boxes)
 
 if __name__ == "__main__":
     main()
