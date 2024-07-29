@@ -11,6 +11,10 @@ from pathlib import Path
 
 def preprocess_image(image_array):
     # Normalize the image
+    print(image_array)
+    print(image_array.shape)
+    print(image_array.dtype)
+
     image = (image_array - image_array.min()) / (image_array.max() - image_array.min())
     # Convert single channel to 3 channels
     image = np.stack((image,) * 3, axis=-1)
