@@ -7,12 +7,22 @@ import matplotlib.pyplot as plt
 from ultralytics import YOLO
 from pathlib import Path
 
+
+
 def preprocess_image(image_array):
     # Normalize the image
     image = (image_array - image_array.min()) / (image_array.max() - image_array.min())
-    image = np.expand_dims(image, axis=0)  # Add batch dimension
-    image = np.repeat(image, 3, axis=1)    # Repeat the single channel to create 3 channels
+    # Convert single channel to 3 channels
+    image = np.stack((image,) * 3, axis=-1)
+    # Resize to (512, 512) if necessary
+    if image.shape[:2] != (512, 512):
+        image = cv2.resize(image, (512, 512))
+    # Convert to float32
+    image = image.astype(np.float32)
+    # Add batch dimension
+    image = np.expand_dims(image, axis=0)
     return image
+
 
 def visualize_predictions(image_array, predictions):
     fig, ax = plt.subplots(1)
