@@ -49,7 +49,7 @@ def infer_images(image_paths, model_path):
         visualize_predictions(image_array, predictions)
 
 # Paths to your test images
-image_paths = ['D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well1\wscepfl0080_xy01\frame0.json', 
-               'D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well1\wscepfl0080_xy01\frame1.json']
-model_path = 'runs/detect/train/weights/best.pt'
+image_paths = [r'D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well1\wscepfl0080_xy01\frame0.json', 
+               r'D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well1\wscepfl0080_xy01\frame1.json']
+model_path = r'C:\Users\helsens\software\singleCell_catalog\runs\detect\train\weights\best.pt'
 infer_images(image_paths, model_path)
