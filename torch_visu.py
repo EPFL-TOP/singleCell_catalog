@@ -64,8 +64,8 @@ def main():
         for file in files:
             if file.endswith('.json'):
                 
-                #if 'xy07' not in root:continue
-                if 'xy40' not in root:continue
+                if 'xy07' not in root:continue
+                #if 'xy40' not in root:continue
                 json_files.append(os.path.join(root, file))
 
     random.shuffle(json_files)
