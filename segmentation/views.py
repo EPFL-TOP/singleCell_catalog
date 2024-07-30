@@ -167,6 +167,7 @@ def build_mva_detection(exp_name=''):
     exp_list = Experiment.objects.all()
     for exp in exp_list:
         if exp_name!='' and exp.name!=exp_name:
+            print('exp.name!=exp_name',exp.name!=exp_name, 'exp.name, exp_name  ',exp.name,'  ',exp_name)
             continue
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
