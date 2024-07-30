@@ -105,7 +105,7 @@ def main():
     # Make predictions
     start_time = time.time()
     with torch.no_grad():
-        predictions = model(image)
+        predictions = model(batch_images)
     end_time = time.time()
     print(f"Inference on batch size {len(batch_images)} took {end_time - start_time:.4f} seconds")
 
