@@ -47,8 +47,11 @@ def infer_images(image_paths, model_path):
             image_array = np.array(data['data'], dtype=np.float32)
             image_array = preprocess_image(image_array)
 
-        # Inference
-        results = model.predict(image_array)
+            # Inference
+            results = model.predict(image_array)
+
+        else:
+            results = model.predict(image_path)
 
         # Extracting the predictions
         predictions = []
