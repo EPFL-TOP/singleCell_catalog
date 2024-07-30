@@ -28,10 +28,10 @@ def load_model(model_path, num_classes, device):
     return model
 
 
-
 def preprocess_image(image_array):
     transform = ToTensorNormalize()
     image = transform(image_array)
+    print(image.shape)
     return image.unsqueeze(0)  # Add batch dimension
 
 def visualize_predictions(images, predictions, boxes):
