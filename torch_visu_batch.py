@@ -105,6 +105,7 @@ def main():
     base_path = r'D:\single_cells\training_cell_detection\wscepfl0080'
     base_path = r'D:\single_cells\training_cell_detection\wscepfl0060\wscepfl0060_well1'
     json_files = []
+    nfiles=0
     for root, _, files in os.walk(base_path):
         for file in files:
             if file.endswith('.json'):
@@ -112,7 +113,10 @@ def main():
                 if 'xy04' not in root:continue
                 #if 'xy40' not in root:continue
                 json_files.append(os.path.join(root, file))
+                if nfiles==2:
+                    break
 
+    print('json_files ',json_files)
     boxes=[]
     for idx in range(len(json_files)):
         print(json_files[idx])
