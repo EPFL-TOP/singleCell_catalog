@@ -9,32 +9,14 @@ from pathlib import Path
 
 
 
-
-
 def preprocess_image(image_array):
-    print(image_array)
+    # Normalize the image
     print(image_array.shape)
     print(image_array.dtype)    # Ensure the image is 2D and convert to 3 channels
-    if len(image_array.shape) == 2:
-        image = np.stack((image_array,) * 3, axis=-1)
-    elif image_array.shape[2] == 1:
-        image = np.concatenate((image_array, image_array, image_array), axis=-1)
-    else:
-        image = image_array
-
-    # Resize to (512, 512) if necessary
-    if image.shape[:2] != (512, 512):
-        image = cv2.resize(image, (512, 512))
-
-    # Normalize the image to range [0, 1]
-    image = (image - image.min()) / (image.max() - image.min())
-
-    # Convert to float32
-    image = image.astype(np.float32)
-
-    # Add batch dimension
-    image = np.expand_dims(image, axis=0)
-    
+    image = (image_array - image_array.min()) / (image_array.max() - image_array.min())
+    # Expand dimensions to match the expected input shape (1, 512, 512) -> (1, 1, 512, 512) -> (1, 3, 512, 512)
+    image = np.expand_dims(image, axis=0)  # Add batch dimension
+    image = np.repeat(image, 3, axis=1)    # Repeat the single channel to create 3 channels
     print(image_array.shape)
     print(image_array.dtype)    # Ensure the image is 2D and convert to 3 channels
     return image
