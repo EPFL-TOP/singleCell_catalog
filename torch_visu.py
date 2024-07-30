@@ -39,15 +39,22 @@ def visualize_predictions(images, predictions, boxes):
         fig, ax = plt.subplots(1)
         img = image.squeeze(0).squeeze(0).cpu().numpy()
         ax.imshow(img, cmap='gray')
-        for p in pred[0]['boxes']:
+        #for p in pred[0]['boxes']:
+        for p, score in zip(pred['boxes'], pred['scores']):
+            print('=================',p, score)
             x_min, y_min, x_max, y_max = p.cpu().numpy()
             rect = patches.Rectangle((x_min, y_min), x_max - x_min, y_max - y_min, linewidth=1, edgecolor='r', facecolor='none')
             ax.add_patch(rect)
-        
+            plt.text(x_min, y_min, f'{score:.2f}', color='white', fontsize=12, bbox=dict(facecolor='red', alpha=0.5))
+
         for b in box:
             rect = patches.Rectangle((b[0], b[2]), b[1] - b[0], b[3] - b[2], linewidth=1, edgecolor='white', facecolor='none')
             ax.add_patch(rect)
         plt.show()
+
+
+
+
 
 def main():
 
