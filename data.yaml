@@ -9,6 +9,6 @@ test:  # test images (optional)
 # Classes (80 COCO classes)
 #names:
 #  0: cell
-
+ch: 1
 nc: 1
 names: ['cell']
