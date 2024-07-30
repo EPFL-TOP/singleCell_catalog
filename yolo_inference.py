@@ -12,10 +12,10 @@ from pathlib import Path
 def preprocess_image(image_array):
     # Normalize the image
     print(image_array.shape)
-    print(image_array.dtype)    # Ensure the image is 2D and convert to 3 channels
     image = (image_array - image_array.min()) / (image_array.max() - image_array.min())
     # Expand dimensions to match the expected input shape (1, 512, 512) -> (1, 1, 512, 512) -> (1, 3, 512, 512)
     image = np.expand_dims(image, axis=0)  # Add batch dimension
+    print(image.shape)
     image = np.repeat(image, 3, axis=1)    # Repeat the single channel to create 3 channels
     print(image.shape)
     print(image.dtype)    # Ensure the image is 2D and convert to 3 channels
