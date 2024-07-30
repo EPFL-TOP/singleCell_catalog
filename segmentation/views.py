@@ -174,8 +174,10 @@ def build_mva_detection(exp_name=''):
         for expds in experimentaldataset:
             print('expds ',expds)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            print(samples)
             for sample in samples:
-                if sample.peaks_tod_div_validated==False:continue
+                print(sample)
+                #if sample.peaks_tod_div_validated==False:continue
                 sample_file_name=sample.file_name
                 print(sample_file_name)
                 if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
