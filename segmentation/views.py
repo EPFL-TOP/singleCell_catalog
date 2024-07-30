@@ -166,15 +166,18 @@ def build_mva_detection(exp_name=''):
     print('build_mva_detection exp_name=',exp_name)
     exp_list = Experiment.objects.all()
     for exp in exp_list:
+        print('exp.name!=exp_name',exp.name!=exp_name, 'exp.name, exp_name  ',exp.name,'  ',exp_name)
         if exp_name!='' and exp.name!=exp_name:
-            print('exp.name!=exp_name',exp.name!=exp_name, 'exp.name, exp_name  ',exp.name,'  ',exp_name)
             continue
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        print('experimentaldataset ',experimentaldataset)
         for expds in experimentaldataset:
+            print('expds ',expds)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for sample in samples:
                 if sample.peaks_tod_div_validated==False:continue
                 sample_file_name=sample.file_name
+                print(sample_file_name)
                 if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
                 #images, channels = read.nd2reader_getFrames(sample.file_name)
                     print('ttt',sample_file_name)
