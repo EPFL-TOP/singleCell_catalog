@@ -56,10 +56,10 @@ def infer_images(image_paths, model_path):
         # Extracting the predictions
         predictions = []
         for result in results:
-            print(result)
-            print(result.boxes)
+            print('result=',result)
+            print('result.boxes=',result.boxes)
             for r in result.boxes:
-                print(r)
+                print('  r=',r)
                 x_min, y_min, x_max, y_max, conf = r[:5]
                 predictions.append({
                     'box': [x_min, y_min, x_max, y_max],
