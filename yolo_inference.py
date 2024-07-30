@@ -31,7 +31,7 @@ def visualize_predictions(image_array, predictions):
         ax.imshow(img)
 
     else:
-    ax.imshow(image_array, cmap='gray')
+        ax.imshow(image_array, cmap='gray')
 
     for pred in predictions:
         box = pred['box']
