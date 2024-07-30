@@ -15,7 +15,7 @@ def preprocess_image(image_array):
     print(image_array.shape)
     image = (image_array - image_array.min()) / (image_array.max() - image_array.min())
     # Expand dimensions to match the expected input shape (1, 512, 512) -> (1, 1, 512, 512) -> (1, 3, 512, 512)
-    image = np.expand_dims(image, axis=0)  # Add batch dimension
+    image = np.expand_dims(image, axis=2)  # Add batch dimension
     print(image.shape)
     #image = np.repeat(image, 3, axis=1)    # Repeat the single channel to create 3 channels
     print(image.shape)
@@ -27,8 +27,8 @@ def visualize_predictions(image_array, predictions):
     fig, ax = plt.subplots(1)
 
     if '.png' in image_array:
-        img = mpimg.imread(image_array, cmap='gray')
-        ax.imshow(img)
+        img = mpimg.imread(image_array)
+        ax.imshow(img, cmap='gray')
 
     else:
         ax.imshow(image_array, cmap='gray')
@@ -81,6 +81,6 @@ def infer_images(image_paths, model_path):
 # Paths to your test images
 image_paths = [r'D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well1\wscepfl0080_xy01\frame0.json', 
                r'D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well1\wscepfl0080_xy01\frame1.json']
-image_paths = [r'D:\single_cells\training_cell_detection_YOLO\images\val\fna-bleb001_xy222_e5d5e17e-4dd0-11ef-ab07-ac1f6bbc3550.png']
+#image_paths = [r'D:\single_cells\training_cell_detection_YOLO\images\val\fna-bleb001_xy222_e5d5e17e-4dd0-11ef-ab07-ac1f6bbc3550.png']
 model_path = r'C:\Users\helsens\software\singleCell_catalog\runs\detect\train\weights\best.pt'
 infer_images(image_paths, model_path)
