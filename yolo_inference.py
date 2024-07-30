@@ -56,18 +56,19 @@ def infer_images(image_paths, model_path):
         # Extracting the predictions
         predictions = []
         for result in results:
-            print('result=',result)
-            print('result.boxes=',result.boxes)
-            for r in result.boxes:
-                print('  r=',r)
-                x_min, y_min, x_max, y_max, conf = r[:5]
+            boxes = result.boxes
+            for i in range(len(boxes)):
+                box = boxes.xyxy[i].cpu().numpy()
+                conf = boxes.conf[i].cpu().numpy()
                 predictions.append({
-                    'box': [x_min, y_min, x_max, y_max],
+                    'box': box,
                     'confidence': conf
                 })
 
         # Visualize the results
-        visualize_predictions(image_array, predictions)
+        #visualize_predictions(image_array[0, 0], predictions)
+        # Visualize the results
+        visualize_predictions(image_path, predictions)
 
 # Paths to your test images
 # Paths to your test images
