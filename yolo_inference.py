@@ -27,7 +27,7 @@ def visualize_predictions(image_array, predictions):
     fig, ax = plt.subplots(1)
 
     if '.png' in image_array:
-        img = mpimg.imread(image_array)
+        img = mpimg.imread(image_array, cmap='gray')
         ax.imshow(img)
 
     else:
