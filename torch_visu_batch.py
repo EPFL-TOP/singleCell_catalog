@@ -115,7 +115,7 @@ def main():
                 json_files.append(os.path.join(root, file))
                 if nfiles==2:
                     break
-
+                nfiles+=1
     print('json_files ',json_files)
     boxes=[]
     for idx in range(len(json_files)):
