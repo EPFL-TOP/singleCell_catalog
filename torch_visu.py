@@ -35,7 +35,7 @@ def preprocess_image(image_array):
     return image.unsqueeze(0)  # Add batch dimension
 
 def visualize_predictions(images, predictions, boxes):
-    for idx, (image, pred, box) in enumerate(zip(image, predictions, boxes)):
+    for idx, (image, pred, box) in enumerate(zip(images, predictions, boxes)):
         fig, ax = plt.subplots(1)
         img = image.squeeze(0).squeeze(0).cpu().numpy()
         ax.imshow(img, cmap='gray')
