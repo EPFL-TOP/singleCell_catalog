@@ -41,10 +41,11 @@ def infer_images(image_paths, model_path):
     model = YOLO(model_path)
 
     for image_path in image_paths:
-        with open(image_path, 'r') as f:
-            data = json.load(f)
-        image_array = np.array(data['data'], dtype=np.float32)
-        image_array = preprocess_image(image_array)
+        if '.json' in image_path:
+            with open(image_path, 'r') as f:
+                data = json.load(f)
+            image_array = np.array(data['data'], dtype=np.float32)
+            image_array = preprocess_image(image_array)
 
         # Inference
         results = model.predict(image_array)
@@ -66,5 +67,6 @@ def infer_images(image_paths, model_path):
 # Paths to your test images
 image_paths = [r'D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well1\wscepfl0080_xy01\frame0.json', 
                r'D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well1\wscepfl0080_xy01\frame1.json']
+image_paths = [r'D:\single_cells\training_cell_detection_YOLO\images\val\fna-bleb001_xy222_e5d5e17e-4dd0-11ef-ab07-ac1f6bbc3550.png']
 model_path = r'C:\Users\helsens\software\singleCell_catalog\runs\detect\train\weights\best.pt'
 infer_images(image_paths, model_path)
