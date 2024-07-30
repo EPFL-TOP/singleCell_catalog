@@ -72,6 +72,7 @@ def visualize_predictions(images, predictions, boxes):
         img = image.squeeze(0).squeeze(0).cpu().numpy()
         ax.imshow(img, cmap='gray')
         #for p in pred[0]['boxes']:
+        print(pred)
         for p, score in zip(pred['boxes'], pred['scores']):
             print('=================',p, score)
             x_min, y_min, x_max, y_max = p.cpu().numpy()
