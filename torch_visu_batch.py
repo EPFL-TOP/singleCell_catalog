@@ -132,9 +132,6 @@ def main():
     # Convert list of images to a batch tensor
     batch_images = torch.stack(processed_images).to(device)
 
-
-    # Convert list of images to a batch tensor
-    batch_images = torch.stack(processed_images).to('cuda')
     
     # Inference
     start_time = time.time()
