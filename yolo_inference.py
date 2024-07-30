@@ -4,6 +4,7 @@ import json
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 from ultralytics import YOLO
 from pathlib import Path
 
@@ -24,6 +25,12 @@ def preprocess_image(image_array):
 
 def visualize_predictions(image_array, predictions):
     fig, ax = plt.subplots(1)
+
+    if '.png' in image_array:
+        img = mpimg.imread(image_array)
+        ax.imshow(img)
+
+    else:
     ax.imshow(image_array, cmap='gray')
 
     for pred in predictions:
