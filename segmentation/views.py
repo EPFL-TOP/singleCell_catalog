@@ -4449,9 +4449,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             bboxes.append(data['bbox'])
 
     # Create a ColumnDataSource with the initial image
-    source = bokeh.models.ColumnDataSource(data={'image': [images_base64[0]]})
-    source_roi  = bokeh.models.ColumnDataSource(data=dict(left=[bboxes[0][0]], right=[bboxes[0][1]], top=[512-bboxes[0][2]], bottom=[512-bboxes[0][3]]))
-    print(source_roi.data)
+    source = bokeh.models.ColumnDataSource(data={'image': [images_base64[0]],
+                                                 'left': [bboxes[0][0]],
+                                                 'right': [bboxes[0][1]],
+                                                 'bottom': [bboxes[0][2]],
+                                                 'top': [bboxes[0][3]]})
+    
     # Create the figure
     p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=600, height=600, tools="box_select,wheel_zoom,box_zoom,reset,undo")
 
@@ -4459,10 +4462,14 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     p.axis.visible = False
     p.grid.visible = False
     # JavaScript callback to update the image
-    callback = bokeh.models.CustomJS(args=dict(source=source, source_roi=source_roi, images=images_base64), code="""
+    callback = bokeh.models.CustomJS(args=dict(source=source, images=images_base64, bboxes=bboxes), code="""
         var data = source.data;
         var index = cb_obj.value;
         data['image'][0] = images[index];
+    data['left'][0] = boxes[index][0];
+    data['right'][0] = boxes[index][1];
+    data['bottom'][0] = boxes[index][2];
+    data['top'][0] = boxes[index][3];
         source.change.emit();
     """)
 
