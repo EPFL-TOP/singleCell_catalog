@@ -4496,7 +4496,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                        'top':[bboxes[new][2]],
                        'bottom':[bboxes[new][3]]
                        }
-        print(source.data['left'], '  ',source.data['right'])
+        print(source.data['left'], '  ',source.data['right'], '  ', source.data['top'],'  ',source.data['bottom'])
 
     # Create the slider
     slider = bokeh.models.Slider(start=0, end=len(images_base64)-1, value=0, step=1, title="Image Index")
