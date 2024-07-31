@@ -4429,18 +4429,22 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 
-
     # Function to convert image to base64
     def image_to_base64(img_path):
         with Image.open(img_path) as img:
             buffer = BytesIO()
             img.save(buffer, format="PNG")
-            return base64.b64encode(buffer.getvalue()).decode()
+            return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
+
+
+
 
     # Load images from folder and convert to base64
     folder_path = r'D:\single_cells\training_cell_detection_categories\dead'
     image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
     images_base64 = [image_to_base64(img_path) for img_path in image_paths]
+
+
 
     # Create a ColumnDataSource with the initial image
     source = bokeh.models.ColumnDataSource(data={'image': [images_base64[0]]})
