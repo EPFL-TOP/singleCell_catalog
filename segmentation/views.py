@@ -4447,8 +4447,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     bboxes = []
     for img_path in image_paths:
         fname = img_path.replace('.png', '_annotation.json')
-        data=json.load(fname)
-        bboxes.append(data['bbox'])
+        with open(fname, 'r') as f:
+            data = json.load(f)
+            bboxes.append(data['bbox'])
 
     # Create a ColumnDataSource with the initial image
     source = bokeh.models.ColumnDataSource(data={'image': [images_base64[0]]})
