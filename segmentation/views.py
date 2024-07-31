@@ -4458,6 +4458,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     # Create the figure
     p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=600, height=600, tools="box_select,wheel_zoom,box_zoom,reset,undo")
 
+    p.quad(left='left', right='right', bottom='bottom', top='top', line_color="red", fill_alpha=0.0, source=source)
+
     p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
     p.axis.visible = False
     p.grid.visible = False
@@ -4487,7 +4489,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     #quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
     #p.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
 
-    p.quad(left='left', right='right', bottom='bottom', top='top', line_color="red", fill_alpha=0.0, source=source_roi)
 
     layout = bokeh.layouts.column(p, slider)
 
