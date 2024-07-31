@@ -4479,10 +4479,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         var data = source.data;
         var index = cb_obj.value;
         data['image'][0] = images[index];
-    data['left'][0] = boxes[index][0];
-    data['right'][0] = boxes[index][1];
-    data['bottom'][0] = boxes[index][2];
-    data['top'][0] = boxes[index][3];
+        //data['left'][0] = boxes[index][0];
+        //data['right'][0] = boxes[index][1];
+        //data['bottom'][0] = boxes[index][2];
+        //data['top'][0] = boxes[index][3];
         source.change.emit();
     """)
 
