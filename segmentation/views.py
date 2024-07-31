@@ -182,7 +182,7 @@ def build_mva_detection_categories():
 
     for idx, cell in enumerate(cellflags_dead):
         if idx>ncells:break
-        cellroi = cellflags_dead.cell_roi
+        cellroi = cell.cell_roi
         frame = cellroi.frame
         print(frame.sample.file_name,' ',frame.number, '  ',cellroi.max_col)
         
