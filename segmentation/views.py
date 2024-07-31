@@ -164,6 +164,42 @@ def build_mva_samples(exp_name=''):
 
 
 #___________________________________________________________________________________________
+def save_categories(cellflags, outname):
+    ncells = 200
+    outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories', outname)
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    for idx, cell in enumerate(cellflags):
+        if idx>=ncells:break
+        cellroi = cell.cell_roi
+        frame   = cellroi.frame
+
+        sample_file_name=os.path.join(r'Y:', frame.sample.file_name.replace('/mnt/nas_rcp',''))
+        print('ttt===',sample_file_name) 
+        images = nd2.imread(Path(sample_file_name).as_posix())
+        images=images.transpose(1,0,2,3)
+        image=images[0][frame.number]
+
+
+        tmp_uuid=uuid.uuid1()
+
+        outfile_png  = os.path.join(outdir, '{}_{}.png'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), tmp_uuid))
+        imageio.imwrite(outfile_png,image)
+
+        outfile_json = os.path.join(outdir, '{}_{}.json'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), tmp_uuid))
+        outdict={"data":image.tolist()}
+        out_file = open(outfile_json, "w") 
+        json.dump(outdict, out_file)
+
+        outfile_anno = os.path.join(outdir, '{}_{}_annotation.json'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), tmp_uuid))
+        outdict={"bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row],
+                 "image_file":outfile_png,
+                 "image_json":outfile_json}
+        out_file = open(outfile_anno, "w") 
+        json.dump(outdict, out_file)
+
+#___________________________________________________________________________________________
 def build_mva_detection_categories():
     cellflags_dead      = CellFlag.objects.filter(alive=False).order_by("?")
     cellflags_alive     = CellFlag.objects.filter(alive=True, dividing=False, double_nuclei=False, elongated=False, flat=False, multiple_cells=False, pair_cell=False, round=False).order_by("?")
@@ -171,20 +207,15 @@ def build_mva_detection_categories():
     cellflags_elongated = CellFlag.objects.filter(alive=True, elongated=True).order_by("?")
     cellflags_flat      = CellFlag.objects.filter(alive=True, flat=True).order_by("?")
 
-    ncells = 200
-
-
     print('number of dead cells      = ',len(cellflags_dead))
     print('number of alive cells     = ',len(cellflags_alive))
     print('number of dividing cells  = ',len(cellflags_dividing))
     print('number of elongated cells = ',len(cellflags_elongated))
     print('number of flat cells      = ',len(cellflags_flat))
 
-    for idx, cell in enumerate(cellflags_dead):
-        if idx>ncells:break
-        cellroi = cell.cell_roi
-        frame = cellroi.frame
-        print(frame.sample.file_name,' ',frame.number, '  ',cellroi.max_col)
+    save_categories(cellflags_dead, 'dead')
+
+
         
 
 
