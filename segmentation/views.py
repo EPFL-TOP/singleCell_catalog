@@ -4476,6 +4476,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     p.axis.visible = False
     p.grid.visible = False
     # JavaScript callback to update the image
+
     callback = bokeh.models.CustomJS(args=dict(source=source, images=images_base64, bboxes=bboxes), code="""
         var data = source.data;
         var index = cb_obj.value;
@@ -4488,14 +4489,19 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     """)
 
     # Slider callback to update the image
-    #def update_image(attr, old, new):
-    #    source.data = {'image': [images_base64[new]]}
-    #    print(images_base64[new])
+    def update_image(attr, old, new):
+        source.data = {'image': [images_base64[new]], 
+                       'left':[bboxes[new][0]],
+                       'right':[bboxes[new][1]],
+                       'top':[bboxes[new][2]],
+                       'bottom':[bboxes[new][3]]
+                       }
+        print(source.data['left'], '  ',source.data['right'])
 
     # Create the slider
     slider = bokeh.models.Slider(start=0, end=len(images_base64)-1, value=0, step=1, title="Image Index")
-    slider.js_on_change('value', callback)
-    #slider.on_change('value', update_image)
+    #slider.js_on_change('value', callback)
+    slider.on_change('value', update_image)
     # Arrange the plot and slider in a layout
 
     #quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
