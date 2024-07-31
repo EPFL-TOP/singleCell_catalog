@@ -4423,6 +4423,48 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
+#___________________________________________________________________________________________
+def phenocheck_handler(doc: bokeh.document.Document) -> None:
+    print('****************************  phenocheck_handler ****************************')
+    os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
+
+
+    # Function to convert image to base64
+    def image_to_base64(img_path):
+        with Image.open(img_path) as img:
+            buffer = BytesIO()
+            img.save(buffer, format="PNG")
+            return base64.b64encode(buffer.getvalue()).decode()
+
+    # Load images from folder and convert to base64
+    folder_path = r'D:\single_cells\training_cell_detection_categories\dead'
+    image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
+    images_base64 = [image_to_base64(img_path) for img_path in image_paths]
+
+    # Create a ColumnDataSource with the initial image
+    source = bokeh.models.ColumnDataSource(data={'image': [images_base64[0]]})
+
+    # Create the figure
+    p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=400, height=400)
+    p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
+
+    # JavaScript callback to update the image
+    callback = bokeh.models.CustomJS(args=dict(source=source, images=images_base64), code="""
+        var data = source.data;
+        var index = cb_obj.value;
+        data['image'][0] = images[index];
+        source.change.emit();
+    """)
+
+    # Create the slider
+    slider = bokeh.models.Slider(start=0, end=len(images_base64)-1, value=0, step=1, title="Image Index")
+    slider.js_on_change('value', callback)
+
+    # Arrange the plot and slider in a layout
+    layout = bokeh.layouts.column(p, slider)
+
+    doc.add_root(layout)
 
 #___________________________________________________________________________________________
 def summary_handler(doc: bokeh.document.Document) -> None:
@@ -5185,3 +5227,15 @@ def bokeh_summary_dashboard(request: HttpRequest) -> HttpResponse:
     context = {'script': script}
 
     return render(request, 'segmentation/bokeh_summary_dashboard.html', context=context)
+
+
+
+#___________________________________________________________________________________________
+@login_required
+def bokeh_phenocheck_dashboard(request: HttpRequest) -> HttpResponse:
+
+    script = bokeh.embed.server_document(request.build_absolute_uri())
+    print("request.build_absolute_uri() ",request.build_absolute_uri())
+    context = {'script': script}
+
+    return render(request, 'segmentation/bokeh_phenocheck_dashboard.html', context=context)

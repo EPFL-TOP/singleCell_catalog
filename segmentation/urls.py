@@ -9,6 +9,7 @@ urlpatterns = [
     path(r"", views.index, name="index"),
     path(r"bokeh_dashboard", views.bokeh_dashboard, name="bokeh_dashboard"),
     path(r"bokeh_summary_dashboard", views.bokeh_summary_dashboard, name="bokeh_summary_dashboard"),
+    path(r"bokeh_phenocheck_dashboard", views.bokeh_phenocheck_dashboard, name="bokeh_phenocheck_dashboard"),
     #path('download/', views.index, name='download_file'),
     #path("bokeh_template", views.bokeh_server, name="bokeh_template"),
     #path("image_template", views.image_view, name="image_template"),
