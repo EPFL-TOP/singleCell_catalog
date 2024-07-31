@@ -161,6 +161,14 @@ def build_mva_samples(exp_name=''):
                         json.dump(bf_image, out_file) 
                         out_file.close() 
 
+
+
+#___________________________________________________________________________________________
+def build_mva_detection_categories():
+    cellflags_dead = CellFlag.objects.filter(alive=False)
+    print('nujber of dead cells = ',len(cellflags_dead))
+#    cellrois_dead = CellROI.objects.filter()
+
 #___________________________________________________________________________________________
 def build_mva_detection(exp_name=''):
     print('build_mva_detection exp_name=',exp_name)
@@ -174,9 +182,7 @@ def build_mva_detection(exp_name=''):
         for expds in experimentaldataset:
             print('expds ',expds)
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-            print(samples)
             for sample in samples:
-                print(sample)
                 #if sample.peaks_tod_div_validated==False:continue
                 sample_file_name=sample.file_name
                 print(sample_file_name)
@@ -4744,6 +4750,9 @@ def index(request: HttpRequest) -> HttpResponse:
 
     if 'build_mva_detection' in request.POST:
         build_mva_detection(selected_dict['experiment'])
+
+    if 'build_mva_detection_categories' in request.POST:
+        build_mva_detection_categories()
 
     #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
     if 'segment' in request.POST:
