@@ -4436,9 +4436,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             img.save(buffer, format="PNG")
             return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
 
-
-
-
     # Load images from folder and convert to base64
     folder_path = r'D:\single_cells\training_cell_detection_categories\dead'
     image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
@@ -4480,8 +4477,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     #slider.on_change('value', update_image)
     # Arrange the plot and slider in a layout
 
-    quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
-    p.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
+    #quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
+    #p.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
+
+    p.quad(left='left', right='right', bottom='bottom', top='top', line_color="red", fill_alpha=0.0, source=source_roi)
 
     layout = bokeh.layouts.column(p, slider)
 
