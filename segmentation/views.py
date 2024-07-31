@@ -4474,7 +4474,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     p.quad(left=0.2, right=0.5, bottom=0.1, top=0.5, line_color="blue", fill_alpha=0.0)
 
-
+    rect = p.rect(x=0.5, y=0.5, width=0.3, height=0.3, line_color="blue", fill_alpha=0.0)
     p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
     p.axis.visible = False
     p.grid.visible = False
