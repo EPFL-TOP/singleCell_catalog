@@ -170,13 +170,23 @@ def build_mva_detection_categories():
     cellflags_dividing  = CellFlag.objects.filter(alive=True, dividing=True).order_by("?")
     cellflags_elongated = CellFlag.objects.filter(alive=True, elongated=True).order_by("?")
     cellflags_flat      = CellFlag.objects.filter(alive=True, flat=True).order_by("?")
+
+    ncells = 200
+
+
     print('number of dead cells      = ',len(cellflags_dead))
     print('number of alive cells     = ',len(cellflags_alive))
     print('number of dividing cells  = ',len(cellflags_dividing))
     print('number of elongated cells = ',len(cellflags_elongated))
     print('number of flat cells      = ',len(cellflags_flat))
 
-#    cellrois_dead = CellROI.objects.filter()
+    for idx, cell in enumerate(cellflags_dead):
+        if idx>ncells:break
+        cellroi = cellflags_dead.cell_roi
+        frame = cellroi.frame
+        print(frame.sample.file_name,' ',frame.number, '  ',cellroi.max_col)
+        
+
 
 #___________________________________________________________________________________________
 def build_mva_detection(exp_name=''):
