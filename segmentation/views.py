@@ -4470,11 +4470,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     # Create the figure
     p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=600, height=600, tools="box_select,wheel_zoom,box_zoom,reset,undo")
 
-    p.quad(left='left', right='right', bottom='bottom', top='top', line_color="red", fill_alpha=0.0, source=source)
-
-    p.quad(left=0.2, right=0.5, bottom=0.1, top=0.5, line_color="blue", fill_alpha=0.0)
-
-    rect = p.rect(x=0.5, y=0.5, width=0.3, height=0.3, line_color="blue", fill_alpha=0.0)
     p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
     p.axis.visible = False
     p.grid.visible = False
@@ -4503,13 +4498,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     # Create the slider
     slider = bokeh.models.Slider(start=0, end=len(images_base64)-1, value=0, step=1, title="Image Index")
-    #slider.js_on_change('value', callback)
-    slider.on_change('value', update_image)
+    slider.js_on_change('value', callback)
+    #slider.on_change('value', update_image)
     # Arrange the plot and slider in a layout
 
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
     p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
-
 
     layout = bokeh.layouts.column(p, slider)
 
