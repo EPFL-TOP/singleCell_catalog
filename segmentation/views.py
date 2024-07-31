@@ -4450,17 +4450,21 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
 
     # JavaScript callback to update the image
-    callback = bokeh.models.CustomJS(args=dict(source=source, images=images_base64), code="""
-        var data = source.data;
-        var index = cb_obj.value;
-        data['image'][0] = images[index];
-        source.change.emit();
-    """)
+    #callback = bokeh.models.CustomJS(args=dict(source=source, images=images_base64), code="""
+    #    var data = source.data;
+    #    var index = cb_obj.value;
+    #    data['image'][0] = images[index];
+    #    source.change.emit();
+    #""")
+
+    # Slider callback to update the image
+    def update_image(attr, old, new):
+        source.data = {'image': [images_base64[new]]}
 
     # Create the slider
     slider = bokeh.models.Slider(start=0, end=len(images_base64)-1, value=0, step=1, title="Image Index")
-    slider.js_on_change('value', callback)
-
+    #slider.js_on_change('value', callback)
+    slider.on_change('value', update_image)
     # Arrange the plot and slider in a layout
     layout = bokeh.layouts.column(p, slider)
 
