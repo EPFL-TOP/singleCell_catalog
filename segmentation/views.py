@@ -4296,8 +4296,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     update_source_segment()
 
     # Add the rectangle glyph after adding the image
-    #quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
-    #plot_image.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
+    quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
+    plot_image.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
 
     # Remove the axes
     plot_image.axis.visible = False
@@ -4507,8 +4507,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     slider.on_change('value', update_image)
     # Arrange the plot and slider in a layout
 
-    #quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
-    #p.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
+    quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
+    p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
 
 
     layout = bokeh.layouts.column(p, slider)
