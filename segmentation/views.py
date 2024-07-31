@@ -4451,7 +4451,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     # Create a ColumnDataSource with the initial image
     source = bokeh.models.ColumnDataSource(data={'image': [images_base64[0]]})
     source_roi  = bokeh.models.ColumnDataSource(data=dict(left=[bboxes[0][0]], right=[bboxes[0][1]], top=[512-bboxes[0][2]], bottom=[512-bboxes[0][3]]))
-
+    print(source_roi.data)
     # Create the figure
     p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=600, height=600, tools="box_select,wheel_zoom,box_zoom,reset,undo")
 
