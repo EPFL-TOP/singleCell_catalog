@@ -4436,6 +4436,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             img.save(buffer, format="PNG")
             return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
 
+
+
     # Load images from folder and convert to base64
     folder_path = r'D:\single_cells\training_cell_detection_categories\dead'
     image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
@@ -4446,15 +4448,25 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         fname = img_path.replace('.png', '_annotation.json')
         with open(fname, 'r') as f:
             data = json.load(f)
-            bboxes.append(data['bbox'])
+            left = data['bbox'][0]/512.
+            right = data['bbox'][1]/512.
+            top = 1 - data['bbox'][2]/512.
+            bottom = 1 - data['bbox'][3]/512.
+            bboxes.append([left, right, top, bottom])
 
     # Create a ColumnDataSource with the initial image
     source = bokeh.models.ColumnDataSource(data={'image': [images_base64[0]],
                                                  'left': [bboxes[0][0]],
                                                  'right': [bboxes[0][1]],
-                                                 'bottom': [bboxes[0][2]],
-                                                 'top': [bboxes[0][3]]})
+                                                 'top': [bboxes[0][2]],
+                                                 'bottom': [bboxes[0][3]]})
     
+           # left_rois.append(roi.min_col)
+           # right_rois.append(roi.max_col)
+           # top_rois.append(frame[0].height-roi.min_row)
+           # bottom_rois.append(frame[0].height-roi.max_row)
+
+
     # Create the figure
     p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=600, height=600, tools="box_select,wheel_zoom,box_zoom,reset,undo")
 
