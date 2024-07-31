@@ -165,7 +165,7 @@ def build_mva_samples(exp_name=''):
 
 #___________________________________________________________________________________________
 def save_categories(cellflags, outname):
-    ncells = 200
+    ncells = 20
     outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories', outname)
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -181,18 +181,19 @@ def save_categories(cellflags, outname):
         images=images.transpose(1,0,2,3)
         image=images[0][frame.number]
 
-
         tmp_uuid=uuid.uuid1()
 
-        outfile_png  = os.path.join(outdir, '{}_{}.png'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), tmp_uuid))
-        imageio.imwrite(outfile_png,image)
+        outfile_png  = os.path.join(outdir, '{}_frame{}_{}.png'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), frame.number, tmp_uuid))
+        norm_image = (image - image.min()) / (image.max() - image.min())
+        plt.imsave(outfile_png, norm_image, cmap='gray')
+        #imageio.imwrite(outfile_png,image)
 
-        outfile_json = os.path.join(outdir, '{}_{}.json'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), tmp_uuid))
+        outfile_json = os.path.join(outdir, '{}_frame{}_{}.json'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), frame.number, tmp_uuid))
         outdict={"data":image.tolist()}
         out_file = open(outfile_json, "w") 
         json.dump(outdict, out_file)
 
-        outfile_anno = os.path.join(outdir, '{}_{}_annotation.json'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), tmp_uuid))
+        outfile_anno = os.path.join(outdir, '{}_frame{}_{}_annotation.json'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), frame.number, tmp_uuid))
         outdict={"bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row],
                  "image_file":outfile_png,
                  "image_json":outfile_json}
