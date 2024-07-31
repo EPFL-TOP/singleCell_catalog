@@ -4460,6 +4460,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     # Slider callback to update the image
     def update_image(attr, old, new):
         source.data = {'image': [images_base64[new]]}
+        print(images_base64[new])
 
     # Create the slider
     slider = bokeh.models.Slider(start=0, end=len(images_base64)-1, value=0, step=1, title="Image Index")
