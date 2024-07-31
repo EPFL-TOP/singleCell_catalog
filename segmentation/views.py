@@ -4444,17 +4444,24 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
     images_base64 = [image_to_base64(img_path) for img_path in image_paths]
 
-
+    bboxes = []
+    for img_path in image_paths:
+        fname = img_path.replace('.png', '_annotation.json')
+        data=json.load(fname)
+        bboxes.append(data['bbox'])
 
     # Create a ColumnDataSource with the initial image
     source = bokeh.models.ColumnDataSource(data={'image': [images_base64[0]]})
+    source_roi  = bokeh.models.ColumnDataSource(data=dict(left=[bboxes[0][0]], right=[bboxes[0][1]], top=[512-bboxes[0][2]], bottom=[512-bboxes[0][3]]))
 
     # Create the figure
-    p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=400, height=400)
-    p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
+    p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=600, height=600, tools="box_select,wheel_zoom,box_zoom,reset,undo")
 
+    p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
+    p.axis.visible = False
+    p.grid.visible = False
     # JavaScript callback to update the image
-    callback = bokeh.models.CustomJS(args=dict(source=source, images=images_base64), code="""
+    callback = bokeh.models.CustomJS(args=dict(source=source, source_roi=source_roi, images=images_base64), code="""
         var data = source.data;
         var index = cb_obj.value;
         data['image'][0] = images[index];
@@ -4471,6 +4478,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     slider.js_on_change('value', callback)
     #slider.on_change('value', update_image)
     # Arrange the plot and slider in a layout
+
+    quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
+    p.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
+
     layout = bokeh.layouts.column(p, slider)
 
     doc.add_root(layout)
