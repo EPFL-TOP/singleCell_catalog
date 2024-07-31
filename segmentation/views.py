@@ -165,14 +165,17 @@ def build_mva_samples(exp_name=''):
 
 #___________________________________________________________________________________________
 def build_mva_detection_categories():
-    cellflags_dead = CellFlag.objects.filter(alive=False)
-    cellflags_alive = CellFlag.objects.filter(alive=True, dividing=False, double_nuclei=False, elongated=False, flat=False, multiple_cells=False, pair_cell=False, round=False)
-    cellflags_dividing = CellFlag.objects.filter(alive=True, dividing=True)
-    #cellflags_dead = CellFlag.objects.filter(alive=False)
-    #cellflags_dead = CellFlag.objects.filter(alive=False)
-    print('number of dead cells     = ',len(cellflags_dead))
-    print('number of alive cells    = ',len(cellflags_alive))
-    print('number of dividing cells = ',len(cellflags_dividing))
+    cellflags_dead      = CellFlag.objects.filter(alive=False)
+    cellflags_alive     = CellFlag.objects.filter(alive=True, dividing=False, double_nuclei=False, elongated=False, flat=False, multiple_cells=False, pair_cell=False, round=False)
+    cellflags_dividing  = CellFlag.objects.filter(alive=True, dividing=True)
+    cellflags_elongated = CellFlag.objects.filter(alive=True, elongated=True)
+    cellflags_flat      = CellFlag.objects.filter(alive=True, flat=True)
+    print('number of dead cells      = ',len(cellflags_dead))
+    print('number of alive cells     = ',len(cellflags_alive))
+    print('number of dividing cells  = ',len(cellflags_dividing))
+    print('number of elongated cells = ',len(cellflags_elongated))
+    print('number of flat cells      = ',len(cellflags_flat))
+
 #    cellrois_dead = CellROI.objects.filter()
 
 #___________________________________________________________________________________________
