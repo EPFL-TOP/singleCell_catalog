@@ -4489,9 +4489,11 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
     p.axis.visible = False
     p.grid.visible = False
-    # JavaScript callback to update the image
 
-    callback = bokeh.models.CustomJS(args=dict(source=source, folders=folders), code="""
+    select = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
+    slider = bokeh.models.Slider(start=0, end=len(images_base64)-1, value=0, step=1, title="Image Index")
+
+    callback = bokeh.models.CustomJS(args=dict(source=source, folders=folders, slider=slider, select=select), code="""
         var index = slider.value;
         var folder = select.value;
         var images_base64 = folders[folder].images;
@@ -4518,13 +4520,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                        }
         print(source.data['left'], '  ',source.data['right'], '  ', source.data['top'],'  ',source.data['bottom'])
 
-    # Create the Select widget
-    select = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
+
     select.js_on_change('value', callback)
 
 
-    # Create the slider
-    slider = bokeh.models.Slider(start=0, end=len(images_base64)-1, value=0, step=1, title="Image Index")
     slider.js_on_change('value', callback)
     #slider.on_change('value', update_image)
     # Arrange the plot and slider in a layout
@@ -4532,7 +4531,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
     p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
 
-    layout = bokeh.layouts.column(p, slider)
+    layout = bokeh.layouts.column(select, p, slider)
 
     doc.add_root(layout)
 
