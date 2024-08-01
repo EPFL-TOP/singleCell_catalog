@@ -4467,7 +4467,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         images_base64, bboxes = get_images_bboxes(os.path.join(folder_path,cell))
         folders[cell] = {
             'images': images_base64,
-            'rects': bboxes
+            'bboxes': bboxes
         }
 
     # Create a ColumnDataSource with the initial image
