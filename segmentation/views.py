@@ -4460,7 +4460,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
     cell_types = ["normal",  "dead", "elongated", "flat"]
-    folder_path = r'D:\single_cells\training_cell_detection_categories\'
+    folder_path = r'D:\single_cells\training_cell_detection_categories'
 
     folders = {}
     for cell in cell_types:
