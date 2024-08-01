@@ -4497,7 +4497,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         var index = slider.value;
         var folder = select.value;
         var images_base64 = folders[folder].images;
-        var rect_data = folders[folder].rects;
+        var rect_data = folders[folder].bboxes;
         data = {
             'image': [images_base64[index]],
             'left': [rect_data[index][0]],
