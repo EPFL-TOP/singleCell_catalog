@@ -4498,14 +4498,13 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         var folder = select.value;
         var images_base64 = folders[folder].images;
         var rect_data = folders[folder].bboxes;
-        data = {
+        source.data = {
             'image': [images_base64[index]],
             'left': [rect_data[index][0]],
             'right': [rect_data[index][1]],
             'bottom': [rect_data[index][2]],
             'top': [rect_data[index][3]]
         };
-        source.data = data;
         source.change.emit();
                                      
     """)
