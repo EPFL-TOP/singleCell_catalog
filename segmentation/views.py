@@ -215,6 +215,10 @@ def build_mva_detection_categories():
     print('number of flat cells      = ',len(cellflags_flat))
 
     save_categories(cellflags_dead, 'dead')
+    save_categories(cellflags_alive, 'normal')
+    save_categories(cellflags_dividing, 'dividing')
+    save_categories(cellflags_elongated, 'elongated')
+    save_categories(cellflags_flat, 'flat')
 
 
         
@@ -4429,37 +4433,49 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 
-    # Function to convert image to base64
+    #___________________________________________________________________________________________
     def image_to_base64(img_path):
         with Image.open(img_path) as img:
             buffer = BytesIO()
             img.save(buffer, format="PNG")
             return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
 
+    #___________________________________________________________________________________________
+    def get_images_bboxes(folder_path):
+        # Load images from folder and convert to base64
+        image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
+        images_base64 = [image_to_base64(img_path) for img_path in image_paths]
+
+        bboxes = []
+        for img_path in image_paths:
+            fname = img_path.replace('.png', '_annotation.json')
+            with open(fname, 'r') as f:
+                data = json.load(f)
+                left = data['bbox'][0]/512.
+                right = data['bbox'][1]/512.
+                top = 1 - data['bbox'][2]/512.
+                bottom = 1 - data['bbox'][3]/512.
+                bboxes.append([left, right, top, bottom])
+        return images_base64, bboxes
 
 
-    # Load images from folder and convert to base64
-    folder_path = r'D:\single_cells\training_cell_detection_categories\dead'
-    image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
-    images_base64 = [image_to_base64(img_path) for img_path in image_paths]
+    cell_types = ["normal",  "dead", "elongated", "flat"]
+    folder_path = r'D:\single_cells\training_cell_detection_categories\'
 
-    bboxes = []
-    for img_path in image_paths:
-        fname = img_path.replace('.png', '_annotation.json')
-        with open(fname, 'r') as f:
-            data = json.load(f)
-            left = data['bbox'][0]/512.
-            right = data['bbox'][1]/512.
-            top = 1 - data['bbox'][2]/512.
-            bottom = 1 - data['bbox'][3]/512.
-            bboxes.append([left, right, top, bottom])
+    folders = {}
+    for cell in cell_types:
+        images_base64, bboxes = get_images_bboxes(os.path.join(folder_path,cell))
+        folders[cell] = {
+            'images': images_base64,
+            'rects': bboxes
+        }
 
     # Create a ColumnDataSource with the initial image
-    source = bokeh.models.ColumnDataSource(data={'image': [images_base64[0]],
-                                                 'left': [bboxes[0][0]],
-                                                 'right': [bboxes[0][1]],
-                                                 'top': [bboxes[0][2]],
-                                                 'bottom': [bboxes[0][3]]})
+    source = bokeh.models.ColumnDataSource(data={'image': [folders["normal"]["images"][0]],
+                                                 'left': [folders["normal"]["bboxes"][0][0]],
+                                                 'right': [folders["normal"]["bboxes"][0][1]],
+                                                 'top': [folders["normal"]["bboxes"][0][2]],
+                                                 'bottom': [folders["normal"]["bboxes"][0][3]]})
     
            # left_rois.append(roi.min_col)
            # right_rois.append(roi.max_col)
@@ -4475,15 +4491,21 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     p.grid.visible = False
     # JavaScript callback to update the image
 
-    callback = bokeh.models.CustomJS(args=dict(source=source, images=images_base64, bboxes=bboxes), code="""
-        var data = source.data;
-        var index = cb_obj.value;
-        data['image'][0] = images[index];
-        data['left'][0]  = bboxes[index][0];
-        data['right'][0] = bboxes[index][1];
-        data['bottom'][0] = bboxes[index][3];
-        data['top'][0] = bboxes[index][2];
+    callback = bokeh.models.CustomJS(args=dict(source=source, folders=folders), code="""
+        var index = slider.value;
+        var folder = select.value;
+        var images_base64 = folders[folder].images;
+        var rect_data = folders[folder].rects;
+        data = {
+            'image': [images_base64[index]],
+            'left': [rect_data[index][0]],
+            'right': [rect_data[index][1]],
+            'bottom': [rect_data[index][2]],
+            'top': [rect_data[index][3]]
+        };
+        source.data = data;
         source.change.emit();
+                                     
     """)
 
     # Slider callback to update the image
@@ -4495,6 +4517,11 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                        'bottom':[bboxes[new][3]]
                        }
         print(source.data['left'], '  ',source.data['right'], '  ', source.data['top'],'  ',source.data['bottom'])
+
+    # Create the Select widget
+    select = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
+    select.js_on_change('value', callback)
+
 
     # Create the slider
     slider = bokeh.models.Slider(start=0, end=len(images_base64)-1, value=0, step=1, title="Image Index")
