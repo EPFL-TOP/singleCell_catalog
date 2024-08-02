@@ -203,7 +203,7 @@ def save_categories(cellflags, outname):
 #___________________________________________________________________________________________
 def build_mva_detection_categories():
     cellflags_dead      = CellFlag.objects.filter(alive=False).order_by("?")
-    cellflags_alive     = CellFlag.objects.filter(cellflag_cellroi__frame__sample__peaks_tod_div_validated==True, alive=True, dividing=False, double_nuclei=False, elongated=False, flat=False, multiple_cells=False, pair_cell=False, round=False).order_by("?")
+    cellflags_alive     = CellFlag.objects.filter(cellflag_cellroi==True, alive=True, dividing=False, double_nuclei=False, elongated=False, flat=False, multiple_cells=False, pair_cell=False, round=False).order_by("?")
     cellflags_dividing  = CellFlag.objects.filter(alive=True, dividing=True).order_by("?")
     cellflags_elongated = CellFlag.objects.filter(alive=True, elongated=True).order_by("?")
     cellflags_flat      = CellFlag.objects.filter(alive=True, flat=True).order_by("?")
