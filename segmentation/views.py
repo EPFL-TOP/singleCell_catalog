@@ -4436,6 +4436,17 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     print('****************************  phenocheck_handler ****************************')
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
+
+
+
+    #___________________________________________________________________________________________
+    def image_to_base64(img_path):
+        with Image.open(img_path) as img:
+            buffer = BytesIO()
+            img.save(buffer, format="PNG")
+            return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
+
+
     #___________________________________________________________________________________________
     def get_images_bboxes(folder_path):
         # Load images from folder and convert to base64
@@ -4482,15 +4493,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                                                  'titles': [folders["normal"]["titles"][0]]
                                                  })
 
-
-
-
-    #___________________________________________________________________________________________
-    def image_to_base64(img_path):
-        with Image.open(img_path) as img:
-            buffer = BytesIO()
-            img.save(buffer, format="PNG")
-            return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
 
 
 
