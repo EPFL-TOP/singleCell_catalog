@@ -4495,7 +4495,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     p.grid.visible = False
 
 
-    labels = bokeh.models.LabelSet(x=0.1, y=0.9, text='titles', x_units='canvas', y_units='canvas',
+    labels = bokeh.models.LabelSet(x=0.1, y=0.9, text='titles', x_units='data', y_units='data',
                                    x_offset=0, y_offset=0, source=source, text_color='white', text_font_size="10pt")
 
     p.add_layout(labels)
@@ -4512,6 +4512,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         var images_base64 = folders[folder].images;
         var rect_data = folders[folder].bboxes;
         var titles = folders[folder].titles;
+        console.log('title:  ',titles[index]);
+
         source.data = {
             'image': [images_base64[index]],
             'left': [rect_data[index][0]],
