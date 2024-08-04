@@ -4437,6 +4437,35 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 
+    cell_types = ["normal",  "dead", "elongated", "flat"]
+    folder_path = r'D:\single_cells\training_cell_detection_categories'
+
+    folders = {}
+    for cell in cell_types:
+        images_base64, bboxes, titles = get_images_bboxes(os.path.join(folder_path,cell))
+        folders[cell] = {
+            'images': images_base64,
+            'bboxes': bboxes,
+            'titles': titles
+        }
+
+    # Load initial images and titles
+    initial_images_base64 = folders["normal"]['images']
+    initial_titles = folders["normal"]['titles']
+
+
+    # Create a ColumnDataSource with the initial image
+    source = bokeh.models.ColumnDataSource(data={'image' : [folders["normal"]["images"][0]],
+                                                 'left'  : [folders["normal"]["bboxes"][0][0]],
+                                                 'right' : [folders["normal"]["bboxes"][0][1]],
+                                                 'top'   : [folders["normal"]["bboxes"][0][2]],
+                                                 'bottom': [folders["normal"]["bboxes"][0][3]],
+                                                 'titles': [folders["normal"]["titles"][0]]
+                                                 })
+
+
+
+
     #___________________________________________________________________________________________
     def image_to_base64(img_path):
         with Image.open(img_path) as img:
@@ -4476,7 +4505,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         return bokeh.layouts.column(p)
 
 
-    # Function to create a grid of 5x5 subplots
+    #___________________________________________________________________________________________
     def create_grid(images, titles):
         plots = []
         for i in range(20):
@@ -4494,41 +4523,16 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         return bokeh.plotting.layouts([plots[i:i+4] for i in range(0, 20, 4)])
 
 
-    cell_types = ["normal",  "dead", "elongated", "flat"]
-    folder_path = r'D:\single_cells\training_cell_detection_categories'
-
-    folders = {}
-    for cell in cell_types:
-        images_base64, bboxes, titles = get_images_bboxes(os.path.join(folder_path,cell))
-        folders[cell] = {
-            'images': images_base64,
-            'bboxes': bboxes,
-            'titles': titles
-        }
-
-    # Load initial images and titles
-    initial_images_base64 = folders["normal"]['images']
-    initial_titles = folders["normal"]['titles']
 
     
     # Create the initial grid
     grid = create_grid(initial_images_base64[:20], initial_titles[:20])
 
 
-    # Create a ColumnDataSource with the initial image
-    source = bokeh.models.ColumnDataSource(data={'image' : [folders["normal"]["images"][0]],
-                                                 'left'  : [folders["normal"]["bboxes"][0][0]],
-                                                 'right' : [folders["normal"]["bboxes"][0][1]],
-                                                 'top'   : [folders["normal"]["bboxes"][0][2]],
-                                                 'bottom': [folders["normal"]["bboxes"][0][3]],
-                                                 'titles': [folders["normal"]["titles"][0]]
-                                                 })
-
 
     # Create the figure
-    p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=600, height=600, tools="box_select,wheel_zoom,box_zoom,reset,undo")
-
-    p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
+    #p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=600, height=600, tools="box_select,wheel_zoom,box_zoom,reset,undo")
+    #p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
 
 
 
