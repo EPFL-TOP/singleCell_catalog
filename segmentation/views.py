@@ -4463,6 +4463,37 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         return images_base64, bboxes, titles
 
 
+    #___________________________________________________________________________________________
+    def create_image_plot(index):
+        p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=200, height=200)
+        p.image_url(url='image', x=0, y=1, w=1, h=1, source=source, index=index)
+        p.axis.visible = False
+        p.grid.visible = False
+        labels = bokeh.models.LabelSet(x=0.1, y=0.9, text='titles', x_units='data', y_units='data',
+                                    x_offset=0, y_offset=0, source=source, text_color='white', text_font_size="10pt")
+
+        p.add_layout(labels)
+        return bokeh.layouts.column(p)
+
+
+    # Function to create a grid of 5x5 subplots
+    def create_grid(images, titles):
+        plots = []
+        for i in range(20):
+            if i < len(images):
+                plots.append(create_image_plot(i))
+            else:
+                p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=200, height=200)
+                p.axis.visible = False
+                p.grid.visible = False
+                labels = bokeh.models.LabelSet(x=0.1, y=0.9, text="empty", x_units='data', y_units='data',
+                                            x_offset=0, y_offset=0, text_color='white', text_font_size="10pt")
+
+                p.add_layout(labels)
+                plots.append(bokeh.layouts.column(p))
+        return bokeh.plotting.layouts([plots[i:i+4] for i in range(0, 20, 4)])
+
+
     cell_types = ["normal",  "dead", "elongated", "flat"]
     folder_path = r'D:\single_cells\training_cell_detection_categories'
 
@@ -4475,7 +4506,15 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             'titles': titles
         }
 
+    # Load initial images and titles
+    initial_images_base64 = folders["normal"]['images']
+    initial_titles = folders["normal"]['titles']
+
     
+    # Create the initial grid
+    grid = create_grid(initial_images_base64[:20], initial_titles[:20])
+
+
     # Create a ColumnDataSource with the initial image
     source = bokeh.models.ColumnDataSource(data={'image' : [folders["normal"]["images"][0]],
                                                  'left'  : [folders["normal"]["bboxes"][0][0]],
@@ -4486,25 +4525,33 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                                                  })
 
 
-    print(folders["normal"]["titles"])
     # Create the figure
     p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=600, height=600, tools="box_select,wheel_zoom,box_zoom,reset,undo")
 
     p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
-    p.axis.visible = False
-    p.grid.visible = False
 
 
-    labels = bokeh.models.LabelSet(x=0.1, y=0.9, text='titles', x_units='data', y_units='data',
-                                   x_offset=0, y_offset=0, source=source, text_color='white', text_font_size="10pt")
 
-    p.add_layout(labels)
 
-    title_div = bokeh.models.Div(text=f'<div style="text-align:center;">{source.data["titles"]}</div>', width=200)
-    #return column(p, title_div)
+
+    # Function to update the grid when the select or slider changes
+    def update_grid(attr, old, new):
+        folder = select.value
+        start_index = slider.value * 20
+        images_base64 = folders[folder]['images'][start_index:start_index + 25]
+        titles = folders[folder]['titles'][start_index:start_index + 25]
+        new_grid = create_grid(images_base64, titles)
+        layout.children[2] = new_grid
+
+    # Calculate the maximum number of pages
+    max_slider_value = max((len(images) + 19) // 20 - 1 for images in (folders[folder]['images'] for folder in folders))
+
+    # Create the Slider widget (adjusting the end value based on the number of images)
+    slider = bokeh.models.Slider(start=0, end=max_slider_value, value=0, step=1, title="Page Index")
+    slider.on_change('value', update_grid)
+    select.on_change('value', update_grid)
 
     select = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
-    slider = bokeh.models.Slider(start=0, end=len(images_base64)-1, value=0, step=1, title="Image Index")
 
     callback = bokeh.models.CustomJS(args=dict(source=source, folders=folders, slider=slider, select=select), code="""
         var index = slider.value;
@@ -4512,7 +4559,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         var images_base64 = folders[folder].images;
         var rect_data     = folders[folder].bboxes;
         var titles        = folders[folder].titles;
-        console.log('title:  ',titles[index]);
+        //console.log('title:  ',titles[index]);
 
         source.data = {
             'image': [images_base64[index]],
@@ -4548,7 +4595,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
     p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
 
-    layout = bokeh.layouts.column(select, title_div, p, slider)
+    layout = bokeh.layouts.column(select,  grid, slider)
 
     doc.add_root(layout)
 
