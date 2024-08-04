@@ -4498,7 +4498,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def create_image_plot(image):
-        p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=250, height=250)
+        p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=275, height=275)
         p.image_url(url=[image], x=0, y=1, w=1, h=1)
         p.axis.visible = False
         p.grid.visible = False
@@ -4516,7 +4516,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             if i < len(images):
                 plots.append(create_image_plot(images[i]))
             else:
-                p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=250, height=250)
+                p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=275, height=275)
                 p.axis.visible = False
                 p.grid.visible = False
                 labels = bokeh.models.LabelSet(x=0.1, y=0.9, text="empty", x_units='data', y_units='data',
@@ -4546,8 +4546,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def update_grid(attr, old, new):
         folder = select.value
         start_index = slider.value * 20
-        images_base64 = folders[folder]['images'][start_index:start_index + 25]
-        titles = folders[folder]['titles'][start_index:start_index + 25]
+        images_base64 = folders[folder]['images'][start_index:start_index + 20]
+        titles = folders[folder]['titles'][start_index:start_index + 20]
         new_grid = create_grid(images_base64, titles)
         layout.children[2] = new_grid
 
@@ -4582,22 +4582,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                                      
     """)
 
-    # Slider callback to update the image
-    def update_image(attr, old, new):
-        source.data = {'image': [images_base64[new]], 
-                       'left':[bboxes[new][0]],
-                       'right':[bboxes[new][1]],
-                       'top':[bboxes[new][2]],
-                       'bottom':[bboxes[new][3]]
-                       }
-        print(source.data['left'], '  ',source.data['right'], '  ', source.data['top'],'  ',source.data['bottom'])
-
-
+ 
     select.js_on_change('value', callback)
-
-
     slider.js_on_change('value', callback)
-    #slider.on_change('value', update_image)
 
 
     #quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
