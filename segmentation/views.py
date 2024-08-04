@@ -4492,6 +4492,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     p.axis.visible = False
     p.grid.visible = False
 
+
+    labels = bokeh.models.LabelSet(x=0.1, y=0.9, text='titles', x_units='image', y_units='image',
+                                   x_offset=0, y_offset=0, source=source, text_color='white', text_font_size="10pt")
+
+    p.add_layout(labels)
+
     title_div = bokeh.models.Div(text=f'<div style="text-align:center;">{source.data["titles"]}</div>', width=200)
     #return column(p, title_div)
 
@@ -4503,14 +4509,17 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         var folder = select.value;
         var images_base64 = folders[folder].images;
         var rect_data = folders[folder].bboxes;
+        var titles = folders[folder].titles;
         source.data = {
             'image': [images_base64[index]],
             'left': [rect_data[index][0]],
             'right': [rect_data[index][1]],
             'bottom': [rect_data[index][2]],
-            'top': [rect_data[index][3]]
+            'top': [rect_data[index][3]],
+            'title': [titles[index]]
         };
         source.change.emit();
+
                                      
     """)
 
