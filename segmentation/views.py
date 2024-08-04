@@ -4475,13 +4475,14 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             'titles': titles
         }
 
+    
     # Create a ColumnDataSource with the initial image
     source = bokeh.models.ColumnDataSource(data={'image' : [folders["normal"]["images"][0]],
                                                  'left'  : [folders["normal"]["bboxes"][0][0]],
                                                  'right' : [folders["normal"]["bboxes"][0][1]],
                                                  'top'   : [folders["normal"]["bboxes"][0][2]],
                                                  'bottom': [folders["normal"]["bboxes"][0][3]],
-                                                 'titles': folders["normal"]["titles"][0]
+                                                 'titles': [folders["normal"]["titles"][0]]
                                                  })
 
     # Create the figure
