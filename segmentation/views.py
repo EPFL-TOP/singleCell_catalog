@@ -4497,9 +4497,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
-    def create_image_plot(index):
+    def create_image_plot():
         p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=200, height=200)
-        p.image_url(url='image', x=0, y=1, w=1, h=1, source=source, index=index)
+        p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
         p.axis.visible = False
         p.grid.visible = False
         labels = bokeh.models.LabelSet(x=0.1, y=0.9, text='titles', x_units='data', y_units='data',
@@ -4514,7 +4514,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         plots = []
         for i in range(20):
             if i < len(images):
-                plots.append(create_image_plot(i))
+                plots.append(create_image_plot())
             else:
                 p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=200, height=200)
                 p.axis.visible = False
