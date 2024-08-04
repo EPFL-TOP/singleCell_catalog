@@ -4493,7 +4493,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     p.grid.visible = False
 
 
-    labels = bokeh.models.LabelSet(x=0.1, y=0.9, text='titles', x_units='image', y_units='canvas',
+    labels = bokeh.models.LabelSet(x=0.1, y=0.9, text='titles', x_units='canvas', y_units='canvas',
                                    x_offset=0, y_offset=0, source=source, text_color='white', text_font_size="10pt")
 
     p.add_layout(labels)
