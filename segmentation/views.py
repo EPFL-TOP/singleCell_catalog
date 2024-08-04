@@ -4485,6 +4485,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                                                  'titles': [folders["normal"]["titles"][0]]
                                                  })
 
+
+    print(folders["normal"]["titles"])
     # Create the figure
     p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=600, height=600, tools="box_select,wheel_zoom,box_zoom,reset,undo")
 
