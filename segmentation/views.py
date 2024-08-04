@@ -4510,8 +4510,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         var index = slider.value;
         var folder = select.value;
         var images_base64 = folders[folder].images;
-        var rect_data = folders[folder].bboxes;
-        var titles = folders[folder].titles;
+        var rect_data     = folders[folder].bboxes;
+        var titles        = folders[folder].titles;
         console.log('title:  ',titles[index]);
 
         source.data = {
@@ -4520,7 +4520,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             'right': [rect_data[index][1]],
             'bottom': [rect_data[index][2]],
             'top': [rect_data[index][3]],
-            'title': [titles[index]]
+            'titles': [titles[index]]
         };
         source.change.emit();
 
