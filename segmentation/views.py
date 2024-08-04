@@ -4556,10 +4556,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     # Create the Slider widget (adjusting the end value based on the number of images)
     slider = bokeh.models.Slider(start=0, end=max_slider_value, value=0, step=1, title="Page Index")
+    select = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
     slider.on_change('value', update_grid)
     select.on_change('value', update_grid)
 
-    select = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
 
     callback = bokeh.models.CustomJS(args=dict(source=source, folders=folders, slider=slider, select=select), code="""
         var index = slider.value;
