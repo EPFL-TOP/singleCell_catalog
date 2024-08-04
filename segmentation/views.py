@@ -181,19 +181,23 @@ def save_categories(cellflags, outname):
         images=images.transpose(1,0,2,3)
         image=images[0][frame.number]
 
-        tmp_uuid=uuid.uuid1()
+        exp_name = frame.sample.experimental_dataset.experiment.name
+        well = os.path.split(frame.sample.file_name)[1].replace('.nd2','')
+        well = well.split("_")[1]
+        out_name = '{}_{}_frame{}'.format(exp_name, well, frame.number)
 
-        outfile_png  = os.path.join(outdir, '{}_frame{}_{}.png'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), frame.number, tmp_uuid))
+        outfile_png  = os.path.join(outdir, '{}.png'.format(out_name))
         norm_image = (image - image.min()) / (image.max() - image.min())
         plt.imsave(outfile_png, norm_image, cmap='gray')
         #imageio.imwrite(outfile_png,image)
 
-        outfile_json = os.path.join(outdir, '{}_frame{}_{}.json'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), frame.number, tmp_uuid))
+        outfile_json = os.path.join(outdir, '{}.json'.format(out_name))
         outdict={"data":image.tolist()}
         out_file = open(outfile_json, "w") 
         json.dump(outdict, out_file)
 
-        outfile_anno = os.path.join(outdir, '{}_frame{}_{}_annotation.json'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), frame.number, tmp_uuid))
+        #outfile_anno = os.path.join(outdir, '{}_frame{}_{}_annotation.json'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), frame.number, tmp_uuid))
+        outfile_anno = os.path.join(outdir, '{}_annotation.json'.format(out_name))
         outdict={"bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row],
                  "image_file":outfile_png,
                  "image_json":outfile_json}
@@ -4443,20 +4447,20 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def get_images_bboxes(folder_path):
         # Load images from folder and convert to base64
-        image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
+        image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
         images_base64 = [image_to_base64(img_path) for img_path in image_paths]
-
+        titles = [os.path.split(t.replace('.png',''))[1] for t in image_paths]
         bboxes = []
         for img_path in image_paths:
             fname = img_path.replace('.png', '_annotation.json')
             with open(fname, 'r') as f:
-                data = json.load(f)
-                left = data['bbox'][0]/512.
-                right = data['bbox'][1]/512.
-                top = 1 - data['bbox'][2]/512.
+                data   = json.load(f)
+                left   = data['bbox'][0]/512.
+                right  = data['bbox'][1]/512.
+                top    = 1 - data['bbox'][2]/512.
                 bottom = 1 - data['bbox'][3]/512.
                 bboxes.append([left, right, top, bottom])
-        return images_base64, bboxes
+        return images_base64, bboxes, titles
 
 
     cell_types = ["normal",  "dead", "elongated", "flat"]
@@ -4464,24 +4468,21 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     folders = {}
     for cell in cell_types:
-        images_base64, bboxes = get_images_bboxes(os.path.join(folder_path,cell))
+        images_base64, bboxes, titles = get_images_bboxes(os.path.join(folder_path,cell))
         folders[cell] = {
             'images': images_base64,
-            'bboxes': bboxes
+            'bboxes': bboxes,
+            'titles': titles
         }
 
     # Create a ColumnDataSource with the initial image
-    source = bokeh.models.ColumnDataSource(data={'image': [folders["normal"]["images"][0]],
-                                                 'left': [folders["normal"]["bboxes"][0][0]],
-                                                 'right': [folders["normal"]["bboxes"][0][1]],
-                                                 'top': [folders["normal"]["bboxes"][0][2]],
-                                                 'bottom': [folders["normal"]["bboxes"][0][3]]})
-    
-           # left_rois.append(roi.min_col)
-           # right_rois.append(roi.max_col)
-           # top_rois.append(frame[0].height-roi.min_row)
-           # bottom_rois.append(frame[0].height-roi.max_row)
-
+    source = bokeh.models.ColumnDataSource(data={'image' : [folders["normal"]["images"][0]],
+                                                 'left'  : [folders["normal"]["bboxes"][0][0]],
+                                                 'right' : [folders["normal"]["bboxes"][0][1]],
+                                                 'top'   : [folders["normal"]["bboxes"][0][2]],
+                                                 'bottom': [folders["normal"]["bboxes"][0][3]],
+                                                 'titles': folders["normal"]["titles"][0]
+                                                 })
 
     # Create the figure
     p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=600, height=600, tools="box_select,wheel_zoom,box_zoom,reset,undo")
@@ -4489,6 +4490,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
     p.axis.visible = False
     p.grid.visible = False
+
+    title_div = bokeh.models.Div(text=f'<div style="text-align:center;">{source.data["titles"]}</div>', width=200)
+    #return column(p, title_div)
 
     select = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
     slider = bokeh.models.Slider(start=0, end=len(images_base64)-1, value=0, step=1, title="Image Index")
@@ -4530,7 +4534,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
     p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
 
-    layout = bokeh.layouts.column(select, p, slider)
+    layout = bokeh.layouts.column(select, title_div, p, slider)
 
     doc.add_root(layout)
 
