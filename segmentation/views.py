@@ -4524,7 +4524,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
                 p.add_layout(labels)
                 plots.append(bokeh.layouts.column(p))
-        return bokeh.plotting.layouts([plots[i:i+4] for i in range(0, 20, 4)])
+        return bokeh.layouts.gridplot([plots[i:i+4] for i in range(0, 20, 4)])
 
 
 
@@ -4598,10 +4598,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     slider.js_on_change('value', callback)
     #slider.on_change('value', update_image)
-    # Arrange the plot and slider in a layout
 
-    quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
-    p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
+
+    #quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
+    #p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
 
     layout = bokeh.layouts.column(select,  grid, slider)
 
