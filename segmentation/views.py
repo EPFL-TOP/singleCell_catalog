@@ -4436,6 +4436,25 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     print('****************************  phenocheck_handler ****************************')
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
+    #___________________________________________________________________________________________
+    def get_images_bboxes(folder_path):
+        # Load images from folder and convert to base64
+        image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
+        images_base64 = [image_to_base64(img_path) for img_path in image_paths]
+        titles = [os.path.split(t.replace('.png',''))[1] for t in image_paths]
+        bboxes = []
+        for img_path in image_paths:
+            fname = img_path.replace('.png', '_annotation.json')
+            with open(fname, 'r') as f:
+                data   = json.load(f)
+                left   = data['bbox'][0]/512.
+                right  = data['bbox'][1]/512.
+                top    = 1 - data['bbox'][2]/512.
+                bottom = 1 - data['bbox'][3]/512.
+                bboxes.append([left, right, top, bottom])
+        return images_base64, bboxes, titles
+
+
 
     cell_types = ["normal",  "dead", "elongated", "flat"]
     folder_path = r'D:\single_cells\training_cell_detection_categories'
@@ -4473,23 +4492,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             img.save(buffer, format="PNG")
             return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
 
-    #___________________________________________________________________________________________
-    def get_images_bboxes(folder_path):
-        # Load images from folder and convert to base64
-        image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
-        images_base64 = [image_to_base64(img_path) for img_path in image_paths]
-        titles = [os.path.split(t.replace('.png',''))[1] for t in image_paths]
-        bboxes = []
-        for img_path in image_paths:
-            fname = img_path.replace('.png', '_annotation.json')
-            with open(fname, 'r') as f:
-                data   = json.load(f)
-                left   = data['bbox'][0]/512.
-                right  = data['bbox'][1]/512.
-                top    = 1 - data['bbox'][2]/512.
-                bottom = 1 - data['bbox'][3]/512.
-                bboxes.append([left, right, top, bottom])
-        return images_base64, bboxes, titles
 
 
     #___________________________________________________________________________________________
