@@ -4581,7 +4581,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             #button_row = buttons[i:i+5]
             plot_rows.append(bokeh.layouts.row(*plot_row))#, bokeh.layouts.column(*button_row)))
 
-        layout = bokeh.layoutscolumn(*plot_rows)
+        layout = bokeh.layouts.column(*plot_rows)
         return layout
 
     # Create the initial layout
