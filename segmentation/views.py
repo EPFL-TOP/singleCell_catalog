@@ -4457,6 +4457,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             print('fname ',fname)
             with open(fname, 'r') as f:
                 data   = json.load(f)
+                print('data ',data)
+
                 left   = data['bbox'][0]/512.
                 right  = data['bbox'][1]/512.
                 top    = 1 - data['bbox'][2]/512.
