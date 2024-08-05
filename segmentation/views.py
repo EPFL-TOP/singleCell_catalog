@@ -4504,6 +4504,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                                     x_offset=0, y_offset=0, text_color='white', text_font_size="10pt")
 
         p.add_layout(labels)
+        print('label ',label)
         return bokeh.layouts.column(p)
 
 
