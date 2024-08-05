@@ -4454,10 +4454,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         bboxes = []
         for img_path in image_paths:
             fname = img_path.replace('.png', '_annotation.json')
-            print('fname ',fname)
             with open(fname, 'r') as f:
                 data   = json.load(f)
-                print('data ',data)
 
                 left   = data['bbox'][0]/512.
                 right  = data['bbox'][1]/512.
@@ -4472,6 +4470,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     folders = {}
     for cell in cell_types:
+        print('processing cell type:',cell)
         images_base64, bboxes, titles = get_images_bboxes(os.path.join(folder_path,cell))
         folders[cell] = {
             'images': images_base64,
@@ -4561,6 +4560,20 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     #doc.add_root(layout)
 
 
+    #___________________________________________________________________________________________
+    # Select image from click
+    def select_tap_callback():
+        return """
+        const indices = cb_data.source.selected.indices;
+
+        if (indices.length > 0) {
+            const index = indices[0];
+            other_source.data = {'index': [index]};
+            other_source.change.emit();  
+        }
+        """
+
+
 
     # Function to create plots and buttons layout
     def create_plots_layout():
@@ -4570,7 +4583,18 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         for idx, img in enumerate(folders[select.value]["images"]):
 
             p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=275, height=275, title=folders[select.value]["titles"][idx])
+            p.axis.visible = False
+            p.grid.visible = False
             p.image_url(url=[img], x=0, y=1, w=1, h=1)
+            source = bokeh.models.ColumnDataSource(dict(left=folders[select.value]["bboxes"][idx][0], 
+                                                        right=folders[select.value]["bboxes"][idx][1], 
+                                                        top=folders[select.value]["bboxes"][idx][2], 
+                                                        bottom=folders[select.value]["bboxes"][idx][3]))
+            quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
+            p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
+            index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
+            tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()))
+            p.add_tools(tap_tool)
             plots.append(p)
                 #buttons.append(button)
 
