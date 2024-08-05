@@ -4454,6 +4454,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         bboxes = []
         for img_path in image_paths:
             fname = img_path.replace('.png', '_annotation.json')
+            print('fname ',fname)
             with open(fname, 'r') as f:
                 data   = json.load(f)
                 left   = data['bbox'][0]/512.
