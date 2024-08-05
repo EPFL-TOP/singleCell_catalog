@@ -166,7 +166,7 @@ def build_mva_samples(exp_name=''):
 #___________________________________________________________________________________________
 def save_categories(cellflags, outname):
     ncells = 100
-    outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories', outname)
+    outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories_new', outname)
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
@@ -184,7 +184,7 @@ def save_categories(cellflags, outname):
         exp_name = frame.sample.experimental_dataset.experiment.name
         well = os.path.split(frame.sample.file_name)[1].replace('.nd2','')
         well = well.split("_")[1]
-        out_name = '{}_{}_frame{}'.format(exp_name, well, frame.number)
+        out_name = '{}_{}_frame{}_{}'.format(exp_name, well, frame.number, cellroi.cell_id.name)
 
         outfile_png  = os.path.join(outdir, '{}.png'.format(out_name))
         norm_image = (image - image.min()) / (image.max() - image.min())
