@@ -4586,10 +4586,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             p.axis.visible = False
             p.grid.visible = False
             p.image_url(url=[img], x=0, y=1, w=1, h=1)
-            source = bokeh.models.ColumnDataSource(dict(left=folders[select.value]["bboxes"][idx][0], 
-                                                        right=folders[select.value]["bboxes"][idx][1], 
-                                                        top=folders[select.value]["bboxes"][idx][2], 
-                                                        bottom=folders[select.value]["bboxes"][idx][3]))
+            source = bokeh.models.ColumnDataSource(dict(left=[folders[select.value]["bboxes"][idx][0]], 
+                                                        right=[folders[select.value]["bboxes"][idx][1]], 
+                                                        top=[folders[select.value]["bboxes"][idx][2]], 
+                                                        bottom=[folders[select.value]["bboxes"][idx][3]]))
             quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
             p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
             index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
