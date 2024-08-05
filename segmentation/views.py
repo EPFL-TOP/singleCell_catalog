@@ -4437,8 +4437,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 
-
-
     #___________________________________________________________________________________________
     def image_to_base64(img_path):
         with Image.open(img_path) as img:
@@ -4464,7 +4462,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 bottom = 1 - data['bbox'][3]/512.
                 bboxes.append([left, right, top, bottom])
         return images_base64, bboxes, titles
-
 
 
     cell_types = ["normal",  "dead", "elongated", "flat"]
@@ -4494,16 +4491,14 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                                                  })
 
 
-
-
     #___________________________________________________________________________________________
-    def create_image_plot(image):
+    def create_image_plot(image, label):
         p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=275, height=275)
         p.image_url(url=[image], x=0, y=1, w=1, h=1)
         p.axis.visible = False
         p.grid.visible = False
-        labels = bokeh.models.LabelSet(x=0.1, y=0.9, text='titles', x_units='data', y_units='data',
-                                    x_offset=0, y_offset=0, source=source, text_color='white', text_font_size="10pt")
+        labels = bokeh.models.LabelSet(x=0.1, y=0.9, text=label, x_units='data', y_units='data',
+                                    x_offset=0, y_offset=0, text_color='white', text_font_size="10pt")
 
         p.add_layout(labels)
         return bokeh.layouts.column(p)
@@ -4514,7 +4509,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         plots = []
         for i in range(20):
             if i < len(images):
-                plots.append(create_image_plot(images[i]))
+                plots.append(create_image_plot(images[i], titles[i]))
             else:
                 p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=275, height=275)
                 p.axis.visible = False
@@ -4533,15 +4528,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     grid = create_grid(initial_images_base64[:20], initial_titles[:20])
 
 
-
-    # Create the figure
-    #p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=600, height=600, tools="box_select,wheel_zoom,box_zoom,reset,undo")
-    #p.image_url(url='image', x=0, y=1, w=1, h=1, source=source)
-
-
-
-
-
     # Function to update the grid when the select or slider changes
     def update_grid(attr, old, new):
         folder = select.value
@@ -4549,10 +4535,17 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         images_base64 = folders[folder]['images'][start_index:start_index + 20]
         titles = folders[folder]['titles'][start_index:start_index + 20]
         new_grid = create_grid(images_base64, titles)
-        layout.children[2] = new_grid
+        layout.children[1] = new_grid
+
+        # Update the slider max value based on the selected folder
+        max_slider_value = (len(folders[folder]['images']) + 19) // 20 - 1
+        slider.end = max_slider_value
+        if slider.value > max_slider_value:
+            slider.value = max_slider_value
+
 
     # Calculate the maximum number of pages
-    max_slider_value = max((len(images) + 19) // 20 - 1 for images in (folders[folder]['images'] for folder in folders))
+    max_slider_value = (len(folders["normal"]['images']) + 19) // 20 - 1
 
     # Create the Slider widget (adjusting the end value based on the number of images)
     slider = bokeh.models.Slider(start=0, end=max_slider_value, value=0, step=1, title="Page Index")
@@ -4561,30 +4554,27 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     select.on_change('value', update_grid)
 
 
-    callback = bokeh.models.CustomJS(args=dict(source=source, folders=folders, slider=slider, select=select), code="""
-        var index = slider.value;
-        var folder = select.value;
-        var images_base64 = folders[folder].images;
-        var rect_data     = folders[folder].bboxes;
-        var titles        = folders[folder].titles;
-        //console.log('title:  ',titles[index]);
+#    callback = bokeh.models.CustomJS(args=dict(source=source, folders=folders, slider=slider, select=select), code="""
+#        var index = slider.value;
+#        var folder = select.value;
+#        var images_base64 = folders[folder].images;
+#        var rect_data     = folders[folder].bboxes;
+#        var titles        = folders[folder].titles;
+#        //console.log('title:  ',titles[index]);
+#
+#        source.data = {
+#            'image': [images_base64[index]],
+#            'left': [rect_data[index][0]],
+#            'right': [rect_data[index][1]],
+#            'bottom': [rect_data[index][2]],
+#            'top': [rect_data[index][3]],
+#            'titles': [titles[index]]
+#        };
+#        source.change.emit();       
+#    """)
 
-        source.data = {
-            'image': [images_base64[index]],
-            'left': [rect_data[index][0]],
-            'right': [rect_data[index][1]],
-            'bottom': [rect_data[index][2]],
-            'top': [rect_data[index][3]],
-            'titles': [titles[index]]
-        };
-        source.change.emit();
-
-                                     
-    """)
-
- 
-    select.js_on_change('value', callback)
-    slider.js_on_change('value', callback)
+#    select.js_on_change('value', callback)
+#    slider.js_on_change('value', callback)
 
 
     #quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
