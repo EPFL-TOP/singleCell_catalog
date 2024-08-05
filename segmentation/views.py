@@ -4567,7 +4567,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         plots = []
         buttons = []
 
-        for idx, img in enumerate(folders[select.value]["image"]):
+        for idx, img in enumerate(folders[select.value]["images"]):
 
             p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=275, height=275, title=folders[select.value]["titles"][idx])
             p.image_url(url=[img], x=0, y=1, w=1, h=1)
