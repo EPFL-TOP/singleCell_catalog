@@ -4557,36 +4557,39 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     slider.on_change('value', update_grid)
     select.on_change('value', update_grid)
 
-
-#    callback = bokeh.models.CustomJS(args=dict(source=source, folders=folders, slider=slider, select=select), code="""
-#        var index = slider.value;
-#        var folder = select.value;
-#        var images_base64 = folders[folder].images;
-#        var rect_data     = folders[folder].bboxes;
-#        var titles        = folders[folder].titles;
-#        //console.log('title:  ',titles[index]);
-#
-#        source.data = {
-#            'image': [images_base64[index]],
-#            'left': [rect_data[index][0]],
-#            'right': [rect_data[index][1]],
-#            'bottom': [rect_data[index][2]],
-#            'top': [rect_data[index][3]],
-#            'titles': [titles[index]]
-#        };
-#        source.change.emit();       
-#    """)
-
-#    select.js_on_change('value', callback)
-#    slider.js_on_change('value', callback)
+    #layout = bokeh.layouts.column(select,  grid, slider)
+    #doc.add_root(layout)
 
 
-    #quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
-    #p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
 
-    layout = bokeh.layouts.column(select,  grid, slider)
+    # Function to create plots and buttons layout
+    def create_plots_layout():
+        plots = []
+        buttons = []
 
+        for idx, img in enumerate(folders[select.value]["image"]):
+
+            p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=275, height=275, title=folders[select.value]["titles"][idx])
+            p.image_url(url=[img], x=0, y=1, w=1, h=1)
+            plots.append(p)
+                #buttons.append(button)
+
+        # Organize layout
+        plot_rows = []
+        for i in range(0, len(plots), 5):
+            plot_row = plots[i:i+5]
+            #button_row = buttons[i:i+5]
+            plot_rows.append(bokeh.layouts.row(*plot_row))#, bokeh.layouts.column(*button_row)))
+
+        layout = bokeh.layoutscolumn(*plot_rows)
+        return layout
+
+    # Create the initial layout
+    layout = create_plots_layout()
     doc.add_root(layout)
+
+
+
 
 #___________________________________________________________________________________________
 def summary_handler(doc: bokeh.document.Document) -> None:
