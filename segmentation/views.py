@@ -4469,7 +4469,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     folder_path = r'D:\single_cells\training_cell_detection_categories'
 
     folders = {}
-    for cell in cell_types:
+
+
+    def process_images(cell):
         print('processing cell type:',cell)
         images_base64, bboxes, titles = get_images_bboxes(os.path.join(folder_path,cell))
         folders[cell] = {
@@ -4477,6 +4479,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             'bboxes': bboxes,
             'titles': titles
         }
+
+
+    for cell in cell_types:
+        threading.Thread(target = process_images, args=(cell,)).start()
+
+
 
     # Load initial images and titles
     initial_images_base64 = folders["normal"]['images']
