@@ -4480,11 +4480,16 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             'titles': titles
         }
 
-
+    threads = []
     for cell in cell_types:
-        threading.Thread(target = process_images, args=(cell,)).start()
+        threads.append(threading.Thread(target = process_images, args=(cell,)))
 
+    for t in threads:
+        t.start()
 
+    # Wait for all threads to finish.
+    for t in threads:
+        t.join()
 
     # Load initial images and titles
     initial_images_base64 = folders["normal"]['images']
