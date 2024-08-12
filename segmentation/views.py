@@ -4538,7 +4538,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                     selected_plots = selected_plots_source.data['selected_plots']
                     dir=os.path.join(folder_path, select_cell_type.value, plot_name+'*.png')
                     print('dir ',dir)
-                    dir = r'{}',format(dir)
+                    dir = r'{}'.format(dir)
                     print('dir ',dir)
                     fullplot = glob.glob(dir)
                     print('fullplot ',fullplot)
