@@ -3087,10 +3087,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 print("source_rois_full.data['left']  ",source_rois_full.data['left'])
                 print("source_roi.data['left']  ",source_roi.data['left'])
                 
-                source_rois_full.data['left'][current_index]   = source_roi.data['left'][0]
-                source_rois_full.data['right'][current_index]  = source_roi.data['right'][0]
-                source_rois_full.data['top'][current_index]    = source_roi.data['top'][0]
-                source_rois_full.data['bottom'][current_index] = source_roi.data['bottom'][0]
+                source_rois_full.data['left'][current_index]   = source_roi.data['left']
+                source_rois_full.data['right'][current_index]  = source_roi.data['right']
+                source_rois_full.data['top'][current_index]    = source_roi.data['top']
+                source_rois_full.data['bottom'][current_index] = source_roi.data['bottom']
 
                 cellflag = CellFlag(cell_roi=roi)
                 cellflag.save()
