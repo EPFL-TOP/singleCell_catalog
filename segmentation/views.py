@@ -4493,10 +4493,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
-    def create_plots_layout(new, old, attr):
+    def create_plots_layout():
         plots = []
         buttons = []
-        print('new=',new, '  old=',old,'  attr=',attr, '  value=', select_cell_type.value)
 
         for idx, img in enumerate(folders[select_cell_type.value]["images"]):
 
@@ -4557,7 +4556,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     select_cell_type.on_change('value', select_cell_type_callback)
 
     # Create the initial layout
-    layout = create_plots_layout('','','')
+    layout = create_plots_layout()
     doc.add_root(bokeh.layouts.column(select_cell_type, layout))
 
 
