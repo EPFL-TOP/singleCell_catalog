@@ -4432,10 +4432,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 #___________________________________________________________________________________________
+#___________________________________________________________________________________________
+#___________________________________________________________________________________________
 def phenocheck_handler(doc: bokeh.document.Document) -> None:
     print('****************************  phenocheck_handler ****************************')
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
+    selected_plots_source       = bokeh.models.ColumnDataSource(data=dict(selected_plots=[]))
 
     #___________________________________________________________________________________________
     def image_to_base64(img_path):
@@ -4444,12 +4447,17 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             img.save(buffer, format="PNG")
             return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
 
-
     #___________________________________________________________________________________________
     def get_images_bboxes(folder_path):
         # Load images from folder and convert to base64
         image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
-        images_base64 = [image_to_base64(img_path) for img_path in image_paths]
+        images_base64 = [threading.Thread(target = image_to_base64, args=(image_path,)) for image_path in image_paths]
+
+        for t in images_base64: t.start()
+        for t in images_base64: t.join()
+
+        #images_base64 = [image_to_base64(img_path) for img_path in image_paths]
+
         titles = [os.path.split(t.replace('.png',''))[1] for t in image_paths]
         bboxes = []
         for img_path in image_paths:
@@ -4466,11 +4474,14 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
     cell_types = ["normal",  "dead", "elongated", "flat"]
+    select = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
+
     folder_path = r'D:\single_cells\training_cell_detection_categories'
 
     folders = {}
 
 
+    #___________________________________________________________________________________________
     def process_images(cell):
         print('processing cell type:',cell)
         images_base64, bboxes, titles = get_images_bboxes(os.path.join(folder_path,cell))
@@ -4480,146 +4491,65 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             'titles': titles
         }
 
-    threads = []
     for cell in cell_types:
-        threads.append(threading.Thread(target = process_images, args=(cell,)))
+        process_images(cell)
 
-    for t in threads:
-        t.start()
-
-    # Wait for all threads to finish.
-    for t in threads:
-        t.join()
-
-    # Load initial images and titles
-    initial_images_base64 = folders["normal"]['images']
-    initial_titles = folders["normal"]['titles']
-
-
-    # Create a ColumnDataSource with the initial image
-    source = bokeh.models.ColumnDataSource(data={'image' : [folders["normal"]["images"][0]],
-                                                 'left'  : [folders["normal"]["bboxes"][0][0]],
-                                                 'right' : [folders["normal"]["bboxes"][0][1]],
-                                                 'top'   : [folders["normal"]["bboxes"][0][2]],
-                                                 'bottom': [folders["normal"]["bboxes"][0][3]],
-                                                 'titles': [folders["normal"]["titles"][0]]
-                                                 })
 
 
     #___________________________________________________________________________________________
-    def create_image_plot(image, label):
-        p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=275, height=275)
-        p.image_url(url=[image], x=0, y=1, w=1, h=1)
-        p.axis.visible = False
-        p.grid.visible = False
-        labels = bokeh.models.LabelSet(x=0.1, y=0.9, text=label, x_units='data', y_units='data',
-                                    x_offset=0, y_offset=0, text_color='white', text_font_size="10pt")
-
-        p.add_layout(labels)
-        print('label ',label)
-        return bokeh.layouts.column(p)
-
-
-    #___________________________________________________________________________________________
-    def create_grid(images, titles):
-        plots = []
-        for i in range(20):
-            if i < len(images):
-                plots.append(create_image_plot(images[i], titles[i]))
-            else:
-                p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=275, height=275)
-                p.axis.visible = False
-                p.grid.visible = False
-                labels = bokeh.models.LabelSet(x=0.1, y=0.9, text="empty", x_units='data', y_units='data',
-                                            x_offset=0, y_offset=0, text_color='white', text_font_size="10pt")
-
-                p.add_layout(labels)
-                plots.append(bokeh.layouts.column(p))
-        return bokeh.layouts.gridplot([plots[i:i+4] for i in range(0, 20, 4)])
-
-
-
-    
-    # Create the initial grid
-    grid = create_grid(initial_images_base64[:20], initial_titles[:20])
-
-
-    # Function to update the grid when the select or slider changes
-    def update_grid(attr, old, new):
-        folder = select.value
-        start_index = slider.value * 20
-        images_base64 = folders[folder]['images'][start_index:start_index + 20]
-        titles = folders[folder]['titles'][start_index:start_index + 20]
-        new_grid = create_grid(images_base64, titles)
-        layout.children[1] = new_grid
-
-        # Update the slider max value based on the selected folder
-        max_slider_value = (len(folders[folder]['images']) + 19) // 20 - 1
-        slider.end = max_slider_value
-        if slider.value > max_slider_value:
-            slider.value = max_slider_value
-
-
-    # Calculate the maximum number of pages
-    max_slider_value = (len(folders["normal"]['images']) + 19) // 20 - 1
-
-    # Create the Slider widget (adjusting the end value based on the number of images)
-    slider = bokeh.models.Slider(start=0, end=max_slider_value, value=0, step=1, title="Page Index")
-    select = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
-    slider.on_change('value', update_grid)
-    select.on_change('value', update_grid)
-
-    #layout = bokeh.layouts.column(select,  grid, slider)
-    #doc.add_root(layout)
-
-
-    #___________________________________________________________________________________________
-    # Select image from click
-    def select_tap_callback():
-        return """
-        const indices = cb_data.source.selected.indices;
-
-        if (indices.length > 0) {
-            const index = indices[0];
-            other_source.data = {'index': [index]};
-            other_source.change.emit();  
-        }
-        """
-
-
-
-    # Function to create plots and buttons layout
     def create_plots_layout():
         plots = []
         buttons = []
 
         for idx, img in enumerate(folders[select.value]["images"]):
 
-            p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=275, height=275, title=folders[select.value]["titles"][idx])
+            plot_name = folders[select.value]["titles"][idx]
+
+            p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=275, height=275, title=plot_name)
             p.axis.visible = False
             p.grid.visible = False
             p.image_url(url=[img], x=0, y=1, w=1, h=1)
-            source = bokeh.models.ColumnDataSource(dict(left=[folders[select.value]["bboxes"][idx][0]], 
-                                                        right=[folders[select.value]["bboxes"][idx][1]], 
-                                                        top=[folders[select.value]["bboxes"][idx][2]], 
-                                                        bottom=[folders[select.value]["bboxes"][idx][3]]))
-            quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None)#, fill_alpha=0.0, fill_color='#009933')
+            source = bokeh.models.ColumnDataSource(dict(left   = [folders[select.value]["bboxes"][idx][0]], 
+                                                        right  = [folders[select.value]["bboxes"][idx][1]], 
+                                                        top    = [folders[select.value]["bboxes"][idx][2]], 
+                                                        bottom = [folders[select.value]["bboxes"][idx][3]]
+                                                        ))
+            quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="white", line_width=2)
             p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
-            index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
-            tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()))
-            p.add_tools(tap_tool)
+
+            button = bokeh.models.Button(label=plot_name, width=60, button_type="success")
+
+
+            def create_button_callback(plot, plot_name, btn):
+                def callback():
+                    selected_plots = selected_plots_source.data['selected_plots']
+                    if plot_name in selected_plots:
+                        plot.background_fill_color = 'white'
+                        selected_plots.remove(plot_name)
+                        btn.button_type = 'success'
+                    else:
+                        plot.background_fill_color = 'rgba(255, 0, 0, 0.1)'
+                        selected_plots.append(plot_name)
+                        btn.button_type = 'danger'
+                    selected_plots_source.data = {'selected_plots': selected_plots}  # Update the data source
+                return callback
+
+            button.on_click(create_button_callback(p, plot_name, button))
+
             plots.append(p)
-                #buttons.append(button)
+            buttons.append(button)
 
         # Organize layout
         plot_rows = []
         for i in range(0, len(plots), 5):
             plot_row = plots[i:i+5]
-            #button_row = buttons[i:i+5]
-            plot_rows.append(bokeh.layouts.row(*plot_row))#, bokeh.layouts.column(*button_row)))
+            button_row = buttons[i:i+5]
+            plot_rows.append(bokeh.layouts.row(*plot_row, bokeh.layouts.column(*button_row)))
 
         layout = bokeh.layouts.column(*plot_rows)
         return layout
+
+    select.on_change('value', create_plots_layout)
 
     # Create the initial layout
     layout = create_plots_layout()
@@ -4627,7 +4557,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
 
-
+#___________________________________________________________________________________________
+#___________________________________________________________________________________________
 #___________________________________________________________________________________________
 def summary_handler(doc: bokeh.document.Document) -> None:
     print('****************************  summary_handler ****************************')
