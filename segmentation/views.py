@@ -4500,7 +4500,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         print(new_layout.children)
         print('new_layout.children ',len(new_layout.children))
         for ch in new_layout.children:
-            print(len(ch),'   ====   ', ch)
+            print(len(ch.children),'   ====   ', ch.children,'  ====  ',ch)
         #doc.clear()  # Clear the current document
         doc.add_root(bokeh.layouts.column(select_cell_type, new_layout))
     select_cell_type.on_change('value', select_cell_type_callback)
@@ -4544,6 +4544,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         print("selected plot red danger")
                         plot.background_fill_color = 'rgba(255, 0, 0, 0.1)'
                         plot.background_fill_color = 'red'
+                        plot.border_fill_color = 'red'
                         selected_plots.append(plot_name)
                         btn.button_type = 'danger'
                     selected_plots_source.data = {'selected_plots': selected_plots}  # Update the data source
