@@ -4492,21 +4492,22 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     for t in threads: t.join()
 
 
+    def set_layout(idx, ch):
+        layout.children[idx] = ch
+
 
     #___________________________________________________________________________________________
     def select_cell_type_callback(attr, old, new):
-        print('select_cell_type_callback attr, old, new=',attr,old,new)
         new_layout = create_plots_layout()
-        print('new_layout ',new_layout.children)
-        print('new_layout.children ',len(new_layout.children))
         for idx, ch in enumerate(new_layout.children):
             print(len(ch.children),'   ====   ', ch.children,'  ====  ',ch)
-            layout.children[idx] = ch
+            #layout.children[idx] = ch
 
-        print('layout ',layout.children)
-        print('layout.children ',len(layout.children))
-        #doc.clear()  # Clear the current document
-        doc.add_root(bokeh.layouts.column(select_cell_type, new_layout))
+        threads = [threading.Thread(target = set_layout, args=(idx,ch,)) for idx, ch in enumerate(new_layout.children)]
+        for t in threads: t.start()
+        for t in threads: t.join()
+
+        #doc.add_root(bokeh.layouts.column(select_cell_type, new_layout))
     select_cell_type.on_change('value', select_cell_type_callback)
 
 
@@ -4514,11 +4515,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def create_plots_layout():
         plots = []
         buttons = []
-        print('create_plots_layout ',select_cell_type.value)
         for idx, img in enumerate(folders[select_cell_type.value]["images"]):
 
             plot_name = folders[select_cell_type.value]["titles"][idx]
-
             p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1),  width=275, height=275, title=plot_name) #toolbar_location=None,
             p.axis.visible = False
             p.grid.visible = False
@@ -4535,9 +4534,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
             def create_button_callback(plot, plot_name, btn):
-                print('create_button_callback')
                 def callback():
-                    print('create_button_callback callback')
                     selected_plots = selected_plots_source.data['selected_plots']
                     print('selected_plots = ',selected_plots)
                     if plot_name in selected_plots:
@@ -4546,7 +4543,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         selected_plots.remove(plot_name)
                         btn.button_type = 'success'
                     else:
-                        print("selected plot red danger")
                         plot.background_fill_color = 'rgba(255, 0, 0, 0.4)'
                         plot.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
                         selected_plots.append(plot_name)
