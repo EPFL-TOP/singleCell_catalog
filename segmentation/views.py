@@ -4518,7 +4518,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         for idx, img in enumerate(folders[select_cell_type.value]["images"]):
 
             plot_name = folders[select_cell_type.value]["titles"][idx]
-            p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1),  width=275, height=275, title=plot_name) #toolbar_location=None,
+            p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1),  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo") #toolbar_location=None,
             p.axis.visible = False
             p.grid.visible = False
             p.image_url(url=[img], x=0, y=1, w=1, h=1)
@@ -4541,11 +4541,17 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         plot.background_fill_color = 'white'
                         plot.border_fill_color     = 'white'
                         selected_plots.remove(plot_name)
+                        fullplot = glob.glob(os.path.join(folder_path, plot_name))
+                        if len(fullplot==1):
+                            os.system("mv {} {}".format(fullplot, fullplot.replace('_invalid.png','.png')))
                         btn.button_type = 'success'
                     else:
                         plot.background_fill_color = 'rgba(255, 0, 0, 0.4)'
                         plot.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
                         selected_plots.append(plot_name)
+                        fullplot = glob.glob(os.path.join(folder_path, plot_name))
+                        if len(fullplot==1):
+                            os.system("mv {} {}".format(fullplot, fullplot.replace('.png', '_invalid.png')))
                         btn.button_type = 'danger'
                     selected_plots_source.data = {'selected_plots': selected_plots}  # Update the data source
                 return callback
