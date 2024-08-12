@@ -4501,11 +4501,11 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         new_layout = create_plots_layout()
         for idx, ch in enumerate(new_layout.children):
             print(len(ch.children),'   ====   ', ch.children,'  ====  ',ch)
-            #layout.children[idx] = ch
+            layout.children[idx] = ch
 
-        threads = [threading.Thread(target = set_layout, args=(idx,ch,)) for idx, ch in enumerate(new_layout.children)]
-        for t in threads: t.start()
-        for t in threads: t.join()
+        #threads = [threading.Thread(target = set_layout, args=(idx,ch,)) for idx, ch in enumerate(new_layout.children)]
+        #for t in threads: t.start()
+        #for t in threads: t.join()
 
         #doc.add_root(bokeh.layouts.column(select_cell_type, new_layout))
     select_cell_type.on_change('value', select_cell_type_callback)
