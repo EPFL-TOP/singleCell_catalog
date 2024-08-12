@@ -4539,7 +4539,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         selected_plots.remove(plot_name)
                         btn.button_type = 'success'
                     else:
+                        print("selected plot red danger")
                         plot.background_fill_color = 'rgba(255, 0, 0, 0.1)'
+                        plot.background_fill_color = 'red'
                         selected_plots.append(plot_name)
                         btn.button_type = 'danger'
                     selected_plots_source.data = {'selected_plots': selected_plots}  # Update the data source
