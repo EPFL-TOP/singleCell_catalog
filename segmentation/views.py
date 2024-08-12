@@ -3084,10 +3084,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 contour.save()
 
 
-                source_rois_full.data['left'][frame.number]   = source_roi.data['left'][0]
-                source_rois_full.data['right'][frame.number]  = source_roi.data['right'][0]
-                source_rois_full.data['top'][frame.number]    = source_roi.data['top'][0]
-                source_rois_full.data['bottom'][frame.number] = source_roi.data['bottom'][0]
+                source_rois_full.data['left'][current_index]   = source_roi.data['left'][0]
+                source_rois_full.data['right'][current_index]  = source_roi.data['right'][0]
+                source_rois_full.data['top'][current_index]    = source_roi.data['top'][0]
+                source_rois_full.data['bottom'][current_index] = source_roi.data['bottom'][0]
 
                 cellflag = CellFlag(cell_roi=roi)
                 cellflag.save()
