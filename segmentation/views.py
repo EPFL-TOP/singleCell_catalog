@@ -4533,6 +4533,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 def callback():
                     print('create_button_callback callback')
                     selected_plots = selected_plots_source.data['selected_plots']
+                    print('selected_plots = ',selected_plots)
                     if plot_name in selected_plots:
                         plot.background_fill_color = 'white'
                         selected_plots.remove(plot_name)
