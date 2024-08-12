@@ -2796,7 +2796,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:print('****************************  callback_slider ****************************')
         time_point = slider.value
         source_img.data = {'img':[source_imgs_norm.data['images'][int(dropdown_channel.value)][time_point]]}
-        #source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
+
+        images=source_imgs.data['images']
+        source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
+
+
 
         #left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         #current_file = os.path.split(get_current_file())[1]
@@ -2981,8 +2985,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:
             print('****************************  save_roi_callback ****************************')
             print('Saving ROI===================================',source_roi_manual.data)
-        current_file=get_current_file()
-        current_index=get_current_index()
+        current_file  = get_current_file()
+        current_index = get_current_index()
 
         sample   = Sample.objects.get(file_name=current_file)
         expds    = ExperimentalDataset.objects.get(id=sample.experimental_dataset.id)
