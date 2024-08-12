@@ -2935,6 +2935,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 )
             source_roi.data = data
 
+            source_rois_full.data['left']   = source_roi.data['left']
+            source_rois_full.data['right']  = source_roi.data['right']
+            source_rois_full.data['top']    = source_roi.data['top']
+            source_rois_full.data['bottom'] = source_roi.data['bottom']
+
+
             save_roi_callback()
             build_cells_callback()
             prepare_intensity()
@@ -3083,16 +3089,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                   mode="manual")
                 contour.save()
 
-                print('save_roi_callback contour intensity_mean ',contour.intensity_mean)
-                print('save_roi_callback contour intensity_max ',contour.intensity_max)
-
-
                 cellflag = CellFlag(cell_roi=roi)
                 cellflag.save()
 
-        left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
-        source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
-        source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+        #left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
+        #source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
+        #source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         
         source_roi_manual.data['left']=[]
         source_roi_manual.data['right']=[]
