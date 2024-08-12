@@ -4499,6 +4499,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         new_layout = create_plots_layout()
         print(new_layout.children)
         print('new_layout.children ',len(new_layout.children))
+        for ch in new_layout.children:
+            print(len(ch),'   ====   ', ch)
         #doc.clear()  # Clear the current document
         doc.add_root(bokeh.layouts.column(select_cell_type, new_layout))
     select_cell_type.on_change('value', select_cell_type_callback)
