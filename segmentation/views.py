@@ -4552,7 +4552,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     select.on_change('value', create_plots_layout)
 
     # Create the initial layout
-    layout = create_plots_layout()
+    layout = create_plots_layout('','','')
     doc.add_root(bokeh.layouts.column(select, layout))
 
 
