@@ -3061,6 +3061,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     intensity_sum[ch_name]=sum
                     intensity_max[ch_name]=max
                 
+
                 contour = Contour(center_x_pix=roi.min_col+(roi.max_col-roi.min_col)/2., 
                                   center_y_pix=roi.min_row+(roi.max_row-roi.min_row)/2.,
                                   center_z_pix=0, 
@@ -3077,6 +3078,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                   type="cell_ROI",
                                   mode="manual")
                 contour.save()
+
+                print('save_roi_callback contour intensity_mean ',contour.intensity_mean)
+                print('save_roi_callback contour intensity_max ',contour.intensity_max)
+
 
                 cellflag = CellFlag(cell_roi=roi)
                 cellflag.save()
@@ -3628,8 +3633,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     tod_checkbox   = bokeh.models.CheckboxGroup(labels=["All", "Keep", "Don't keep"], active=[1,0,0])
-
-
 
 
     #___________________________________________________________________________________________
