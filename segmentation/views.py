@@ -3320,6 +3320,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         build_cells_sample(sample=current_file, addmode=True)
         left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+
+        source_cells_full.data['weight'][slider.value] = source_cells.data['weight']
+        source_cells_full.data['height'][slider.value] = source_cells.data['height']
+        source_cells_full.data['names'][slider.value]  = source_cells.data['names']
+
         update_dropdown_cell('','','')
 
     button_build_cells = bokeh.models.Button(label="build cells")
