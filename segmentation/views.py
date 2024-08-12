@@ -4468,7 +4468,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
     cell_types = ["normal",  "dead", "elongated", "flat"]
-    select = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
+    select_cell_type = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
 
     folder_path = r'D:\single_cells\training_cell_detection_categories'
 
@@ -4496,20 +4496,20 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def create_plots_layout(new, old, attr):
         plots = []
         buttons = []
-        print('new=',new, '  old=',old,'  attr=',attr, '  value=', select.value)
+        print('new=',new, '  old=',old,'  attr=',attr, '  value=', select_cell_type.value)
 
-        for idx, img in enumerate(folders[select.value]["images"]):
+        for idx, img in enumerate(folders[select_cell_type.value]["images"]):
 
-            plot_name = folders[select.value]["titles"][idx]
+            plot_name = folders[select_cell_type.value]["titles"][idx]
 
             p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1),  width=275, height=275, title=plot_name) #toolbar_location=None,
             p.axis.visible = False
             p.grid.visible = False
             p.image_url(url=[img], x=0, y=1, w=1, h=1)
-            source = bokeh.models.ColumnDataSource(dict(left   = [folders[select.value]["bboxes"][idx][0]], 
-                                                        right  = [folders[select.value]["bboxes"][idx][1]], 
-                                                        top    = [folders[select.value]["bboxes"][idx][2]], 
-                                                        bottom = [folders[select.value]["bboxes"][idx][3]]
+            source = bokeh.models.ColumnDataSource(dict(left   = [folders[select_cell_type.value]["bboxes"][idx][0]], 
+                                                        right  = [folders[select_cell_type.value]["bboxes"][idx][1]], 
+                                                        top    = [folders[select_cell_type.value]["bboxes"][idx][2]], 
+                                                        bottom = [folders[select_cell_type.value]["bboxes"][idx][3]]
                                                         ))
             quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="white", line_width=2)
             p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
@@ -4548,11 +4548,17 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         layout = bokeh.layouts.column(*plot_rows)
         return layout
 
-    select.on_change('value', create_plots_layout)
+
+
+    def select_cell_type_callback(attr, old, new):
+        new_layout = create_plots_layout()
+        doc.clear()  # Clear the current document
+        doc.add_root(bokeh.layouts.column(select_cell_type, layout))
+    select_cell_type.on_change('value', select_cell_type_callback)
 
     # Create the initial layout
     layout = create_plots_layout('','','')
-    doc.add_root(bokeh.layouts.column(select, layout))
+    doc.add_root(bokeh.layouts.column(select_cell_type, layout))
 
 
 
