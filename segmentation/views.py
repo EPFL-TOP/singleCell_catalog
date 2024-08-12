@@ -4451,13 +4451,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def get_images_bboxes(folder_path):
         # Load images from folder and convert to base64
         image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
-        #images_base64 = [threading.Thread(target = image_to_base64, args=(image_path,)) for image_path in image_paths]
-        #print('--------',image_to_base64)
-        #for t in images_base64: 
-        #    print('  t=',t)
-        #    t.start()
-        #for t in images_base64: t.join()
-
         images_base64 = [image_to_base64(img_path) for img_path in image_paths]
 
         titles = [os.path.split(t.replace('.png',''))[1] for t in image_paths]
@@ -4466,7 +4459,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             fname = img_path.replace('.png', '_annotation.json')
             with open(fname, 'r') as f:
                 data   = json.load(f)
-
                 left   = data['bbox'][0]/512.
                 right  = data['bbox'][1]/512.
                 top    = 1 - data['bbox'][2]/512.
@@ -4509,7 +4501,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
             plot_name = folders[select.value]["titles"][idx]
 
-            p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1), toolbar_location=None, width=275, height=275, title=plot_name)
+            p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1),  width=275, height=275, title=plot_name) #toolbar_location=None,
             p.axis.visible = False
             p.grid.visible = False
             p.image_url(url=[img], x=0, y=1, w=1, h=1)
