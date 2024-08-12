@@ -4452,8 +4452,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         # Load images from folder and convert to base64
         image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
         images_base64 = [threading.Thread(target = image_to_base64, args=(image_path,)) for image_path in image_paths]
-
-        for t in images_base64: t.start()
+        print('--------',image_to_base64)
+        for t in images_base64: 
+            print('  t=',t)
+            t.start()
         #for t in images_base64: t.join()
 
         #images_base64 = [image_to_base64(img_path) for img_path in image_paths]
