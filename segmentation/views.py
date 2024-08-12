@@ -4543,7 +4543,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         selected_plots.remove(plot_name)
                         fullplot = glob.glob(os.path.join(folder_path, plot_name))
                         if len(fullplot)==1:
-                            os.system("mv {} {}".format(fullplot[0], fullplot[0].replace('_invalid.png','.png')))
+                            cmd="mv {} {}".format(fullplot[0], fullplot[0].replace('_invalid.png','.png'))
+                            print(cmd)
+                            os.system(cmd)
                         btn.button_type = 'success'
                     else:
                         plot.background_fill_color = 'rgba(255, 0, 0, 0.4)'
@@ -4551,7 +4553,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         selected_plots.append(plot_name)
                         fullplot = glob.glob(os.path.join(folder_path, plot_name))
                         if len(fullplot)==1:
-                            os.system("mv {} {}".format(fullplot[0], fullplot[0].replace('.png', '_invalid.png')))
+                            cmd="mv {} {}".format(fullplot[0], fullplot[0].replace('.png', '_invalid.png'))
+                            print(cmd)
+                            os.system(cmd)
                         btn.button_type = 'danger'
                     selected_plots_source.data = {'selected_plots': selected_plots}  # Update the data source
                 return callback
