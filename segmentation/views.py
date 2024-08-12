@@ -4536,12 +4536,13 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             def create_button_callback(plot, plot_name, btn):
                 def callback():
                     selected_plots = selected_plots_source.data['selected_plots']
+                    fullplot = glob.glob(os.path.join(folder_path, plot_name))
+                    print('fullplot ',fullplot)
                     print('selected_plots = ',selected_plots)
                     if plot_name in selected_plots:
                         plot.background_fill_color = 'white'
                         plot.border_fill_color     = 'white'
                         selected_plots.remove(plot_name)
-                        fullplot = glob.glob(os.path.join(folder_path, plot_name))
                         if len(fullplot)==1:
                             cmd="mv {} {}".format(fullplot[0], fullplot[0].replace('_invalid.png','.png'))
                             print(cmd)
@@ -4551,7 +4552,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         plot.background_fill_color = 'rgba(255, 0, 0, 0.4)'
                         plot.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
                         selected_plots.append(plot_name)
-                        fullplot = glob.glob(os.path.join(folder_path, plot_name))
                         if len(fullplot)==1:
                             cmd="mv {} {}".format(fullplot[0], fullplot[0].replace('.png', '_invalid.png'))
                             print(cmd)
