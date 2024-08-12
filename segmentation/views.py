@@ -1556,10 +1556,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
-    def get_adjacent_stack(number=6):
+#    def get_adjacent_stack(number=6):
+    def get_adjacent_stack(number=3):
         current_pos_list=[]
         current_file_list=[]
-        for n in range(-number+4, number+2):
+        #for n in range(-number+4, number+2):
+        for n in range(-number+1, number+2):
             #if n==0:continue
             current_file = get_current_file(index=n)
             current_file_list.append(current_file)
