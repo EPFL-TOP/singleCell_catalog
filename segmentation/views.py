@@ -4451,14 +4451,14 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def get_images_bboxes(folder_path):
         # Load images from folder and convert to base64
         image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
-        images_base64 = [threading.Thread(target = image_to_base64, args=(image_path,)) for image_path in image_paths]
-        print('--------',image_to_base64)
-        for t in images_base64: 
-            print('  t=',t)
-            t.start()
+        #images_base64 = [threading.Thread(target = image_to_base64, args=(image_path,)) for image_path in image_paths]
+        #print('--------',image_to_base64)
+        #for t in images_base64: 
+        #    print('  t=',t)
+        #    t.start()
         #for t in images_base64: t.join()
 
-        #images_base64 = [image_to_base64(img_path) for img_path in image_paths]
+        images_base64 = [image_to_base64(img_path) for img_path in image_paths]
 
         titles = [os.path.split(t.replace('.png',''))[1] for t in image_paths]
         bboxes = []
@@ -4493,9 +4493,11 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             'titles': titles
         }
 
-    for cell in cell_types:
-        process_images(cell)
-
+    #for cell in cell_types:
+    #    process_images(cell)
+    threads = [threading.Thread(target = process_images, args=(cell,)) for cell in cell_types]
+    for t in threads: t.start()
+    for t in threads: t.join()
 
 
     #___________________________________________________________________________________________
