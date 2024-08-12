@@ -4496,6 +4496,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def create_plots_layout(new, old, attr):
         plots = []
         buttons = []
+        print('new=',new, '  old=',old,'  attr=',attr, '  value=', select.value)
 
         for idx, img in enumerate(folders[select.value]["images"]):
 
