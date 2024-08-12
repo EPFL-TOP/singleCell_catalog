@@ -4497,8 +4497,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def select_cell_type_callback(attr, old, new):
         print('select_cell_type_callback attr, old, new=',attr,old,new)
         new_layout = create_plots_layout()
-        doc.clear()  # Clear the current document
-        doc.add_root(bokeh.layouts.column(select_cell_type, new_layout))
+        #doc.clear()  # Clear the current document
+        #doc.add_root(bokeh.layouts.column(select_cell_type, new_layout))
     select_cell_type.on_change('value', select_cell_type_callback)
 
 
