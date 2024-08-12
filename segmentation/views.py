@@ -4536,7 +4536,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             def create_button_callback(plot, plot_name, btn):
                 def callback():
                     selected_plots = selected_plots_source.data['selected_plots']
-                    fullplot = glob.glob(os.path.join(folder_path, plot_name))
+                    fullplot = glob.glob(os.path.join(folder_path, plot_name, '*.png'))
                     print('fullplot ',fullplot)
                     print('selected_plots = ',selected_plots)
                     if plot_name in selected_plots:
