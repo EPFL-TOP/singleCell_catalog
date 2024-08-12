@@ -41,8 +41,8 @@ except ModuleNotFoundError:
     pass
 
 LOCAL=True
-DEBUG=True
-DEBUG_TIME=True
+DEBUG=False
+DEBUG_TIME=False
 BASEPATH="/mnt/nas_rcp/raw_data"
 CELLPATH="microscopy/cell_culture"
 
@@ -3083,22 +3083,27 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                   mode="manual")
                 contour.save()
 
-
-                print("source_rois_full.data['left']  ",source_rois_full.data['left'])
-                print("source_roi.data['left']  ",source_roi.data['left'])
-                
-                source_rois_full.data['left'][current_index]   = source_roi.data['left']
-                source_rois_full.data['right'][current_index]  = source_roi.data['right']
-                source_rois_full.data['top'][current_index]    = source_roi.data['top']
-                source_rois_full.data['bottom'][current_index] = source_roi.data['bottom']
-
                 cellflag = CellFlag(cell_roi=roi)
                 cellflag.save()
 
         left_rois, right_rois, top_rois, bottom_rois,height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells= update_source_roi_cell_labels()
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
         source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
-        
+
+
+        source_rois_full.data['left'][current_index]   = source_roi.data['left']
+        source_rois_full.data['right'][current_index]  = source_roi.data['right']
+        source_rois_full.data['top'][current_index]    = source_roi.data['top']
+        source_rois_full.data['bottom'][current_index] = source_roi.data['bottom']
+
+        source_labels_full.data['weight'][current_index] = source_labels.data['weight']
+        source_labels_full.data['height'][current_index] = source_labels.data['height']
+        source_labels_full.data['names'][current_index]  = source_labels.data['names']
+
+        source_cells_full.data['weight'][current_index] = source_cells.data['weight']
+        source_cells_full.data['height'][current_index] = source_cells.data['height']
+        source_cells_full.data['names'][current_index]  = source_cells.data['names']
+
         source_roi_manual.data['left']=[]
         source_roi_manual.data['right']=[]
         source_roi_manual.data['top']=[]
