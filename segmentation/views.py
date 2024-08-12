@@ -4550,7 +4550,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         if len(fullplot)==1:
                             cmd="mv {} {}".format(fullplot[0], fullplot[0].replace('_invalid.png','.png'))
                             print(cmd)
-                            os.system(cmd)
+                            os.rename(fullplot[0], fullplot[0].replace('_invalid.png','.png'))
                         btn.button_type = 'success'
                     else:
                         plot.background_fill_color = 'rgba(255, 0, 0, 0.4)'
@@ -4559,7 +4559,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         if len(fullplot)==1:
                             cmd="mv {} {}".format(fullplot[0], fullplot[0].replace('.png', '_invalid.png'))
                             print(cmd)
-                            os.system(cmd)
+                            os.rename(fullplot[0], fullplot[0].replace('.png', '_invalid.png'))
                         btn.button_type = 'danger'
                     selected_plots_source.data = {'selected_plots': selected_plots}  # Update the data source
                 return callback
