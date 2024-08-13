@@ -4573,10 +4573,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         if len(annotation_file)==1:
 
                             data={}
-                            with open(annotation_file, 'r') as f:
+                            with open(annotation_file[0], 'r') as f:
                                 data   = json.load(f)
                                 data["valid"] = True
-                            out_file = open(annotation_file, "w") 
+                            out_file = open(annotation_file[0], "w") 
                             json.dump(data, out_file) 
                             out_file.close() 
 
@@ -4587,10 +4587,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         selected_plots.append(plot_name)
                         if len(annotation_file)==1:
                             data={}
-                            with open(annotation_file, 'r') as f:
+                            with open(annotation_file[0], 'r') as f:
                                 data   = json.load(f)
                                 data["valid"] = False
-                            out_file = open(annotation_file, "w") 
+                            out_file = open(annotation_file[0], "w") 
                             json.dump(data, out_file) 
                             out_file.close() 
                         btn.button_type = 'danger'
