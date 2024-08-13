@@ -82,6 +82,18 @@ def collate_fn(batch):
     return tuple(zip(*batch))
 
 
+from torchvision.models.detection.transform import GeneralizedRCNNTransform
+
+# Create a transform specifically for grayscale images
+class CustomRCNNTransform(GeneralizedRCNNTransform):
+    def normalize(self, image):
+        mean = torch.tensor([0.5], device=image.device)  # Mean for grayscale
+        std = torch.tensor([0.5], device=image.device)   # Std for grayscale
+        return (image - mean[:, None, None]) / std[:, None, None]
+
+
+
+
 def train_one_epoch(model, optimizer, data_loader, device, epoch):
     model.train()
     running_loss = 0.0
@@ -131,7 +143,8 @@ if __name__ == "__main__":
 
 
     model = fasterrcnn_resnet50_fpn(weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT')
-
+    # Use this custom transform in your model initialization
+    model.transform = CustomRCNNTransform(min_size=512, max_size=512, image_mean=[0.5], image_std=[0.5])
 
 
     num_classes = 3  # 1 class (cell) + background
