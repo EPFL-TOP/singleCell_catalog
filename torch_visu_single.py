@@ -59,12 +59,14 @@ def main():
     json_path = r'D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well2\wscepfl0080_xy41\frame0.json'
     base_path = r'D:\single_cells\training_cell_detection\wscepfl0080'
 
+    base_path=r'D:\single_cells\training_cell_detection_categories_new\normal'
+
     json_files = []
     for root, _, files in os.walk(base_path):
         for file in files:
             if file.endswith('.json'):
-                
-                if 'xy07' not in root:continue
+                if 'annotation' in file: continue
+                #if 'xy07' not in root:continue
                 #if 'xy40' not in root:continue
                 json_files.append(os.path.join(root, file))
 
@@ -76,8 +78,11 @@ def main():
         json_path=json_files[idx]
         with open(json_path, 'r') as f:
             data = json.load(f)
+        with open(json_path.replace('.json','_annotation.json'), 'r') as f:
+            data_annotation = json.load(f)
         image_array = np.array(data['data'], dtype=np.float32)  # Convert to float32 to avoid overflow
-        boxes = [ann['bbox'] for ann in data['annotations']]
+        #boxes = [ann['bbox'] for ann in data['annotations']]
+        boxes = [data_annotation['bbox']]
 
 
         # Preprocess the image
