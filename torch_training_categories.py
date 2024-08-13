@@ -61,11 +61,15 @@ class CellDataset(Dataset):
         
         img = np.array(data["data"])
         img = np.array(img, dtype=np.float32) / 65535.0  # Normalize to [0, 1] based on int16 max
+        print(f"Image shape 1: {img.shape}")  # Should be [3, H, W]
+
         img = np.expand_dims(img, axis=0)  # Add channel dimension
-        
+        print(f"Image shape 2: {img.shape}")  # Should be [3, H, W]
+
 
         #img = np.expand_dims(img, axis=0)  # Make it (1, H, W)
         img = np.repeat(img, 3, axis=0)   # Convert to (3, H, W)
+        print(f"Image shape 3: {img.shape}")  # Should be [3, H, W]
 
         json_path = self.annotation_files[idx]
         with open(json_path) as f:
@@ -83,7 +87,6 @@ class CellDataset(Dataset):
         if self.transforms:
             img = self.transforms(img)
         
-        print(f"Image shape: {img.shape}")  # Should be [3, H, W]
         return img, target
     
 
