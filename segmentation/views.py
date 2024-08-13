@@ -4560,30 +4560,27 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             def create_button_callback(plot, plot_name, btn):
                 def callback():
                     selected_plots = selected_plots_source.data['selected_plots']
-                    dir=os.path.join(folder_path, select_cell_type.value, plot_name+'*.png')
-                    print('dir ',dir)
+                    dir=os.path.join(folder_path, select_cell_type.value, plot_name+'*.png')                   
                     dir = r'{}'.format(dir)
-                    print('dir ',dir)
                     fullplot = glob.glob(dir)
-                    print('fullplot ',fullplot)
                     print('selected_plots = ',selected_plots)
                     if plot_name in selected_plots:
                         plot.background_fill_color = 'white'
                         plot.border_fill_color     = 'white'
                         selected_plots.remove(plot_name)
                         if len(fullplot)==1:
-                            cmd="mv {} {}".format(fullplot[0], fullplot[0].replace('_invalid.png','.png'))
-                            print(cmd)
                             os.rename(fullplot[0], fullplot[0].replace('_invalid.png','.png'))
+                            os.rename(fullplot[0], fullplot[0].replace('_invalid.json','.json'))
+                            os.rename(fullplot[0], fullplot[0].replace('annotation_invalid.json','annotation.json'))
                         btn.button_type = 'success'
                     else:
                         plot.background_fill_color = 'rgba(255, 0, 0, 0.4)'
                         plot.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
                         selected_plots.append(plot_name)
                         if len(fullplot)==1:
-                            cmd="mv {} {}".format(fullplot[0], fullplot[0].replace('.png', '_invalid.png'))
-                            print(cmd)
                             os.rename(fullplot[0], fullplot[0].replace('.png', '_invalid.png'))
+                            os.rename(fullplot[0], fullplot[0].replace('.json','_invalid.json'))
+                            os.rename(fullplot[0], fullplot[0].replace('annotation.json','annotation_invalid.json'))
                         btn.button_type = 'danger'
                     selected_plots_source.data = {'selected_plots': selected_plots}  # Update the data source
                 return callback
