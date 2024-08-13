@@ -4463,7 +4463,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
     selected_plots_source       = bokeh.models.ColumnDataSource(data=dict(selected_plots=[]))
-    selected_plots_source       = bokeh.models.ColumnDataSource(data=dict(selected_plots=['bleb001_xy092_frame11_cell1']))
 
     #___________________________________________________________________________________________
     def image_to_base64(img_path):
@@ -4547,6 +4546,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         for idx, img in enumerate(folders[select_cell_type.value]["images"]):
 
             plot_name = folders[select_cell_type.value]["titles"][idx]
+            valid = folders[select_cell_type.value]["valid"][idx]
             p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1),  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo") #toolbar_location=None,
             p.axis.visible = False
             p.grid.visible = False
@@ -4560,6 +4560,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
 
             button = bokeh.models.Button(label=plot_name, width=60, button_type="success")
+
+            if not valid:
+                p.background_fill_color = 'rgba(255, 0, 0, 0.4)'
+                p.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
+                button.button_type = 'danger'
+                selected_plots_source.data['selected_plots'].append(plot_name)
 
             def create_button_callback(plot, plot_name, btn):
                 def callback():
