@@ -92,7 +92,10 @@ print(f"Number of training images: {train_size}")
 print(f"Number of validation images: {val_size}")
 
 
-model = fasterrcnn_resnet50_fpn(pretrained=True)
+model = fasterrcnn_resnet50_fpn(pretrained=True, weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT')
+
+
+
 num_classes = 2  # 1 class (cell) + background
 
 in_features = model.roi_heads.box_predictor.cls_score.in_features
