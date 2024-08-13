@@ -40,7 +40,8 @@ class CellDataset(Dataset):
                 self.data_files.append(data["image_json"])
                 self.labels.append(label)
 
-
+        print('data_files ',self.data_files)
+        print('labels     ',self.labels)
 
     def __len__(self):
         return len(self.data_files)
