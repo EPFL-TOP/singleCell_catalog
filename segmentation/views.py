@@ -165,7 +165,7 @@ def build_mva_samples(exp_name=''):
 
 #___________________________________________________________________________________________
 def save_categories(cellflags, outname):
-    ncells = 100
+    ncells = 1000
     outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories_new', outname)
     if not os.path.exists(outdir):
         os.makedirs(outdir)
