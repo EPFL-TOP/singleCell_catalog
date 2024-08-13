@@ -28,7 +28,6 @@ class CellDataset(Dataset):
                     if '_annotation' not in file: continue
                     print('processing ',file)
                     data={}
-
                     with open(file) as f:
                         data = json.load(f)
                         valid=True
@@ -37,8 +36,8 @@ class CellDataset(Dataset):
                         except KeyError:
                             valid=True
                     if not valid: continue
-                self.data_files.append(data["image_json"])
-                self.labels.append(label)
+                    self.data_files.append(data["image_json"])
+                    self.labels.append(label)
 
         print('data_files ',self.data_files)
         print('labels     ',self.labels)
