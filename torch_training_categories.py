@@ -86,7 +86,8 @@ class CellDataset(Dataset):
 
         if self.transforms:
             img = self.transforms(img)
-        
+        print(f"Image shape 4: {img.shape}")  # Should be [3, H, W]
+    
         return img, target
     
 
