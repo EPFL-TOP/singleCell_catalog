@@ -64,7 +64,7 @@ class CellDataset(Dataset):
         with open(json_path) as f:
             data = json.load(f)
 
-        boxes = [ann["bbox"] for ann in data["annotations"]]
+        boxes = [data["bbox"]]
         label = self.labels[idx]
         
         target = {}
