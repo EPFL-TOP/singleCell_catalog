@@ -65,7 +65,9 @@ class CellDataset(Dataset):
         with open(json_path) as f:
             data = json.load(f)
 
-        boxes = [data["bbox"]]
+        boxes = [[data["bbox"][0], data["bbox"][2], data["bbox"][1], data["bbox"][3]]]
+        #boxes = [[x_min, y_min, x_max, y_max] for x_min, x_max, y_min, y_max in boxes]
+#"bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row],
         label = self.labels[idx]
         
         target = {}
