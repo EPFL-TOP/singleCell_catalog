@@ -77,13 +77,19 @@ class CellDataset(Dataset):
         return img, target
     
 
+def collate_fn(batch):
+    return tuple(zip(*batch))
+
 dataset = CellDataset(root_dir=r'D:\single_cells\training_cell_detection_categories_new', transforms=get_transform())
 train_size = int(0.8 * len(dataset))
 val_size = len(dataset) - train_size
 train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
-train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True, num_workers=4, collate_fn=lambda x: tuple(zip(*x)))
-val_loader   = DataLoader(val_dataset, batch_size=2, shuffle=False, num_workers=4, collate_fn=lambda x: tuple(zip(*x)))
+#train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True, num_workers=4, collate_fn=lambda x: tuple(zip(*x)))
+#val_loader   = DataLoader(val_dataset, batch_size=2, shuffle=False, num_workers=4, collate_fn=lambda x: tuple(zip(*x)))
+
+train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True, num_workers=4, collate_fn=collate_fn)
+val_loader   = DataLoader(val_dataset, batch_size=2, shuffle=False, num_workers=4, collate_fn=collate_fn)
 
 print(f"Number of training images: {train_size}")
 print(f"Number of validation images: {val_size}")
