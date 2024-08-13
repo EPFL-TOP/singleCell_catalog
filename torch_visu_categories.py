@@ -33,6 +33,16 @@ model.to(device)
 
 # Example evaluation
 test_images = [np.random.rand(1, 512, 512).astype(np.float32)]  # Replace with your test 2D arrays
-outputs = evaluate_model(model, test_images, device)
+test_images = [np.random.rand(1, 512, 512).astype(np.float32)]  # Replace with your test 2D arrays
+image=r'D:\single_cells\training_cell_detection_categories_new\normal\bleb001_xy049_frame17_cell0.json'
+with open(image, 'r') as f:
+    data = json.load(f)
+image_array = np.array(data['data'], dtype=np.float32)  
+img = np.array(image_array, dtype=np.float32) / 65535.0  # Normalize to [0, 1] based on int16 max
+img = np.expand_dims(img, axis=0)  # Add channel dimension
+img = np.repeat(img, 3, axis=0)   # Convert to (3, H, W)
+
+#outputs = evaluate_model(model, test_images, device)
+outputs = evaluate_model(model, img, device)
 for output in outputs:
     print(output['boxes'], output['scores'])
