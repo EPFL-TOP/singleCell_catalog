@@ -4462,7 +4462,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     print('****************************  phenocheck_handler ****************************')
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
-    selected_plots_source       = bokeh.models.ColumnDataSource(data=dict(selected_plots=[]))
+    #selected_plots_source       = bokeh.models.ColumnDataSource(data=dict(selected_plots=[]))
+    selected_plots_source       = bokeh.models.ColumnDataSource(data=dict(selected_plots=['bleb001_xy092_frame11_cell1']))
 
     #___________________________________________________________________________________________
     def image_to_base64(img_path):
@@ -4479,6 +4480,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
         titles = [os.path.split(t.replace('.png',''))[1] for t in image_paths]
         bboxes = []
+        valid = []
         for img_path in image_paths:
             fname = img_path.replace('.png', '_annotation.json')
             with open(fname, 'r') as f:
@@ -4488,8 +4490,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 top    = 1 - data['bbox'][2]/512.
                 bottom = 1 - data['bbox'][3]/512.
                 bboxes.append([left, right, top, bottom])
-        return images_base64, bboxes, titles
+                try:
+                    valid.append(data['valid'])
+                except KeyError:
+                    valid.append(True)
 
+        return images_base64, bboxes, titles, valid
 
     cell_types = ["normal",  "dead", "elongated", "flat"]
     select_cell_type = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
@@ -4502,11 +4508,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def process_images(cell):
         print('processing cell type:',cell)
-        images_base64, bboxes, titles = get_images_bboxes(os.path.join(folder_path,cell))
+        images_base64, bboxes, titles, valid = get_images_bboxes(os.path.join(folder_path,cell))
         folders[cell] = {
             'images': images_base64,
             'bboxes': bboxes,
-            'titles': titles
+            'titles': titles,
+            'valid': valid
         }
 
     #for cell in cell_types:
@@ -4556,7 +4563,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
             button = bokeh.models.Button(label=plot_name, width=60, button_type="success")
 
-
             def create_button_callback(plot, plot_name, btn):
                 def callback():
                     selected_plots = selected_plots_source.data['selected_plots']
@@ -4571,7 +4577,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         plot.border_fill_color     = 'white'
                         selected_plots.remove(plot_name)
                         if len(annotation_file)==1:
-
                             data={}
                             with open(annotation_file[0], 'r') as f:
                                 data   = json.load(f)
@@ -4579,7 +4584,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                             out_file = open(annotation_file[0], "w") 
                             json.dump(data, out_file) 
                             out_file.close() 
-
                         btn.button_type = 'success'
                     else:
                         plot.background_fill_color = 'rgba(255, 0, 0, 0.4)'
