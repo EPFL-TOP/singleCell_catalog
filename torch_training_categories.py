@@ -24,9 +24,11 @@ class CellDataset(Dataset):
             if os.path.isdir(cell_type_dir):
                 files = list(sorted(os.listdir(cell_type_dir)))
                 for file in files:
+                    file = os.path.join(cell_type_dir, file)
                     if '_annotation' not in file: continue
                     print('processing ',file)
                     data={}
+
                     with open(file) as f:
                         data = json.load(f)
                         valid=True
