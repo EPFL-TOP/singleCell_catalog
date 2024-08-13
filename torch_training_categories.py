@@ -136,10 +136,11 @@ def evaluate(model, data_loader, device):
             images = list(image.to(device) for image in images)
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
             
-            loss_dict = model(images, targets)
-            print('loss_dict ',loss_dict)
-            losses = sum(loss for loss in loss_dict.values())
-            running_loss += losses.item()
+            loss_list = model(images, targets)
+            print('loss_list ',loss_list)
+            for loss_dict in loss_list:
+                losses = sum(loss for loss in loss_dict.values())
+                running_loss += losses.item()
     
     return running_loss / len(data_loader)
 
