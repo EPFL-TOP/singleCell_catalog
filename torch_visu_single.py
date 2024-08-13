@@ -37,6 +37,7 @@ def preprocess_image(image_array):
 def visualize_predictions(image, predictions, boxes):
     fig, ax = plt.subplots(1)
     img = image.squeeze(0).squeeze(0).cpu().numpy()
+    print(predictions)
     ax.imshow(img, cmap='gray')
     for box in predictions[0]['boxes']:
         x_min, y_min, x_max, y_max = box.cpu().numpy()
@@ -50,7 +51,8 @@ def visualize_predictions(image, predictions, boxes):
 
 def main():
     model_path = 'cell_detection_model.pth'
-    num_classes = 2
+    model_path = 'model_epoch_10.pth'
+    num_classes = 3
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
     # Load the model
