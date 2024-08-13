@@ -4462,7 +4462,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     print('****************************  phenocheck_handler ****************************')
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
-    #selected_plots_source       = bokeh.models.ColumnDataSource(data=dict(selected_plots=[]))
+    selected_plots_source       = bokeh.models.ColumnDataSource(data=dict(selected_plots=[]))
     selected_plots_source       = bokeh.models.ColumnDataSource(data=dict(selected_plots=['bleb001_xy092_frame11_cell1']))
 
     #___________________________________________________________________________________________
@@ -4499,9 +4499,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     cell_types = ["normal",  "dead", "elongated", "flat"]
     select_cell_type = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
-
     folder_path = r'D:\single_cells\training_cell_detection_categories'
-
     folders = {}
 
 
@@ -4566,12 +4564,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             def create_button_callback(plot, plot_name, btn):
                 def callback():
                     selected_plots = selected_plots_source.data['selected_plots']
+                    print('selected_plots callback = ',selected_plots, '  plot_name = ',plot_name)
 
                     dir=os.path.join(folder_path, select_cell_type.value, plot_name+'_annotation.json')                   
                     dir = r'{}'.format(dir)
                     annotation_file = glob.glob(dir)
 
-                    print('selected_plots = ',selected_plots)
                     if plot_name in selected_plots:
                         plot.background_fill_color = 'white'
                         plot.border_fill_color     = 'white'
