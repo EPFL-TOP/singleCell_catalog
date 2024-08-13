@@ -66,7 +66,7 @@ class CellDataset(Dataset):
 
 
         #img = np.expand_dims(img, axis=0)  # Make it (1, H, W)
-        img = np.repeat(img, 3, axis=0)   # Convert to (3, H, W)
+        #img = np.repeat(img, 3, axis=0)   # Convert to (3, H, W)
 
         img = np.transpose(img, (1, 2, 0))
 
