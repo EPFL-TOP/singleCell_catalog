@@ -71,7 +71,7 @@ class CellDataset(Dataset):
         img = np.repeat(img, 3, axis=0)   # Convert to (3, H, W)
         print(f"Image shape 3: {img.shape}")  # Should be [3, H, W]
 
-        img = np.transpose(img, (0, 1, 2)
+        img = np.transpose(img, (0, 1, 2))
 
         json_path = self.annotation_files[idx]
         with open(json_path) as f:
