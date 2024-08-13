@@ -89,11 +89,11 @@ print(f"Number of training images: {train_size}")
 print(f"Number of validation images: {val_size}")
 
 
-model = fasterrcnn_resnet50_fpn(pretrained=True, weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT')
+model = fasterrcnn_resnet50_fpn(weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT')
 
 
 
-num_classes = 2  # 1 class (cell) + background
+num_classes = 3  # 1 class (cell) + background
 
 in_features = model.roi_heads.box_predictor.cls_score.in_features
 model.roi_heads.box_predictor = torchvision.models.detection.faster_rcnn.FastRCNNPredictor(in_features, num_classes)
