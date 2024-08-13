@@ -117,6 +117,8 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch):
         targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
         
         loss_dict = model(images, targets)
+        print('loss_dict train_one_epoch',loss_dict)
+
         losses = sum(loss for loss in loss_dict.values())
         running_loss += losses.item()
         
@@ -130,14 +132,13 @@ def evaluate(model, data_loader, device):
     model.eval()
     running_loss = 0.0
     with torch.no_grad():
-        print('data_loader ',data_loader)
 
         for images, targets in data_loader:
             images = list(image.to(device) for image in images)
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
             
             loss_list = model(images, targets)
-            print('loss_list ',loss_list)
+            print('loss_list evaluate',loss_list)
             for loss_dict in loss_list:
                 losses = sum(loss for loss in loss_dict.values())
                 running_loss += losses.item()
@@ -184,6 +185,7 @@ if __name__ == "__main__":
 
     for epoch in range(num_epochs):
         train_loss = train_one_epoch(model, optimizer, train_loader, device, epoch)
+        print(f"Epoch {epoch+1}, Training Loss: {train_loss:.4f}")
         val_loss = evaluate(model, val_loader, device)
         
         lr_scheduler.step()
