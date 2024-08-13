@@ -4560,36 +4560,39 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             def create_button_callback(plot, plot_name, btn):
                 def callback():
                     selected_plots = selected_plots_source.data['selected_plots']
-                    dir=os.path.join(folder_path, select_cell_type.value, plot_name+'*.png')                   
-                    dir = r'{}'.format(dir)
-                    fullplot = glob.glob(dir)
 
-                    dir=os.path.join(folder_path, select_cell_type.value, plot_name+'*.json')                   
+                    dir=os.path.join(folder_path, select_cell_type.value, plot_name+'_annotation.json')                   
                     dir = r'{}'.format(dir)
-                    fullplot_json = glob.glob(dir)
-
-                    dir=os.path.join(folder_path, select_cell_type.value, plot_name+'*annotation.json')                   
-                    dir = r'{}'.format(dir)
-                    fullplot_annotation = glob.glob(dir)
+                    annotation_file = glob.glob(dir)
 
                     print('selected_plots = ',selected_plots)
                     if plot_name in selected_plots:
                         plot.background_fill_color = 'white'
                         plot.border_fill_color     = 'white'
                         selected_plots.remove(plot_name)
-                        if len(fullplot)==1:
-                            os.rename(fullplot[0], fullplot[0].replace('_invalid.png','.png'))
-                            os.rename(fullplot_json[0], fullplot_json[0].replace('_invalid.json','.json'))
-                            os.rename(fullplot_annotation[0], fullplot_annotation[0].replace('annotation_invalid.json','annotation.json'))
+                        if len(annotation_file)==1:
+
+                            data={}
+                            with open(annotation_file, 'r') as f:
+                                data   = json.load(f)
+                                data["valid"] = True
+                            out_file = open(annotation_file, "w") 
+                            json.dump(data, out_file) 
+                            out_file.close() 
+
                         btn.button_type = 'success'
                     else:
                         plot.background_fill_color = 'rgba(255, 0, 0, 0.4)'
                         plot.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
                         selected_plots.append(plot_name)
-                        if len(fullplot)==1:
-                            os.rename(fullplot[0], fullplot[0].replace('.png', '_invalid.png'))
-                            os.rename(fullplot_json[0], fullplot_json[0].replace('.json','_invalid.json'))
-                            os.rename(fullplot_annotation[0], fullplot_annotation[0].replace('annotation.json','annotation_invalid.json'))
+                        if len(annotation_file)==1:
+                            data={}
+                            with open(annotation_file, 'r') as f:
+                                data   = json.load(f)
+                                data["valid"] = False
+                            out_file = open(annotation_file, "w") 
+                            json.dump(data, out_file) 
+                            out_file.close() 
                         btn.button_type = 'danger'
                     selected_plots_source.data = {'selected_plots': selected_plots}  # Update the data source
                 return callback
