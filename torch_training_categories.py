@@ -25,6 +25,7 @@ class CellDataset(Dataset):
                 files = list(sorted(os.listdir(cell_type_dir)))
                 for file in files:
                     if '_annotation' not in file: continue
+                    print('processing ',file)
                     data={}
                     with open(file) as f:
                         data = json.load(f)
@@ -63,7 +64,7 @@ class CellDataset(Dataset):
         return img, target
     
 
-dataset = CellDataset(json_dir=r'D:\single_cells\training_cell_detection_categories_new', transforms=get_transform())
+dataset = CellDataset(root_dir=r'D:\single_cells\training_cell_detection_categories_new', transforms=get_transform())
 train_size = int(0.8 * len(dataset))
 val_size = len(dataset) - train_size
 train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
