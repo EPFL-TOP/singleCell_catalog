@@ -35,7 +35,6 @@ class CellDataset(Dataset):
                 for file in files:
                     file = os.path.join(cell_type_dir, file)
                     if '_annotation' not in file: continue
-                    print('processing ',file)
                     data={}
                     with open(file) as f:
                         data = json.load(f)
@@ -49,8 +48,6 @@ class CellDataset(Dataset):
                     self.annotation_files.append(file)
                     self.labels.append(label)
 
-        print('data_files ',self.data_files)
-        print('labels     ',self.labels)
 
     def __len__(self):
         return len(self.data_files)
