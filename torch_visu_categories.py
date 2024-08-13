@@ -12,7 +12,7 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 def evaluate_model(model, images, device):
     model.eval()
     with torch.no_grad():
-        images = [torch.tensor(image).unsqueeze(0).to(device) for image in images]  # Add batch dimension
+        #images = [torch.tensor(image).unsqueeze(0).to(device) for image in images]  # Add batch dimension
         outputs = model(images)
     return outputs
 
