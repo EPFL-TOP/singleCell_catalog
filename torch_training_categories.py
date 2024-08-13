@@ -61,18 +61,14 @@ class CellDataset(Dataset):
         
         img = np.array(data["data"])
         img = np.array(img, dtype=np.float32) / 65535.0  # Normalize to [0, 1] based on int16 max
-        print(f"Image shape 1: {img.shape}")  # Should be [3, H, W]
 
         img = np.expand_dims(img, axis=0)  # Add channel dimension
-        print(f"Image shape 2: {img.shape}")  # Should be [3, H, W]
 
 
         #img = np.expand_dims(img, axis=0)  # Make it (1, H, W)
         img = np.repeat(img, 3, axis=0)   # Convert to (3, H, W)
-        print(f"Image shape 3: {img.shape}")  # Should be [3, H, W]
 
         img = np.transpose(img, (1, 2, 0))
-        print(f"Image shape 4: {img.shape}")  # Should be [3, H, W]
 
         json_path = self.annotation_files[idx]
         with open(json_path) as f:
@@ -89,7 +85,6 @@ class CellDataset(Dataset):
 
         if self.transforms:
             img = self.transforms(img)
-        print(f"Image shape 5: {img.shape}")  # Should be [3, H, W]
     
         return img, target
     
@@ -131,6 +126,9 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch):
 def evaluate(model, data_loader, device):
     model.eval()
     running_loss = 0.0
+    correct = 0
+    total = 0
+    val_loss = 0.0
     with torch.no_grad():
 
         for images, targets in data_loader:
@@ -138,6 +136,13 @@ def evaluate(model, data_loader, device):
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
             
             loss_list = model(images, targets)
+
+
+            _, predicted = torch.max(loss_list.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+            val_loss += criterion(outputs, labels).item() * labels.size(0)
+
             print('loss_list evaluate',loss_list)
             for loss_dict in loss_list:
                 losses = sum(loss for loss in loss_dict.values())
@@ -186,10 +191,11 @@ if __name__ == "__main__":
     for epoch in range(num_epochs):
         train_loss = train_one_epoch(model, optimizer, train_loader, device, epoch)
         print(f"Epoch {epoch+1}, Training Loss: {train_loss:.4f}")
-        val_loss = evaluate(model, val_loader, device)
+        #val_loss = evaluate(model, val_loader, device)
         
         lr_scheduler.step()
 
-        print(f"Epoch {epoch+1}, Training Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
+        
+        #print(f"Epoch {epoch+1}, Training Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
         
         torch.save(model.state_dict(), f"model_epoch_{epoch+1}.pth")
