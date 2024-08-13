@@ -58,6 +58,7 @@ class CellDataset(Dataset):
             data = json.load(f)
         
         img = np.array(data["data"])
+        img = np.array(img, dtype=np.float32) / 65535.0  # Normalize to [0, 1] based on int16 max
         img = np.expand_dims(img, axis=0)  # Add channel dimension
         
         json_path = self.annotation_files[idx]
