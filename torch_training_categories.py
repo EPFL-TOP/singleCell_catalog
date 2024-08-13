@@ -130,11 +130,14 @@ def evaluate(model, data_loader, device):
     model.eval()
     running_loss = 0.0
     with torch.no_grad():
+        print('data_loader ',data_loader)
+
         for images, targets in data_loader:
             images = list(image.to(device) for image in images)
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
             
             loss_dict = model(images, targets)
+            print('loss_dict ',loss_dict)
             losses = sum(loss for loss in loss_dict.values())
             running_loss += losses.item()
     
