@@ -112,7 +112,6 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch):
         targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
         
         loss_dict = model(images, targets)
-        print('loss_dict train_one_epoch',loss_dict)
 
         losses = sum(loss for loss in loss_dict.values())
         running_loss += losses.item()
