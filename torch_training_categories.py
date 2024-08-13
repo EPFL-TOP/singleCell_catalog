@@ -4,6 +4,8 @@ import torch
 import torchvision
 from torchvision.transforms import ToTensor
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
+from torchvision.models.detection.transform import GeneralizedRCNNTransform
+
 #from torchvision.transforms import functional as F
 from torch.utils.data import DataLoader, Dataset, random_split
 import os
@@ -61,6 +63,10 @@ class CellDataset(Dataset):
         img = np.array(img, dtype=np.float32) / 65535.0  # Normalize to [0, 1] based on int16 max
         img = np.expand_dims(img, axis=0)  # Add channel dimension
         
+
+        #img = np.expand_dims(img, axis=0)  # Make it (1, H, W)
+        img = np.repeat(img, 3, axis=0)   # Convert to (3, H, W)
+
         json_path = self.annotation_files[idx]
         with open(json_path) as f:
             data = json.load(f)
@@ -84,14 +90,13 @@ def collate_fn(batch):
     return tuple(zip(*batch))
 
 
-from torchvision.models.detection.transform import GeneralizedRCNNTransform
 
 # Create a transform specifically for grayscale images
-class CustomRCNNTransform(GeneralizedRCNNTransform):
-    def normalize(self, image):
-        mean = torch.tensor([0.5], device=image.device)  # Mean for grayscale
-        std = torch.tensor([0.5], device=image.device)   # Std for grayscale
-        return (image - mean[:, None, None]) / std[:, None, None]
+#class CustomRCNNTransform(GeneralizedRCNNTransform):
+#    def normalize(self, image):
+#        mean = torch.tensor([0.5], device=image.device)  # Mean for grayscale
+#        std = torch.tensor([0.5], device=image.device)   # Std for grayscale
+#        return (image - mean[:, None, None]) / std[:, None, None]
 
 
 
@@ -144,9 +149,10 @@ if __name__ == "__main__":
     print(f"Number of validation images: {val_size}")
 
 
-    model = fasterrcnn_resnet50_fpn(weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT')
+    #model = fasterrcnn_resnet50_fpn(weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT')
+    model = fasterrcnn_resnet50_fpn(weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT', pretrained=True)
     # Use this custom transform in your model initialization
-    model.transform = CustomRCNNTransform(min_size=512, max_size=512, image_mean=[0.5], image_std=[0.5])
+    #model.transform = CustomRCNNTransform(min_size=512, max_size=512, image_mean=[0.5], image_std=[0.5])
 
 
     num_classes = 3  # 1 class (cell) + background
