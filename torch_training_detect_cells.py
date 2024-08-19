@@ -111,7 +111,7 @@ num_classes = 2  # 1 class (cell) + background
 model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
 model_save_path = 'cell_detection_model.pth'
-model.load_state_dict(torch.load(model_save_path))
+#model.load_state_dict(torch.load(model_save_path))
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 print('using device: ',device)
