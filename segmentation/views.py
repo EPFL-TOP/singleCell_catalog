@@ -35,10 +35,48 @@ from pathlib import Path
 from io import BytesIO
 import base64
 from PIL import Image
-try:
-    import tensorflow as tf
-except ModuleNotFoundError:
-    pass
+
+import torch
+import torchvision
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+from torchvision.transforms import functional as F
+
+
+class ToTensorNormalize:
+    def __call__(self, image):
+        if isinstance(image, np.ndarray):
+            image = torch.tensor(image, dtype=torch.float32).unsqueeze(0)
+        else:
+            image = F.pil_to_tensor(image).float()
+        
+        image = (image - image.min()) / (image.max() - image.min())
+        return image
+
+def load_model(model_path, num_classes, device):
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT')
+    in_features = model.roi_heads.box_predictor.cls_score.in_features
+    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+    model.load_state_dict(torch.load(model_path, weights_only=True))
+    model.to(device)
+    model.eval()
+    return model
+
+
+def preprocess_image(image_array):
+    transform = ToTensorNormalize()
+    image = transform(image_array)
+    return image.unsqueeze(0)  # Add batch dimension
+
+
+model_path = 'cell_detection_model.pth'
+num_classes = 2
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+
+# Load the model
+model_gpu = load_model(model_path, num_classes, torch.device('cuda'))
+
+
+
 
 LOCAL=True
 DEBUG=False
@@ -87,17 +125,7 @@ import bokeh.plotting
 import bokeh.embed
 import bokeh.layouts
 
-def load_model(model_path):
-    try:
-        return tf.keras.models.load_model(model_path)
-    except NameError:
-        return None
-#model = load_model('cell_classifier_model.keras')
-#trained on GPU with one dense layer more
 
-model_alive = load_model('cell_classifier_model_simple_alive.keras')
-#model_oscillating = load_model('cell_classifier_model_simple_oscillating.keras')
-#        
 
 
 #___________________________________________________________________________________________
@@ -161,12 +189,9 @@ def build_mva_samples(exp_name=''):
                         json.dump(bf_image, out_file) 
                         out_file.close() 
 
-
-
 #___________________________________________________________________________________________
 def save_categories(cellflags, outname):
     ncells = 1000
-
 
     for idx, cell in enumerate(cellflags):
         val=random.uniform(0,1)
@@ -184,28 +209,31 @@ def save_categories(cellflags, outname):
         frame   = cellroi.frame
 
         sample_file_name=os.path.join(r'Y:', frame.sample.file_name.replace('/mnt/nas_rcp',''))
-        print('ttt===',sample_file_name) 
-        images = nd2.imread(Path(sample_file_name).as_posix())
-        images=images.transpose(1,0,2,3)
-        image=images[0][frame.number]
+        print('ttt===',sample_file_name)
 
         exp_name = frame.sample.experimental_dataset.experiment.name
         well = os.path.split(frame.sample.file_name)[1].replace('.nd2','')
         well = well.split("_")[1]
         out_name = '{}_{}_frame{}_{}'.format(exp_name, well, frame.number, cellroi.cell_id.name)
-
         outfile_png  = os.path.join(outdir, '{}.png'.format(out_name))
+        outfile_json = os.path.join(outdir, '{}.json'.format(out_name))
+        outfile_anno = os.path.join(outdir, '{}_annotation.json'.format(out_name))
+
+        if os.path.exists(outfile_png) and os.path.exists(outfile_json) and os.path.exists(outfile_anno):
+            continue
+
+        images = nd2.imread(Path(sample_file_name).as_posix())
+        images=images.transpose(1,0,2,3)
+        image=images[0][frame.number]
+
         norm_image = (image - image.min()) / (image.max() - image.min())
         plt.imsave(outfile_png, norm_image, cmap='gray')
         #imageio.imwrite(outfile_png,image)
 
-        outfile_json = os.path.join(outdir, '{}.json'.format(out_name))
         outdict={"data":image.tolist()}
         out_file = open(outfile_json, "w") 
         json.dump(outdict, out_file)
 
-        #outfile_anno = os.path.join(outdir, '{}_frame{}_{}_annotation.json'.format(os.path.split(frame.sample.file_name)[1].replace('.nd2',''), frame.number, tmp_uuid))
-        outfile_anno = os.path.join(outdir, '{}_annotation.json'.format(out_name))
         outdict={"bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row],
                  "image_file":outfile_png,
                  "image_json":outfile_json}
@@ -231,10 +259,6 @@ def build_mva_detection_categories():
     save_categories(cellflags_dividing, 'dividing')
     save_categories(cellflags_elongated, 'elongated')
     save_categories(cellflags_flat, 'flat')
-
-
-        
-
 
 #___________________________________________________________________________________________
 def build_mva_detection(exp_name=''):
@@ -576,7 +600,6 @@ def register_rawdataset():
                     if DEBUG: print('            adding frame with name ',fr)
                     frame.save()
 
-
 #___________________________________________________________________________________________
 def build_cells_all_exp(sample=None):
     #loop over all experiments
@@ -626,7 +649,6 @@ def build_cells_all_exp(sample=None):
                     if clustering.labels_[cid]!=-1:
                         cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
                         cell_roi_list[cid].save()
-
 
 #___________________________________________________________________________________________
 def build_cells_sample(sample, addmode=False):
@@ -755,7 +777,6 @@ def build_cells_sample(sample, addmode=False):
                 cellroi_frame.cell_id = mincellid
                 cellroi_frame.save()
 
-
 #___________________________________________________________________________________________
 def removeROIs(sample):
     s=None
@@ -770,7 +791,6 @@ def removeROIs(sample):
             if cellROI.cell_id == None:
                 cellROI.delete()
     print('removeROIs sample ',s)
-
 
 #___________________________________________________________________________________________
 def build_segmentation(exp_name=''):

@@ -110,6 +110,8 @@ in_features = model.roi_heads.box_predictor.cls_score.in_features
 num_classes = 2  # 1 class (cell) + background
 model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
+model_save_path = 'cell_detection_model.pth'
+model.load_state_dict(torch.load(model_save_path))
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 print('using device: ',device)
@@ -117,10 +119,10 @@ model.to(device)
 
 params = [p for p in model.parameters() if p.requires_grad]
 optimizer = optim.Adam(params, lr=1e-4)
+#optimizer = torch.optim.SGD(model.parameters(), lr=0.005, momentum=0.9, weight_decay=0.0005)
 
 num_epochs = 20
-model_save_path = 'cell_detection_model.pth'
-
+start_epoch =20
 for epoch in range(num_epochs):
     model.train()
     running_loss = 0.0
@@ -144,8 +146,17 @@ for epoch in range(num_epochs):
     epoch_loss = running_loss / len(train_loader)
     print(f'Epoch {epoch + 1} completed. Loss: {epoch_loss:.4f}')
 
-    torch.save(model.state_dict(), model_save_path)
-    print(f'Model saved to {model_save_path} after epoch {epoch + 1}')
+    checkpoint = {
+        'epoch': epoch+start_epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'loss': epoch_loss,
+    }
+    #torch.save(model.state_dict(), model_save_path)
+    torch.save(checkpoint, model_save_path)
+
+
+    print(f'Model saved to {model_save_path} after epoch {epoch + 1 + start_epoch}')
 
 torch.save(model.state_dict(), model_save_path)
 print(f'Training complete. Final model saved to {model_save_path}')
