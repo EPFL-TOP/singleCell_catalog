@@ -4495,15 +4495,17 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     cell_types = ["normal",  "dead", "elongated", "flat"]
     select_cell_type = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
+    train_set = ["train",  "val"]
+    select_train_set = bokeh.models.Select(title="Set", value=train_set[0], options=train_set)    
     folder_path = r'D:\single_cells\training_cell_detection_categories'
     folders = {}
 
 
     #___________________________________________________________________________________________
-    def process_images(cell):
+    def process_images(train, cell):
         print('processing cell type:',cell)
-        images_base64, bboxes, titles, valid = get_images_bboxes(os.path.join(folder_path,cell))
-        folders[cell] = {
+        images_base64, bboxes, titles, valid = get_images_bboxes(os.path.join(folder_path,train, cell))
+        folders["{}_{}".format(train, cell)] = {
             'images': images_base64,
             'bboxes': bboxes,
             'titles': titles,
@@ -4512,7 +4514,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     #for cell in cell_types:
     #    process_images(cell)
-    threads = [threading.Thread(target = process_images, args=(cell,)) for cell in cell_types]
+    threads = []
+    for train in train_set:
+        for cell in cell_types:
+            threads.append(threading.Thread(target = process_images, args=(train,cell, )))
     for t in threads: t.start()
     for t in threads: t.join()
 
@@ -4534,24 +4539,25 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
         #doc.add_root(bokeh.layouts.column(select_cell_type, new_layout))
     select_cell_type.on_change('value', select_cell_type_callback)
+    select_train_set.on_change('value', select_cell_type_callback)
 
 
     #___________________________________________________________________________________________
     def create_plots_layout():
         plots = []
         buttons = []
-        for idx, img in enumerate(folders[select_cell_type.value]["images"]):
+        for idx, img in enumerate(folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["images"]):
 
-            plot_name = folders[select_cell_type.value]["titles"][idx]
-            valid = folders[select_cell_type.value]["valid"][idx]
+            plot_name = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["titles"][idx]
+            valid = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["valid"][idx]
             p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1),  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo") #toolbar_location=None,
             p.axis.visible = False
             p.grid.visible = False
             p.image_url(url=[img], x=0, y=1, w=1, h=1)
-            source = bokeh.models.ColumnDataSource(dict(left   = [folders[select_cell_type.value]["bboxes"][idx][0]], 
-                                                        right  = [folders[select_cell_type.value]["bboxes"][idx][1]], 
-                                                        top    = [folders[select_cell_type.value]["bboxes"][idx][2]], 
-                                                        bottom = [folders[select_cell_type.value]["bboxes"][idx][3]]
+            source = bokeh.models.ColumnDataSource(dict(left   = [folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx][0]], 
+                                                        right  = [folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx][1]], 
+                                                        top    = [folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx][2]], 
+                                                        bottom = [folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx][3]]
                                                         ))
             quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="white", line_width=2)
             p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
@@ -4569,7 +4575,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                     selected_plots = selected_plots_source.data['selected_plots']
                     print('selected_plots callback = ',selected_plots, '  plot_name = ',plot_name)
 
-                    dir=os.path.join(folder_path, select_cell_type.value, plot_name+'_annotation.json')                   
+                    dir=os.path.join(folder_path, select_train_set.value, select_cell_type.value, plot_name+'_annotation.json')                   
                     dir = r'{}'.format(dir)
                     annotation_file = glob.glob(dir)
 
@@ -4618,10 +4624,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         return layout
 
 
-
     # Create the initial layout
     layout = create_plots_layout()
-    doc.add_root(bokeh.layouts.column(select_cell_type, layout))
+    doc.add_root(bokeh.layouts.column(bokeh.layouts.row(select_train_set, select_cell_type), layout))
 
 
 
