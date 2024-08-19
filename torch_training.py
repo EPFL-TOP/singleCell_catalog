@@ -26,6 +26,16 @@ class CellDataset(Dataset):
         for root, _, files in os.walk(self.base_path):
             for file in files:
                 if file.endswith('_annotation.json'):
+
+                    with open(file) as f:
+                        data = json.load(f)
+                        valid=True
+                        try:
+                            valid=data["valid"]
+                        except KeyError:
+                            valid=True
+                    if not valid: continue
+
                     json_files.append(os.path.join(root, file))
         return json_files
 

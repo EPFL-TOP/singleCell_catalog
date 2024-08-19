@@ -1,5 +1,5 @@
 import torch
-import json, os, random
+import json, os, random, datetime
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,7 +28,6 @@ def load_model(model_path, num_classes, device):
     return model
 
 
-
 def preprocess_image(image_array):
     transform = ToTensorNormalize()
     image = transform(image_array)
@@ -51,25 +50,28 @@ def visualize_predictions(image, predictions, boxes):
 
 def main():
     model_path = 'cell_detection_model.pth'
-    model_path = 'model_epoch_10.pth'
-    num_classes = 3
+    num_classes = 2
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
     # Load the model
-    model = load_model(model_path, num_classes, device)
+    model_gpu = load_model(model_path, num_classes, torch.device('cuda'))
+    model_cpu = load_model(model_path, num_classes, torch.device('cpu'))
 
-    json_path = r'D:\single_cells\training_cell_detection\wscepfl0080\wscepfl0080_well2\wscepfl0080_xy41\frame0.json'
-    base_path = r'D:\single_cells\training_cell_detection\wscepfl0080'
 
-    base_path=r'D:\single_cells\training_cell_detection_categories_new\normal'
+    base_path=r'D:\single_cells\training_cell_detection_categories\valid'
 
     json_files = []
     for root, _, files in os.walk(base_path):
         for file in files:
-            if file.endswith('.json'):
-                if 'annotation' in file: continue
-                #if 'xy07' not in root:continue
-                #if 'xy40' not in root:continue
+            if file.endswith('_annotation.json'):
+                with open(file) as f:
+                    data = json.load(f)
+                    valid=True
+                    try:
+                        valid=data["valid"]
+                    except KeyError:
+                        valid=True
+                if not valid: continue
                 json_files.append(os.path.join(root, file))
 
     random.shuffle(json_files)
@@ -79,21 +81,21 @@ def main():
         if idx>=nimages:break
         json_path=json_files[idx]
         with open(json_path, 'r') as f:
-            data = json.load(f)
-        with open(json_path.replace('.json','_annotation.json'), 'r') as f:
             data_annotation = json.load(f)
-        image_array = np.array(data['data'], dtype=np.float32)  # Convert to float32 to avoid overflow
-        #boxes = [ann['bbox'] for ann in data['annotations']]
+        with open(data_annotation['image_json'], 'r') as f:
+            data = json.load(f)
+        image_array = np.array(data['data'], dtype=np.float32)
         boxes = [data_annotation['bbox']]
-
 
         # Preprocess the image
         image = preprocess_image(image_array).to(device)
 
         # Make predictions
         with torch.no_grad():
-            predictions = model(image)
-
+            start=datetime.datetime.now()
+            predictions = model_gpu(image)
+            end=datetime.datetime.now()
+            print('took: ',end-start)
         # Visualize the predictions
         visualize_predictions(image.cpu(), predictions, boxes)
 
