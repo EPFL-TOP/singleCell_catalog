@@ -38,10 +38,11 @@ def visualize_predictions(image, predictions, boxes):
     img = image.squeeze(0).squeeze(0).cpu().numpy()
     print(predictions)
     ax.imshow(img, cmap='gray')
-    for box in predictions[0]['boxes']:
+    for idx, box in enumerate(predictions[0]['boxes']):
         x_min, y_min, x_max, y_max = box.cpu().numpy()
         rect = patches.Rectangle((x_min, y_min), x_max - x_min, y_max - y_min, linewidth=1, edgecolor='r', facecolor='none')
         ax.add_patch(rect)
+        plt.text(x_min, y_min, predictions[0]['scores'][idx])
     
     for box in boxes:
         rect = patches.Rectangle((box[0], box[2]), box[1] - box[0], box[3] - box[2], linewidth=1, edgecolor='white', facecolor='none')
@@ -93,7 +94,7 @@ def main():
         # Make predictions
         with torch.no_grad():
             start=datetime.datetime.now()
-            predictions = model_cpu(image)
+            predictions = model_gpu(image)
             end=datetime.datetime.now()
             print('took: ',end-start)
         # Visualize the predictions
