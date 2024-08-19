@@ -75,7 +75,7 @@ def main():
                 json_files.append(os.path.join(root, file))
 
     random.shuffle(json_files)
-    nimages=100
+    nimages=10
     for idx in range(len(json_files)):
         print(json_files[idx])
         if idx>=nimages:break
@@ -93,7 +93,7 @@ def main():
         # Make predictions
         with torch.no_grad():
             start=datetime.datetime.now()
-            predictions = model_gpu(image)
+            predictions = model_cpu(image)
             end=datetime.datetime.now()
             print('took: ',end-start)
         # Visualize the predictions
