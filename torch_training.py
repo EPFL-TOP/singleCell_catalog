@@ -25,7 +25,7 @@ class CellDataset(Dataset):
         json_files = []
         for root, _, files in os.walk(self.base_path):
             for file in files:
-                if file.endswith('.json'):
+                if file.endswith('_annotation.json'):
                     json_files.append(os.path.join(root, file))
         return json_files
 
@@ -36,14 +36,14 @@ class CellDataset(Dataset):
         json_path = self.json_files[idx]
         
         with open(json_path, 'r') as f:
+            annotations = json.load(f)
+        
+        with open(annotations['image_json'], 'r') as f:
             data = json.load(f)
-        
+
         image_array = np.array(data['data'], dtype=np.float32)  # Convert to float32 to avoid overflow
-        boxes = [ann['bbox'] for ann in data['annotations']]
-        
-        # Convert bounding boxes from [x_min, y_min, width, height] to [x_min, y_min, x_max, y_max]
-        #boxes = [[x, y, x + w, y + h] for x, y, w, h in boxes]
-        boxes = [[x_min, y_min, x_max, y_max] for x_min, x_max, y_min, y_max in boxes]
+        boxes = [[annotations["bbox"][0], annotations["bbox"][2], annotations["bbox"][1], annotations["bbox"][3]]]
+
         boxes = torch.tensor(boxes, dtype=torch.float32)
         labels = torch.ones((len(boxes),), dtype=torch.int64)  # Assuming all cells belong to one class
 
@@ -76,30 +76,29 @@ transform = transforms.Compose([
     transforms.Resize((512, 512))
 ])
 
-base_path = r'D:\single_cells\training_cell_detection'
+train_path = r'D:\single_cells\training_cell_detection_categories\train'
+train_dataset = CellDataset(base_path=train_path, transform=transform)
 
+val_path = r'D:\single_cells\training_cell_detection_categories\valid'
+val_dataset = CellDataset(base_path=val_path, transform=transform)
 
-dataset = CellDataset(base_path=base_path, transform=transform)
 # Split dataset into training and validation sets
-train_size = int(0.8 * len(dataset))
-val_size = len(dataset) - train_size
-batch_size = 32  # Adjust this based on your GPU memory
-train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+#train_size = int(0.8 * len(dataset))
+#val_size = len(dataset) - train_size
+batch_size = 16  # Adjust this based on your GPU memory
+#train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
 train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=lambda x: tuple(zip(*x)))
 val_loader   = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False, collate_fn=lambda x: tuple(zip(*x)))
 
-
 # Print the number of samples in training and validation sets
-print(f'Number of training samples: {train_size}')
-print(f'Number of validation samples: {val_size}')
+print(f'Number of training samples: {len(train_dataset)}')
+print(f'Number of validation samples: {len(val_dataset)}')
 
 model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT')
 in_features = model.roi_heads.box_predictor.cls_score.in_features
 num_classes = 2  # 1 class (cell) + background
 model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
-
-
 
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -109,7 +108,7 @@ model.to(device)
 params = [p for p in model.parameters() if p.requires_grad]
 optimizer = optim.Adam(params, lr=1e-4)
 
-num_epochs = 20
+num_epochs = 10
 model_save_path = 'cell_detection_model.pth'
 
 for epoch in range(num_epochs):
@@ -140,6 +139,16 @@ for epoch in range(num_epochs):
 
 torch.save(model.state_dict(), model_save_path)
 print(f'Training complete. Final model saved to {model_save_path}')
+
+
+
+
+
+
+
+
+
+
 
 def predict(model, image_array):
     model.eval()
