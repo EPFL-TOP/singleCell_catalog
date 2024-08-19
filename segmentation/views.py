@@ -4495,7 +4495,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     cell_types = ["normal",  "dead", "elongated", "flat"]
     select_cell_type = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
-    folder_path = r'D:\single_cells\training_cell_detection_categories_new'
+    folder_path = r'D:\single_cells\training_cell_detection_categories'
     folders = {}
 
 
