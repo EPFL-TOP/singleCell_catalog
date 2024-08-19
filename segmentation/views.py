@@ -4493,7 +4493,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
         return images_base64, bboxes, titles, valid
 
-    cell_types = ["normal",  "dead", "elongated", "flat"]
+    cell_types = ["normal",  "dead", "elongated", "flat", "dividing"]
     select_cell_type = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
     train_set = ["train",  "valid"]
     select_train_set = bokeh.models.Select(title="Set", value=train_set[0], options=train_set)    

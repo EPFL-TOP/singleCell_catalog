@@ -118,7 +118,7 @@ model.to(device)
 params = [p for p in model.parameters() if p.requires_grad]
 optimizer = optim.Adam(params, lr=1e-4)
 
-num_epochs = 10
+num_epochs = 20
 model_save_path = 'cell_detection_model.pth'
 
 for epoch in range(num_epochs):
