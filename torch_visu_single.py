@@ -42,7 +42,7 @@ def visualize_predictions(image, predictions, boxes):
         x_min, y_min, x_max, y_max = box.cpu().numpy()
         rect = patches.Rectangle((x_min, y_min), x_max - x_min, y_max - y_min, linewidth=1, edgecolor='r', facecolor='none')
         ax.add_patch(rect)
-        plt.text(x_min, y_min-10, predictions[0]['scores'][idx].cpu().numpy(), fontsize=10)
+        plt.text(x_min, y_min-10, f"{predictions[0]['scores'][idx].cpu().numpy() :.3f}", fontsize=10, color='white')
     
     for box in boxes:
         rect = patches.Rectangle((box[0], box[2]), box[1] - box[0], box[3] - box[2], linewidth=1, edgecolor='white', facecolor='none')
@@ -76,7 +76,7 @@ def main():
                 json_files.append(os.path.join(root, file))
 
     random.shuffle(json_files)
-    nimages=10
+    nimages=100
     for idx in range(len(json_files)):
         print(json_files[idx])
         if idx>=nimages:break
