@@ -551,7 +551,7 @@ def register_rawdataset():
 
             for f in files_json["files"]:
                 fname=os.path.join(BASEPATH, CELLPATH, x[5], "raw_files", f["name"])
-                fname=f"/mnt/nas_rcp/raw_data/microscopy/cell_culture/{x[5]}/raw_files/{f["name"]}"
+                fname=f"/mnt/nas_rcp/raw_data/microscopy/cell_culture/{x[5]}/raw_files/{f['name']}"
 
                 metadata = read.nd2reader_getSampleMetadata(fname)
                 sample = Sample(file_name=fname, 
