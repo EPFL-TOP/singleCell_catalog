@@ -1,5 +1,3 @@
-
-
 import torch
 import torchvision
 from torchvision.transforms import ToTensor
@@ -61,7 +59,6 @@ class CellDataset(Dataset):
         
         img = np.array(data["data"])
         img = np.array(img, dtype=np.float32) / 65535.0  # Normalize to [0, 1] based on int16 max
-
         img = np.expand_dims(img, axis=0)  # Add channel dimension
 
 
@@ -197,4 +194,4 @@ if __name__ == "__main__":
         
         #print(f"Epoch {epoch+1}, Training Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
         
-        torch.save(model.state_dict(), f"model_epoch_{epoch+1}.pth")
+        torch.save(model.state_dict(), "model_single_cell_last.pth")

@@ -171,6 +171,15 @@ def save_categories(cellflags, outname):
         os.makedirs(outdir)
 
     for idx, cell in enumerate(cellflags):
+        val=random.uniform(0,1)
+        if val>0.8:
+            outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories', outname,'valid')
+            if not os.path.exists(outdir):
+                os.makedirs(outdir)
+        else:
+            outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories', outname,'train')
+            if not os.path.exists(outdir):
+                os.makedirs(outdir)
         if idx>=ncells:break
         cellroi = cell.cell_roi
         frame   = cellroi.frame
