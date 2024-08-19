@@ -121,8 +121,8 @@ params = [p for p in model.parameters() if p.requires_grad]
 optimizer = optim.Adam(params, lr=1e-4)
 #optimizer = torch.optim.SGD(model.parameters(), lr=0.005, momentum=0.9, weight_decay=0.0005)
 
-num_epochs = 20
-start_epoch =20
+num_epochs = 100
+
 for epoch in range(num_epochs):
     model.train()
     running_loss = 0.0
@@ -147,7 +147,7 @@ for epoch in range(num_epochs):
     print(f'Epoch {epoch + 1} completed. Loss: {epoch_loss:.4f}')
 
     checkpoint = {
-        'epoch': epoch+start_epoch,
+        'epoch': epoch,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'loss': epoch_loss,
@@ -156,7 +156,7 @@ for epoch in range(num_epochs):
     torch.save(checkpoint, model_save_path)
 
 
-    print(f'Model saved to {model_save_path} after epoch {epoch + 1 + start_epoch}')
+    print(f'Model saved to {model_save_path} after epoch {epoch + 1 }')
 
 torch.save(model.state_dict(), model_save_path)
 print(f'Training complete. Final model saved to {model_save_path}')
