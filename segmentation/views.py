@@ -166,20 +166,19 @@ def build_mva_samples(exp_name=''):
 #___________________________________________________________________________________________
 def save_categories(cellflags, outname):
     ncells = 1000
-    outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories', outname)
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
+
 
     for idx, cell in enumerate(cellflags):
         val=random.uniform(0,1)
+        outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories\train', outname)
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+
         if val>0.8:
-            outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories', outname,'valid')
+            outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories\valid', outname)
             if not os.path.exists(outdir):
                 os.makedirs(outdir)
-        else:
-            outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories', outname,'train')
-            if not os.path.exists(outdir):
-                os.makedirs(outdir)
+
         if idx>=ncells:break
         cellroi = cell.cell_roi
         frame   = cellroi.frame
