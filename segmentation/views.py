@@ -43,8 +43,8 @@ except ModuleNotFoundError:
 LOCAL=True
 DEBUG=False
 DEBUG_TIME=False
-BASEPATH="/mnt/nas_rcp/raw_data"
-CELLPATH="microscopy/cell_culture"
+BASEPATH="/mnt/nas_rcp"
+CELLPATH="raw_data/microscopy/cell_culture"
 
 #MY macbook
 if os.path.isdir('/Users/helsens/Software/github/EPFL-TOP/cellgmenter'):
@@ -66,8 +66,8 @@ if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
 #HIVE
 if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
     sys.path.append(r'C:\Users\helsens\software\cellgmenter')
-    BASEPATH=r'D:\raw_data'
-    CELLPATH=r'\microscopy\cell_culture'
+    BASEPATH=r'D:'
+    CELLPATH=r'raw_data\microscopy\cell_culture'
     LOCAL=False
     import mysql.connector
     import accesskeys
@@ -321,11 +321,6 @@ def build_mva_detection(exp_name=''):
 
                         f.close()
 
-
-   
-
-
-
 #___________________________________________________________________________________________
 def deltaR(c1, c2):
     return math.sqrt( math.pow((c1['x'] - c2['x']),2) +  math.pow((c1['y'] - c2['y']),2) + math.pow((c1['z'] - c2['z']),2))
@@ -524,7 +519,7 @@ def register_rawdataset():
         unsplit_file = glob.glob(os.path.join(BASEPATH, CELLPATH ,x[1],'*.nd2'))
         if DEBUG: print('=========unsplit_file ===',unsplit_file)
         if len(unsplit_file)!=1:
-            print('====================== ERROR, unsplit_file not 1, exit ',unsplit_file,'  in ',os.path.join('raw_data/microscopy/cell_culture/',x[1],'*.nd2'))
+            print('====================== ERROR, unsplit_file not 1, exit ',unsplit_file,'  in ',os.path.join(BASEPATH, CELLPATH,x[1],'*.nd2'))
             sys.exit(3)
         metadata = read.nd2reader_getSampleMetadata(unsplit_file[0])
         experiment =  Experiment(name=x[1], 
@@ -541,7 +536,6 @@ def register_rawdataset():
         list_experiments_uid.append(x[1])
         if DEBUG:print('adding experiment with name:  ',x[1])
 
-
     for exp in Experiment.objects.all():
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         list_expds_uid = [os.path.join(entry.data_type, entry.data_name) for entry in experimentaldataset] 
@@ -557,6 +551,8 @@ def register_rawdataset():
 
             for f in files_json["files"]:
                 fname=os.path.join(BASEPATH, CELLPATH, x[5], "raw_files", f["name"])
+                fname=f"/mnt/nas_rcp/raw_data/microscopy/cell_culture/{x[5]}/raw_files/{f["name"]}"
+
                 metadata = read.nd2reader_getSampleMetadata(fname)
                 sample = Sample(file_name=fname, 
                                 experimental_dataset=expds,
@@ -943,15 +939,8 @@ def build_ROIs_loop(exp_name):
     print('build_ROIs_loop exp_name=',exp_name)
     exp_list = Experiment.objects.all()
     for exp in exp_list:
-    #ALREADY DONE WITH NEW 
-    #bleb001, bleb002 = 2
-    #ppf001, ppf003, ppf005, ppf008 ppf009 = 5
-    #wscepfl0060, wscepfl0078, wscepfl0080, wscepfl0081, wscepfl0082, wscepfl0086, wscepfl0089, wscepfl0096 = 7
-    #reste wscepfl0087 (annotated)
         if exp_name!='' and exp.name!=exp_name:
             continue
-
-
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
