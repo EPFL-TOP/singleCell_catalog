@@ -27,7 +27,7 @@ class CellDataset(Dataset):
             for file in files:
                 if file.endswith('_annotation.json'):
 
-                    with open(file) as f:
+                    with open(os.path.join(root, file)) as f:
                         data = json.load(f)
                         valid=True
                         try:

@@ -64,7 +64,7 @@ def main():
     for root, _, files in os.walk(base_path):
         for file in files:
             if file.endswith('_annotation.json'):
-                with open(file) as f:
+                with open(os.path.join(root, file)) as f:
                     data = json.load(f)
                     valid=True
                     try:
