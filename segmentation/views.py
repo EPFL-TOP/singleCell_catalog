@@ -4596,7 +4596,11 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             if idx==25:break
             plot_name = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["titles"][idx]
             valid = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["valid"][idx]
-            p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1),  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo") #toolbar_location=None,
+            x_range = bokeh.models.Range1d(start=0, end=img.shape[0])
+            y_range = bokeh.models.Range1d(start=0, end=img.shape[1])
+            p = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo") #toolbar_location=None,
+        #plot = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
+
             p.axis.visible = True
             p.grid.visible = True
             #p.image_url(url=[img], x=0, y=1, w=1, h=1)
