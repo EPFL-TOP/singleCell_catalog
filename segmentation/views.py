@@ -4516,8 +4516,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 for b in data['bbox']:
                     left   = b[0]#/512.
                     right  = b[1]#/512.
-                    top    = 512 - b[2]#/512.
-                    bottom = 512 - b[3]#/512.
+                    top    = b[2]#/512.
+                    bottom = b[3]#/512.
                     bbox = [left, right, top, bottom]
                     bboxes.append(bbox)
                 try:
