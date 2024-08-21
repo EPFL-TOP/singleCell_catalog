@@ -4529,7 +4529,11 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 with open(data["image_json"]) as f2:
                     data2 = json.load(f2)
                     image = np.array(data2["data"])
-                    images.append(image)
+                    max_value = np.max(image)
+                    min_value = np.min(image)
+                    intensity_normalized = (image - min_value)/(max_value-min_value)*255
+                    intensity_normalized = intensity_normalized.astype(np.uint8)
+                    images.append(intensity_normalized)
 
             bboxes_list.append(bboxes)
             if not islist:
