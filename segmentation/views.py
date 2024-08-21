@@ -4491,27 +4491,50 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def get_images_bboxes(folder_path):
         # Load images from folder and convert to base64
-        image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
-        images_base64 = [image_to_base64(img_path) for img_path in image_paths]
-
-        titles = [os.path.split(t.replace('.png',''))[1] for t in image_paths]
+        #image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
+        image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('_annotation.json')])
+        #images_base64 = [image_to_base64(img_path) for img_path in image_paths]
+        images=[]
+        #titles = [os.path.split(t.replace('.png',''))[1] for t in image_paths]
+        titles = [os.path.split(t.replace('_annotation.json',''))[1] for t in image_paths]
         bboxes = []
         valid = []
         for img_path in image_paths:
             fname = img_path.replace('.png', '_annotation.json')
+            fname = img_path
+            islist=True
+            data={}
             with open(fname, 'r') as f:
                 data   = json.load(f)
-                left   = data['bbox'][0]/512.
-                right  = data['bbox'][1]/512.
-                top    = 1 - data['bbox'][2]/512.
-                bottom = 1 - data['bbox'][3]/512.
+                if type(data['bbox'][0])!=list:
+                    data['bbox']=[data['bbox'][0], data['bbox'][1], data['bbox'][2], data['bbox'][3]]
+                    islist=False
+
+                for b in data['bbox']:
+                    left   = data['bbox'][0]#/512.
+                    right  = data['bbox'][1]#/512.
+                    top    = 1 - data['bbox'][2]#/512.
+                    bottom = 1 - data['bbox'][3]#/512.
+                    bbox = [left, right, top, bottom]
+
                 bboxes.append([left, right, top, bottom])
                 try:
                     valid.append(data['valid'])
                 except KeyError:
                     valid.append(True)
 
-        return images_base64, bboxes, titles, valid
+
+                with open(data["image_json"]) as f2:
+                    data2 = json.load(f2)
+                    image = np.array(data2["data"])
+                    images.append(image)
+
+            if not islist:
+                out_file = open(fname, "w") 
+                json.dump(data, out_file) 
+                out_file.close() 
+
+        return images, bboxes, titles, valid
 
     cell_types = ["normal",  "dead", "elongated", "flat", "dividing"]
     select_cell_type = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
@@ -4567,13 +4590,15 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         plots = []
         buttons = []
         for idx, img in enumerate(folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["images"]):
-
+            if idx==50:break
             plot_name = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["titles"][idx]
             valid = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["valid"][idx]
             p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1),  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo") #toolbar_location=None,
             p.axis.visible = False
             p.grid.visible = False
             p.image_url(url=[img], x=0, y=1, w=1, h=1)
+            p.image(image=[img], x=0, y=0, dw=img.shape[0], dh=img.shape[1])
+
             source = bokeh.models.ColumnDataSource(dict(left   = [folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx][0]], 
                                                         right  = [folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx][1]], 
                                                         top    = [folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx][2]], 
