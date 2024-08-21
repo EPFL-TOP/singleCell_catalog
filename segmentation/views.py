@@ -4499,7 +4499,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         titles = [os.path.split(t.replace('_annotation.json',''))[1] for t in image_paths]
         bboxes = []
         valid = []
-        for img_path in image_paths:
+
+        for idx,img_path in enumerate(image_paths):
+            if idx>100:break
             fname = img_path.replace('.png', '_annotation.json')
             fname = img_path
             islist=True
