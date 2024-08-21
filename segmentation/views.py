@@ -4513,13 +4513,13 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                     islist=False
 
                 for b in data['bbox']:
-                    left   = data['bbox'][0]#/512.
-                    right  = data['bbox'][1]#/512.
-                    top    = 1 - data['bbox'][2]#/512.
-                    bottom = 1 - data['bbox'][3]#/512.
+                    left   = b[0]#/512.
+                    right  = b[1]#/512.
+                    top    = 512 - b[2]#/512.
+                    bottom = 512 - b[3]#/512.
                     bbox = [left, right, top, bottom]
 
-                bboxes.append([left, right, top, bottom])
+                bboxes.append(bbox)
                 try:
                     valid.append(data['valid'])
                 except KeyError:
@@ -4600,11 +4600,11 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             p.grid.visible = False
             p.image_url(url=[img], x=0, y=1, w=1, h=1)
             p.image(image=[img], x=0, y=0, dw=img.shape[0], dh=img.shape[1])
-
-            source = bokeh.models.ColumnDataSource(dict(left   = [folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx][0]], 
-                                                        right  = [folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx][1]], 
-                                                        top    = [folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx][2]], 
-                                                        bottom = [folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx][3]]
+            bboxes = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx]
+            source = bokeh.models.ColumnDataSource(dict(left   = [b[0] for b in bboxes], 
+                                                        right  = [b[1] for b in bboxes], 
+                                                        top    = [b[2] for b in bboxes], 
+                                                        bottom = [b[3] for b in bboxes]
                                                         ))
             quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="white", line_width=2)
             p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
