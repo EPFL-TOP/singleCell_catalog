@@ -4602,7 +4602,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             valid = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["valid"][idx]
             x_range = bokeh.models.Range1d(start=0, end=img.shape[0])
             y_range = bokeh.models.Range1d(start=0, end=img.shape[1])
-            p = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo") #toolbar_location=None,
+            color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=img.min(), high=img.max())
+
+            p = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo", color_mapper=color_mapper) #toolbar_location=None,
         #plot = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
 
             p.axis.visible = True
