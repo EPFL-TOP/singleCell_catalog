@@ -4497,7 +4497,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         images=[]
         #titles = [os.path.split(t.replace('.png',''))[1] for t in image_paths]
         titles = [os.path.split(t.replace('_annotation.json',''))[1] for t in image_paths]
-        bboxes = []
+        bboxes_list = []
         valid = []
 
         for idx,img_path in enumerate(image_paths):
@@ -4506,6 +4506,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             fname = img_path
             islist=True
             data={}
+            bboxes=[]
             with open(fname, 'r') as f:
                 data   = json.load(f)
                 if type(data['bbox'][0])!=list:
@@ -4518,8 +4519,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                     top    = 512 - b[2]#/512.
                     bottom = 512 - b[3]#/512.
                     bbox = [left, right, top, bottom]
-
-                bboxes.append(bbox)
+                    bboxes.append(bbox)
                 try:
                     valid.append(data['valid'])
                 except KeyError:
@@ -4531,12 +4531,13 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                     image = np.array(data2["data"])
                     images.append(image)
 
+            bboxes_list.append(bboxes)
             if not islist:
                 out_file = open(fname, "w") 
                 json.dump(data, out_file) 
                 out_file.close() 
 
-        return images, bboxes, titles, valid
+        return images, bboxes_list, titles, valid
 
     cell_types = ["normal",  "dead", "elongated", "flat", "dividing"]
     select_cell_type = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
