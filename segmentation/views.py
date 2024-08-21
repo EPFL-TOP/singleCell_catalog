@@ -4509,7 +4509,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             with open(fname, 'r') as f:
                 data   = json.load(f)
                 if type(data['bbox'][0])!=list:
-                    data['bbox']=[data['bbox'][0], data['bbox'][1], data['bbox'][2], data['bbox'][3]]
+                    data['bbox']=[[data['bbox'][0], data['bbox'][1], data['bbox'][2], data['bbox'][3]]]
                     islist=False
 
                 for b in data['bbox']:
