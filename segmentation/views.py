@@ -4597,9 +4597,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             plot_name = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["titles"][idx]
             valid = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["valid"][idx]
             p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1),  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo") #toolbar_location=None,
-            p.axis.visible = False
-            p.grid.visible = False
-            p.image_url(url=[img], x=0, y=1, w=1, h=1)
+            p.axis.visible = True
+            p.grid.visible = True
+            #p.image_url(url=[img], x=0, y=1, w=1, h=1)
             p.image(image=[img], x=0, y=0, dw=img.shape[0], dh=img.shape[1])
             bboxes = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx]
             print(bboxes)
