@@ -4604,13 +4604,13 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             y_range = bokeh.models.Range1d(start=0, end=img.shape[1])
             color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=img.min(), high=img.max())
 
-            p = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo", color_mapper=color_mapper) #toolbar_location=None,
+            p = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo") #toolbar_location=None,
         #plot = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
 
             p.axis.visible = True
             p.grid.visible = True
             #p.image_url(url=[img], x=0, y=1, w=1, h=1)
-            p.image(image=[img], x=0, y=0, dw=img.shape[0], dh=img.shape[1])
+            p.image(image=[img], x=0, y=0, dw=img.shape[0], dh=img.shape[1],color_mapper=color_mapper)
             bboxes = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx]
             print(bboxes)
             print(plot_name)
