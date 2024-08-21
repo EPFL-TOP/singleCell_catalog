@@ -4603,6 +4603,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             bboxes = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx]
             print(bboxes)
             print(plot_name)
+            print("{}_{}".format(select_train_set.value, select_cell_type.value)])
             source = bokeh.models.ColumnDataSource(dict(left   = [b[0] for b in bboxes], 
                                                         right  = [b[1] for b in bboxes], 
                                                         top    = [b[2] for b in bboxes], 
