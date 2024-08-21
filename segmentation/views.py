@@ -4501,7 +4501,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         valid = []
 
         for idx,img_path in enumerate(image_paths):
-            if idx>100:break
+            if idx>50:break
             fname = img_path.replace('.png', '_annotation.json')
             fname = img_path
             islist=True
@@ -4592,7 +4592,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         plots = []
         buttons = []
         for idx, img in enumerate(folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["images"]):
-            if idx==50:break
+            if idx==25:break
             plot_name = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["titles"][idx]
             valid = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["valid"][idx]
             p = bokeh.plotting.figure(x_range=(0, 1), y_range=(0, 1),  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo") #toolbar_location=None,
