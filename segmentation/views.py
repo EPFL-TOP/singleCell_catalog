@@ -126,42 +126,6 @@ import bokeh.embed
 import bokeh.layouts
 
 
-#__________________________________________________________________________________
-def pad_image(image, target_size):
-    # Calculate padding
-    #image = np.clip(image, np.iinfo(np.int16).min, np.iinfo(np.int16).max)
-    #image = np.array(image, dtype=np.int16)
-
-    if image.shape[0]>target_size[0] or image.shape[1]>target_size[1]: 
-        print("image.shape[0]  ", image.shape[0], " target_size[0] ", target_size[0], " ", image.shape[1],"",target_size[1] )
-        return []
-
-    delta_w = target_size[1] - image.shape[1]
-    delta_h = target_size[0] - image.shape[0]
-    pad_width = delta_w // 2
-    pad_height = delta_h // 2
-
-    padding = ((pad_height, pad_height), (pad_width, pad_width))
-
-    # Check if the padding difference is odd and distribute padding accordingly
-    if delta_w % 2 != 0:
-        padding = ((pad_height, pad_height), (pad_width, pad_width+1))
-
-    if delta_h % 2 != 0:
-        padding = ((pad_height, pad_height+1), (pad_width, pad_width))
-
-    if delta_h % 2 != 0 and delta_w % 2 != 0:
-        padding = ((pad_height, pad_height+1), (pad_width, pad_width+1))
-    # Pad the image
-    padded_image = np.pad(image, padding, mode='constant', constant_values=0)
-
-    #padded_image = padded_image / np.max(padded_image)
-
-    return padded_image
-
-
-
-
 #___________________________________________________________________________________________
 def build_mva_samples(exp_name=''):
     print('build_mva_samples exp_name=',exp_name)
@@ -270,9 +234,10 @@ def save_categories(cellflags, outname):
         plt.imsave(outfile_png, norm_image, cmap='gray')
 
         target_size = (150, 150)
-        image_padded = pad_image(image, target_size)
+        center = (int(cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.), int(cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.))
+        cropped_image = image[center[1]-target_size[1]/2:center[1]+target_size[1]/2, center[0]-target_size[0]/2:center[0]+target_size[0]/2]
 
-        outdict={"data":image.tolist(), "data_pad":image_padded}
+        outdict={"data":image.tolist(), "data_pad":cropped_image.tolist()}
         out_file = open(outfile_json, "w") 
         json.dump(outdict, out_file)
 
