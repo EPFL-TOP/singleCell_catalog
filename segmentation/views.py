@@ -4580,6 +4580,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def update_image(way=1, number=-9999):
+        current_index = slider.value
         nimg = len(annot_dict_train)
         if select_train_set.value == 'valid':
             nimg = len(annot_dict_valid)
