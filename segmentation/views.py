@@ -268,12 +268,20 @@ def build_mva_detection_categories():
     print('number of dividing cells  = ',len(cellflags_dividing))
     print('number of elongated cells = ',len(cellflags_elongated))
     print('number of flat cells      = ',len(cellflags_flat))
+    threads = []
+    threads.append(threading.Thread(target = save_categories, args=(cellflags_dead,'dead', )))
+    threads.append(threading.Thread(target = save_categories, args=(cellflags_alive,'normal', )))
+    threads.append(threading.Thread(target = save_categories, args=(cellflags_dividing,'dividing', )))
+    threads.append(threading.Thread(target = save_categories, args=(cellflags_elongated,'elongated', )))
+    threads.append(threading.Thread(target = save_categories, args=(cellflags_flat,'flat', )))
+    for t in threads: t.start()
+    for t in threads: t.join()
 
-    save_categories(cellflags_dead, 'dead')
-    save_categories(cellflags_alive, 'normal')
-    save_categories(cellflags_dividing, 'dividing')
-    save_categories(cellflags_elongated, 'elongated')
-    save_categories(cellflags_flat, 'flat')
+    #save_categories(cellflags_dead, 'dead')
+    #save_categories(cellflags_alive, 'normal')
+    #save_categories(cellflags_dividing, 'dividing')
+    #save_categories(cellflags_elongated, 'elongated')
+    #save_categories(cellflags_flat, 'flat')
 
 #___________________________________________________________________________________________
 def build_mva_detection(exp_name=''):
@@ -4571,7 +4579,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     fig_img = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=400, height=400, tools="box_select,wheel_zoom,box_zoom,reset,undo")
     fig_img.axis.visible = False
     fig_img.grid.visible = False
-    fig_img.image(image='img', x=0, y=0, dw=source_image.data["img"][0].shape[0], dh=source_image.data["img"][0].shape[1], color_mapper=color_mapper)
+    fig_img.image(image='img', x=0, y=0, dw=source_image.data["img"][0].shape[0], dh=source_image.data["img"][0].shape[1], color_mapper=color_mapper, source=source_image)
 
     layout=bokeh.layouts.column(fig_img)
     doc.add_root(layout)
