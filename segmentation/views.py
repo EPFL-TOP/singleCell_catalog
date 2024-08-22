@@ -126,6 +126,38 @@ import bokeh.embed
 import bokeh.layouts
 
 
+#__________________________________________________________________________________
+def pad_image(image, target_size):
+    # Calculate padding
+    #image = np.clip(image, np.iinfo(np.int16).min, np.iinfo(np.int16).max)
+    #image = np.array(image, dtype=np.int16)
+
+    if image.shape[0]>target_size[0] or image.shape[1]>target_size[1]: return []
+
+    delta_w = target_size[1] - image.shape[1]
+    delta_h = target_size[0] - image.shape[0]
+    pad_width = delta_w // 2
+    pad_height = delta_h // 2
+
+    padding = ((pad_height, pad_height), (pad_width, pad_width))
+
+    # Check if the padding difference is odd and distribute padding accordingly
+    if delta_w % 2 != 0:
+        padding = ((pad_height, pad_height), (pad_width, pad_width+1))
+
+    if delta_h % 2 != 0:
+        padding = ((pad_height, pad_height+1), (pad_width, pad_width))
+
+    if delta_h % 2 != 0 and delta_w % 2 != 0:
+        padding = ((pad_height, pad_height+1), (pad_width, pad_width+1))
+    # Pad the image
+    padded_image = np.pad(image, padding, mode='constant', constant_values=0)
+
+    #padded_image = padded_image / np.max(padded_image)
+
+    return padded_image
+
+
 
 
 #___________________________________________________________________________________________
@@ -191,22 +223,28 @@ def build_mva_samples(exp_name=''):
 
 #___________________________________________________________________________________________
 def save_categories(cellflags, outname):
-    ncells = 1000
+    ncells = 10
 
     for idx, cell in enumerate(cellflags):
+        if idx>=ncells:
+            break
+
         val=random.uniform(0,1)
-        outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories\train', outname)
+        #outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories\train', 'mixed')
+        outdir = r'D:\single_cells\training_cell_detection_categories\train'
         if not os.path.exists(outdir):
             os.makedirs(outdir)
-
         if val>0.8:
-            outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories\valid', outname)
+            #outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories\valid', 'mixed')
+            outdir = r'D:\single_cells\training_cell_detection_categories\valid'
             if not os.path.exists(outdir):
                 os.makedirs(outdir)
 
-        if idx>=ncells:break
         cellroi = cell.cell_roi
         frame   = cellroi.frame
+        cellrois = CellROI.objects.select_related().filter(frame=frame)
+        if len(cellrois)>1:
+            continue
 
         sample_file_name=os.path.join(r'Y:', frame.sample.file_name.replace('/mnt/nas_rcp',''))
         print('ttt===',sample_file_name)
@@ -228,15 +266,19 @@ def save_categories(cellflags, outname):
 
         norm_image = (image - image.min()) / (image.max() - image.min())
         plt.imsave(outfile_png, norm_image, cmap='gray')
-        #imageio.imwrite(outfile_png,image)
 
-        outdict={"data":image.tolist()}
+        target_size = (150, 150)
+        image_padded = pad_image(image, target_size)
+
+        outdict={"data":image.tolist(), "data_pad":image_padded.tolist()}
         out_file = open(outfile_json, "w") 
         json.dump(outdict, out_file)
 
         outdict={"bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row],
                  "image_file":outfile_png,
-                 "image_json":outfile_json}
+                 "image_json":outfile_json,
+                 "label":outname}
+        
         out_file = open(outfile_anno, "w") 
         json.dump(outdict, out_file)
 
