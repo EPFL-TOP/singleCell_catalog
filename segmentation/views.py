@@ -4598,7 +4598,15 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         time_point = slider.value
-        source_image.data = {'img':[image_dict_train[map_img_pos_train[time_point]]]}
+        if select_train_set.value=='train':
+            source_image.data = {'img':[image_dict_train[map_img_pos_train[time_point]]]}
+            source_image_cropped.data = {'img':[image_cropped_dict_train[map_img_pos_train[time_point]]]}
+            source_roi.data = {'left':[annot_dict_train[map_img_pos_train[time_point]]['bbox'][0]], 'right':[annot_dict_train[map_img_pos_train[time_point]]['bbox'][1]], 
+                               'top':[annot_dict_train[map_img_pos_train[time_point]]['bbox'][2]], 'bottom':[annot_dict_train[map_img_pos_train[time_point]]['bbox'][3]]}
+        elif select_train_set.value=='valid':
+            source_image.data = {'img':[image_dict_valid[map_img_pos_valid[time_point]]]}
+            source_image_cropped.data = {'img':[image_cropped_dict_valid[map_img_pos_valid[time_point]]]}
+
 
     #___________________________________________________________________________________________
     def next_callback():
