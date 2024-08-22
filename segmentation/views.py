@@ -270,7 +270,7 @@ def save_categories(cellflags, outname):
         target_size = (150, 150)
         image_padded = pad_image(image, target_size)
 
-        outdict={"data":image.tolist(), "data_pad":image_padded.tolist()}
+        outdict={"data":image.tolist(), "data_pad":image_padded}
         out_file = open(outfile_json, "w") 
         json.dump(outdict, out_file)
 
