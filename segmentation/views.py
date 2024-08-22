@@ -4488,10 +4488,84 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     print('****************************  phenocheck_handler ****************************')
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
+    annot_dict_train = {}
+    annot_dict_valid = {}
+    image_dict_train = {}
+    image_dict_valid = {}
+    image_cropped_dict_train = {}
+    image_cropped_dict_valid = {}
+
+    source_image  = bokeh.models.ColumnDataSource(dict(img=[]))
+    source_image_cropped  = bokeh.models.ColumnDataSource(dict(img=[]))
+    source_roi = bokeh.models.ColumnDataSource(dict(left=0, right=0, top=0, bottom=0))
+
 
     #___________________________________________________________________________________________
+    def build_dict(folder_path):
+        image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('_annotation.json')])
+        titles = [os.path.split(t.replace('_annotation.json',''))[1] for t in image_paths]
+        for idx,fname in enumerate(image_paths):
+            with open(fname, 'r') as f:
+                data = json.load(f)
+                if os.path.split(folder_path)=='train':
+                    annot_dict_train[titles[idx]]=data
+                    image_dict_train[titles[idx]]=None
+                    image_cropped_dict_train[titles[idx]]=None
+
+                elif os.path.split(folder_path)=='valid':
+                    annot_dict_valid[titles[idx]]=data
+                    image_dict_valid[titles[idx]]=None
+                    image_cropped_dict_valid[titles[idx]]=None
+
+    #___________________________________________________________________________________________
+    def normalise(data):
+        image = np.array(data)
+        max_value = np.max(image)
+        min_value = np.min(image)
+        intensity_normalized = (image - min_value)/(max_value-min_value)*255
+        intensity_normalized = intensity_normalized.astype(np.uint8)
+        return intensity_normalized
+    #___________________________________________________________________________________________
+    def get_images(input_dict, val):
+        for img in input_dict:        
+            with open(input_dict[img]["image_json"], 'r') as f:
+                data = json.load(f)
+                image = normalise(data["data"])
+                image_cropped = normalise(data)["data_cropped"]
+
+                if val == "train":
+                    image_dict_train[img]=image
+                    image_cropped_dict_train[img]=image_cropped
+                elif val == "valid":
+                    image_dict_valid[img]=image
+                    image_cropped_dict_valid[img]=image_cropped
+
+        
+    folder_path = r'D:\single_cells\training_cell_detection_categories'
+    build_dict(os.path.join(folder_path, 'train'))
+    build_dict(os.path.join(folder_path, 'valid'))
+    get_images(annot_dict_train, "train")
+    get_images(annot_dict_valid, "valid")
+
+
+    source_image.data = {'img':[image_dict_train[list(annot_dict_train.keys())[0]]]}
+    source_image_cropped.data = {'img':[image_cropped_dict_train[list(annot_dict_train.keys())[0]]]}
+
+
+    color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=source_image.data["img"][0].min(), high=source_image.data["img"][0].max())
+    x_range = bokeh.models.Range1d(start=0, end=source_image.data["img"][0].shape[0])
+    y_range = bokeh.models.Range1d(start=0, end=source_image.data["img"][0].shape[1])
+    fig_img = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=400, height=400, tools="box_select,wheel_zoom,box_zoom,reset,undo")
+    fig_img.axis.visible = False
+    fig_img.grid.visible = False
+    fig_img.image(image='img', x=0, y=0, dw=source_image.data["img"][0].shape[0], dh=source_image.data["img"][0].shape[1], color_mapper=color_mapper)
+
+    layout=bokeh.layouts.column(fig_img)
+    doc.add_root(layout)
+
+"""     #___________________________________________________________________________________________
     def get_images_bboxes(folder_path):
-        image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('_annotation.json')])
+        image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('_annotation.json')])
         titles = [os.path.split(t.replace('_annotation.json',''))[1] for t in image_paths]
         valid  = []
         images = []
@@ -4503,13 +4577,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             data={}
             bboxes=[]
             with open(fname, 'r') as f:
-                data   = json.load(f)
+                data = json.load(f)
                 bbox = [data['bbox'][0], data['bbox'][1], data['bbox'][2], data['bbox'][3]]
                 try:
                     valid.append(data['valid'])
                 except KeyError:
                     valid.append(None)
-
 
                 with open(data["image_json"]) as f2:
                     data2 = json.load(f2)
@@ -4521,17 +4594,11 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                     images.append(intensity_normalized)
 
                     image_cropped = np.array(data2["data_cropped"])
-                    max_value = np.max(image)
-                    min_value = np.min(image)
-                    intensity_normalized = (image - min_value)/(max_value-min_value)*255
+                    max_value = np.max(image_cropped)
+                    min_value = np.min(image_cropped)
+                    intensity_normalized = (image_cropped - min_value)/(max_value-min_value)*255
                     intensity_normalized = intensity_normalized.astype(np.uint8)
-                    images.append(intensity_normalized)
-
-            bboxes_list.append(bboxes)
-            if not islist:
-                out_file = open(fname, "w") 
-                json.dump(data, out_file) 
-                out_file.close() 
+                    images_cropped.append(intensity_normalized)
 
         return images, bboxes_list, titles, valid
 
@@ -4541,6 +4608,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     select_train_set = bokeh.models.Select(title="Set", value=train_set[0], options=train_set)    
     folder_path = r'D:\single_cells\training_cell_detection_categories'
     folders = {}
+
+    build_dict(os.path.join(folder_path, 'train'))
+    build_dict(os.path.join(folder_path, 'valid'))
 
 
     #___________________________________________________________________________________________
@@ -4680,7 +4750,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     # Create the initial layout
     layout = create_plots_layout()
     doc.add_root(bokeh.layouts.column(bokeh.layouts.row(select_train_set, select_cell_type), layout))
-
+ """
 
 
 #___________________________________________________________________________________________
