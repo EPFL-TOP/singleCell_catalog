@@ -4576,12 +4576,20 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=source_image.data["img"][0].min(), high=source_image.data["img"][0].max())
     x_range = bokeh.models.Range1d(start=0, end=source_image.data["img"][0].shape[0])
     y_range = bokeh.models.Range1d(start=0, end=source_image.data["img"][0].shape[1])
-    fig_img = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=400, height=400, tools="box_select,wheel_zoom,box_zoom,reset,undo")
+    fig_img = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=500, height=500, tools="box_select,wheel_zoom,box_zoom,reset,undo")
     fig_img.axis.visible = False
     fig_img.grid.visible = False
     fig_img.image(image='img', x=0, y=0, dw=source_image.data["img"][0].shape[0], dh=source_image.data["img"][0].shape[1], color_mapper=color_mapper, source=source_image)
 
-    layout=bokeh.layouts.column(fig_img)
+    color_mapper_cropped = bokeh.models.LinearColorMapper(palette="Greys256", low=source_image_cropped.data["img"][0].min(), high=source_image_cropped.data["img"][0].max())
+    x_range_cropped = bokeh.models.Range1d(start=0, end=source_image_cropped.data["img"][0].shape[0])
+    y_range_cropped = bokeh.models.Range1d(start=0, end=source_image_cropped.data["img"][0].shape[1])
+    fig_img_cropped = bokeh.plotting.figure(x_range=x_range_cropped, y_range=y_range_cropped,  width=500, height=500, tools="box_select,wheel_zoom,box_zoom,reset,undo")
+    fig_img_cropped.axis.visible = False
+    fig_img_cropped.grid.visible = False
+    fig_img_cropped.image(image='img', x=0, y=0, dw=source_image_cropped.data["img"][0].shape[0], dh=source_image_cropped.data["img"][0].shape[1], color_mapper=color_mapper_cropped, source=source_image_cropped)
+
+    layout=bokeh.layouts.column(bokeh.layouts.row(fig_img,fig_img_cropped))
     doc.add_root(layout)
 
 """     #___________________________________________________________________________________________
