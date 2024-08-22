@@ -4497,7 +4497,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     source_image  = bokeh.models.ColumnDataSource(dict(img=[]))
     source_image_cropped  = bokeh.models.ColumnDataSource(dict(img=[]))
-    source_roi = bokeh.models.ColumnDataSource(dict(left=0, right=0, top=0, bottom=0))
+    #source_roi = bokeh.models.ColumnDataSource(dict(left=0, right=0, top=0, bottom=0))
 
 
     #___________________________________________________________________________________________
