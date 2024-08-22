@@ -4584,7 +4584,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         if select_train_set.value == 'valid':
             nimg = len(annot_dict_valid)
 
-        current_index = (current_index + 1*way) % nimg)
+        current_index = (current_index + 1*way) % nimg
         if current_index>slider.end:current_index=slider.start
         if current_index<slider.start:current_index=slider.end
 
