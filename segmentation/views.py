@@ -132,7 +132,9 @@ def pad_image(image, target_size):
     #image = np.clip(image, np.iinfo(np.int16).min, np.iinfo(np.int16).max)
     #image = np.array(image, dtype=np.int16)
 
-    if image.shape[0]>target_size[0] or image.shape[1]>target_size[1]: return []
+    if image.shape[0]>target_size[0] or image.shape[1]>target_size[1]: 
+        print("image.shape[0]  ", image.shape[0], " target_size[0] ", target_size[0], " ", image.shape[1],"",target_size[1] )
+        return []
 
     delta_w = target_size[1] - image.shape[1]
     delta_h = target_size[0] - image.shape[0]
