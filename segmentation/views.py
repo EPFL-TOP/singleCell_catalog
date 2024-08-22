@@ -237,7 +237,7 @@ def save_categories(cellflags, outname):
         center = (int(cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.), int(cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.))
         cropped_image = image[int(center[1]-target_size[1]/2):int(center[1]+target_size[1]/2), int(center[0]-target_size[0]/2):int(center[0]+target_size[0]/2)]
 
-        outdict={"data":image.tolist(), "data_pad":cropped_image.tolist()}
+        outdict={"data":image.tolist(), "data_cropped":cropped_image.tolist()}
         out_file = open(outfile_json, "w") 
         json.dump(outdict, out_file)
 
@@ -4488,56 +4488,39 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     print('****************************  phenocheck_handler ****************************')
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
-    selected_plots_source       = bokeh.models.ColumnDataSource(data=dict(selected_plots=[]))
-
-    #___________________________________________________________________________________________
-    def image_to_base64(img_path):
-        with Image.open(img_path) as img:
-            buffer = BytesIO()
-            img.save(buffer, format="PNG")
-            return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
 
     #___________________________________________________________________________________________
     def get_images_bboxes(folder_path):
-        # Load images from folder and convert to base64
-        #image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.png')])
         image_paths   = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('_annotation.json')])
-        #images_base64 = [image_to_base64(img_path) for img_path in image_paths]
-        images=[]
-        #titles = [os.path.split(t.replace('.png',''))[1] for t in image_paths]
         titles = [os.path.split(t.replace('_annotation.json',''))[1] for t in image_paths]
-        bboxes_list = []
-        valid = []
+        valid  = []
+        images = []
+        images_cropped = []
 
         for idx,img_path in enumerate(image_paths):
             if idx>15:break
-            fname = img_path.replace('.png', '_annotation.json')
             fname = img_path
-            islist=True
             data={}
             bboxes=[]
             with open(fname, 'r') as f:
                 data   = json.load(f)
-                if type(data['bbox'][0])!=list:
-                    data['bbox']=[[data['bbox'][0], data['bbox'][1], data['bbox'][2], data['bbox'][3]]]
-                    islist=False
-
-                for b in data['bbox']:
-                    left   = b[0]#/512.
-                    right  = b[1]#/512.
-                    top    = b[2]#/512.
-                    bottom = b[3]#/512.
-                    bbox = [left, right, top, bottom]
-                    bboxes.append(bbox)
+                bbox = [data['bbox'][0], data['bbox'][1], data['bbox'][2], data['bbox'][3]]
                 try:
                     valid.append(data['valid'])
                 except KeyError:
-                    valid.append(True)
+                    valid.append(None)
 
 
                 with open(data["image_json"]) as f2:
                     data2 = json.load(f2)
                     image = np.array(data2["data"])
+                    max_value = np.max(image)
+                    min_value = np.min(image)
+                    intensity_normalized = (image - min_value)/(max_value-min_value)*255
+                    intensity_normalized = intensity_normalized.astype(np.uint8)
+                    images.append(intensity_normalized)
+
+                    image_cropped = np.array(data2["data_cropped"])
                     max_value = np.max(image)
                     min_value = np.min(image)
                     intensity_normalized = (image - min_value)/(max_value-min_value)*255
