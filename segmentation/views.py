@@ -4513,6 +4513,14 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     source_image_cropped  = bokeh.models.ColumnDataSource(dict(img=[]))
     source_roi = bokeh.models.ColumnDataSource(dict(left=[], right=[], top=[], bottom=[]))
 
+    cell_types = ["normal",  "dead", "elongated", "flat", "dividing"]
+    select_cell_type = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
+    train_set = ["train",  "valid"]
+    select_train_set = bokeh.models.Select(title="Set", value=train_set[0], options=train_set)    
+
+    quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="white", line_width=2)
+
+    cell_label = bokeh.models.Div(text="")
 
     #___________________________________________________________________________________________
     def build_dict(folder_path):
@@ -4569,27 +4577,32 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
     print(list(annot_dict_train.keys()))
-    source_image.data = {'img':[image_dict_train[list(annot_dict_train.keys())[0]]]}
-    source_image_cropped.data = {'img':[image_cropped_dict_train[list(annot_dict_train.keys())[0]]]}
-
+    first_key = list(annot_dict_train.keys())[0]
+    source_image.data = {'img':[image_dict_train[first_key]]}
+    source_image_cropped.data = {'img':[image_cropped_dict_train[first_key]]}
+    source_roi.data = {'left':[annot_dict_train[first_key]['bbox'][0]], 'right':[annot_dict_train[first_key]['bbox'][1]], 
+                       'top':[annot_dict_train[first_key]['bbox'][2]], 'bottom':[annot_dict_train[first_key]['bbox'][3]]}
 
     color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=source_image.data["img"][0].min(), high=source_image.data["img"][0].max())
     x_range = bokeh.models.Range1d(start=0, end=source_image.data["img"][0].shape[0])
     y_range = bokeh.models.Range1d(start=0, end=source_image.data["img"][0].shape[1])
-    fig_img = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=500, height=500, tools="box_select,wheel_zoom,box_zoom,reset,undo")
+    fig_img = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=500, height=500, tools="box_select,wheel_zoom,box_zoom,reset,undo", title='detect ROI valid')
     fig_img.axis.visible = False
     fig_img.grid.visible = False
     fig_img.image(image='img', x=0, y=0, dw=source_image.data["img"][0].shape[0], dh=source_image.data["img"][0].shape[1], color_mapper=color_mapper, source=source_image)
+    fig_img.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
+    cell_label.text = "<b style='color:black; ; font-size:20px;'> {} </b>".format(annot_dict_train[first_key]['label'])
 
     color_mapper_cropped = bokeh.models.LinearColorMapper(palette="Greys256", low=source_image_cropped.data["img"][0].min(), high=source_image_cropped.data["img"][0].max())
     x_range_cropped = bokeh.models.Range1d(start=0, end=source_image_cropped.data["img"][0].shape[0])
     y_range_cropped = bokeh.models.Range1d(start=0, end=source_image_cropped.data["img"][0].shape[1])
-    fig_img_cropped = bokeh.plotting.figure(x_range=x_range_cropped, y_range=y_range_cropped,  width=500, height=500, tools="box_select,wheel_zoom,box_zoom,reset,undo")
+    fig_img_cropped = bokeh.plotting.figure(x_range=x_range_cropped, y_range=y_range_cropped,  width=500, height=500, tools="box_select,wheel_zoom,box_zoom,reset,undo", title='cell type ID')
     fig_img_cropped.axis.visible = False
     fig_img_cropped.grid.visible = False
     fig_img_cropped.image(image='img', x=0, y=0, dw=source_image_cropped.data["img"][0].shape[0], dh=source_image_cropped.data["img"][0].shape[1], color_mapper=color_mapper_cropped, source=source_image_cropped)
 
-    layout=bokeh.layouts.column(bokeh.layouts.row(fig_img,fig_img_cropped))
+    select_col = bokeh.layouts.column(select_train_set, cell_label, select_cell_type)
+    layout=bokeh.layouts.column(bokeh.layouts.row(fig_img,fig_img_cropped,select_col))
     doc.add_root(layout)
 
 """     #___________________________________________________________________________________________
