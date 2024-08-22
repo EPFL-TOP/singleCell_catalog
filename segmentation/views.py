@@ -4598,7 +4598,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         time_point = slider.value
         source_image.data = {'img':[image_dict_train[map_img_pos_train[time_point]]]}
-    slider.on_change('value', callback_slider)
 
     #___________________________________________________________________________________________
     def next_callback():
@@ -4621,6 +4620,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     initial_time_point = 0
     slider  = bokeh.models.Slider(start=0, end=len(annot_dict_train) - 1, value=initial_time_point, step=1, title="image", width=250)
+    slider.on_change('value', callback_slider)
 
 
     first_key = list(annot_dict_train.keys())[0]
