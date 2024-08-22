@@ -4507,7 +4507,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         for idx,fname in enumerate(image_paths):
             with open(fname, 'r') as f:
                 data = json.load(f)
-                print(folder_path, )
+                print(folder_path)
                 if os.path.split(folder_path)[-1]=='train':
                     annot_dict_train[titles[idx]]=data
                     image_dict_train[titles[idx]]=None
@@ -4521,11 +4521,13 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def normalise(data):
         image = np.array(data)
+        print('image ',type(image))
         max_value = np.max(image)
         min_value = np.min(image)
         intensity_normalized = (image - min_value)/(max_value-min_value)*255
         intensity_normalized = intensity_normalized.astype(np.uint8)
         return intensity_normalized
+
     #___________________________________________________________________________________________
     def get_images(input_dict, val):
         for img in input_dict:        
