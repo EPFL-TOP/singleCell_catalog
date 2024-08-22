@@ -235,7 +235,7 @@ def save_categories(cellflags, outname):
 
         target_size = (150, 150)
         center = (int(cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.), int(cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.))
-        cropped_image = image[center[1]-target_size[1]/2:center[1]+target_size[1]/2, center[0]-target_size[0]/2:center[0]+target_size[0]/2]
+        cropped_image = image[int(center[1]-target_size[1]/2):int(center[1]+target_size[1]/2), int(center[0]-target_size[0]/2):int(center[0]+target_size[0]/2)]
 
         outdict={"data":image.tolist(), "data_pad":cropped_image.tolist()}
         out_file = open(outfile_json, "w") 
