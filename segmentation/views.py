@@ -4522,8 +4522,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def normalise(data):
         image = np.array(data)
         print('image ',type(image))
+        print(image)
         max_value = np.max(image)
         min_value = np.min(image)
+        print(max_value, '  ---------------  ',min_value)
         intensity_normalized = (image - min_value)/(max_value-min_value)*255
         intensity_normalized = intensity_normalized.astype(np.uint8)
         return intensity_normalized
