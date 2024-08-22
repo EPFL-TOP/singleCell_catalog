@@ -230,12 +230,18 @@ def save_categories(cellflags, outname):
         images=images.transpose(1,0,2,3)
         image=images[0][frame.number]
 
-        norm_image = (image - image.min()) / (image.max() - image.min())
-        plt.imsave(outfile_png, norm_image, cmap='gray')
 
         target_size = (150, 150)
         center = (int(cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.), int(cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.))
         cropped_image = image[int(center[1]-target_size[1]/2):int(center[1]+target_size[1]/2), int(center[0]-target_size[0]/2):int(center[0]+target_size[0]/2)]
+
+        if cropped_image.shape[0]!=target_size[0] or cropped_image.shape[1]!=target_size[1]:
+            continue
+
+        norm_image = (image - image.min()) / (image.max() - image.min())
+        plt.imsave(outfile_png, norm_image, cmap='gray')
+
+
 
         outdict={"data":image.tolist(), "data_cropped":cropped_image.tolist()}
         out_file = open(outfile_json, "w") 
