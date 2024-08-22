@@ -4507,12 +4507,13 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         for idx,fname in enumerate(image_paths):
             with open(fname, 'r') as f:
                 data = json.load(f)
-                if os.path.split(folder_path)=='train':
+                print(folder_path, )
+                if os.path.split(folder_path)[-1]=='train':
                     annot_dict_train[titles[idx]]=data
                     image_dict_train[titles[idx]]=None
                     image_cropped_dict_train[titles[idx]]=None
 
-                elif os.path.split(folder_path)=='valid':
+                elif os.path.split(folder_path)[-1]=='valid':
                     annot_dict_valid[titles[idx]]=data
                     image_dict_valid[titles[idx]]=None
                     image_cropped_dict_valid[titles[idx]]=None
