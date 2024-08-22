@@ -4522,12 +4522,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def normalise(data):
         image = np.array(data)
         print('image ',type(image))
-        print(image)
         max_value = np.max(image)
         min_value = np.min(image)
         print(max_value, '  ---------------  ',min_value)
         intensity_normalized = (image - min_value)/(max_value-min_value)*255
         intensity_normalized = intensity_normalized.astype(np.uint8)
+        print('intensity_normalized ',intensity_normalized.shape)
         return intensity_normalized
 
     #___________________________________________________________________________________________
@@ -4536,7 +4536,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             with open(input_dict[img]["image_json"], 'r') as f:
                 data = json.load(f)
                 image = normalise(data["data"])
-                image_cropped = normalise(data)["data_cropped"]
+                image_cropped = normalise(data["data_cropped"])
 
                 if val == "train":
                     image_dict_train[img]=image
