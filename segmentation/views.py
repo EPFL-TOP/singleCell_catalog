@@ -4591,12 +4591,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
-    def fill_color(input_dict, fig_img):
+    def fill_color(input_dict, fig_img, key):
         try:
-            if input_dict['valid_detect']==True:
+            if input_dict[key]==True:
                 fig_img.background_fill_color = 'rgba(0, 255, 0, 0.4)'
                 fig_img.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
-            elif input_dict['valid_detect']==False:
+            elif input_dict[key]==False:
                 fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
                 fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
         except KeyError:
@@ -4681,7 +4681,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     source_roi.data = {'left':[annot_dict_train[first_key]['dict']['bbox'][0]], 'right':[annot_dict_train[first_key]['dict']['bbox'][1]], 
                        'top':[annot_dict_train[first_key]['dict']['bbox'][2]], 'bottom':[annot_dict_train[first_key]['dict']['bbox'][3]]}
 
-    fill_color(annot_dict_train[first_key]['dict'], fig_img)
 
 
     color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=source_image.data["img"][0].min(), high=source_image.data["img"][0].max())
@@ -4694,6 +4693,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     fig_img.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
     cell_label.text = "<b style='color:black; ; font-size:20px;'> {} </b>".format(annot_dict_train[first_key]['dict']['label'])
     select_cell_label.value = annot_dict_train[first_key]['dict']['label']
+    fill_color(annot_dict_train[first_key]['dict'], fig_img, 'valid_detect')
 
     x_range_cropped = bokeh.models.Range1d(start=0, end=source_image_cropped.data["img"][0].shape[0])
     y_range_cropped = bokeh.models.Range1d(start=0, end=source_image_cropped.data["img"][0].shape[1])
@@ -4701,6 +4701,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     fig_img_cropped.axis.visible = False
     fig_img_cropped.grid.visible = False
     fig_img_cropped.image(image='img', x=0, y=0, dw=source_image_cropped.data["img"][0].shape[0], dh=source_image_cropped.data["img"][0].shape[1], color_mapper=color_mapper, source=source_image_cropped)
+    fill_color(annot_dict_train[first_key]['dict'], fig_img_cropped, 'valid_label')
+
+
 
     select_col = bokeh.layouts.column(select_train_set, cell_label, select_cell_label, slider, bokeh.layouts.row(button_prev, button_next), bokeh.layouts.row(valid_detect_button))
     layout=bokeh.layouts.column(bokeh.layouts.row(fig_img,fig_img_cropped,select_col))
