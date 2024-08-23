@@ -61,7 +61,7 @@ def load_model(model_path, num_classes, device):
     checkpoint = torch.load(model_path)
 
     # Load model state
-    model.load_state_dict(checkpoint['model_state_dict'])
+    model.load_state_dict(checkpoint['model_state_dict'], weights_only=True)
 
     #model.load_state_dict(torch.load(model_path, weights_only=True))
     model.to(device)
