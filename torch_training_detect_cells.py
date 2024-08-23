@@ -31,9 +31,9 @@ class CellDataset(Dataset):
                         data = json.load(f)
                         valid=True
                         try:
-                            valid=data["valid"]
+                            valid=data["valid_detect"]
                         except KeyError:
-                            valid=True
+                            valid=False
                     if not valid: continue
 
                     json_files.append(os.path.join(root, file))

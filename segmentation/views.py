@@ -4531,6 +4531,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     n_images_label = bokeh.models.Div(text="")
 
 
+    #___________________________________________________________________________________________
     def set_numbers():
         n_valid_detect   = 0
         n_invalid_detect = 0
