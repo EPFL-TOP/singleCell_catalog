@@ -4597,14 +4597,11 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 fig_img.background_fill_color = 'rgba(0, 255, 0, 0.4)'
                 fig_img.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
                 valid_detect_button.label     = "Invalid detect"
-                print('if fill_color')
             elif input_dict[key]==False:
                 fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
                 fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
                 valid_detect_button.label     = "Valid detect"
-                print('elif fill_color')
         except KeyError:
-                print('KeyError fill_color')
                 fig_img.background_fill_color = 'white'
                 fig_img.border_fill_color     = 'white'
                 valid_detect_button.label     = "Valid detect"
@@ -4668,6 +4665,15 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             valid_detect_button.label = "Valid detect"
     valid_detect_button = bokeh.models.Button(label="")
     valid_detect_button.on_click(valid_detect_callback)
+
+
+    #___________________________________________________________________________________________
+    def callback_set(attr: str, old: Any, new: Any) -> None:
+        if slider.value == 0:
+            callback_slider(None, None, None)
+        else:
+            slider.value = 0
+    select_train_set.on_change('value', callback_set)
 
 
     folder_path = r'D:\single_cells\training_cell_detection_categories'
