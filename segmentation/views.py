@@ -4591,6 +4591,19 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
+    def fill_color(input_dict, fig_img):
+        try:
+            if input_dict['valid_detect']==True:
+                fig_img.background_fill_color = 'rgba(0, 255, 0, 0.4)'
+                fig_img.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
+            elif input_dict['valid_detect']==False:
+                fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
+                fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
+        except KeyError:
+                fig_img.background_fill_color = 'white'
+                fig_img.border_fill_color     = 'white'
+
+    #___________________________________________________________________________________________
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         time_point = slider.value
         if select_train_set.value=='train':
@@ -4599,21 +4612,16 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             source_roi.data = {'left':[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][0]], 'right' :[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][1]], 
                                'top' :[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][2]], 'bottom':[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][3]]}
             select_cell_label.value = annot_dict_train[map_img_pos_train[time_point]]['dict']['label']
-            try:
-                if annot_dict_train[map_img_pos_train[slider.value]]['dict']['valid_detect']==True:
-                    fig_img.background_fill_color = 'rgba(0, 255, 0, 0.4)'
-                    fig_img.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
-                elif annot_dict_train[map_img_pos_train[slider.value]]['dict']['valid_detect']==False:
-                    fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
-                    fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
-            except KeyError:
-                pass
+            fill_color(annot_dict_train[map_img_pos_train[slider.value]]['dict'], fig_img)
+
+
         elif select_train_set.value=='valid':
             source_image.data = {'img':[image_dict_valid[map_img_pos_valid[time_point]]]}
             source_image_cropped.data = {'img':[image_cropped_dict_valid[map_img_pos_valid[time_point]]]}
             source_roi.data = {'left':[annot_dict_valid[map_img_pos_valid[time_point]]['dict']['bbox'][0]], 'right':[annot_dict_valid[map_img_pos_valid[time_point]]['dict']['bbox'][1]], 
                                'top':[annot_dict_valid[map_img_pos_valid[time_point]]['dict']['bbox'][2]], 'bottom':[annot_dict_valid[map_img_pos_valid[time_point]]['dict']['bbox'][3]]}
             select_cell_label.value = annot_dict_valid[map_img_pos_valid[time_point]]['dict']['label']
+            fill_color(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], fig_img)
 
 
 
@@ -4672,6 +4680,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     source_image_cropped.data = {'img':[image_cropped_dict_train[first_key]]}
     source_roi.data = {'left':[annot_dict_train[first_key]['dict']['bbox'][0]], 'right':[annot_dict_train[first_key]['dict']['bbox'][1]], 
                        'top':[annot_dict_train[first_key]['dict']['bbox'][2]], 'bottom':[annot_dict_train[first_key]['dict']['bbox'][3]]}
+
+    fill_color(annot_dict_train[first_key]['dict'], fig_img)
+
 
     color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=source_image.data["img"][0].min(), high=source_image.data["img"][0].max())
     x_range = bokeh.models.Range1d(start=0, end=source_image.data["img"][0].shape[0])
