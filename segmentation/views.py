@@ -72,7 +72,7 @@ def load_model(model_path, num_classes, device):
     return model
 
 
-def preprocess_image(image_array):
+def preprocess_image_pytorch(image_array):
     transform = ToTensorNormalize()
     image = transform(image_array)
     return image.unsqueeze(0)  # Add batch dimension
@@ -4722,7 +4722,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             fill_color(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], fig_img, 'valid_detect', valid_detect_button)
             fill_color(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], fig_img_cropped, 'valid_label', valid_label_button)
 
-            image = preprocess_image(image_dict_valid[map_img_pos_valid[time_point]]).to(device)
+            print('=-----------  ',image_dict_valid[map_img_pos_valid[time_point]].shape)
+            image = preprocess_image_pytorch(image_dict_valid[map_img_pos_valid[time_point]]).to(device)
             predictions = model_gpu(image)
             print(predictions)
 
