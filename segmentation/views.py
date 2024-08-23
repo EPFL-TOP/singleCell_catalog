@@ -4526,8 +4526,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     cell_label = bokeh.models.Div(text="")
 
 
-
-
     #___________________________________________________________________________________________
     def build_dict(folder_path):
         image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('_annotation.json')])
@@ -4537,13 +4535,13 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 data = json.load(f)
                 print(folder_path)
                 if os.path.split(folder_path)[-1]=='train':
-                    annot_dict_train[titles[idx]]=data
+                    annot_dict_train[titles[idx]]={'dict':data,'file':fname}
                     image_dict_train[titles[idx]]=None
                     image_cropped_dict_train[titles[idx]]=None
                     map_img_pos_train[idx]=titles[idx]
 
                 elif os.path.split(folder_path)[-1]=='valid':
-                    annot_dict_valid[titles[idx]]=data
+                    annot_dict_valid[titles[idx]]={'dict':data,'file':fname}
                     image_dict_valid[titles[idx]]=None
                     image_cropped_dict_valid[titles[idx]]=None
                     map_img_pos_valid[titles[idx]]=idx
@@ -4576,8 +4574,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                     image_dict_valid[img]=image
                     image_cropped_dict_valid[img]=image_cropped
 
-
-
     #___________________________________________________________________________________________
     def update_image(way=1, number=-9999):
         current_index = slider.value
@@ -4594,23 +4590,22 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         slider.value = current_index
 
 
-
     #___________________________________________________________________________________________
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         time_point = slider.value
         if select_train_set.value=='train':
             source_image.data = {'img':[image_dict_train[map_img_pos_train[time_point]]]}
             source_image_cropped.data = {'img':[image_cropped_dict_train[map_img_pos_train[time_point]]]}
-            source_roi.data = {'left':[annot_dict_train[map_img_pos_train[time_point]]['bbox'][0]], 'right':[annot_dict_train[map_img_pos_train[time_point]]['bbox'][1]], 
-                               'top':[annot_dict_train[map_img_pos_train[time_point]]['bbox'][2]], 'bottom':[annot_dict_train[map_img_pos_train[time_point]]['bbox'][3]]}
-            select_cell_label.value = annot_dict_train[map_img_pos_train[time_point]]['label']
+            source_roi.data = {'left':[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][0]], 'right' :[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][1]], 
+                               'top' :[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][2]], 'bottom':[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][3]]}
+            select_cell_label.value = annot_dict_train[map_img_pos_train[time_point]]['dict']['label']
 
         elif select_train_set.value=='valid':
             source_image.data = {'img':[image_dict_valid[map_img_pos_valid[time_point]]]}
             source_image_cropped.data = {'img':[image_cropped_dict_valid[map_img_pos_valid[time_point]]]}
-            source_roi.data = {'left':[annot_dict_valid[map_img_pos_valid[time_point]]['bbox'][0]], 'right':[annot_dict_valid[map_img_pos_valid[time_point]]['bbox'][1]], 
-                               'top':[annot_dict_valid[map_img_pos_valid[time_point]]['bbox'][2]], 'bottom':[annot_dict_valid[map_img_pos_valid[time_point]]['bbox'][3]]}
-            select_cell_label.value = annot_dict_valid[map_img_pos_valid[time_point]]['label']
+            source_roi.data = {'left':[annot_dict_valid[map_img_pos_valid[time_point]]['dict']['bbox'][0]], 'right':[annot_dict_valid[map_img_pos_valid[time_point]]['dict']['bbox'][1]], 
+                               'top':[annot_dict_valid[map_img_pos_valid[time_point]]['dict']['bbox'][2]], 'bottom':[annot_dict_valid[map_img_pos_valid[time_point]]['dict']['bbox'][3]]}
+            select_cell_label.value = annot_dict_valid[map_img_pos_valid[time_point]]['dict']['label']
 
 
 
@@ -4626,6 +4621,18 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     button_prev = bokeh.models.Button(label="Prev")
     button_prev.on_click(prev_callback)
     
+    #___________________________________________________________________________________________
+    def valid_detect_callback():
+
+        annot_dict_train[map_img_pos_train[slider.value]]['dict']['valid_detect']=True
+        out_file = open(annot_dict_train[map_img_pos_train[slider.value]]['dict'], "w") 
+        json.dump(annot_dict_train, out_file) 
+        out_file.close() 
+
+    valid_detect_button = bokeh.models.Button(label="Valid detect")
+    valid_detect_button.on_click(valid_detect_callback)
+
+
     folder_path = r'D:\single_cells\training_cell_detection_categories'
     build_dict(os.path.join(folder_path, 'train'))
     build_dict(os.path.join(folder_path, 'valid'))
@@ -4641,8 +4648,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     first_key = list(annot_dict_train.keys())[0]
     source_image.data = {'img':[image_dict_train[first_key]]}
     source_image_cropped.data = {'img':[image_cropped_dict_train[first_key]]}
-    source_roi.data = {'left':[annot_dict_train[first_key]['bbox'][0]], 'right':[annot_dict_train[first_key]['bbox'][1]], 
-                       'top':[annot_dict_train[first_key]['bbox'][2]], 'bottom':[annot_dict_train[first_key]['bbox'][3]]}
+    source_roi.data = {'left':[annot_dict_train[first_key]['dict']['bbox'][0]], 'right':[annot_dict_train[first_key]['dict']['bbox'][1]], 
+                       'top':[annot_dict_train[first_key]['dict']['bbox'][2]], 'bottom':[annot_dict_train[first_key]['dict']['bbox'][3]]}
 
     color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=source_image.data["img"][0].min(), high=source_image.data["img"][0].max())
     x_range = bokeh.models.Range1d(start=0, end=source_image.data["img"][0].shape[0])
@@ -4652,8 +4659,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     fig_img.grid.visible = False
     fig_img.image(image='img', x=0, y=0, dw=source_image.data["img"][0].shape[0], dh=source_image.data["img"][0].shape[1], color_mapper=color_mapper, source=source_image)
     fig_img.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
-    cell_label.text = "<b style='color:black; ; font-size:20px;'> {} </b>".format(annot_dict_train[first_key]['label'])
-    select_cell_label.value = annot_dict_train[first_key]['label']
+    cell_label.text = "<b style='color:black; ; font-size:20px;'> {} </b>".format(annot_dict_train[first_key]['dict']['label'])
+    select_cell_label.value = annot_dict_train[first_key]['dict']['label']
 
     x_range_cropped = bokeh.models.Range1d(start=0, end=source_image_cropped.data["img"][0].shape[0])
     y_range_cropped = bokeh.models.Range1d(start=0, end=source_image_cropped.data["img"][0].shape[1])
@@ -4662,9 +4669,15 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     fig_img_cropped.grid.visible = False
     fig_img_cropped.image(image='img', x=0, y=0, dw=source_image_cropped.data["img"][0].shape[0], dh=source_image_cropped.data["img"][0].shape[1], color_mapper=color_mapper, source=source_image_cropped)
 
-    select_col = bokeh.layouts.column(select_train_set, cell_label, select_cell_label, slider, bokeh.layouts.row(button_prev, button_next))
+    select_col = bokeh.layouts.column(select_train_set, cell_label, select_cell_label, slider, bokeh.layouts.row(button_prev, button_next), bokeh.layouts.row(valid_detect_button))
     layout=bokeh.layouts.column(bokeh.layouts.row(fig_img,fig_img_cropped,select_col))
     doc.add_root(layout)
+
+
+
+
+
+
 
 """     #___________________________________________________________________________________________
     def get_images_bboxes(folder_path):
