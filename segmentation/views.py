@@ -52,6 +52,9 @@ class ToTensorNormalize:
         image = (image - image.min()) / (image.max() - image.min())
         return image
 
+
+
+
 def load_model(model_path, num_classes, device):
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT')
     in_features = model.roi_heads.box_predictor.cls_score.in_features
@@ -4719,7 +4722,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             fill_color(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], fig_img, 'valid_detect', valid_detect_button)
             fill_color(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], fig_img_cropped, 'valid_label', valid_label_button)
 
-            predictions = model_gpu(image_cropped_dict_valid[map_img_pos_valid[time_point]])
+            image = preprocess_image(image_dict_valid[map_img_pos_valid[time_point]]).to(device)
+            predictions = model_gpu(image)
             print(predictions)
 
             source_roi_pred.data = {'left':[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][0]], 'right' :[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][1]], 
