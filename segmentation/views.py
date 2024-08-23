@@ -4708,7 +4708,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     fig_img_cropped.axis.visible = False
     fig_img_cropped.grid.visible = False
     fig_img_cropped.image(image='img', x=0, y=0, dw=source_image_cropped.data["img"][0].shape[0], dh=source_image_cropped.data["img"][0].shape[1], color_mapper=color_mapper, source=source_image_cropped)
-    fill_color(annot_dict_train[first_key]['dict'], fig_img_cropped, 'valid_label')
+    #fill_color(annot_dict_train[first_key]['dict'], fig_img_cropped, 'valid_label')
 
 
 
