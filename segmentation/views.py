@@ -4560,8 +4560,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def get_images(input_dict, val):
-        for img in input_dict:        
-            with open(input_dict[img]["image_json"], 'r') as f:
+        for img in input_dict:
+            with open(input_dict[img]["dict"]["image_json"], 'r') as f:
                 print(val, '  ===  ',img)
                 data = json.load(f)
                 image = normalise(data["data"])
