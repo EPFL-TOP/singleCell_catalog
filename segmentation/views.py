@@ -4625,12 +4625,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def valid_detect_callback():
 
         if select_train_set.value=="train":
-            annot_dict_train[map_img_pos_train[slider.value]]['dict']['valid_detect']=True
+            annot_dict_train[map_img_pos_train[slider.value]]['dict']['valid_detect']=True if valid_detect_button.label == "Valid detect" else False
             out_file = open(annot_dict_train[map_img_pos_train[slider.value]]['file'], "w") 
             json.dump(annot_dict_train[map_img_pos_train[slider.value]]['dict'], out_file) 
             out_file.close()
         elif select_train_set.value=="valid":
-            annot_dict_valid[map_img_pos_valid[slider.value]]['dict']['valid_detect']=True
+            annot_dict_valid[map_img_pos_valid[slider.value]]['dict']['valid_detect']=True if valid_detect_button.label == "Valid detect" else False
             out_file = open(annot_dict_valid[map_img_pos_valid[slider.value]]['file'], "w") 
             json.dump(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], out_file) 
             out_file.close()
@@ -4638,11 +4638,11 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         if valid_detect_button.label == "Valid detect":
             fig_img.background_fill_color = 'rgba(0, 255, 0, 0.4)'
             fig_img.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
-            valid_detect_button.label == "Invalid detect"
+            valid_detect_button.label = "Invalid detect"
         elif valid_detect_button.label == "Invalid detect":
             fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
             fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
-            valid_detect_button.label == "Valid detect"
+            valid_detect_button.label = "Valid detect"
     valid_detect_button = bokeh.models.Button(label="Valid detect")
     valid_detect_button.on_click(valid_detect_callback)
 
