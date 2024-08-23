@@ -4544,18 +4544,15 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                     annot_dict_valid[titles[idx]]={'dict':data,'file':fname}
                     image_dict_valid[titles[idx]]=None
                     image_cropped_dict_valid[titles[idx]]=None
-                    map_img_pos_valid[titles[idx]]=idx
+                    map_img_pos_valid[idx]=titles[idx]
 
     #___________________________________________________________________________________________
     def normalise(data):
         image = np.array(data)
-        print('image ',type(image),' ==  ', image.shape)
         max_value = np.max(image)
         min_value = np.min(image)
-        print(max_value, '  ---------------  ',min_value)
         intensity_normalized = (image - min_value)/(max_value-min_value)*255
         intensity_normalized = intensity_normalized.astype(np.uint8)
-        print('intensity_normalized ',intensity_normalized.shape)
         return intensity_normalized
 
     #___________________________________________________________________________________________
