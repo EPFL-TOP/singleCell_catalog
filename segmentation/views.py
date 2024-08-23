@@ -4663,7 +4663,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
             fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
             valid_detect_button.label = "Valid detect"
-    valid_detect_button = bokeh.models.Button(label="Valid detect")
+    valid_detect_button = bokeh.models.Button(label="")
     valid_detect_button.on_click(valid_detect_callback)
 
 
