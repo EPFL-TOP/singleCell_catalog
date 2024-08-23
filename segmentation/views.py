@@ -4599,7 +4599,15 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             source_roi.data = {'left':[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][0]], 'right' :[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][1]], 
                                'top' :[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][2]], 'bottom':[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][3]]}
             select_cell_label.value = annot_dict_train[map_img_pos_train[time_point]]['dict']['label']
-
+            try:
+                if annot_dict_train[map_img_pos_train[slider.value]]['dict']['valid_detect']==True:
+                    fig_img.background_fill_color = 'rgba(0, 255, 0, 0.4)'
+                    fig_img.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
+                elif annot_dict_train[map_img_pos_train[slider.value]]['dict']['valid_detect']==False:
+                    fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
+                    fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
+            except KeyError:
+                pass
         elif select_train_set.value=='valid':
             source_image.data = {'img':[image_dict_valid[map_img_pos_valid[time_point]]]}
             source_image_cropped.data = {'img':[image_cropped_dict_valid[map_img_pos_valid[time_point]]]}
