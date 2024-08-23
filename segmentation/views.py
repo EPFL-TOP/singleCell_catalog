@@ -4596,12 +4596,16 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             if input_dict[key]==True:
                 fig_img.background_fill_color = 'rgba(0, 255, 0, 0.4)'
                 fig_img.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
+                valid_detect_button.label     = "Invalid detect"
             elif input_dict[key]==False:
                 fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
                 fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
+                valid_detect_button.label     = "Valid detect"
         except KeyError:
                 fig_img.background_fill_color = 'white'
                 fig_img.border_fill_color     = 'white'
+                valid_detect_button.label     = "Valid detect"
+
 
     #___________________________________________________________________________________________
     def callback_slider(attr: str, old: Any, new: Any) -> None:
