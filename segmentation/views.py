@@ -4530,12 +4530,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def build_dict(folder_path):
+        print('build_dict  ',folder_path)
         image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('_annotation.json')])
         titles = [os.path.split(t.replace('_annotation.json',''))[1] for t in image_paths]
         for idx,fname in enumerate(image_paths):
             with open(fname, 'r') as f:
                 data = json.load(f)
-                print(folder_path)
                 if os.path.split(folder_path)[-1]=='train':
                     annot_dict_train[titles[idx]]={'dict':data,'file':fname}
                     image_dict_train[titles[idx]]=None
@@ -4587,7 +4587,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 num=0
                 thread_dic={}
         if num!=0 and num<target:threads.append(threading.Thread(target = get_images_thread, args=(thread_dic, val, )))
-        for t in threads: t.start()
+        for t in threads: 
+            t.start()
+            print('start thread ',t)
         for t in threads: t.join()
 
 
