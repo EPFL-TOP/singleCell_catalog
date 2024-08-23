@@ -4611,6 +4611,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def callback_slider(attr: str, old: Any, new: Any) -> None:
         time_point = slider.value
         if select_train_set.value=='train':
+            cell_label.text = "<b style='color:black; ; font-size:18px;'> {} </b>".format(map_img_pos_train[time_point])
             source_image.data = {'img':[image_dict_train[map_img_pos_train[time_point]]]}
             source_image_cropped.data = {'img':[image_cropped_dict_train[map_img_pos_train[time_point]]]}
             source_roi.data = {'left':[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][0]], 'right' :[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][1]], 
@@ -4620,6 +4621,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
         elif select_train_set.value=='valid':
+            cell_label.text = "<b style='color:black; ; font-size:18px;'> {} </b>".format(map_img_pos_valid[time_point])
             source_image.data = {'img':[image_dict_valid[map_img_pos_valid[time_point]]]}
             source_image_cropped.data = {'img':[image_cropped_dict_valid[map_img_pos_valid[time_point]]]}
             source_roi.data = {'left':[annot_dict_valid[map_img_pos_valid[time_point]]['dict']['bbox'][0]], 'right':[annot_dict_valid[map_img_pos_valid[time_point]]['dict']['bbox'][1]], 
@@ -4704,7 +4706,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     fig_img.grid.visible = False
     fig_img.image(image='img', x=0, y=0, dw=source_image.data["img"][0].shape[0], dh=source_image.data["img"][0].shape[1], color_mapper=color_mapper, source=source_image)
     fig_img.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
-    cell_label.text = "<b style='color:black; ; font-size:20px;'> {} </b>".format(annot_dict_train[first_key]['dict']['label'])
+    cell_label.text = "<b style='color:black; ; font-size:18px;'> {} </b>".format(first_key)
     select_cell_label.value = annot_dict_train[first_key]['dict']['label']
     fill_color(annot_dict_train[first_key]['dict'], fig_img, 'valid_detect')
 
@@ -4718,7 +4720,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    select_col = bokeh.layouts.column(select_train_set, cell_label, select_cell_label, slider, bokeh.layouts.row(button_prev, button_next), bokeh.layouts.row(valid_detect_button))
+    select_col = bokeh.layouts.column(bokeh.layouts.row(select_train_set, cell_label), select_cell_label, slider, bokeh.layouts.row(button_prev, button_next), bokeh.layouts.row(valid_detect_button))
     layout=bokeh.layouts.column(bokeh.layouts.row(fig_img,fig_img_cropped,select_col))
     doc.add_root(layout)
 
