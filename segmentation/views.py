@@ -4627,12 +4627,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         if select_train_set.value=="train":
             annot_dict_train[map_img_pos_train[slider.value]]['dict']['valid_detect']=True
             out_file = open(annot_dict_train[map_img_pos_train[slider.value]]['file'], "w") 
-            json.dump(annot_dict_train, out_file) 
+            json.dump(annot_dict_train[map_img_pos_train[slider.value]]['dict'], out_file) 
             out_file.close()
         elif select_train_set.value=="valid":
             annot_dict_valid[map_img_pos_valid[slider.value]]['dict']['valid_detect']=True
             out_file = open(annot_dict_valid[map_img_pos_valid[slider.value]]['file'], "w") 
-            json.dump(annot_dict_valid, out_file) 
+            json.dump(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], out_file) 
             out_file.close()
 
     valid_detect_button = bokeh.models.Button(label="Valid detect")
