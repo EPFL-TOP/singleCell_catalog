@@ -4575,15 +4575,16 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def get_images(input_dict, val):
         threads=[]
         thread_dic={}
+        target=2
         num=0
         for img in input_dict:
             thread_dic[img]=input_dict[img]
             num+=1
-            if num==10:
+            if num==target:
                 threads.append(threading.Thread(target = get_images_thread, args=(thread_dic, val, )))
                 num=0
                 thread_dic={}
-        if num!=0 and num<10:threads.append(threading.Thread(target = get_images_thread, args=(thread_dic, val, )))
+        if num!=0 and num<target:threads.append(threading.Thread(target = get_images_thread, args=(thread_dic, val, )))
         for t in threads: t.start()
         for t in threads: t.join()
 
