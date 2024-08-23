@@ -4690,7 +4690,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             select_cell_label.value = annot_dict_train[map_img_pos_train[time_point]]['dict']['label']
             fill_color(annot_dict_train[map_img_pos_train[slider.value]]['dict'], fig_img, 'valid_detect', valid_detect_button)
 
-
         elif select_train_set.value=='valid':
             cell_label.text = "<b style='color:black; ; font-size:18px;'> {} </b>".format(map_img_pos_valid[time_point])
             source_image.data = {'img':[image_dict_valid[map_img_pos_valid[time_point]]]}
@@ -4787,6 +4786,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             callback_slider(None, None, None)
         else:
             slider.value = 0
+
+        if select_train_set.value=="train":
+            slider.end = len(annot_dict_train) - 1
+        else:
+            slider.end = len(annot_dict_valid) - 1
+        set_numbers()
     select_train_set.on_change('value', callback_set)
 
 
