@@ -4542,6 +4542,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     n_images_detect = bokeh.models.Div(text="")
     n_images_label = bokeh.models.Div(text="")
 
+    source_scores_detect = bokeh.models.ColumnDataSource(dict(height=[], weight=[], names=[]))
+    scores_detect = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data', x_offset=0, y_offset=0, source=source_scores_detect, text_color='white', text_font_size="10pt")
+
 
     #___________________________________________________________________________________________
     def set_numbers():
@@ -4726,9 +4729,28 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             image = preprocess_image_pytorch(image_dict_valid[map_img_pos_valid[time_point]]).to(device)
             predictions = model_gpu(image)
             print(predictions)
+            left=[]
+            right=[]
+            top=[]
+            bottom=[]
+            height=[]
+            width=[]
+            names=[]
 
-            source_roi_pred.data = {'left':[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][0]], 'right' :[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][1]], 
-                               'top' :[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][2]], 'bottom':[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][3]]}
+            for idx, box in enumerate(predictions[0]['boxes']):
+                x_min, y_min, x_max, y_max = box.cpu().numpy()
+                left.append(x_min)
+                right.append(x_max)
+                top.append(y_min)
+                bottom.append(y_max)
+                height.append(x_min)
+                width.append(y_min)
+                names.append(f"{predictions[0]['scores'][idx].cpu().numpy() :.3f}")
+                #plt.text(x_min, y_min-10, f"{predictions[0]['scores'][idx].cpu().numpy() :.3f}", fontsize=10, color='white')
+    
+
+            source_roi_pred.data = {'left':left, 'right' :right, 'top' :top, 'bottom':bottom}
+            source_scores_detect.data = {'height':height, 'width':width, 'names':names}
 
 
     #___________________________________________________________________________________________
@@ -4852,6 +4874,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     fig_img = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=500, height=500, tools="box_select,wheel_zoom,box_zoom,reset,undo", title='detect ROI valid')
     fig_img.axis.visible = False
     fig_img.grid.visible = False
+    fig_img.add_layout(scores_detect)
+
     fig_img.image(image='img', x=0, y=0, dw=source_image.data["img"][0].shape[0], dh=source_image.data["img"][0].shape[1], color_mapper=color_mapper, source=source_image)
     fig_img.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
     fig_img.add_glyph(source_roi_pred, quad_pred, selection_glyph=quad_pred, nonselection_glyph=quad_pred)
