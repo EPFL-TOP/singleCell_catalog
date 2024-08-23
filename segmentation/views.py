@@ -4727,30 +4727,31 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
             print('=-----------  ',image_dict_valid[map_img_pos_valid[time_point]].shape)
             image = preprocess_image_pytorch(image_dict_valid[map_img_pos_valid[time_point]]).to(device)
-            predictions = model_gpu(image)
-            print(predictions)
-            left=[]
-            right=[]
-            top=[]
-            bottom=[]
-            height=[]
-            width=[]
-            names=[]
+            with torch.no_grad():
+                predictions = model_gpu(image)
+                print(predictions)
+                left=[]
+                right=[]
+                top=[]
+                bottom=[]
+                height=[]
+                width=[]
+                names=[]
 
-            for idx, box in enumerate(predictions[0]['boxes']):
-                x_min, y_min, x_max, y_max = box.cpu().numpy()
-                left.append(x_min)
-                right.append(x_max)
-                top.append(y_min)
-                bottom.append(y_max)
-                height.append(x_min)
-                width.append(y_min)
-                names.append(f"{predictions[0]['scores'][idx].cpu().numpy() :.3f}")
-                #plt.text(x_min, y_min-10, f"{predictions[0]['scores'][idx].cpu().numpy() :.3f}", fontsize=10, color='white')
-    
+                for idx, box in enumerate(predictions[0]['boxes']):
+                    x_min, y_min, x_max, y_max = box.cpu().numpy()
+                    left.append(x_min)
+                    right.append(x_max)
+                    top.append(y_min)
+                    bottom.append(y_max)
+                    height.append(x_min)
+                    width.append(y_min)
+                    names.append(f"{predictions[0]['scores'][idx].cpu().numpy() :.3f}")
+                    #plt.text(x_min, y_min-10, f"{predictions[0]['scores'][idx].cpu().numpy() :.3f}", fontsize=10, color='white')
+        
 
-            source_roi_pred.data = {'left':left, 'right' :right, 'top' :top, 'bottom':bottom}
-            source_scores_detect.data = {'height':height, 'width':width, 'names':names}
+                source_roi_pred.data = {'left':left, 'right' :right, 'top' :top, 'bottom':bottom}
+                source_scores_detect.data = {'height':height, 'width':width, 'names':names}
 
 
     #___________________________________________________________________________________________
