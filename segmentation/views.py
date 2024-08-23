@@ -4635,6 +4635,14 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             json.dump(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], out_file) 
             out_file.close()
 
+        if valid_detect_button.label == "Valid detect":
+            fig_img.background_fill_color = 'rgba(0, 255, 0, 0.4)'
+            fig_img.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
+            valid_detect_button.label == "Invalid detect"
+        elif valid_detect_button.label == "Invalid detect":
+            fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
+            fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
+            valid_detect_button.label == "Valid detect"
     valid_detect_button = bokeh.models.Button(label="Valid detect")
     valid_detect_button.on_click(valid_detect_callback)
 
