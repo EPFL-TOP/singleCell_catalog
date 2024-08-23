@@ -56,7 +56,14 @@ def load_model(model_path, num_classes, device):
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT')
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
-    model.load_state_dict(torch.load(model_path, weights_only=True))
+
+    # Load the checkpoint
+    checkpoint = torch.load(model_path)
+
+    # Load model state
+    model.load_state_dict(checkpoint['model_state_dict'])
+
+    #model.load_state_dict(torch.load(model_path, weights_only=True))
     model.to(device)
     model.eval()
     return model
