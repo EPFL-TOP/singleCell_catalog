@@ -4746,9 +4746,11 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
             fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
             valid_detect_button.label = "Valid detect"
+        #set_numbers()
+
     valid_detect_button = bokeh.models.Button(label="")
     valid_detect_button.on_click(valid_detect_callback)
-
+    valid_detect_button.on_click(set_numbers)
 
     #___________________________________________________________________________________________
     def valid_label_callback():
@@ -4771,8 +4773,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             fig_img_cropped.background_fill_color = 'rgba(255, 0, 0, 0.4)'
             fig_img_cropped.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
             valid_label_button.label = "Valid label"
+        #set_numbers()
     valid_label_button = bokeh.models.Button(label="")
     valid_label_button.on_click(valid_label_callback)
+    valid_label_button.on_click(set_numbers)
 
     #___________________________________________________________________________________________
     def callback_set(attr: str, old: Any, new: Any) -> None:
@@ -4826,7 +4830,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     set_numbers()
 
     select_col = bokeh.layouts.column(bokeh.layouts.row(select_train_set), slider, bokeh.layouts.row(button_prev, button_next, select_cell_label), bokeh.layouts.row(valid_detect_button, valid_label_button))
-    info_col   = bokeh.layouts.column(cell_label,n_images,bokeh.layouts.row())
+    info_col   = bokeh.layouts.column(cell_label,n_images,n_images_detect, n_images_label)
     layout=bokeh.layouts.column(bokeh.layouts.row(fig_img,fig_img_cropped,select_col, info_col))
     doc.add_root(layout)
 
