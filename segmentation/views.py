@@ -4524,6 +4524,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     source_image  = bokeh.models.ColumnDataSource(dict(img=[]))
     source_image_cropped  = bokeh.models.ColumnDataSource(dict(img=[]))
     source_roi = bokeh.models.ColumnDataSource(dict(left=[], right=[], top=[], bottom=[]))
+    source_roi_pred = bokeh.models.ColumnDataSource(dict(left=[], right=[], top=[], bottom=[]))
 
     cell_types = ["normal",  "dead", "elongated", "flat", "dividing"]
     select_cell_label = bokeh.models.Select(title="Cell label", value=cell_types[0], options=cell_types)
@@ -4531,6 +4532,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     select_train_set = bokeh.models.Select(title="Image set", value=train_set[0], options=train_set)    
 
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="white", line_width=2)
+    quad_pred = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="red", line_width=3)
 
     cell_label = bokeh.models.Div(text="")
     n_images = bokeh.models.Div(text="")
@@ -4674,15 +4676,24 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             if input_dict[key]==True:
                 fig_img.background_fill_color = 'rgba(0, 255, 0, 0.4)'
                 fig_img.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
-                button.label     = "Invalid detect"
+                if key=="valid_detect":
+                    button.label     = "Invalid detect"
+                elif key=="valid_label":
+                    button.label     = "Invalid label"
             elif input_dict[key]==False:
                 fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
                 fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
-                button.label     = "Valid detect"
+                if key=="valid_detect":
+                    button.label     = "Valid detect"
+                elif key=="valid_label":
+                    button.label     = "Valid label"
         except KeyError:
                 fig_img.background_fill_color = 'white'
                 fig_img.border_fill_color     = 'white'
-                button.label     = "Valid detect"
+                if key=="valid_detect":
+                    button.label     = "Valid detect"
+                elif key=="valid_label":
+                    button.label     = "Valid label"
 
 
     #___________________________________________________________________________________________
@@ -4830,6 +4841,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     fig_img.grid.visible = False
     fig_img.image(image='img', x=0, y=0, dw=source_image.data["img"][0].shape[0], dh=source_image.data["img"][0].shape[1], color_mapper=color_mapper, source=source_image)
     fig_img.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
+    fig_img.add_glyph(source_roi_pred, quad_pred, selection_glyph=quad_pred, nonselection_glyph=quad_pred)
     cell_label.text = "<b style='color:black; ; font-size:18px;'> {} </b>".format(first_key)
     select_cell_label.value = annot_dict_train[first_key]['dict']['label']
     fill_color(annot_dict_train[first_key]['dict'], fig_img, 'valid_detect', valid_detect_button)
@@ -4850,6 +4862,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     doc.add_root(layout)
 
 
+#            predictions = model_gpu(image)
 
 
 
