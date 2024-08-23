@@ -4719,6 +4719,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             fill_color(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], fig_img, 'valid_detect', valid_detect_button)
             fill_color(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], fig_img_cropped, 'valid_label', valid_label_button)
 
+            predictions = model_gpu(image_cropped_dict_valid[map_img_pos_valid[time_point])
+            print(predictions)
+
+            source_roi_pred.data = {'left':[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][0]], 'right' :[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][1]], 
+                               'top' :[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][2]], 'bottom':[annot_dict_train[map_img_pos_train[time_point]]['dict']['bbox'][3]]}
+
 
     #___________________________________________________________________________________________
     def callback_label(attr: str, old: Any, new: Any) -> None:
@@ -4864,7 +4870,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     doc.add_root(layout)
 
 
-#            predictions = model_gpu(image)
 
 
 
