@@ -4538,7 +4538,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         n_valid_label   = 0
         n_invalid_label = 0
         n_notano_label  = 0
-        if select_train_set == "train":
+        if select_train_set.value == "train":
             n_images.text = "<b style='color:black; ; font-size:18px;'> N images={} </b>".format(len(map_img_pos_train))
             for img in annot_dict_train:
                 try:
@@ -4557,7 +4557,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                     n_notano_label+=1
             n_images_detect.text = "<b style='color:black; ; font-size:18px;'> Detect: valid={} invalid={} missing={}</b>".format(n_valid_detect, n_invalid_detect, n_notano_detect)
 
-        elif select_train_set == "valid":
+        elif select_train_set.value == "valid":
             n_images.text = "<b style='color:black; ; font-size:18px;'> N images={} </b>".format(len(map_img_pos_valid))
             for img in annot_dict_valid:
                 try:
