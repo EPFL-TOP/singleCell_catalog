@@ -4556,8 +4556,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         return intensity_normalized
 
     #___________________________________________________________________________________________
-    def get_images(input_dict, val):
-        for img in input_dict:
+    def get_images_thread(input_dict, val):
+        for img in input_dict:            
             with open(input_dict[img]["dict"]["image_json"], 'r') as f:
                 print(val, '  ===  ',img)
                 data = json.load(f)
@@ -4570,6 +4570,24 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 elif val == "valid":
                     image_dict_valid[img]=image
                     image_cropped_dict_valid[img]=image_cropped
+
+    #___________________________________________________________________________________________
+    def get_images(input_dict, val):
+        threads=[]
+        thread_dic={}
+        num=0
+        for img in input_dict:
+            thread_dic[img]=input_dict[img]
+            num+=1
+            if num==10:
+                threads.append(threading.Thread(target = get_images_thread, args=(thread_dic, val, )))
+                num=0
+                thread_dic={}
+        if num!=0 and num<10:threads.append(threading.Thread(target = get_images_thread, args=(thread_dic, val, )))
+        for t in threads: t.start()
+        for t in threads: t.join()
+
+
 
     #___________________________________________________________________________________________
     def update_image(way=1, number=-9999):
