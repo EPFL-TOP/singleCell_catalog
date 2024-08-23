@@ -4526,7 +4526,56 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="white", line_width=2)
 
     cell_label = bokeh.models.Div(text="")
+    n_images = bokeh.models.Div(text="")
+    n_images_detect = bokeh.models.Div(text="")
+    n_images_label = bokeh.models.Div(text="")
 
+
+    def set_numbers():
+        n_valid_detect   = 0
+        n_invalid_detect = 0
+        n_notano_detect  = 0
+        n_valid_label   = 0
+        n_invalid_label = 0
+        n_notano_label  = 0
+        if select_train_set == "train":
+            n_images.text = "<b style='color:black; ; font-size:18px;'> N images={} </b>".format(len(map_img_pos_train))
+            for img in annot_dict_train:
+                try:
+                    if annot_dict_train[img]['dict']['valid_detect']==True:
+                        n_valid_detect+=1
+                    else:
+                        n_invalid_detect+=1
+                except KeyError:
+                    n_notano_detect+=1
+                try:
+                    if annot_dict_train[img]['dict']['valid_label']==True:
+                        n_valid_label+=1
+                    else:
+                        n_invalid_label+=1
+                except KeyError:
+                    n_notano_label+=1
+            n_images_detect.text = "<b style='color:black; ; font-size:18px;'> Detect: valid={} invalid={} missing={}</b>".format(n_valid_detect, n_invalid_detect, n_notano_detect)
+
+        elif select_train_set == "valid":
+            n_images.text = "<b style='color:black; ; font-size:18px;'> N images={} </b>".format(len(map_img_pos_valid))
+            for img in annot_dict_valid:
+                try:
+                    if annot_dict_valid[img]['dict']['valid_detect']==True:
+                        n_valid_detect+=1
+                    else:
+                        n_invalid_detect+=1
+                except KeyError:
+                    n_notano_detect+=1
+                try:
+                    if annot_dict_valid[img]['dict']['valid_label']==True:
+                        n_valid_label+=1
+                    else:
+                        n_invalid_label+=1
+                except KeyError:
+                    n_notano_label+=1
+            n_images_label.text = "<b style='color:black; ; font-size:18px;'> Label: valid={} invalid={} missing={}</b>".format(n_valid_label, n_invalid_label, n_notano_label)
+        
 
     #___________________________________________________________________________________________
     def build_dict(folder_path):
@@ -4610,20 +4659,20 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
-    def fill_color(input_dict, fig_img, key):
+    def fill_color(input_dict, fig_img, key, button):
         try:
             if input_dict[key]==True:
                 fig_img.background_fill_color = 'rgba(0, 255, 0, 0.4)'
                 fig_img.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
-                valid_detect_button.label     = "Invalid detect"
+                button.label     = "Invalid detect"
             elif input_dict[key]==False:
                 fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
                 fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
-                valid_detect_button.label     = "Valid detect"
+                button.label     = "Valid detect"
         except KeyError:
                 fig_img.background_fill_color = 'white'
                 fig_img.border_fill_color     = 'white'
-                valid_detect_button.label     = "Valid detect"
+                button.label     = "Valid detect"
 
 
     #___________________________________________________________________________________________
@@ -4715,12 +4764,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             out_file.close()
 
         if valid_label_button.label == "Valid label":
-            fig_img.background_fill_color = 'rgba(0, 255, 0, 0.4)'
-            fig_img.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
+            fig_img_cropped.background_fill_color = 'rgba(0, 255, 0, 0.4)'
+            fig_img_cropped.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
             valid_label_button.label = "Invalid label"
         elif valid_label_button.label == "Invalid label":
-            fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
-            fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
+            fig_img_cropped.background_fill_color = 'rgba(255, 0, 0, 0.4)'
+            fig_img_cropped.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
             valid_label_button.label = "Valid label"
     valid_label_button = bokeh.models.Button(label="")
     valid_label_button.on_click(valid_label_callback)
@@ -4764,7 +4813,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     fig_img.add_glyph(source_roi, quad, selection_glyph=quad, nonselection_glyph=quad)
     cell_label.text = "<b style='color:black; ; font-size:18px;'> {} </b>".format(first_key)
     select_cell_label.value = annot_dict_train[first_key]['dict']['label']
-    fill_color(annot_dict_train[first_key]['dict'], fig_img, 'valid_detect')
+    fill_color(annot_dict_train[first_key]['dict'], fig_img, 'valid_detect', valid_detect_button)
 
     x_range_cropped = bokeh.models.Range1d(start=0, end=source_image_cropped.data["img"][0].shape[0])
     y_range_cropped = bokeh.models.Range1d(start=0, end=source_image_cropped.data["img"][0].shape[1])
@@ -4772,12 +4821,13 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     fig_img_cropped.axis.visible = False
     fig_img_cropped.grid.visible = False
     fig_img_cropped.image(image='img', x=0, y=0, dw=source_image_cropped.data["img"][0].shape[0], dh=source_image_cropped.data["img"][0].shape[1], color_mapper=color_mapper, source=source_image_cropped)
-    #fill_color(annot_dict_train[first_key]['dict'], fig_img_cropped, 'valid_label')
+    fill_color(annot_dict_train[first_key]['dict'], fig_img_cropped, 'valid_label', valid_label_button)
 
+    set_numbers()
 
-
-    select_col = bokeh.layouts.column(bokeh.layouts.row(select_train_set), select_cell_label, slider, bokeh.layouts.row(button_prev, button_next, cell_label), bokeh.layouts.row(valid_detect_button))
-    layout=bokeh.layouts.column(bokeh.layouts.row(fig_img,fig_img_cropped,select_col))
+    select_col = bokeh.layouts.column(bokeh.layouts.row(select_train_set), slider, bokeh.layouts.row(button_prev, button_next, select_cell_label), bokeh.layouts.row(valid_detect_button, valid_label_button))
+    info_col   = bokeh.layouts.column(cell_label,n_images,bokeh.layouts.row())
+    layout=bokeh.layouts.column(bokeh.layouts.row(fig_img,fig_img_cropped,select_col, info_col))
     doc.add_root(layout)
 
 
