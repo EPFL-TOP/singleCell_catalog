@@ -189,7 +189,7 @@ def build_mva_samples(exp_name=''):
 
 #___________________________________________________________________________________________
 def save_categories(cellflags, outname):
-    ncells = 10
+    ncells = 100
 
     for idx, cell in enumerate(cellflags):
         if idx>=ncells:
@@ -208,9 +208,11 @@ def save_categories(cellflags, outname):
 
         cellroi = cell.cell_roi
         frame   = cellroi.frame
-        cellrois = CellROI.objects.select_related().filter(frame=frame)
-        if len(cellrois)>1:
-            continue
+
+        if val<0.8:
+            cellrois = CellROI.objects.select_related().filter(frame=frame)
+            if len(cellrois)>1:
+                continue
 
         sample_file_name=os.path.join(r'Y:', frame.sample.file_name.replace('/mnt/nas_rcp',''))
         print('ttt===',sample_file_name)
@@ -4575,7 +4577,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     def get_images(input_dict, val):
         threads=[]
         thread_dic={}
-        target=2
+        target=10
         num=0
         for img in input_dict:
             thread_dic[img]=input_dict[img]
@@ -4587,7 +4589,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
         if num!=0 and num<target:threads.append(threading.Thread(target = get_images_thread, args=(thread_dic, val, )))
         for t in threads: t.start()
         for t in threads: t.join()
-
 
 
     #___________________________________________________________________________________________
@@ -4646,6 +4647,19 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             fill_color(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], fig_img, 'valid_label')
 
 
+    #___________________________________________________________________________________________
+    def callback_label(attr: str, old: Any, new: Any) -> None:
+        if select_train_set.value=="train":
+            annot_dict_train[map_img_pos_train[slider.value]]['dict']['label']=new
+            out_file = open(annot_dict_train[map_img_pos_train[slider.value]]['file'], "w") 
+            json.dump(annot_dict_train[map_img_pos_train[slider.value]]['dict'], out_file) 
+            out_file.close()
+        elif select_train_set.value=="valid":
+            annot_dict_valid[map_img_pos_valid[slider.value]]['dict']['label']=new
+            out_file = open(annot_dict_valid[map_img_pos_valid[slider.value]]['file'], "w") 
+            json.dump(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], out_file) 
+            out_file.close()
+    select_cell_label.on_change('value', callback_label)
 
     #___________________________________________________________________________________________
     def next_callback():
@@ -4684,6 +4698,30 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     valid_detect_button = bokeh.models.Button(label="")
     valid_detect_button.on_click(valid_detect_callback)
 
+
+    #___________________________________________________________________________________________
+    def valid_label_callback():
+        if select_train_set.value=="train":
+            annot_dict_train[map_img_pos_train[slider.value]]['dict']['valid_label']=True if valid_label_button.label == "Valid label" else False
+            out_file = open(annot_dict_train[map_img_pos_train[slider.value]]['file'], "w") 
+            json.dump(annot_dict_train[map_img_pos_train[slider.value]]['dict'], out_file) 
+            out_file.close()
+        elif select_train_set.value=="valid":
+            annot_dict_valid[map_img_pos_valid[slider.value]]['dict']['valid_label']=True if valid_label_button.label == "Valid label" else False
+            out_file = open(annot_dict_valid[map_img_pos_valid[slider.value]]['file'], "w") 
+            json.dump(annot_dict_valid[map_img_pos_valid[slider.value]]['dict'], out_file) 
+            out_file.close()
+
+        if valid_label_button.label == "Valid label":
+            fig_img.background_fill_color = 'rgba(0, 255, 0, 0.4)'
+            fig_img.border_fill_color     = 'rgba(0, 255, 0, 0.4)'
+            valid_label_button.label = "Invalid label"
+        elif valid_label_button.label == "Invalid label":
+            fig_img.background_fill_color = 'rgba(255, 0, 0, 0.4)'
+            fig_img.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
+            valid_label_button.label = "Valid label"
+    valid_label_button = bokeh.models.Button(label="")
+    valid_label_button.on_click(valid_label_callback)
 
     #___________________________________________________________________________________________
     def callback_set(attr: str, old: Any, new: Any) -> None:
@@ -4736,7 +4774,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    select_col = bokeh.layouts.column(bokeh.layouts.row(select_train_set, cell_label), select_cell_label, slider, bokeh.layouts.row(button_prev, button_next), bokeh.layouts.row(valid_detect_button))
+    select_col = bokeh.layouts.column(bokeh.layouts.row(select_train_set), select_cell_label, slider, bokeh.layouts.row(button_prev, button_next, cell_label), bokeh.layouts.row(valid_detect_button))
     layout=bokeh.layouts.column(bokeh.layouts.row(fig_img,fig_img_cropped,select_col))
     doc.add_root(layout)
 
