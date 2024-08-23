@@ -4556,6 +4556,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 except KeyError:
                     n_notano_label+=1
             n_images_detect.text = "<b style='color:black; ; font-size:18px;'> Detect: valid={} invalid={} missing={}</b>".format(n_valid_detect, n_invalid_detect, n_notano_detect)
+            n_images_label.text  = "<b style='color:black; ; font-size:18px;'> Label:  valid={} invalid={} missing={}</b>".format(n_valid_label, n_invalid_label, n_notano_label)
 
         elif select_train_set.value == "valid":
             n_images.text = "<b style='color:black; ; font-size:18px;'> N images={} </b>".format(len(map_img_pos_valid))
@@ -4574,7 +4575,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                         n_invalid_label+=1
                 except KeyError:
                     n_notano_label+=1
-            n_images_label.text = "<b style='color:black; ; font-size:18px;'> Label: valid={} invalid={} missing={}</b>".format(n_valid_label, n_invalid_label, n_notano_label)
+            n_images_detect.text = "<b style='color:black; ; font-size:18px;'> Detect: valid={} invalid={} missing={}</b>".format(n_valid_detect, n_invalid_detect, n_notano_detect)
+            n_images_label.text  = "<b style='color:black; ; font-size:18px;'> Label:  valid={} invalid={} missing={}</b>".format(n_valid_label, n_invalid_label, n_notano_label)
         
 
     #___________________________________________________________________________________________
