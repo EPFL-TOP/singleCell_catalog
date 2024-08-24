@@ -4543,7 +4543,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     n_images_label = bokeh.models.Div(text="")
 
     source_scores_detect = bokeh.models.ColumnDataSource(dict(height=[], width=[], names=[]))
-    scores_detect = bokeh.models.LabelSet(x='weight', y='height', text='names', x_units='data', y_units='data', x_offset=0, y_offset=0, source=source_scores_detect, text_color='white', text_font_size="10pt")
+    scores_detect = bokeh.models.LabelSet(x='width', y='height', text='names', x_units='data', y_units='data', x_offset=0, y_offset=0, source=source_scores_detect, text_color='red', text_font_size="10pt")
 
 
     #___________________________________________________________________________________________
