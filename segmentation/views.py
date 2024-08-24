@@ -40,6 +40,7 @@ import torch
 import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.transforms import functional as F
+import torch.nn as nn
 
 
 class ToTensorNormalize:
@@ -52,10 +53,27 @@ class ToTensorNormalize:
         image = (image - image.min()) / (image.max() - image.min())
         return image
 
+class CellClassifier(nn.Module):
+    def __init__(self):
+        super(CellClassifier, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)  # Input is 1 channel (grayscale)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.fc1 = nn.Linear(128 * 8 * 8, 512)  # Adjust size according to your input dimensions
+        self.fc2 = nn.Linear(512, 4)  # 4 classes: "normal", "dead", "flat", "elongated"
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = self.pool(F.relu(self.conv3(x)))
+        x = x.view(-1, 128 * 8 * 8)  # Flatten the output for the fully connected layer
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
 
 
-
-def load_model(model_path, num_classes, device):
+def load_model_detect(model_path, num_classes, device):
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights='FasterRCNN_ResNet50_FPN_Weights.DEFAULT')
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
@@ -66,9 +84,27 @@ def load_model(model_path, num_classes, device):
 
     #when no checkpoint
     model.load_state_dict(torch.load(model_path, weights_only=True))
+
     model.to(device)
     model.eval()
     return model
+
+
+
+
+def load_model_label(model_path, num_classes, device):
+
+    # Instantiate the model
+    model = CellClassifier()
+#    Load the saved model parameters
+    checkpoint = torch.load(model_path, weights_only=True)
+    model.load_state_dict(checkpoint['model_state_dict'])
+# Set the model to evaluation mode
+    model.to(device)
+    model.eval()
+    return model
+
+
 
 
 def preprocess_image_pytorch(image_array):
@@ -78,11 +114,12 @@ def preprocess_image_pytorch(image_array):
 
 
 model_path = 'cell_detection_model.pth'
-num_classes = 2
+model_path_labels = 'cell_labels_model.pth'
+num_classes_detect = 2
+num_classes_labels = 5
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-
-# Load the model
-model_gpu = load_model(model_path, num_classes, torch.device('cuda'))
+model_detect = load_model_detect(model_path, num_classes_detect, torch.device('cuda'))
+model_label = load_model_detect(model_path_labels, num_classes_labels, torch.device('cuda'))
 
 
 
@@ -4727,7 +4764,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             print('=-----------  ',image_dict_valid[map_img_pos_valid[time_point]].shape)
             image = preprocess_image_pytorch(image_dict_valid[map_img_pos_valid[time_point]]).to(device)
             with torch.no_grad():
-                predictions = model_gpu(image)
+                predictions = model_detect(image)
+                labels = model_labels(image)
                 print(predictions)
                 left=[]
                 right=[]
