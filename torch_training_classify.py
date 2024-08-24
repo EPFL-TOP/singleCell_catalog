@@ -19,7 +19,7 @@ class CellDataset(Dataset):
 
     def _collect_json_files(self):
         json_files = []
-        for root, _, files in os.walk(self.base_path):
+        for root, _, files in os.walk(self.image_paths):
             for file in files:
                 if file.endswith('_annotation.json'):
 
