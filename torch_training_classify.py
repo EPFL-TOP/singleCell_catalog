@@ -9,7 +9,7 @@ import torch.optim as optim
 import numpy as np
 
 
-labels_map = {'normal':1, 'dead':2, 'flat':3, 'elongated':4, 'dividing':5}
+labels_map = {'normal':0, 'dead':1, 'flat':2, 'elongated':3, 'dividing':4}
 
 class CellDataset(Dataset):
     def __init__(self, image_paths, transform=None):
