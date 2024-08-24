@@ -135,8 +135,9 @@ for epoch in range(10):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(train_loader, 0):
         inputs, labels = data
-        images = list(image.to(device) for image in images)
-        targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
+        #images = list(image.to(device) for image in inputs)
+        targets = [{k: v.to(device) for k, v in t.items()} for t in labels]
+        print(targets)
 
         #inputs = inputs.unsqueeze(1)  # Add a channel dimension for grayscale
 
