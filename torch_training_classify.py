@@ -137,8 +137,8 @@ for epoch in range(10):  # loop over the dataset multiple times
         inputs, labels = data
         #images = list(image.to(device) for image in inputs)
         #targets = [{k: v.to(device) for k, v in t.items()} for t in labels]
-        print(inputs)
-        print(labels)
+        print(type(inputs))
+        print(type(labels))
 
         #inputs = inputs.unsqueeze(1)  # Add a channel dimension for grayscale
 
