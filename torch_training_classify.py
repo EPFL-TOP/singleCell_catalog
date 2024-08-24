@@ -97,14 +97,22 @@ class CellClassifier(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
         self.conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
         self.pool = nn.MaxPool2d(2, 2)
-        self.fc1 = nn.Linear(128 * 8 * 8, 150)  # Adjust size according to your input dimensions
-        self.fc2 = nn.Linear(150, 5)  # 4 classes: "normal", "dead", "flat", "elongated"
+
+        # Adjust the input size of the first fully connected layer
+        self.fc1 = nn.Linear(128 * 18 * 18, 150)  # Updated size after pooling
+        self.fc2 = nn.Linear(150, 5)  # 5 classes: "normal", "dead", "flat", "elongated", etc.
+
+        #self.fc1 = nn.Linear(128 * 8 * 8, 150)  # Adjust size according to your input dimensions
+        #self.fc2 = nn.Linear(150, 5)  # 4 classes: "normal", "dead", "flat", "elongated"
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x = self.pool(F.relu(self.conv3(x)))
-        x = x.view(-1, 128 * 8 * 8)  # Flatten the output for the fully connected layer
+
+        # Flatten the output for the fully connected layer
+        x = x.view(-1, 128 * 18 * 18)
+        #x = x.view(-1, 128 * 8 * 8)  # Flatten the output for the fully connected layer
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return x
