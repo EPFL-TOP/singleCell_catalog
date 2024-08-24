@@ -54,7 +54,7 @@ class CellDataset(Dataset):
         image_array = np.array(data['data_cropped'], dtype=np.float32)  # Convert to float32 to avoid overflow
 
         # Get label and convert to tensor
-        label = data["label"]
+        label = annotations["label"]
         label = torch.tensor(label, dtype=torch.long)
 
         if self.transform:
