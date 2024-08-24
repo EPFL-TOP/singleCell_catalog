@@ -4763,9 +4763,12 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
             print('=-----------  ',image_dict_valid[map_img_pos_valid[time_point]].shape)
             image = preprocess_image_pytorch(image_dict_valid[map_img_pos_valid[time_point]]).to(device)
+            image_cropped = preprocess_image_pytorch(image_cropped_dict_valid[map_img_pos_valid[time_point]]).to(device)
             with torch.no_grad():
                 predictions = model_detect(image)
-                labels = model_labels(image)
+                labels = model_label(image_cropped)
+
+                print(labels)
                 print(predictions)
                 left=[]
                 right=[]
