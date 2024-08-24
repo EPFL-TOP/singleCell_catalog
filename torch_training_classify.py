@@ -150,6 +150,7 @@ for epoch in range(10):  # loop over the dataset multiple times
 
         # Forward pass
         outputs = model(inputs)
+        print(f'Input shape: {inputs.shape}')
 
         print(f'Output shape: {outputs.shape}')
         print(f'Labels shape: {labels.shape}')
