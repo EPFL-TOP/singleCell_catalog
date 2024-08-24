@@ -79,11 +79,11 @@ def load_model_detect(model_path, num_classes, device):
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
     # Load the checkpoint
-    #checkpoint = torch.load(model_path, weights_only=True)
-    #model.load_state_dict(checkpoint['model_state_dict'])
+    checkpoint = torch.load(model_path, weights_only=True)
+    model.load_state_dict(checkpoint['model_state_dict'])
 
     #when no checkpoint
-    model.load_state_dict(torch.load(model_path, weights_only=True))
+    #model.load_state_dict(torch.load(model_path, weights_only=True))
 
     model.to(device)
     model.eval()
@@ -4768,8 +4768,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 predictions = model_detect(image)
                 labels = model_label(image_cropped)
 
-                print(labels)
-                print(predictions)
+                print('labels      : ',labels)
+                print('predictions : ',predictions)
                 left=[]
                 right=[]
                 top=[]
