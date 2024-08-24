@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
-
+from torchvision import models
 
 labels_map = {'normal':0, 'dead':1, 'flat':2, 'elongated':3, 'dividing':4}
 
@@ -34,9 +34,6 @@ class CellDataset(Dataset):
 
                     json_files.append(os.path.join(root, file))
         return json_files
-
-        self.bounding_boxes = bounding_boxes  # list of (x, y, w, h) tuples
-        self.labels = labels  # list of labels: "normal", "dead", etc.
 
     def __len__(self):
         return len(self.json_files)
@@ -118,6 +115,18 @@ class CellClassifier(nn.Module):
         return x
 
 
+def get_resnet():
+    # Load a pre-trained ResNet model
+    model = models.resnet18(pretrained=True)
+
+    # Modify the first convolutional layer to accept 3-channel grayscale images
+    model.conv1 = nn.Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+
+    # Modify the final fully connected layer to output 5 classes
+    num_ftrs = model.fc.in_features
+    model.fc = nn.Linear(num_ftrs, 5)
+    return model
+
 
 image_paths=r'D:\single_cells\training_cell_detection_categories\train'
 model_save_path = 'cell_labels_model.pth'
@@ -128,6 +137,8 @@ train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
 # Initialize the model, loss function, and optimizer
 model = CellClassifier()
+
+model = get_resnet()
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 print('using device: ',device)
