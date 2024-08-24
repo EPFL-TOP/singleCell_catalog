@@ -137,8 +137,10 @@ model.to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
+num_epochs = 100
+
 # Training loop
-for epoch in range(10):  # loop over the dataset multiple times
+for epoch in range(num_epochs):  # loop over the dataset multiple times
     model.train()
     running_loss = 0.0
     for i, data in enumerate(train_loader, 0):
@@ -154,7 +156,6 @@ for epoch in range(10):  # loop over the dataset multiple times
 
         # Forward pass
         outputs = model(inputs)
-
 
         loss = criterion(outputs, labels)
         
