@@ -158,8 +158,7 @@ for epoch in range(num_epochs):
 
     print(f'Model saved to {model_save_path} after epoch {epoch + 1 }')
 
-torch.save(model.state_dict(), model_save_path)
-print(f'Training complete. Final model saved to {model_save_path}')
+
 
 
 

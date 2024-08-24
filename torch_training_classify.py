@@ -112,21 +112,32 @@ class CellClassifier(nn.Module):
 
 
 image_paths=r'D:\single_cells\training_cell_detection_categories\train'
+model_save_path = 'cell_labels_model.pth'
 
 # Load your dataset
 train_dataset = CellDataset(image_paths, transform=transform)
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
 # Initialize the model, loss function, and optimizer
 model = CellClassifier()
+
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+print('using device: ',device)
+model.to(device)
+
+
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # Training loop
 for epoch in range(10):  # loop over the dataset multiple times
+    model.train()
     running_loss = 0.0
     for i, data in enumerate(train_loader, 0):
         inputs, labels = data
+        images = list(image.to(device) for image in images)
+        targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
+
         #inputs = inputs.unsqueeze(1)  # Add a channel dimension for grayscale
 
         # Zero the parameter gradients
@@ -140,10 +151,26 @@ for epoch in range(10):  # loop over the dataset multiple times
         loss.backward()
         optimizer.step()
 
-        # Print statistics
         running_loss += loss.item()
-        if i % 100 == 99:    # print every 100 mini-batches
-            print(f'Epoch {epoch + 1}, Batch {i + 1}, Loss: {running_loss / 100}')
-            running_loss = 0.0
+        if i % 10 == 0:
+            print(f'[{epoch + 1}, {i}] loss: {loss.item():.4f}')
+
+    epoch_loss = running_loss / len(train_loader)
+    print(f'Epoch {epoch + 1} completed. Loss: {epoch_loss:.4f}')
+
+    checkpoint = {
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'loss': epoch_loss,
+    }
+    #torch.save(model.state_dict(), model_save_path)
+    torch.save(checkpoint, model_save_path)
+    print(f'Model saved to {model_save_path} after epoch {epoch + 1 }')
+
 
 print('Finished Training')
+
+
+
+

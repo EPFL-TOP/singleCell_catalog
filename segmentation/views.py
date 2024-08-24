@@ -61,12 +61,11 @@ def load_model(model_path, num_classes, device):
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
     # Load the checkpoint
-    checkpoint = torch.load(model_path, weights_only=True)
+    #checkpoint = torch.load(model_path, weights_only=True)
+    #model.load_state_dict(checkpoint['model_state_dict'])
 
-    # Load model state
-    model.load_state_dict(checkpoint['model_state_dict'])
-
-    #model.load_state_dict(torch.load(model_path, weights_only=True))
+    #when no checkpoint
+    model.load_state_dict(torch.load(model_path, weights_only=True))
     model.to(device)
     model.eval()
     return model
