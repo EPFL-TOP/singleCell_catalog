@@ -927,8 +927,7 @@ def build_segmentation_sam2(sample=None, force=False):
         s=sample
     expds = s.experimental_dataset
     exp = expds.experiment
-    expds = sample.experimental_dataset
-    exp = expds.experiment  
+
     print('build_segmentation_sam2: ',s.file_name)
 
     frames = Frame.objects.select_related().filter(sample=s)
