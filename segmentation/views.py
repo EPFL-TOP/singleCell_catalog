@@ -2893,7 +2893,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_intensity_min.data={'time':peaks['min_time'], 'intensity':int_min}  
         update_source_segment(slider.value)
 
-    seg_type_list = ["roi", "localthresholding_1.5", "localthresholding_2.0", "apoc"]
+    seg_type_list = ["roi", "localthresholding_1.5", "localthresholding_2.0", "apoc","SAM2_b+"]
     dropdown_segmentation_type = bokeh.models.Select(value=seg_type_list[0], title="segmentation", options=seg_type_list)
     dropdown_segmentation_type.on_change('value', segmentation_type_callback)
     #___________________________________________________________________________________________
