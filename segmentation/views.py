@@ -947,7 +947,7 @@ def build_segmentation_sam2(sample=None, force=False):
             masks = masks[sorted_ind]
             scores = scores[sorted_ind]
             logits = logits[sorted_ind]
-            print(sorted_ind)
+            print(scores)
 
 
 
@@ -3455,6 +3455,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     button_build_roi.on_click(build_roi_callback)
     #___________________________________________________________________________________________
 
+    #___________________________________________________________________________________________
+    def build_sam2_callback():
+        if DEBUG:print('****************************  build_sam2_callback ****************************')
+        build_segmentation_sam2(get_current_file(), force=True)
+    button_build_sam2 = bokeh.models.Button(label="Build SAM2")
+    button_build_sam2.on_click(build_sam2_callback)
+    #___________________________________________________________________________________________
+
 
     #___________________________________________________________________________________________
     # Create next button
@@ -4610,6 +4618,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          bokeh.layouts.row(position_keep_button),
                                          bokeh.layouts.row(button_build_roi),
                                          bokeh.layouts.row(button_remove_roi),
+                                         bokeh.layouts.row(button_build_sam2),
                                          #bokeh.layouts.row(button_segment_cell),                                         
                                          )
 
