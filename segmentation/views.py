@@ -940,7 +940,7 @@ def build_segmentation_sam2(sample=None, force=False):
 
         cellROIs = CellROI.objects.select_related().filter(frame=frame)
         for cellroi in cellROIs:
-            input_point = np.array([[cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2, cellroi.min_raw+(cellroi.max_raw-cellroi.min_raw)/2]])
+            input_point = np.array([[cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2, cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2]])
             input_label = np.array([1])
             masks, scores, logits = predictor.predict(point_coords=input_point,point_labels=input_label,multimask_output=True)
             sorted_ind = np.argsort(scores)[::-1]
