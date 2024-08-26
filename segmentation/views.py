@@ -1138,7 +1138,7 @@ def build_ROIs(sample=None, force=False):
             out_dir_name  = os.path.join(r"Y:\analysis_data","singleCell_catalog","contour_data",s.experimental_dataset.experiment.name, s.experimental_dataset.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
             out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, roi_number))
             out_dir_name_DB  = "/data/singleCell_catalog/contour_data/"+s.experimental_dataset.experiment.name+"/"+ s.experimental_dataset.data_name+"/"+os.path.split(s.file_name)[-1].replace('.nd2','')
-            out_file_name_DB = out_dir_name+ "/frame{0}_ROI{1}.json".format(frame.number, roi_number)
+            out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}.json".format(frame.number, roi_number)
 
             if not os.path.exists(out_dir_name):
                 os.makedirs(out_dir_name)
@@ -1186,7 +1186,7 @@ def build_ROIs(sample=None, force=False):
             contour.intensity_sum    = intensity_sum
             contour.intensity_max    = intensity_max
             contour.number_of_pixels = cropped_img.shape[1]*cropped_img.shape[2]
-            contour.file_name        = out_file_name
+            contour.file_name        = out_file_name_DB
             contour.type             = "cell_ROI"
             contour.mode             = "auto"
             contour.save()
