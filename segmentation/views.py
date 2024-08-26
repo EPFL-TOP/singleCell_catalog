@@ -922,8 +922,11 @@ def build_segmentation_sam2(sample=None, force=False):
     s=None
     if type(sample) == str:
         s = Sample.objects.get(file_name = sample)
+
     else:
         s=sample
+    expds = s.experimental_dataset
+    exp = expds.experiment
     expds = sample.experimental_dataset
     exp = expds.experiment  
     print('build_segmentation_sam2: ',s.file_name)
