@@ -136,7 +136,7 @@ def preprocess_image_sam2(image):
     min_value = np.min(image)
     intensity_normalized = (image - min_value)/(max_value-min_value)*255
     intensity_normalized = intensity_normalized.astype(np.uint8)
-    image_ = intensity_normalized
+    image = intensity_normalized
     image = np.expand_dims(image, axis=0)  # Add channel dimension
     image = np.repeat(image, 3, axis=0)
     image = np.transpose(image, (1, 2, 0))
@@ -940,7 +940,7 @@ def build_segmentation_sam2(sample=None, force=False):
 
         cellROIs = CellROI.objects.select_related().filter(frame=frame)
         for cellroi in cellROIs:
-            input_point = np.array([[cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2, cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2]])
+            input_point = np.array([[cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.]])
             input_label = np.array([1])
             masks, scores, logits = predictor.predict(point_coords=input_point,point_labels=input_label,multimask_output=True)
             sorted_ind = np.argsort(scores)[::-1]
