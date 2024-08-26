@@ -1415,7 +1415,7 @@ def build_ROIs(sample=None, force=False):
                 rois_DB_final[roi_final].roi_number = roi_final
                 rois_DB_final[roi_final].save()
     print('about to build cells')
-    build_cells_sample(s)
+    build_cells_sample(s, addmode=True)
     removeROIs(s)
 
 #___________________________________________________________________________________________
@@ -3554,7 +3554,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def build_roi_callback():
         if DEBUG:print('****************************  build_roi_callback ****************************')
         build_ROIs(get_current_file(), force=True)
-        build_segmentation_sam2(get_current_file(), force=True)
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         
         source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
