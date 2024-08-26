@@ -1084,7 +1084,9 @@ def build_ROIs(sample=None, force=False):
                 x_min, y_min, x_max, y_max = box.cpu().numpy()
                 rois_seg.append((y_min, x_min, y_max, x_max))
 
-
+        print(rois_seg)
+        for rr in rois_seg:
+            print('------------  ',rr)
         roi_number=0
         roi_seg_count=0
         roi_DB_list=[]
