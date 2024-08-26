@@ -1082,7 +1082,7 @@ def build_ROIs(sample=None, force=False):
             predictions = model_detect(image_prepro)
             for idx, box in enumerate(predictions[0]['boxes']):
                 x_min, y_min, x_max, y_max = box.cpu().numpy()
-                rois_seg.append((y_min, x_min, y_max, x_max))
+                rois_seg.append((int(y_min), int(x_min), int(y_max), int(x_max)))
 
         print(rois_seg)
         for rr in rois_seg:
