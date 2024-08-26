@@ -966,6 +966,9 @@ def build_segmentation_sam2(sample=None, force=False):
                 contourseg = ContourSeg(cell_roi=cellroi)
                 if len(region)>1:
                     print(region)
+                print('region  =  ',region)
+                for r in region:
+                    print('r  =  ',r)
                 build_contours(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
 
 #___________________________________________________________________________________________
@@ -1061,6 +1064,7 @@ def build_contours(contour, contourseg, cellroi, img_shape, segname, images, cha
     intensity_sum={}
     intensity_max={}
     for ch in range(len(channels)): 
+        print('len(images)= ',len(images),'  shape  ', images.shape)
         segment=mask0*images[ch][cellroi.frame.number]
         sum=float(np.sum(segment))
         mean=float(np.mean(segment))
