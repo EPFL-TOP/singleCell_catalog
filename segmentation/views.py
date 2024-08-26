@@ -938,7 +938,7 @@ def build_segmentation_sam2(sample=None, force=False):
         image_prepro = preprocess_image_sam2(BF_images[frame.number])
         predictor.set_image(image_prepro)
 
-        cellROIs = frame.cellroi
+        cellROIs = CellROI.objects.select_related().filter(frame=frame)
         for cellroi in cellROIs:
             input_point = np.array([[cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2, cellroi.min_raw+(cellroi.max_raw-cellroi.min_raw)/2]])
             input_label = np.array([1])
