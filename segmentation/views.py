@@ -934,9 +934,10 @@ def build_segmentation_sam2(sample=None, force=False):
     file_name=os.path.join('Y:',s.file_name.replace('/mnt/nas_rcp',''))
 
     images, channels = read.nd2reader_getFrames(file_name)
+    images=images.transpose(1,0,2,3)
+
     #images are t, c, x, y 
-    BF_images=images.transpose(1,0,2,3)
-    BF_images=BF_images[0]
+    BF_images=images[0]
     for frame in frames:
         print(frame)
 
