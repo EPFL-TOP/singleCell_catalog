@@ -1063,7 +1063,9 @@ def build_ROIs(sample=None, force=False):
     print('build roi sample: ',s.file_name)
 
     frames = Frame.objects.select_related().filter(sample=s)
-    images, channels = read.nd2reader_getFrames(s.file_name)
+    file_name=os.path.join('Y:',s.file_name.replace('/mnt/nas_rcp',''))
+
+    images, channels = read.nd2reader_getFrames(file_name)
     #images are t, c, x, y 
     BF_images=images.transpose(1,0,2,3)
     BF_images=BF_images[0]
