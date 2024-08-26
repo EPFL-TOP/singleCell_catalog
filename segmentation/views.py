@@ -44,6 +44,8 @@ import torch.nn.functional as F2
 
 import torch.nn as nn
 
+labels_map = {0:'normal', 1:'dead', 2:'flat', 3:'elongated', 4:'dividing'}
+
 
 class ToTensorNormalize:
     def __call__(self, image):
@@ -4580,8 +4582,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     train_set = ["train",  "valid"]
     select_train_set = bokeh.models.Select(title="Image set", value=train_set[0], options=train_set)    
 
-    quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="white", line_width=2)
-    quad_pred = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="red", line_width=3)
+    quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="red", line_width=2)
+    quad_pred = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="white", line_width=3)
 
     cell_label = bokeh.models.Div(text="")
     n_images = bokeh.models.Div(text="")
@@ -4589,7 +4591,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     n_images_label = bokeh.models.Div(text="")
 
     source_scores_detect = bokeh.models.ColumnDataSource(dict(height=[], width=[], names=[]))
-    scores_detect = bokeh.models.LabelSet(x='width', y='height', text='names', x_units='data', y_units='data', x_offset=0, y_offset=0, source=source_scores_detect, text_color='red', text_font_size="10pt")
+    scores_detect = bokeh.models.LabelSet(x='width', y='height', text='names', x_units='data', y_units='data', x_offset=0, y_offset=0, source=source_scores_detect, text_color='white', text_font_size="10pt")
+
+    source_scores_label = bokeh.models.ColumnDataSource(dict(height=[], width=[], names=[]))
+    scores_label = bokeh.models.LabelSet(x='width', y='height', text='names', x_units='data', y_units='data', x_offset=0, y_offset=0, source=source_scores_label, text_color='white', text_font_size="10pt")
 
 
     #___________________________________________________________________________________________
@@ -4760,6 +4765,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             select_cell_label.value = annot_dict_train[map_img_pos_train[time_point]]['dict']['label']
             fill_color(annot_dict_train[map_img_pos_train[slider.value]]['dict'], fig_img, 'valid_detect', valid_detect_button)
             fill_color(annot_dict_train[map_img_pos_train[slider.value]]['dict'], fig_img_cropped, 'valid_label', valid_label_button)
+            
+            source_roi_pred.data = {'left':[], 'right' :[], 'top' :[], 'bottom':[]}
+            source_scores_detect.data = {'height':[], 'width':[], 'names':[]}
+            source_scores_label.data = {'height':[], 'width':[], 'names':[]}
 
         elif select_train_set.value=='valid':
             cell_label.text = "<b style='color:black; ; font-size:18px;'> {} </b>".format(map_img_pos_valid[time_point])
@@ -4804,6 +4813,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
                 source_roi_pred.data = {'left':left, 'right' :right, 'top' :top, 'bottom':bottom}
                 source_scores_detect.data = {'height':height, 'width':width, 'names':names}
+
+                pred_label = labels_map[int(predictions[0].cpu().numpy())]
+                pred_label_proba = probabilities[0].cpu().numpy()
+                source_scores_label.data = {'height':[10], 'width':[10], 'names':[f"{pred_label} {pred_label_proba :.3f}"]}
 
 
     #___________________________________________________________________________________________
@@ -4942,6 +4955,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     fig_img_cropped.axis.visible = False
     fig_img_cropped.grid.visible = False
     fig_img_cropped.image(image='img', x=0, y=0, dw=source_image_cropped.data["img"][0].shape[0], dh=source_image_cropped.data["img"][0].shape[1], color_mapper=color_mapper, source=source_image_cropped)
+    fig_img_cropped.add_layout(scores_label)
     fill_color(annot_dict_train[first_key]['dict'], fig_img_cropped, 'valid_label', valid_label_button)
 
     set_numbers()
