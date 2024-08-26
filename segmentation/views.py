@@ -17,6 +17,8 @@ import random
 from memory_profiler import profile
 from sklearn.cluster import DBSCAN
 from skimage import exposure
+from skimage.measure import label, regionprops
+
 import numpy as np
 from scipy.signal import find_peaks
 
@@ -922,7 +924,8 @@ def build_segmentation_sam2(sample=None, force=False):
         s = Sample.objects.get(file_name = sample)
     else:
         s=sample
-    cellids = CellID.objects.select_related().filter(sample=s)
+    expds = sample.experimental_dataset
+    exp = expds.experiment  
     print('build_segmentation_sam2: ',s.file_name)
 
     frames = Frame.objects.select_related().filter(sample=s)
@@ -948,8 +951,19 @@ def build_segmentation_sam2(sample=None, force=False):
             scores = scores[sorted_ind]
             logits = logits[sorted_ind]
             print(scores)
+            label_im = label(masks[0])
+            region=regionprops(label_im)
 
+            eflag={'SAM2_b+':False}
+            contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi)
+            for contourSeg in contoursSeg:
+                eflag[contourSeg.algo] = True
 
+            for flag in eflag:  
+                if eflag[flag]: continue
+                contourseg = ContourSeg(cell_roi=cellroi)
+
+                build_contours(region, contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
 
 #___________________________________________________________________________________________
 def build_segmentation(exp_name=''):
