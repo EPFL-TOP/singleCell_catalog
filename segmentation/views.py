@@ -44,6 +44,13 @@ import torch.nn.functional as F2
 
 import torch.nn as nn
 
+
+
+from sam2.build_sam import build_sam2
+from sam2.sam2_image_predictor import SAM2ImagePredictor
+
+
+
 labels_map = {0:'normal', 1:'dead', 2:'flat', 3:'elongated', 4:'dividing'}
 
 
@@ -124,6 +131,16 @@ def preprocess_image_pytorch(image_array):
     image = transform(image_array)
     return image.unsqueeze(0)  # Add batch dimension
 
+def preprocess_image_sam2(image):
+    max_value = np.max(image)
+    min_value = np.min(image)
+    intensity_normalized = (image - min_value)/(max_value-min_value)*255
+    intensity_normalized = intensity_normalized.astype(np.uint8)
+    image_ = intensity_normalized
+    image = np.expand_dims(image, axis=0)  # Add channel dimension
+    image = np.repeat(image, 3, axis=0)
+    image = np.transpose(image, (1, 2, 0))
+    return image
 
 model_path = 'cell_detection_model.pth'
 model_path_labels = 'cell_labels_model.pth'
@@ -134,6 +151,27 @@ model_detect = load_model_detect(model_path, num_classes_detect, torch.device('c
 model_label = load_model_label(model_path_labels, num_classes_labels, torch.device('cuda'))
 
 
+
+
+if device.type == "cuda":
+    # use bfloat16 for the entire notebook
+    torch.autocast("cuda", dtype=torch.bfloat16).__enter__()
+    # turn on tfloat32 for Ampere GPUs (https://pytorch.org/docs/stable/notes/cuda.html#tensorfloat-32-tf32-on-ampere-devices)
+    if torch.cuda.get_device_properties(0).major >= 8:
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+elif device.type == "mps":
+    print(
+        "\nSupport for MPS devices is preliminary. SAM 2 is trained with CUDA and might "
+        "give numerically different outputs and sometimes degraded performance on MPS. "
+        "See e.g. https://github.com/pytorch/pytorch/issues/84936 for a discussion."
+    )
+
+
+sam2_checkpoint = "checkpoints/sam2_hiera_base_plus.pt"
+model_cfg = "sam2_hiera_b+.yaml"
+sam2 = build_sam2(model_cfg, sam2_checkpoint, device=device)#, apply_postprocessing=False)
+predictor = SAM2ImagePredictor(sam2)
 
 
 LOCAL=True
@@ -874,6 +912,44 @@ def removeROIs(sample):
             if cellROI.cell_id == None:
                 cellROI.delete()
     print('removeROIs sample ',s)
+
+
+
+#___________________________________________________________________________________________
+def build_segmentation_sam2(sample=None, force=False):
+    s=None
+    if type(sample) == str:
+        s = Sample.objects.get(file_name = sample)
+    else:
+        s=sample
+    cellids = CellID.objects.select_related().filter(sample=s)
+    print('build_segmentation_sam2: ',s.file_name)
+
+    frames = Frame.objects.select_related().filter(sample=s)
+    file_name=os.path.join('Y:',s.file_name.replace('/mnt/nas_rcp',''))
+
+    images, channels = read.nd2reader_getFrames(file_name)
+    #images are t, c, x, y 
+    BF_images=images.transpose(1,0,2,3)
+    BF_images=BF_images[0]
+    for frame in frames:
+        print(frame)
+
+        image_prepro = preprocess_image_sam2(BF_images[frame.number])
+        predictor.set_image(image_prepro)
+
+        cellROIs = frame.cellroi
+        for cellroi in cellROIs:
+            input_point = np.array([[cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2, cellroi.min_raw+(cellroi.max_raw-cellroi.min_raw)/2]])
+            input_label = np.array([1])
+            masks, scores, logits = predictor.predict(point_coords=input_point,point_labels=input_label,multimask_output=True)
+            sorted_ind = np.argsort(scores)[::-1]
+            masks = masks[sorted_ind]
+            scores = scores[sorted_ind]
+            logits = logits[sorted_ind]
+            print(sorted_ind)
+
+
 
 #___________________________________________________________________________________________
 def build_segmentation(exp_name=''):
@@ -3366,7 +3442,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def build_roi_callback():
         if DEBUG:print('****************************  build_roi_callback ****************************')
         build_ROIs(get_current_file(), force=True)
-
+        build_segmentation_sam2(get_current_file(), force=True)
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         
         source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
