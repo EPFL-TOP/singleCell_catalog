@@ -78,7 +78,7 @@ class CellClassifier(nn.Module):
         # Flatten the output for the fully connected layer
         x = x.view(-1, 128 * 18 * 18)
         #x = x.view(-1, 128 * 8 * 8)  # Flatten the output for the fully connected layer
-        x = F.relu(self.fc1(x))
+        x = F2.relu(self.fc1(x))
         x = self.fc2(x)
         return x
 
