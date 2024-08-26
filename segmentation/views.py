@@ -4779,6 +4779,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 labels = model_label(image_cropped)
 
                 print('labels      : ',labels)
+                probabilities = F.softmax(labels, dim=1)
+                print(probabilities)
                 print('predictions : ',predictions)
                 left=[]
                 right=[]
