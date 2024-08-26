@@ -4814,7 +4814,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 source_roi_pred.data = {'left':left, 'right' :right, 'top' :top, 'bottom':bottom}
                 source_scores_detect.data = {'height':height, 'width':width, 'names':names}
 
-                pred_label = labels_map[int(predictions[0].cpu().numpy())]
+
+                pred_label = labels_map[int(torch.argmax(labels, dim=1)[0].cpu().numpy())]
                 pred_label_proba = probabilities[0].cpu().numpy()
                 source_scores_label.data = {'height':[10], 'width':[10], 'names':[f"{pred_label} {pred_label_proba :.3f}"]}
 
