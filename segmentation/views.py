@@ -4816,7 +4816,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
                 pred_label = labels_map[int(torch.argmax(labels, dim=1)[0].cpu().numpy())]
-                pred_label_proba = probabilities[0].cpu().numpy()
+                print('pred_label = ',pred_label)
+                pred_label_proba = float(probabilities[0].cpu().numpy())
+                print('pred_label_proba = ',pred_pred_label_probalabel)
+
                 source_scores_label.data = {'height':[10], 'width':[10], 'names':[f"{pred_label} {pred_label_proba :.3f}"]}
 
 
