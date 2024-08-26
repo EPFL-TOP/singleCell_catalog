@@ -4805,12 +4805,11 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                     right.append(x_max)
                     top.append(y_min)
                     bottom.append(y_max)
-                    height.append(x_min)
-                    width.append(y_min)
+                    height.append(y_min)
+                    width.append(x_min)
                     names.append(f"{predictions[0]['scores'][idx].cpu().numpy() :.3f}")
                     #plt.text(x_min, y_min-10, f"{predictions[0]['scores'][idx].cpu().numpy() :.3f}", fontsize=10, color='white')
         
-
                 source_roi_pred.data = {'left':left, 'right' :right, 'top' :top, 'bottom':bottom}
                 source_scores_detect.data = {'height':height, 'width':width, 'names':names}
 
