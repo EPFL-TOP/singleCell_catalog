@@ -4787,10 +4787,10 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
                 predictions = model_detect(image)
                 labels = model_label(image_cropped)
 
-                print('labels      : ',labels)
+                print('labels        : ',labels)
                 probabilities = F2.softmax(labels, dim=1)
-                print(probabilities)
-                print('predictions : ',predictions)
+                print('probabilities : ',probabilities)
+                print('predictions   : ',predictions)
                 left=[]
                 right=[]
                 top=[]
@@ -4817,8 +4817,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
                 pred_label = labels_map[int(torch.argmax(labels, dim=1)[0].cpu().numpy())]
                 print('pred_label = ',pred_label)
-                pred_label_proba = float(probabilities[0].cpu().numpy())
-                print('pred_label_proba = ',pred_pred_label_probalabel)
+                pred_label_proba = probabilities.cpu().numpy()
+                pred_label_proba = pred_label_proba[torch.argmax(labels, dim=1)]
+                print('pred_label_proba = ',pred_label_proba)
 
                 source_scores_label.data = {'height':[10], 'width':[10], 'names':[f"{pred_label} {pred_label_proba :.3f}"]}
 
