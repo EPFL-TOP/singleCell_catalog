@@ -1083,6 +1083,8 @@ def build_ROIs(sample=None, force=False):
             print(predictions)
             for idx, box in enumerate(predictions[0]['boxes']):
                 x_min, y_min, x_max, y_max = box.cpu().numpy()
+                if float(predictions[0]['scores'][idx].cpu().numpy())<0.4:continue
+                if (x_max-x_min)*(y_max-y_min)<150:continue
                 rois_seg.append((int(y_min), int(x_min), int(y_max), int(x_max)))
 
 
