@@ -1135,8 +1135,11 @@ def build_ROIs(sample=None, force=False):
 
             #Bounding box (min_row, min_col, max_row, max_col). 
             cropped_dict = {'shape_original':BF_images[frame.number].shape}
-            out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",s.experimental_dataset.experiment.name, s.experimental_dataset.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
+            out_dir_name  = os.path.join(r"Y:\analysis_data","singleCell_catalog","contour_data",s.experimental_dataset.experiment.name, s.experimental_dataset.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
             out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, roi_number))
+            out_dir_name_DB  = "/data/singleCell_catalog/contour_data/"+s.experimental_dataset.experiment.name+"/"+ s.experimental_dataset.data_name+"/"+os.path.split(s.file_name)[-1].replace('.nd2','')
+            out_file_name_DB = out_dir_name+ "/frame{0}_ROI{1}.json".format(frame.number, roi_number)
+
             if not os.path.exists(out_dir_name):
                 os.makedirs(out_dir_name)
             cropped_img = images[frame.number][:, roi.min_row:roi.max_row, roi.min_col:roi.max_col]
