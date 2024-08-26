@@ -1044,7 +1044,8 @@ def build_contours_sam2(contour, contourseg, cellroi, img_shape, segname, images
     mask0=mask
 
     for y in range(len(mask)):
-        for x in range(len(y)):
+        for x in range(len(mask[y])):
+            if mask[y][x]==False: continue
             x_coords.append(x)
             y_coords.append(y)
 
