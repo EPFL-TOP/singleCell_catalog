@@ -964,8 +964,9 @@ def build_segmentation_sam2(sample=None, force=False):
             for flag in eflag:  
                 if eflag[flag]: continue
                 contourseg = ContourSeg(cell_roi=cellroi)
-
-                build_contours(region, contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
+                if len(region)>1:
+                    print(region)
+                build_contours(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
 
 #___________________________________________________________________________________________
 def build_segmentation(exp_name=''):
