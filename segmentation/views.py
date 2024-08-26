@@ -1080,13 +1080,12 @@ def build_ROIs(sample=None, force=False):
         image_prepro = preprocess_image_pytorch(BF_images[frame.number]).to(device)
         with torch.no_grad():
             predictions = model_detect(image_prepro)
+            print(predictions)
             for idx, box in enumerate(predictions[0]['boxes']):
                 x_min, y_min, x_max, y_max = box.cpu().numpy()
                 rois_seg.append((int(y_min), int(x_min), int(y_max), int(x_max)))
 
-        print(rois_seg)
-        for rr in rois_seg:
-            print('------------  ',rr)
+
         roi_number=0
         roi_seg_count=0
         roi_DB_list=[]
