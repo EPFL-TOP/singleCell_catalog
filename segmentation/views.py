@@ -970,7 +970,8 @@ def build_segmentation_sam2(sample=None, force=False):
                 print('region  =  ',region)
                 for r in region:
                     print('r  =  ',r)
-                build_contours(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
+                #build_contours(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
+                build_contours_sam2(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
 
 #___________________________________________________________________________________________
 def build_segmentation(exp_name=''):
@@ -1028,6 +1029,94 @@ def build_segmentation(exp_name=''):
 
                             if contour!=None:
                                 build_contours(contour, contourseg, cellroi, image.shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
+
+
+#___________________________________________________________________________________________
+def build_contours_sam2(contour, contourseg, cellroi, img_shape, segname, images, channels, exp_name, expds_data_name, s_file_name, mask):
+    x_coords=[]
+    y_coords=[]
+#    mask0=np.zeros(img_shape, dtype=bool)
+
+#    for coord in contour.coords:
+#        x_coords.append(coord[0])
+#        y_coords.append(coord[1])
+#        mask0[coord[0]][coord[1]]=True
+    mask0=mask
+
+    for y in range(len(mask)):
+        for x in range(len(y)):
+            x_coords.append(x)
+            y_coords.append(y)
+
+
+    cs=plt.contour(mask0, [0.5],linewidths=1.,  colors='red')
+    contcoords = cs.allsegs[0][0]
+    x_cont_coords=[]
+    y_cont_coords=[]
+    for p in contcoords:
+        x_cont_coords.append(p[0])
+        y_cont_coords.append(p[1])
+
+    plt.figure().clear()
+    plt.close()
+    plt.cla()
+    plt.clf()
+
+    contourseg.pixels={'x':x_cont_coords, 'y':y_cont_coords}
+    contourseg.center_x_pix = contour.centroid[0]
+    contourseg.center_y_pix = contour.centroid[1]
+    contourseg.center_x_mic = contour.centroid[0]*cellroi.frame.pixel_microns+cellroi.frame.pos_x
+    contourseg.center_y_mic = contour.centroid[1]*cellroi.frame.pixel_microns+cellroi.frame.pos_y
+    contourseg.algo = segname
+
+    intensity_mean={}
+    intensity_std={}
+    intensity_sum={}
+    intensity_max={}
+    for ch in range(len(channels)): 
+        print('len(images)= ',len(images),'  shape  ', images.shape)
+        segment=mask0*images[ch][cellroi.frame.number]
+        sum=float(np.sum(segment))
+        mean=float(np.mean(segment))
+        std=float(np.std(segment))
+        max=float(np.max(segment))
+        ch_name=channels[ch].replace(" ","")
+        intensity_mean[ch_name]=mean
+        intensity_std[ch_name]=std
+        intensity_sum[ch_name]=sum
+        intensity_max[ch_name]=max
+
+    contourseg.intensity_max  = intensity_max
+    contourseg.intensity_mean = intensity_mean
+    contourseg.intensity_std  = intensity_std
+    contourseg.intensity_sum  = intensity_sum
+    contourseg.number_of_pixels = contour.num_pixels
+
+    segment_dict = {}
+    out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
+    out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname))
+    if not os.path.exists(out_dir_name):
+        os.makedirs(out_dir_name)
+    segment_dict['npixels']=int(contour.num_pixels)
+    segment_dict['type']=segname
+
+    segment_dict['x'] = []
+    segment_dict['y'] = []
+    for ch in range(len(channels)):
+        segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = []
+    
+    for coord in contour.coords:
+        segment_dict['x'].append(int(coord[0]))
+        segment_dict['y'].append(int(coord[1]))
+        for ch in range(len(channels)):
+            segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(float(images[ch][cellroi.frame.number][coord[0]][coord[1]]))
+    out_file = open(out_file_name, "w") 
+    json.dump(segment_dict, out_file) 
+    out_file.close() 
+    contourseg.file_name = out_file_name
+    contourseg.save()
+
+
 
 #___________________________________________________________________________________________
 def build_contours(contour, contourseg, cellroi, img_shape, segname, images, channels, exp_name, expds_data_name, s_file_name):
