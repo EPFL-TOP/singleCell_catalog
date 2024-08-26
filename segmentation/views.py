@@ -971,7 +971,7 @@ def build_segmentation_sam2(sample=None, force=False):
                 for r in region:
                     print('r  =  ',r)
                 #build_contours(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
-                build_contours_sam2(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
+                build_contours_sam2(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name, masks[0])
 
 #___________________________________________________________________________________________
 def build_segmentation(exp_name=''):
