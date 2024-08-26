@@ -1073,7 +1073,16 @@ def build_ROIs(sample=None, force=False):
         #Just for now, should normally check that same ROI don't overlap
         #if len(rois)>0: continue
         #ROIs = segtools.get_ROIs_per_frame(BF_images[frame.number], 2)
-        rois_seg = segtools.triangle_opening(BF_images[frame.number])
+        #rois_seg = segtools.triangle_opening(BF_images[frame.number])
+        rois_seg=[]
+        image_prepro = preprocess_image_pytorch(BF_images[frame.number]).to(device)
+        with torch.no_grad():
+            predictions = model_detect(image_prepro)
+            for idx, box in enumerate(predictions[0]['boxes']):
+                x_min, y_min, x_max, y_max = box.cpu().numpy()
+                rois_seg.append((y_min, x_min, y_max, x_max))
+
+
         roi_number=0
         roi_seg_count=0
         roi_DB_list=[]
