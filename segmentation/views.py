@@ -40,6 +40,8 @@ import torch
 import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.transforms import functional as F
+import torch.nn.functional as F2
+
 import torch.nn as nn
 
 
@@ -69,9 +71,9 @@ class CellClassifier(nn.Module):
         #self.fc2 = nn.Linear(150, 5)  # 4 classes: "normal", "dead", "flat", "elongated"
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = self.pool(F.relu(self.conv3(x)))
+        x = self.pool(F2.relu(self.conv1(x)))
+        x = self.pool(F2.relu(self.conv2(x)))
+        x = self.pool(F2.relu(self.conv3(x)))
 
         # Flatten the output for the fully connected layer
         x = x.view(-1, 128 * 18 * 18)
