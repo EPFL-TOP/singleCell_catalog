@@ -10,6 +10,7 @@ import numpy as np
 from torchvision import models
 
 labels_map = {'normal':0, 'dead':1, 'flat':2, 'elongated':3, 'dividing':4}
+labels_map = {'normal':0, 'dead':1, 'flat':1, 'elongated':1, 'dividing':1}
 
 class CellDataset(Dataset):
     def __init__(self, image_paths, transform=None):

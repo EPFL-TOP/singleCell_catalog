@@ -14,7 +14,6 @@ import imageio
 import uuid
 import random
 
-from memory_profiler import profile
 from sklearn.cluster import DBSCAN
 from skimage import exposure
 from skimage.measure import label, regionprops
@@ -43,7 +42,6 @@ import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.transforms import functional as F
 import torch.nn.functional as F2
-
 import torch.nn as nn
 
 
@@ -52,8 +50,19 @@ from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
 
 
+import reader as read
+import segmentationTools as segtools
+
+
+import bokeh.models
+import bokeh.palettes
+import bokeh.plotting
+import bokeh.embed
+import bokeh.layouts
+
 
 labels_map = {0:'normal', 1:'dead', 2:'flat', 3:'elongated', 4:'dividing'}
+labels_map = {0:'normal', 1:'dead', 2:'normal', 3:'normal', 4:'normal'}
 
 
 class ToTensorNormalize:
@@ -182,6 +191,9 @@ DEBUG_TIME=False
 BASEPATH="/mnt/nas_rcp"
 CELLPATH="raw_data/microscopy/cell_culture"
 
+NASRCP_MOUNT_POINT=r'Y:'
+
+
 #MY macbook
 if os.path.isdir('/Users/helsens/Software/github/EPFL-TOP/cellgmenter'):
     sys.path.append('/Users/helsens/Software/github/EPFL-TOP/cellgmenter')
@@ -213,15 +225,6 @@ if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
                                   host='127.0.0.1',
                                   port=3336,
                                   database=accesskeys.RD_DB_name)
-import reader as read
-import segmentationTools as segtools
-
-
-import bokeh.models
-import bokeh.palettes
-import bokeh.plotting
-import bokeh.embed
-import bokeh.layouts
 
 
 #___________________________________________________________________________________________
@@ -287,19 +290,17 @@ def build_mva_samples(exp_name=''):
 
 #___________________________________________________________________________________________
 def save_categories(cellflags, outname):
-    ncells = 100
+    ncells = 300
 
     for idx, cell in enumerate(cellflags):
         if idx>=ncells:
             break
 
         val=random.uniform(0,1)
-        #outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories\train', 'mixed')
         outdir = r'D:\single_cells\training_cell_detection_categories\train'
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         if val>0.8:
-            #outdir = os.path.join(r'D:\single_cells\training_cell_detection_categories\valid', 'mixed')
             outdir = r'D:\single_cells\training_cell_detection_categories\valid'
             if not os.path.exists(outdir):
                 os.makedirs(outdir)
@@ -370,18 +371,14 @@ def build_mva_detection_categories():
     print('number of flat cells      = ',len(cellflags_flat))
     threads = []
     threads.append(threading.Thread(target = save_categories, args=(cellflags_dead,'dead', )))
-    threads.append(threading.Thread(target = save_categories, args=(cellflags_alive,'normal', )))
-    threads.append(threading.Thread(target = save_categories, args=(cellflags_dividing,'dividing', )))
-    threads.append(threading.Thread(target = save_categories, args=(cellflags_elongated,'elongated', )))
-    threads.append(threading.Thread(target = save_categories, args=(cellflags_flat,'flat', )))
+    #threads.append(threading.Thread(target = save_categories, args=(cellflags_alive,'normal', )))
+    #threads.append(threading.Thread(target = save_categories, args=(cellflags_dividing,'dividing', )))
+    #threads.append(threading.Thread(target = save_categories, args=(cellflags_elongated,'elongated', )))
+    #threads.append(threading.Thread(target = save_categories, args=(cellflags_flat,'flat', )))
     for t in threads: t.start()
     for t in threads: t.join()
 
-    #save_categories(cellflags_dead, 'dead')
-    #save_categories(cellflags_alive, 'normal')
-    #save_categories(cellflags_dividing, 'dividing')
-    #save_categories(cellflags_elongated, 'elongated')
-    #save_categories(cellflags_flat, 'flat')
+
 
 #___________________________________________________________________________________________
 def build_mva_detection(exp_name=''):
@@ -3069,13 +3066,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo=dropdown_segmentation_type.value)
             if len(contours)!=1:return
             contour = contours[0]
-            f = open(os.path.join(r'Y:\analysis_data',contour.file_name))
+            f = open(os.path.join(NASRCP_MOUNT_POINT, 'analysis_data',contour.file_name))
             data = json.load(f)
-            mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
+            #mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
             mask1=np.ones(source_img_ch.data['img'][0].shape, dtype=bool)
             mask1=mask1*255
             for i in range(data['npixels']):
-                mask0[frame.height-data['x'][i]][data['y'][i]]=True
+                #mask0[frame.height-data['x'][i]][data['y'][i]]=True
                 mask1[frame.height-data['x'][i]][data['y'][i]]=source_img.data['img'][0][frame.height-data['x'][i]][data['y'][i]]
                 
             #source_img_mask.data = {'img':[mask0*source_img.data['img'][0]]}
