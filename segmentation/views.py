@@ -50,8 +50,7 @@ from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
 
 
-import reader as read
-import segmentationTools as segtools
+
 
 
 import bokeh.models
@@ -226,6 +225,8 @@ if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
                                   port=3336,
                                   database=accesskeys.RD_DB_name)
 
+import reader as read
+import segmentationTools as segtools
 
 #___________________________________________________________________________________________
 def build_mva_samples(exp_name=''):
