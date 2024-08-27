@@ -969,7 +969,8 @@ def build_segmentation_sam2(sample=None, force=False):
                     print(region)
                 print('region  =  ',region)
                 for r in region:
-                    print('r  =  ',r)
+                    print('r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
+                    print('input_point ',input_point)
                 #build_contours(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
                 build_contours_sam2(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name, masks[0])
 
