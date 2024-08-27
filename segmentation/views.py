@@ -965,12 +965,15 @@ def build_segmentation_sam2(sample=None, force=False):
             for flag in eflag:  
                 if eflag[flag]: continue
                 contourseg = ContourSeg(cell_roi=cellroi)
+                sel_region = None 
+                if len(region)==1: sel_region=region[0]
                 if len(region)>1:
-                    print(region)
-                print('region  =  ',region)
-                for r in region:
-                    print('r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
-                    print('input_point ',input_point)
+                    for r in region:
+                        print('r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
+                        print('input_point ',input_point)
+                        if r.area<100: continue
+                        if math.sqrt( math.pow((input_point[0][0] - r.centroid[1]),2) +  math.pow((input_point[0][1]- r.centroid[0]),2))>50:continue
+
                 #build_contours(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
                 build_contours_sam2(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name, masks[0])
 
