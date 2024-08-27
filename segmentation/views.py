@@ -1183,7 +1183,7 @@ def build_contours(contour, contourseg, cellroi, img_shape, segname, images, cha
     out_dir_name  = os.path.join(r"Y:\analysis_data","singleCell_catalog","contour_data",exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
     out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname))
 
-    out_dir_name_DB  = "singleCell_catalog/contour_data/"+exp_name+"/"+ expds_data_name+"/"+os.path.split(s_file_name)[-1].replace('.nd2','')
+    out_dir_name_DB  = "analysis_data/singleCell_catalog/contour_data/"+exp_name+"/"+ expds_data_name+"/"+os.path.split(s_file_name)[-1].replace('.nd2','')
     out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname)
 
     if not os.path.exists(out_dir_name):
@@ -3069,7 +3069,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo=dropdown_segmentation_type.value)
             if len(contours)!=1:return
             contour = contours[0]
-            f = open(contour.file_name)
+            f = open(os.path.join(r'Y:\analysis_data',contour.file_name))
             data = json.load(f)
             mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
             for i in range(data['npixels']):
