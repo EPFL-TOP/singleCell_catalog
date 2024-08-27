@@ -974,8 +974,8 @@ def build_segmentation_sam2(sample=None, force=False):
                         if r.area<100: continue
                         if math.sqrt( math.pow((input_point[0][0] - r.centroid[1]),2) +  math.pow((input_point[0][1]- r.centroid[0]),2))>50:continue
 
-                #build_contours(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
-                build_contours_sam2(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name, masks[0])
+                build_contours(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
+                #build_contours_sam2(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name, masks[0])
 
 #___________________________________________________________________________________________
 def build_segmentation(exp_name=''):
@@ -1178,10 +1178,14 @@ def build_contours(contour, contourseg, cellroi, img_shape, segname, images, cha
     contourseg.number_of_pixels = contour.num_pixels
 
     segment_dict = {}
-    out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
+    out_dir_name  = os.path.join(r"Y:\analysis_data","singleCell_catalog","contour_data",exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
     out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname))
-    if not os.path.exists(out_dir_name):
-        os.makedirs(out_dir_name)
+
+    out_dir_name_DB  = "singleCell_catalog/contour_data/"+exp_name+"/"+ expds_data_name+"/"+os.path.split(s_file_name)[-1].replace('.nd2','')
+    out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname)
+
+    if not os.path.exists(out_dir_name_DB):
+        os.makedirs(out_dir_name_DB)
     segment_dict['npixels']=int(contour.num_pixels)
     segment_dict['type']=segname
 
@@ -1195,7 +1199,7 @@ def build_contours(contour, contourseg, cellroi, img_shape, segname, images, cha
         segment_dict['y'].append(int(coord[1]))
         for ch in range(len(channels)):
             segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(float(images[ch][cellroi.frame.number][coord[0]][coord[1]]))
-    out_file = open(out_file_name, "w") 
+    out_file = open(out_file_name_DB, "w") 
     json.dump(segment_dict, out_file) 
     out_file.close() 
     contourseg.file_name = out_file_name
