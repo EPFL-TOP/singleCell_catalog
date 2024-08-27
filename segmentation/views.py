@@ -974,6 +974,7 @@ def build_segmentation_sam2(sample=None, force=False):
                         if r.area<80: continue
                         if math.sqrt( math.pow((input_point[0][0] - r.centroid[1]),2) +  math.pow((input_point[0][1]- r.centroid[0]),2))>50:continue
                         sel_region=r
+                        print(' slecred r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
                 if sel_region!=None:
                     build_contours(sel_region, contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
                 #build_contours_sam2(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name, masks[0])
