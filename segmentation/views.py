@@ -187,9 +187,11 @@ predictor = SAM2ImagePredictor(sam2)
 LOCAL=True
 DEBUG=False
 DEBUG_TIME=False
-CELLPATH="raw_data/microscopy/cell_culture"
+RAW_DATA_PATH="raw_data/microscopy/cell_culture"
+ANALYSIS_DATA_PATH="analysis_data"
+NASRCP_MOUNT_POINT=''
+MVA_OUTDIR=r'D:'
 
-NASRCP_MOUNT_POINT=r'Y:'
 
 
 #MY macbook
@@ -214,6 +216,7 @@ elif os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
 elif os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
     sys.path.append(r'C:\Users\helsens\software\cellgmenter')
     NASRCP_MOUNT_POINT=r'Y:'
+    MVA_OUTDIR=r'D:'
 
     LOCAL=False
     import mysql.connector
@@ -233,8 +236,8 @@ def change_file_paths():
     count=0
     mylist = Contour.objects.all()
     for X in mylist:
-        if '/data/' in X.file_name:count+=1
-        name=X.file_name.replace('/data/','')
+        if 'singleCell_catalog/' in X.file_name:count+=1
+        name=X.file_name.replace('singleCell_catalog/','analysis_data/singleCell_catalog/')
         X.file_name=name
         X.save()
         if count%10000==0:
@@ -242,68 +245,7 @@ def change_file_paths():
 
     print('changed ',count)
 
-#/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0117/wscepfl0117.nd2
-
-#___________________________________________________________________________________________
-def build_mva_samples(exp_name=''):
-    print('build_mva_samples exp_name=',exp_name)
-    exp_list = Experiment.objects.all()
-    for exp in exp_list:
-        if exp_name!='' and exp.name!=exp_name:
-            continue
-        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-        for expds in experimentaldataset:
-            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-            for sample in samples:
-                if sample.peaks_tod_div_validated==False:continue
-                cellids = CellID.objects.select_related().filter(sample=sample)
-                for cellid in cellids:
-                    cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
-                    cellstatus = cellid.cell_status
-                    for cellroi in cellrois:
-
-                        framenumber = cellroi.frame.number
-                        cellflag = cellroi.cellflag_cellroi
-                        if cellstatus.start_oscillation_frame>=0 and cellstatus.end_oscillation_frame>=1 and framenumber>=cellstatus.start_oscillation_frame and framenumber<=cellstatus.end_oscillation_frame:
-                            cellflag.oscillating = True
-                        else:
-                            cellflag.oscillating = False
-                        cellflag.save()
-
-                        image_file = cellroi.contour_cellroi.file_name
-                        bf_image={'image_bf':None,
-                                  'image_bf_bbox':None,
-                                  'alive':cellroi.cellflag_cellroi.alive,
-                                  'oscillating':cellroi.cellflag_cellroi.oscillating,
-                                  'rising':cellroi.cellflag_cellroi.rising,
-                                  'falling':cellroi.cellflag_cellroi.falling,
-                                  'maximum':cellroi.cellflag_cellroi.maximum,
-                                  'minimum':cellroi.cellflag_cellroi.minimum,
-                                  'last_osc':cellroi.cellflag_cellroi.last_osc,
-                                  'dividing':cellroi.cellflag_cellroi.dividing,
-                                  'double_nuclei':cellroi.cellflag_cellroi.double_nuclei,
-                                  'multiple_cells':cellroi.cellflag_cellroi.multiple_cells,
-                                  'pair_cell':cellroi.cellflag_cellroi.pair_cell,
-                                  'flat':cellroi.cellflag_cellroi.flat,
-                                  'round':cellroi.cellflag_cellroi.round,
-                                  'elongated':cellroi.cellflag_cellroi.elongated,
-                                  "bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row], 
-                                  "area":cellroi.contour_cellroi.number_of_pixels
-                                  }
-                        with open(image_file, 'r') as f:
-                            data = json.load(f)
-                            for key in data:
-                                if 'BF' in key.split('_')[-1]:
-                                    bf_image['image_bf']=data[key]
-                        outdir_name =  '/data/singleCell_training/{}/{}/{}'.format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
-                        if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
-                            outdir_name =  r'D:\single_cells\training\{}\{}\{}'.format(exp.name, expds.data_name, sample.file_name.split('/')[-1].replace('.nd2',''))
-                        outfile_name = os.path.join(outdir_name, 'frame{}_{}.json'.format(cellroi.frame.number, cellid.name))
-                        if not os.path.exists(outdir_name):
-                            os.makedirs(outdir_name)
-                        out_file = open(outfile_name, "w") 
-                        json.dump(bf_image, out_file) 
-                        out_file.close() 
+#singleCell_catalog/contour_data/ppf001/ppf001_well1/ppf001_xy006/frame11_ROI0.json
 
 #___________________________________________________________________________________________
 def save_categories(cellflags, outname):
@@ -314,11 +256,11 @@ def save_categories(cellflags, outname):
             break
 
         val=random.uniform(0,1)
-        outdir = r'D:\single_cells\training_cell_detection_categories\train'
+        outdir = os.path.join(MVA_OUTDIR,r'\single_cells\training_cell_detection_categories\train')
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         if val>0.8:
-            outdir = r'D:\single_cells\training_cell_detection_categories\valid'
+            outdir = os.path.join(MVA_OUTDIR,r'\single_cells\training_cell_detection_categories\valid')
             if not os.path.exists(outdir):
                 os.makedirs(outdir)
 
@@ -330,7 +272,7 @@ def save_categories(cellflags, outname):
             if len(cellrois)>1:
                 continue
 
-        sample_file_name=os.path.join(r'Y:', frame.sample.file_name.replace('/mnt/nas_rcp',''))
+        sample_file_name=os.path.join(NASRCP_MOUNT_POINT, frame.sample.file_name)
         print('ttt===',sample_file_name)
 
         exp_name = frame.sample.experimental_dataset.experiment.name
@@ -388,106 +330,15 @@ def build_mva_detection_categories():
     print('number of flat cells      = ',len(cellflags_flat))
     threads = []
     threads.append(threading.Thread(target = save_categories, args=(cellflags_dead,'dead', )))
-    #threads.append(threading.Thread(target = save_categories, args=(cellflags_alive,'normal', )))
-    #threads.append(threading.Thread(target = save_categories, args=(cellflags_dividing,'dividing', )))
-    #threads.append(threading.Thread(target = save_categories, args=(cellflags_elongated,'elongated', )))
-    #threads.append(threading.Thread(target = save_categories, args=(cellflags_flat,'flat', )))
+    threads.append(threading.Thread(target = save_categories, args=(cellflags_alive,'normal', )))
+    threads.append(threading.Thread(target = save_categories, args=(cellflags_dividing,'dividing', )))
+    threads.append(threading.Thread(target = save_categories, args=(cellflags_elongated,'elongated', )))
+    threads.append(threading.Thread(target = save_categories, args=(cellflags_flat,'flat', )))
     for t in threads: t.start()
     for t in threads: t.join()
 
-
-
 #___________________________________________________________________________________________
-def build_mva_detection(exp_name=''):
-    print('build_mva_detection exp_name=',exp_name)
-    exp_list = Experiment.objects.all()
-    for exp in exp_list:
-        print('exp.name!=exp_name',exp.name!=exp_name, 'exp.name, exp_name  ',exp.name,'  ',exp_name)
-        if exp_name!='' and exp.name!=exp_name:
-            continue
-        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-        print('experimentaldataset ',experimentaldataset)
-        for expds in experimentaldataset:
-            print('expds ',expds)
-            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-            for sample in samples:
-                #if sample.peaks_tod_div_validated==False:continue
-                sample_file_name=sample.file_name
-                print(sample_file_name)
-                if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
-                #images, channels = read.nd2reader_getFrames(sample.file_name)
-                    print('ttt',sample_file_name)
-                    sample_file_name=os.path.join(r'Y:', sample_file_name.replace('/mnt/nas_rcp',''))
-                    print('ttt===',sample_file_name)
-
-                    
-                images = nd2.imread(Path(sample_file_name).as_posix())
-                #images are t, c, x, y 
-                print(images.shape)
-                print(images.dtype)
-
-                images=images.transpose(1,0,2,3)
-                BF_images=images[0]
-
-                frames = Frame.objects.select_related().filter(sample=sample)
-                for frame in frames:
-                    image = BF_images[frame.number]
-                    print(image.shape)
-                    outdir_name  = "/data/singleCell_training_images/{}/{}/{}".format(exp.name, expds.data_name, os.path.split(sample.file_name)[1].replace('.nd2',''))
-                    if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
-                            outdir_name =  r'D:\single_cells\training_cell_detection\{}\{}\{}'.format(exp.name, expds.data_name, os.path.split(sample.file_name)[1].replace('.nd2',''))
-                    if not os.path.exists(outdir_name):
-                        os.makedirs(outdir_name)
-                    cellrois = CellROI.objects.select_related().filter(frame=frame)
-                    outdict = {}
-                    outdict={"data":image.tolist(),
-                             "height": frame.height,
-                                      "width": frame.width,
-                                      "annotations":[]}
-                    outfile_name = os.path.join(outdir_name, 'frame{}.json'.format(frame.number))
-                    for cellroi in cellrois:
-
-                        tmpdict={"bbox":[cellroi.min_col, cellroi.max_col, cellroi.min_row, cellroi.max_row], "area":cellroi.contour_cellroi.number_of_pixels}
-                        outdict["annotations"].append(tmpdict)
-
-                    if len(outdict["annotations"])>0:
-                        out_file = open(outfile_name, "w") 
-                        json.dump(outdict, out_file)
-                        #outfile_name = os.path.join(outdir_name, 'frame{}.jpg'.format(frame.number))
-                        #norm_image = ((image - image.min()) / (image.max() - image.min()) * 255).astype(np.uint8)
-            
-                        #rgb_image = np.stack((norm_image, norm_image, norm_image), axis=-1)
-
-                        #im = Image.fromarray(rgb_image, mode='RGB')
-
-                        #im.save(outfile_name)
-                        outdir_name  = r'D:\single_cells\training_cell_detection_YOLO'
-                        tmp_uuid=uuid.uuid1()
-                        val=random.uniform(0,1)
-                        outdir_file  = os.path.join(outdir_name, 'images','train', '{}_{}.png'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), tmp_uuid))
-                        outdir_label = os.path.join(outdir_name, 'labels','train', '{}_{}.txt'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), tmp_uuid))
-                        
-                        if val>0.8:
-                            outdir_file  = os.path.join(outdir_name, 'images','val', '{}_{}.png'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), tmp_uuid))
-                            outdir_label = os.path.join(outdir_name, 'labels','val', '{}_{}.txt'.format(os.path.split(sample.file_name)[1].replace('.nd2',''), tmp_uuid))
-
-                        imageio.imwrite(outdir_file,image)
-                        f = open(outdir_label, "w")
-                        for bbox in outdict["annotations"]:
-                            f.write("0 {} {} {} {}".format((bbox['bbox'][0]+(bbox['bbox'][1]-bbox['bbox'][0])/2.)/outdict["width"], 
-                                                           (bbox['bbox'][2]+(bbox['bbox'][3]-bbox['bbox'][2])/2.)/outdict["height"],
-                                                           (bbox['bbox'][1]-bbox['bbox'][0])/outdict["width"], 
-                                                           (bbox['bbox'][3]-bbox['bbox'][2])/outdict["height"]
-                                                           ))
-
-                        f.close()
-
-#___________________________________________________________________________________________
-def deltaR(c1, c2):
-    return math.sqrt( math.pow((c1['x'] - c2['x']),2) +  math.pow((c1['y'] - c2['y']),2) + math.pow((c1['z'] - c2['z']),2))
-
-#___________________________________________________________________________________________
-def get_experiement_details(selected_experiment):
+def get_experiment_details(selected_experiment):
     #GET THE EXPERIMENT DETAILS
     query = (
         "select e.* from experiment_catalog_experiment e"
@@ -677,10 +528,10 @@ def register_rawdataset():
 
     for x in myresult:
         if x[1] in list_experiments_uid: continue
-        unsplit_file = glob.glob(os.path.join(NASRCP_MOUNT_POINT, CELLPATH ,x[1],'*.nd2'))
+        unsplit_file = glob.glob(os.path.join(NASRCP_MOUNT_POINT, RAW_DATA_PATH ,x[1],'*.nd2'))
         if DEBUG: print('=========unsplit_file ===',unsplit_file)
         if len(unsplit_file)!=1:
-            print('====================== ERROR, unsplit_file not 1, exit ',unsplit_file,'  in ',os.path.join(NASRCP_MOUNT_POINT, CELLPATH,x[1],'*.nd2'))
+            print('====================== ERROR, unsplit_file not 1, exit ',unsplit_file,'  in ',os.path.join(NASRCP_MOUNT_POINT, RAW_DATA_PATH,x[1],'*.nd2'))
             sys.exit(3)
         metadata = read.nd2reader_getSampleMetadata(unsplit_file[0])
         experiment =  Experiment(name=x[1], 
@@ -711,8 +562,7 @@ def register_rawdataset():
             if DEBUG:print('    adding experimental dataset with name ',os.path.join(x[4], x[5]))
 
             for f in files_json["files"]:
-                fname=os.path.join(NASRCP_MOUNT_POINT, CELLPATH, x[5], "raw_files", f["name"])
-                fname=f"/mnt/nas_rcp/raw_data/microscopy/cell_culture/{x[5]}/raw_files/{f['name']}"
+                fname=os.path.join(NASRCP_MOUNT_POINT, RAW_DATA_PATH, x[5], "raw_files", f["name"])
 
                 metadata = read.nd2reader_getSampleMetadata(fname)
                 sample = Sample(file_name=fname, 
@@ -737,55 +587,6 @@ def register_rawdataset():
                     if DEBUG: print('            adding frame with name ',fr)
                     frame.save()
 
-#___________________________________________________________________________________________
-def build_cells_all_exp(sample=None):
-    #loop over all experiments
-    exp_list = Experiment.objects.all()
-    for exp in exp_list:
-        print('---- BUILD CELLS experiment name ',exp.name)
-        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-        for expds in experimentaldataset:
-            print('    ---- BUILD CELLS experimentaldataset name ',expds.data_name, expds.data_type)
-            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-            for s in samples:
-                if sample!=None and sample!=s.file_name:continue
-                print('        ---- BUILD CELL sample name ',s.file_name)
-                cellsid = CellID.objects.select_related().filter(sample = s)
-                #delete the existing cellID
-                cellsid.delete()
-
-                frames = Frame.objects.select_related().filter(sample = s)
-                cell_roi_list=[]
-                cell_roi_coord=[]
-
-                for f in frames:
-                    cellrois = CellROI.objects.select_related().filter(frame=f)
-                    for cellroi in cellrois:
-                        cell_roi_list.append(cellroi)
-                        cell_roi_coord.append([cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., 
-                                               cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.])
-                print('number of cell frames=',len(cell_roi_list))
-                if len(cell_roi_list)==0:continue
-                X = np.array(cell_roi_coord)
-                eps= ((cellroi.max_col-cellroi.min_col)/2. + (cellroi.max_row-cellroi.min_row)/2.)/1.
-                clustering = DBSCAN(eps=eps, min_samples=25).fit(X)
-                print(clustering.labels_)
-
-                #Create the cells ID according to existing clusters (one per cluster >=0)
-                #Connect the cellFrames to cellID
-                createdcells=[]
-                cellid_dict={}
-                for cid in range(len(clustering.labels_)):
-                    if clustering.labels_[cid] not in createdcells and clustering.labels_[cid]!=-1:
-                        cellstatus = CellStatus()
-                        cellstatus.save()
-                        cellid = CellID(sample=s, name='cell{}'.format(clustering.labels_[cid]), cell_status=cellstatus)
-                        cellid.save()
-                        createdcells.append(clustering.labels_[cid])
-                        cellid_dict['cell{}'.format(clustering.labels_[cid])]=cellid
-                    if clustering.labels_[cid]!=-1:
-                        cell_roi_list[cid].cell_id = cellid_dict['cell{}'.format(clustering.labels_[cid])]
-                        cell_roi_list[cid].save()
 
 #___________________________________________________________________________________________
 def build_cells_sample(sample, addmode=False):
@@ -945,7 +746,7 @@ def build_segmentation_sam2(sample=None, force=False):
     print('build_segmentation_sam2: ',s.file_name)
 
     frames = Frame.objects.select_related().filter(sample=s)
-    file_name=os.path.join('Y:',s.file_name.replace('/mnt/nas_rcp',''))
+    file_name=os.path.join(NASRCP_MOUNT_POINT,s.file_name)
 
     images, channels = read.nd2reader_getFrames(file_name)
     images=images.transpose(1,0,2,3)
@@ -991,7 +792,6 @@ def build_segmentation_sam2(sample=None, force=False):
                         print(' slecred r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
                 if sel_region!=None:
                     build_contours(sel_region, contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
-                #build_contours_sam2(region[0], contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name, masks[0])
 
 #___________________________________________________________________________________________
 def build_segmentation(exp_name=''):
@@ -1051,91 +851,7 @@ def build_segmentation(exp_name=''):
                                 build_contours(contour, contourseg, cellroi, image.shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
 
 
-#___________________________________________________________________________________________
-def build_contours_sam2(contour, contourseg, cellroi, img_shape, segname, images, channels, exp_name, expds_data_name, s_file_name, mask):
-    x_coords=[]
-    y_coords=[]
-#    mask0=np.zeros(img_shape, dtype=bool)
 
-#    for coord in contour.coords:
-#        x_coords.append(coord[0])
-#        y_coords.append(coord[1])
-#        mask0[coord[0]][coord[1]]=True
-    mask0=mask
-
-    for y in range(len(mask)):
-        for x in range(len(mask[y])):
-            if mask[y][x]==False: continue
-            x_coords.append(x)
-            y_coords.append(y)
-
-
-    cs=plt.contour(mask0, [0.5],linewidths=1.,  colors='red')
-    contcoords = cs.allsegs[0][0]
-    x_cont_coords=[]
-    y_cont_coords=[]
-    for p in contcoords:
-        x_cont_coords.append(p[0])
-        y_cont_coords.append(p[1])
-
-    plt.figure().clear()
-    plt.close()
-    plt.cla()
-    plt.clf()
-
-    contourseg.pixels={'x':x_cont_coords, 'y':y_cont_coords}
-    contourseg.center_x_pix = contour.centroid[0]
-    contourseg.center_y_pix = contour.centroid[1]
-    contourseg.center_x_mic = contour.centroid[0]*cellroi.frame.pixel_microns+cellroi.frame.pos_x
-    contourseg.center_y_mic = contour.centroid[1]*cellroi.frame.pixel_microns+cellroi.frame.pos_y
-    contourseg.algo = segname
-
-    intensity_mean={}
-    intensity_std={}
-    intensity_sum={}
-    intensity_max={}
-    for ch in range(len(channels)): 
-        print('len(images)= ',len(images),'  shape  ', images.shape)
-        segment=mask0*images[ch][cellroi.frame.number]
-        sum=float(np.sum(segment))
-        mean=float(np.mean(segment))
-        std=float(np.std(segment))
-        max=float(np.max(segment))
-        ch_name=channels[ch].replace(" ","")
-        intensity_mean[ch_name]=mean
-        intensity_std[ch_name]=std
-        intensity_sum[ch_name]=sum
-        intensity_max[ch_name]=max
-
-    contourseg.intensity_max  = intensity_max
-    contourseg.intensity_mean = intensity_mean
-    contourseg.intensity_std  = intensity_std
-    contourseg.intensity_sum  = intensity_sum
-    contourseg.number_of_pixels = contour.num_pixels
-
-    segment_dict = {}
-    out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
-    out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname))
-    if not os.path.exists(out_dir_name):
-        os.makedirs(out_dir_name)
-    segment_dict['npixels']=int(contour.num_pixels)
-    segment_dict['type']=segname
-
-    segment_dict['x'] = []
-    segment_dict['y'] = []
-    for ch in range(len(channels)):
-        segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = []
-    
-    for coord in contour.coords:
-        segment_dict['x'].append(int(coord[0]))
-        segment_dict['y'].append(int(coord[1]))
-        for ch in range(len(channels)):
-            segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(float(images[ch][cellroi.frame.number][coord[0]][coord[1]]))
-    out_file = open(out_file_name, "w") 
-    json.dump(segment_dict, out_file) 
-    out_file.close() 
-    contourseg.file_name = out_file_name
-    contourseg.save()
 
 
 
@@ -1194,7 +910,8 @@ def build_contours(contour, contourseg, cellroi, img_shape, segname, images, cha
     contourseg.number_of_pixels = contour.num_pixels
 
     segment_dict = {}
-    out_dir_name  = os.path.join(r"Y:\analysis_data","singleCell_catalog","contour_data",exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
+    out_dir_name  = os.path.join(NASRCP_MOUNT_POINT, ANALYSIS_DATA_PATH,
+        r"Y:\analysis_data","singleCell_catalog","contour_data",exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
     out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname))
 
     out_dir_name_DB  = "analysis_data/singleCell_catalog/contour_data/"+exp_name+"/"+ expds_data_name+"/"+os.path.split(s_file_name)[-1].replace('.nd2','')
@@ -5723,11 +5440,6 @@ def index(request: HttpRequest) -> HttpResponse:
     if 'register_rawdataset' in request.POST and LOCAL==False:
         register_rawdataset()
 
-
-
-    if 'build_cells' in request.POST:
-        build_cells_all_exp()
-
     if 'fix_tod' in request.POST:
         fix_alive_status()
 
@@ -5785,12 +5497,6 @@ def index(request: HttpRequest) -> HttpResponse:
     if 'build_ROIs' in request.POST:
         build_ROIs_loop(selected_dict['experiment'])
 
-    if 'build_mva' in request.POST:
-        build_mva_samples(selected_dict['experiment'])
-
-    if 'build_mva_detection' in request.POST:
-        build_mva_detection(selected_dict['experiment'])
-
     if 'build_mva_detection_categories' in request.POST:
         build_mva_detection_categories()
 
@@ -5829,7 +5535,7 @@ def index(request: HttpRequest) -> HttpResponse:
     ##CLEMENT UNCOMMENT WHEN DB CONNECTION UNDERSTOOD
     if selected_experiment != None:
         ##GET THE LIST OF EXPERIMENTS
-        experiment_dict=get_experiement_details(selected_experiment)
+        experiment_dict=get_experiment_details(selected_experiment)
         ##GET THE CONTRIBUTION TO THE EXPERIMENT 
         contribution_dict=get_contribution_details(selected_experiment)
 
