@@ -536,7 +536,7 @@ def register_rawdataset():
         experiment =  Experiment(name=x[1], 
                                  date=x[2], 
                                  description=x[3],
-                                 file_name=unsplit_file[0],
+                                 file_name=RAW_DATA_PATH+'/'+x[1]+'/'+os.path.split(unsplit_file[0])[-1],
                                  number_of_frames=metadata['number_of_frames'], 
                                  number_of_channels=metadata['number_of_channels'], 
                                  name_of_channels=metadata['name_of_channels'].replace(' ',''), 
@@ -564,7 +564,7 @@ def register_rawdataset():
                 fname=os.path.join(NASRCP_MOUNT_POINT, RAW_DATA_PATH, x[5], "raw_files", f["name"])
 
                 metadata = read.nd2reader_getSampleMetadata(fname)
-                sample = Sample(file_name=fname, 
+                sample = Sample(file_name=RAW_DATA_PATH+'/'+ x[5]+"/raw_files/"+f["name"],
                                 experimental_dataset=expds,
                                 keep_sample=True)
                 sample.save()
