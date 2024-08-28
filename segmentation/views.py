@@ -1490,7 +1490,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_file=os.path.join(NASRCP_MOUNT_POINT,"/"+current_file)
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         time_lapse_path = Path(current_file)
+        print('time_lapse_path = ',time_lapse_path)
+        print_time(f'------- time_lapse_path get_stack_data {text}', local_time)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
+        print_time(f'------- imread get_stack_data {text}', local_time)
+
         ind_images_list= []
         ind_images_list_norm=[]
         for nch in range(time_lapse.shape[1]):
@@ -1506,6 +1510,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 ind_images_norm.append(intensity_normalized)
             ind_images_list.append(ind_images)
             ind_images_list_norm.append(ind_images_norm)
+
+        print_time(f'------- end loop get_stack_data {text}', local_time)
 
         ind_images_array = np.array(ind_images_list)
         ind_images_norm_array = np.array(ind_images_list_norm)
