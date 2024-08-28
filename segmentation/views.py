@@ -186,7 +186,7 @@ predictor = SAM2ImagePredictor(sam2)
 
 LOCAL=True
 DEBUG=False
-DEBUG_TIME=False
+DEBUG_TIME=True
 RAW_DATA_PATH="raw_data/microscopy/cell_culture"
 ANALYSIS_DATA_PATH="analysis_data/singleCell_catalog/contour_data"
 NASRCP_MOUNT_POINT=''
