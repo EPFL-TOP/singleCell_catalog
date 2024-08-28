@@ -1487,7 +1487,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def get_stack_data(current_file, text=''):
         local_time=datetime.datetime.now()
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
-        current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
+        current_file=os.path.join(NASRCP_MOUNT_POINT,"/"+current_file)
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
@@ -1592,7 +1592,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
 #    def get_adjacent_stack(number=6):
-    def get_adjacent_stack(number=3):
+    def get_adjacent_stack(number=5):
         current_pos_list=[]
         current_file_list=[]
         #for n in range(-number+4, number+2):
