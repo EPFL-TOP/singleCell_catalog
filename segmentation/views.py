@@ -187,7 +187,6 @@ predictor = SAM2ImagePredictor(sam2)
 LOCAL=True
 DEBUG=False
 DEBUG_TIME=False
-BASEPATH="/mnt/nas_rcp"
 CELLPATH="raw_data/microscopy/cell_culture"
 
 NASRCP_MOUNT_POINT=r'Y:'
@@ -198,7 +197,7 @@ if os.path.isdir('/Users/helsens/Software/github/EPFL-TOP/cellgmenter'):
     sys.path.append('/Users/helsens/Software/github/EPFL-TOP/cellgmenter')
 
 #VMachine
-if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
+elif os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
     sys.path.append('/home/helsens/Software/segmentationTools/cellgmenter/main')
     LOCAL=False
     import mysql.connector
@@ -209,12 +208,13 @@ if os.path.isdir('/home/helsens/Software/segmentationTools/cellgmenter/main'):
                                   host='127.0.0.1',
                                   port=3306,
                                   database=accesskeys.RD_DB_name)
+    NASRCP_MOUNT_POINT='/mnt/nas_rcp'
 
 #HIVE
-if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
+elif os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
     sys.path.append(r'C:\Users\helsens\software\cellgmenter')
-    BASEPATH=r'D:'
-    CELLPATH=r'raw_data\microscopy\cell_culture'
+    NASRCP_MOUNT_POINT=r'Y:'
+
     LOCAL=False
     import mysql.connector
     import accesskeys
@@ -227,6 +227,16 @@ if os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
 
 import reader as read
 import segmentationTools as segtools
+
+def change_file_paths():
+    exp_list = Experiment.objects.all()
+    for exp in exp_list:
+        name=exp.file_name.replace('/mnt/nas_rcp/','')
+        exp.file_name=name
+        exp.save()
+
+
+#/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0117/wscepfl0117.nd2
 
 #___________________________________________________________________________________________
 def build_mva_samples(exp_name=''):
@@ -661,10 +671,10 @@ def register_rawdataset():
 
     for x in myresult:
         if x[1] in list_experiments_uid: continue
-        unsplit_file = glob.glob(os.path.join(BASEPATH, CELLPATH ,x[1],'*.nd2'))
+        unsplit_file = glob.glob(os.path.join(NASRCP_MOUNT_POINT, CELLPATH ,x[1],'*.nd2'))
         if DEBUG: print('=========unsplit_file ===',unsplit_file)
         if len(unsplit_file)!=1:
-            print('====================== ERROR, unsplit_file not 1, exit ',unsplit_file,'  in ',os.path.join(BASEPATH, CELLPATH,x[1],'*.nd2'))
+            print('====================== ERROR, unsplit_file not 1, exit ',unsplit_file,'  in ',os.path.join(NASRCP_MOUNT_POINT, CELLPATH,x[1],'*.nd2'))
             sys.exit(3)
         metadata = read.nd2reader_getSampleMetadata(unsplit_file[0])
         experiment =  Experiment(name=x[1], 
@@ -695,7 +705,7 @@ def register_rawdataset():
             if DEBUG:print('    adding experimental dataset with name ',os.path.join(x[4], x[5]))
 
             for f in files_json["files"]:
-                fname=os.path.join(BASEPATH, CELLPATH, x[5], "raw_files", f["name"])
+                fname=os.path.join(NASRCP_MOUNT_POINT, CELLPATH, x[5], "raw_files", f["name"])
                 fname=f"/mnt/nas_rcp/raw_data/microscopy/cell_culture/{x[5]}/raw_files/{f['name']}"
 
                 metadata = read.nd2reader_getSampleMetadata(fname)
@@ -5760,6 +5770,9 @@ def index(request: HttpRequest) -> HttpResponse:
     selected_dict['segmentation']=selected_segmentation
     selected_segmentation_channel=request.POST.get('select_segmentation_channel')
     selected_dict['segmentation_channel']=selected_segmentation_channel
+
+    if 'change_files' in request.POST:
+        change_file_paths()
 
 
     #THIS BUILDS THE ROIS FOR ALL THE EXISTING SAMPLES
