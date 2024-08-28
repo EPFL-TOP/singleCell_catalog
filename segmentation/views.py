@@ -188,10 +188,9 @@ LOCAL=True
 DEBUG=False
 DEBUG_TIME=False
 RAW_DATA_PATH="raw_data/microscopy/cell_culture"
-ANALYSIS_DATA_PATH="analysis_data"
+ANALYSIS_DATA_PATH="analysis_data/singleCell_catalog/contour_data"
 NASRCP_MOUNT_POINT=''
 MVA_OUTDIR=r'D:'
-
 
 
 #MY macbook
@@ -851,10 +850,6 @@ def build_segmentation(exp_name=''):
                                 build_contours(contour, contourseg, cellroi, image.shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
 
 
-
-
-
-
 #___________________________________________________________________________________________
 def build_contours(contour, contourseg, cellroi, img_shape, segname, images, channels, exp_name, expds_data_name, s_file_name):
     x_coords=[]
@@ -910,11 +905,10 @@ def build_contours(contour, contourseg, cellroi, img_shape, segname, images, cha
     contourseg.number_of_pixels = contour.num_pixels
 
     segment_dict = {}
-    out_dir_name  = os.path.join(NASRCP_MOUNT_POINT, ANALYSIS_DATA_PATH,
-        r"Y:\analysis_data","singleCell_catalog","contour_data",exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
+    out_dir_name  = os.path.join(NASRCP_MOUNT_POINT, ANALYSIS_DATA_PATH,exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
     out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname))
 
-    out_dir_name_DB  = "analysis_data/singleCell_catalog/contour_data/"+exp_name+"/"+ expds_data_name+"/"+os.path.split(s_file_name)[-1].replace('.nd2','')
+    out_dir_name_DB  = ANALYSIS_DATA_PATH+"/"+exp_name+"/"+ expds_data_name+"/"+os.path.split(s_file_name)[-1].replace('.nd2','')
     out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname)
 
     if not os.path.exists(out_dir_name):
@@ -992,14 +986,13 @@ def build_ROIs(sample=None, force=False):
     print('build roi sample: ',s.file_name)
 
     frames = Frame.objects.select_related().filter(sample=s)
-    file_name=os.path.join('Y:',s.file_name.replace('/mnt/nas_rcp',''))
+    file_name=os.path.join(NASRCP_MOUNT_POINT,s.file_name)
 
     images, channels = read.nd2reader_getFrames(file_name)
     #images are t, c, x, y 
     BF_images=images.transpose(1,0,2,3)
     BF_images=BF_images[0]
     for frame in frames:
-        print(frame)
         rois_DB = CellROI.objects.select_related().filter(frame = frame)
         #Just for now, should normally check that same ROI don't overlap
         #if len(rois)>0: continue
@@ -1065,9 +1058,9 @@ def build_ROIs(sample=None, force=False):
 
             #Bounding box (min_row, min_col, max_row, max_col). 
             cropped_dict = {'shape_original':BF_images[frame.number].shape}
-            out_dir_name  = os.path.join(r"Y:\analysis_data","singleCell_catalog","contour_data",s.experimental_dataset.experiment.name, s.experimental_dataset.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
+            out_dir_name  = os.path.join(NASRCP_MOUNT_POINT, ANALYSIS_DATA_PATH,s.experimental_dataset.experiment.name, s.experimental_dataset.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
             out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame.number, roi_number))
-            out_dir_name_DB  = "/data/singleCell_catalog/contour_data/"+s.experimental_dataset.experiment.name+"/"+ s.experimental_dataset.data_name+"/"+os.path.split(s.file_name)[-1].replace('.nd2','')
+            out_dir_name_DB  = ANALYSIS_DATA_PATH+"/"+s.experimental_dataset.experiment.name+"/"+ s.experimental_dataset.data_name+"/"+os.path.split(s.file_name)[-1].replace('.nd2','')
             out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}.json".format(frame.number, roi_number)
 
             if not os.path.exists(out_dir_name):
@@ -1493,12 +1486,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to get the image data stack
     def get_stack_data(current_file, text=''):
         local_time=datetime.datetime.now()
-
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
-        if os.path.isdir(r'C:\Users\helsens'):
-#            current_file=os.path.join('D:',current_file.replace('/mnt/nas_rcp',''))
-            current_file=os.path.join('Y:',current_file.replace('/mnt/nas_rcp',''))
-        
+        current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
@@ -3082,8 +3071,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     images[i]=np.flip(images[i],0)
                 if DEBUG:print('save_roi_callback images shape ', images.shape)
                 cropped_dict = {'shape_original':images[0].shape}
-                out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
+
+                out_dir_name  = os.path.join(NASRCP_MOUNT_POINT, ANALYSIS_DATA_PATH,exp.name, expds.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
                 out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame[0].number, roi_number))
+
+                out_dir_name_DB  = ANALYSIS_DATA_PATH+"/"+exp.name+"/"+ expds.data_name+"/"+os.path.split(sample.file_name)[-1].replace('.nd2','')
+                out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}.json".format(cellroi.frame.number, cellroi.roi_number)
+
+
                 if not os.path.exists(out_dir_name):
                     os.makedirs(out_dir_name)
                 if DEBUG:print('roi.min_row, roi.max_row, roi.min_col,roi.max_col',roi.min_row, roi.max_row, roi.min_col,roi.max_col)
@@ -3130,7 +3125,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                   intensity_sum=intensity_sum,
                                   intensity_max=intensity_max,
                                   number_of_pixels=cropped_img.shape[1]*cropped_img.shape[2],
-                                  file_name=out_file_name,
+                                  file_name=out_file_name_DB,
                                   cell_roi=roi,
                                   type="cell_ROI",
                                   mode="manual")
@@ -4014,164 +4009,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    #___________________________________________________________________________________________
-    def segment_cell_callback():
-        print('--------segment_cell_callback-------- ')
-
-        sample = Sample.objects.get(file_name=get_current_file())
-        channels = sample.experimental_dataset.experiment.name_of_channels.split(',')
-        frames = Frame.objects.select_related().filter(sample=sample)
-        for frame in frames:
-            if frame.number!=slider.value:continue
-            cellROIs = CellROI.objects.select_related().filter(frame=frame)
-            for cellROI in cellROIs:
-                #eflag=False
-                if cellROI.cell_id == None: continue
-                #contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellROI)
-                #for contourSeg in contoursSeg:
-                #    if contourSeg.algo == 'localthresholding': 
-                #       eflag=True
-                #if eflag: continue
-
-                contour, bkg_mean_list, bkg_std_list,  sig_mean_list_sel, sig_std_list_sel, sig_mean_list_notsel, sig_std_list_notsel = segtools.segmentation_test(source_img_ch.data['img'][0], 1.9, frame.height-cellROI.max_row, cellROI.min_col, frame.height-cellROI.min_row, cellROI.max_col)
-                print('contour npix=',contour.num_pixels)
-                #contour=segtools.segmentation_test(source_img_ch.data['img'][0], 2., cellROI.min_row, cellROI.min_col, cellROI.max_row, cellROI.max_col)
-                x_coords=[]
-                y_coords=[]
-                mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
-
-                for coord in contour.coords:
-                    x_coords.append(coord[0])
-                    y_coords.append(coord[1])
-                    mask0[coord[0]][coord[1]]=True
-
-
-                source_img_mask.data = {'img':[mask0]}
-                cs=plt.contour(mask0, [0.5],linewidths=1.2,  colors='red')
-                contcoords = cs.allsegs[0][0]
-                x_cont_coords=[]
-                y_cont_coords=[]
-                for p in contcoords:
-                    x_cont_coords.append(p[0])
-                    y_cont_coords.append(p[1])
-                source_segmentation.data={'x':x_cont_coords, 'y':y_cont_coords}
-
-                print('segment_cell_callback source_segmentation.data=',source_segmentation.data)
-
-                plt.figure().clear()
-                plt.close()
-                plt.cla()
-                plt.clf()
-
-                hist, edges = np.histogram(bkg_mean_list, 
-                                        bins=int((np.max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-np.min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
-                                        range=(np.min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), np.max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
-                hist = hist/np.sum(hist)
-                source_histo_int_mean_bkg.data={'x': edges[:-1], 'top': hist}
-
-
-                hist, edges = np.histogram(sig_mean_list_sel,
-                                        bins=int((np.max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-np.min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
-                                        range=(np.min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), np.max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
-                hist = hist/np.sum(hist)
-                source_histo_int_mean_sig_sel.data={'x': edges[:-1], 'top': hist}
-
-                hist, edges = np.histogram(sig_mean_list_notsel,
-                                        bins=int((np.max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)-np.min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel))/5.), 
-                                        range=(np.min(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel), np.max(bkg_mean_list+sig_mean_list_sel+sig_mean_list_notsel)))
-                hist = hist/np.sum(hist)
-                source_histo_int_mean_sig_notsel.data={'x': edges[:-1], 'top': hist}
-
-
-                hist, edges = np.histogram(bkg_std_list, bins=int((np.max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-np.min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
-                                        range=(np.min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), np.max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
-                hist = hist/np.sum(hist)
-                source_histo_int_std_bkg.data={'x': edges[:-1], 'top': hist}
-
-
-                hist, edges = np.histogram(sig_std_list_sel, bins=int((np.max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-np.min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
-                                        range=(np.min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), np.max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
-                hist = hist/np.sum(hist)
-                source_histo_int_std_sig_sel.data={'x': edges[:-1], 'top': hist}
-
-                hist, edges = np.histogram(sig_std_list_notsel, bins=int((np.max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)-np.min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel))/4.), 
-                                        range=(np.min(bkg_std_list+sig_std_list_sel+sig_std_list_notsel), np.max(bkg_std_list+sig_std_list_sel+sig_std_list_notsel)))
-                hist = hist/np.sum(hist)
-                source_histo_int_std_sig_notsel.data={'x': edges[:-1], 'top': hist}
-
-
-                cellroi=cellROI
-                contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo='localthresholding')
-                contourseg = None
-                print('contoursSeg = ',contoursSeg,'  ',len(contoursSeg))
-
-                if len(contoursSeg)>1:
-                    for c in contoursSeg:
-                        print('=== ',c)
-                    return
-                if len(contoursSeg) == 0 :
-                    contourseg = ContourSeg(cell_roi=cellroi)
-                else:
-                    contourseg = contoursSeg[0]
-
-                contourseg.pixels={'x':x_cont_coords, 'y':y_cont_coords}
-                contourseg.center_x_pix = contour.centroid[0]
-                contourseg.center_y_pix = contour.centroid[1]
-                contourseg.center_x_mic = contour.centroid[0]*cellroi.frame.pixel_microns+cellroi.frame.pos_x
-                contourseg.center_y_mic = contour.centroid[1]*cellroi.frame.pixel_microns+cellroi.frame.pos_y
-                contourseg.algo = 'localthresholding'
-
-                intensity_mean={}
-                intensity_std={}
-                intensity_sum={}
-                intensity_max={}
-                for ch in range(len(channels)): 
-                    segment=mask0*source_img_ch.data['img'][ch]
-                    sum=float(np.sum(segment))
-                    mean=float(np.mean(segment))
-                    std=float(np.std(segment))
-                    max=float(np.max(segment))
-                    ch_name=channels[ch].replace(" ","")
-                    intensity_mean[ch_name]=mean
-                    intensity_std[ch_name]=std
-                    intensity_sum[ch_name]=sum
-                    intensity_max[ch_name]=max
-
-                contourseg.intensity_max  = intensity_max
-                contourseg.intensity_mean = intensity_mean
-                contourseg.intensity_std  = intensity_std
-                contourseg.intensity_sum  = intensity_sum
-                contourseg.number_of_pixels = contour.num_pixels
-
-                segment_dict = {}
-                out_dir_name  = os.path.join(os.sep, "data","singleCell_catalog","contour_data",exp.name, expds.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
-                out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, 'localthresholding'))
-                if not os.path.exists(out_dir_name):
-                    os.makedirs(out_dir_name)
-                segment_dict['npixels']=int(contour.num_pixels)
-                segment_dict['type']="localthresholding"
-
-                segment_dict['x'] = []
-                segment_dict['y'] = []
-                for ch in range(len(channels)):
-                    segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = []
-                
-                for coord in contour.coords:
-                    segment_dict['x'].append(int(coord[0]))
-                    segment_dict['y'].append(int(coord[1]))
-                    for ch in range(len(channels)):
-                        segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(float(source_img_ch.data['img'][ch][coord[0]][coord[1]]))
-                out_file = open(out_file_name, "w") 
-                json.dump(segment_dict, out_file) 
-                out_file.close() 
-                contourseg.file_name = out_file_name
-                contourseg.save()
-
-
-    button_segment_cell = bokeh.models.Button(label="Segment cell")
-    button_segment_cell.on_click(segment_cell_callback)
-    #___________________________________________________________________________________________
-
 
     #get_adjacent_stack()
     threading.Thread(target = get_adjacent_stack).start()
@@ -4395,29 +4232,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_img_mask.axis.visible = False
     plot_img_mask.grid.visible = False
 
-    source_histo_int_mean_bkg        = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    source_histo_int_mean_sig_sel    = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    source_histo_int_mean_sig_notsel = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
  
-    plot_histo_int_mean       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity mean', y_axis_label='Number of pixels norm',width=500, height=400)#, y_axis_type="log"
-    plot_histo_int_mean.vbar(x='x', top='top', width=5., source=source_histo_int_mean_bkg, alpha=0.3, color='black', line_color=None)
-    plot_histo_int_mean.vbar(x='x', top='top', width=5., source=source_histo_int_mean_sig_sel, alpha=0.3, color='blue', line_color=None)
-    plot_histo_int_mean.vbar(x='x', top='top', width=5., source=source_histo_int_mean_sig_notsel, alpha=0.3, color='red', line_color=None)
-
-    plot_histo_int_mean.quad(top='top', bottom=0, left='left', right='right', 
-                             source=source_test_dead, fill_color="navy", line_color="white", alpha=0.5)
-
-
-    source_histo_int_std_bkg = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    source_histo_int_std_sig_sel = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
-    source_histo_int_std_sig_notsel = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
- 
-    plot_histo_int_std       = bokeh.plotting.figure(title="histo int", x_axis_label='intensity std', y_axis_label='Number of pixels norm',width=500, height=400)
-    plot_histo_int_std.vbar(x='x', top='top', width=4., source=source_histo_int_std_bkg, alpha=0.3, color='black', line_color=None)
-    plot_histo_int_std.vbar(x='x', top='top', width=4., source=source_histo_int_std_sig_sel, alpha=0.3, color='blue', line_color=None)
-    plot_histo_int_std.vbar(x='x', top='top', width=4., source=source_histo_int_std_sig_notsel, alpha=0.3, color='red', line_color=None)
-
-
     plot_oscillation_cycle  = bokeh.plotting.figure(title="Osc Cycle", x_axis_label='cycle number', y_axis_label='Period [min]',width=500, height=400)
     #whisker = bokeh.models.Whisker(base=bokeh.transform.jitter('base', width=0.25, range=plot_oscillation_cycle.x_range),
     whisker = bokeh.models.Whisker(base='base',
@@ -4476,7 +4291,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                          bokeh.layouts.row(button_build_roi),
                                          bokeh.layouts.row(button_remove_roi),
                                          bokeh.layouts.row(button_build_sam2),
-                                         #bokeh.layouts.row(button_segment_cell),                                         
                                          )
 
     right_col = bokeh.layouts.column(bokeh.layouts.row(slider),
@@ -4494,8 +4308,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity, plot_markers),
                                               bokeh.layouts.row(plot_tod, plot_nosc),tod_checkbox,
-                                              bokeh.layouts.row(plot_oscillation_cycle),
-                                              bokeh.layouts.row(plot_histo_int_mean, plot_histo_int_std),)
+                                              bokeh.layouts.row(plot_oscillation_cycle),)
 
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
                                              #bokeh.layouts.row(plot_nosc),
@@ -4878,7 +4691,7 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     select_train_set.on_change('value', callback_set)
 
 
-    folder_path = r'D:\single_cells\training_cell_detection_categories'
+    folder_path = os.path.join(MVA_OUTDIR, 'single_cells\training_cell_detection_categories')
     build_dict(os.path.join(folder_path, 'train'))
     build_dict(os.path.join(folder_path, 'valid'))
     get_images(annot_dict_train, "train")
@@ -4934,195 +4747,6 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
 
 
 
-
-"""     #___________________________________________________________________________________________
-    def get_images_bboxes(folder_path):
-        image_paths = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('_annotation.json')])
-        titles = [os.path.split(t.replace('_annotation.json',''))[1] for t in image_paths]
-        valid  = []
-        images = []
-        images_cropped = []
-
-        for idx,img_path in enumerate(image_paths):
-            if idx>15:break
-            fname = img_path
-            data={}
-            bboxes=[]
-            with open(fname, 'r') as f:
-                data = json.load(f)
-                bbox = [data['bbox'][0], data['bbox'][1], data['bbox'][2], data['bbox'][3]]
-                try:
-                    valid.append(data['valid'])
-                except KeyError:
-                    valid.append(None)
-
-                with open(data["image_json"]) as f2:
-                    data2 = json.load(f2)
-                    image = np.array(data2["data"])
-                    max_value = np.max(image)
-                    min_value = np.min(image)
-                    intensity_normalized = (image - min_value)/(max_value-min_value)*255
-                    intensity_normalized = intensity_normalized.astype(np.uint8)
-                    images.append(intensity_normalized)
-
-                    image_cropped = np.array(data2["data_cropped"])
-                    max_value = np.max(image_cropped)
-                    min_value = np.min(image_cropped)
-                    intensity_normalized = (image_cropped - min_value)/(max_value-min_value)*255
-                    intensity_normalized = intensity_normalized.astype(np.uint8)
-                    images_cropped.append(intensity_normalized)
-
-        return images, bboxes_list, titles, valid
-
-    cell_types = ["normal",  "dead", "elongated", "flat", "dividing"]
-    select_cell_type = bokeh.models.Select(title="Cell Type", value=cell_types[0], options=cell_types)
-    train_set = ["train",  "valid"]
-    select_train_set = bokeh.models.Select(title="Set", value=train_set[0], options=train_set)    
-    folder_path = r'D:\single_cells\training_cell_detection_categories'
-    folders = {}
-
-    build_dict(os.path.join(folder_path, 'train'))
-    build_dict(os.path.join(folder_path, 'valid'))
-
-
-    #___________________________________________________________________________________________
-    def process_images(train, cell):
-        print('processing cell type:',cell)
-        images_base64, bboxes, titles, valid = get_images_bboxes(os.path.join(folder_path,train, cell))
-        folders["{}_{}".format(train, cell)] = {
-            'images': images_base64,
-            'bboxes': bboxes,
-            'titles': titles,
-            'valid': valid
-        }
-
-    #for cell in cell_types:
-    #    process_images(cell)
-    threads = []
-    for train in train_set:
-        for cell in cell_types:
-            threads.append(threading.Thread(target = process_images, args=(train,cell, )))
-    for t in threads: t.start()
-    for t in threads: t.join()
-
-
-    def set_layout(idx, ch):
-        layout.children[idx] = ch
-
-
-    #___________________________________________________________________________________________
-    def select_cell_type_callback(attr, old, new):
-        new_layout = create_plots_layout()
-        for idx, ch in enumerate(new_layout.children):
-            print(len(ch.children),'   ====   ', ch.children,'  ====  ',ch)
-            layout.children[idx] = ch
-
-        #threads = [threading.Thread(target = set_layout, args=(idx,ch,)) for idx, ch in enumerate(new_layout.children)]
-        #for t in threads: t.start()
-        #for t in threads: t.join()
-
-        #doc.add_root(bokeh.layouts.column(select_cell_type, new_layout))
-    select_cell_type.on_change('value', select_cell_type_callback)
-    select_train_set.on_change('value', select_cell_type_callback)
-
-
-    #___________________________________________________________________________________________
-    def create_plots_layout():
-        plots = []
-        buttons = []
-        for idx, img in enumerate(folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["images"]):
-            if idx==15:break
-            plot_name = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["titles"][idx]
-            valid = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["valid"][idx]
-            x_range = bokeh.models.Range1d(start=0, end=img.shape[0])
-            y_range = bokeh.models.Range1d(start=0, end=img.shape[1])
-            color_mapper = bokeh.models.LinearColorMapper(palette="Greys256", low=img.min(), high=img.max())
-
-            p = bokeh.plotting.figure(x_range=x_range, y_range=y_range,  width=275, height=275, title=plot_name, tools="box_select,wheel_zoom,box_zoom,reset,undo") #toolbar_location=None,
-        #plot = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
-
-            p.axis.visible = True
-            p.grid.visible = True
-            #p.image_url(url=[img], x=0, y=1, w=1, h=1)
-            p.image(image=[img], x=0, y=0, dw=img.shape[0], dh=img.shape[1],color_mapper=color_mapper)
-            bboxes = folders["{}_{}".format(select_train_set.value, select_cell_type.value)]["bboxes"][idx]
-            print(bboxes)
-            print(plot_name)
-            print("{}_{}".format(select_train_set.value, select_cell_type.value))
-            source = bokeh.models.ColumnDataSource(dict(left   = [b[0] for b in bboxes], 
-                                                        right  = [b[1] for b in bboxes], 
-                                                        top    = [b[2] for b in bboxes], 
-                                                        bottom = [b[3] for b in bboxes]
-                                                        ))
-            quad = bokeh.models.Quad(left='left', right='right', top='top', bottom='bottom', fill_color=None, line_color="white", line_width=2)
-            p.add_glyph(source, quad, selection_glyph=quad, nonselection_glyph=quad)
-
-            button = bokeh.models.Button(label=plot_name, width=60, button_type="success")
-
-            if not valid:
-                p.background_fill_color = 'rgba(255, 0, 0, 0.4)'
-                p.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
-                button.button_type = 'danger'
-                selected_plots_source.data['selected_plots'].append(plot_name)
-
-            def create_button_callback(plot, plot_name, btn):
-                def callback():
-                    selected_plots = selected_plots_source.data['selected_plots']
-                    print('selected_plots callback = ',selected_plots, '  plot_name = ',plot_name)
-
-                    dir=os.path.join(folder_path, select_train_set.value, select_cell_type.value, plot_name+'_annotation.json')                   
-                    dir = r'{}'.format(dir)
-                    annotation_file = glob.glob(dir)
-
-                    if plot_name in selected_plots:
-                        plot.background_fill_color = 'white'
-                        plot.border_fill_color     = 'white'
-                        selected_plots.remove(plot_name)
-                        if len(annotation_file)==1:
-                            data={}
-                            with open(annotation_file[0], 'r') as f:
-                                data   = json.load(f)
-                                data["valid"] = True
-                            out_file = open(annotation_file[0], "w") 
-                            json.dump(data, out_file) 
-                            out_file.close() 
-                        btn.button_type = 'success'
-                    else:
-                        plot.background_fill_color = 'rgba(255, 0, 0, 0.4)'
-                        plot.border_fill_color     = 'rgba(255, 0, 0, 0.4)'
-                        selected_plots.append(plot_name)
-                        if len(annotation_file)==1:
-                            data={}
-                            with open(annotation_file[0], 'r') as f:
-                                data   = json.load(f)
-                                data["valid"] = False
-                            out_file = open(annotation_file[0], "w") 
-                            json.dump(data, out_file) 
-                            out_file.close() 
-                        btn.button_type = 'danger'
-                    selected_plots_source.data = {'selected_plots': selected_plots}  # Update the data source
-                return callback
-
-            button.on_click(create_button_callback(p, plot_name, button))
-
-            plots.append(p)
-            buttons.append(button)
-
-        # Organize layout
-        plot_rows = []
-        for i in range(0, len(plots), 5):
-            plot_row = plots[i:i+5]
-            button_row = buttons[i:i+5]
-            plot_rows.append(bokeh.layouts.row(*plot_row, bokeh.layouts.column(*button_row)))
-
-        layout = bokeh.layouts.column(*plot_rows)
-        return layout
-
-
-    # Create the initial layout
-    layout = create_plots_layout()
-    doc.add_root(bokeh.layouts.column(bokeh.layouts.row(select_train_set, select_cell_type), layout))
- """
 
 
 #___________________________________________________________________________________________
