@@ -231,9 +231,9 @@ import segmentationTools as segtools
 def change_file_paths():
 
 
-    mylist = Sample.objects.all()
+    mylist = Contour.objects.all()
     for X in mylist:
-        name=X.file_name.replace('/mnt/nas_rcp/','')
+        name=X.file_name.replace('/data/','')
         X.file_name=name
         X.save()
 
