@@ -229,11 +229,13 @@ import reader as read
 import segmentationTools as segtools
 
 def change_file_paths():
-    exp_list = Experiment.objects.all()
-    for exp in exp_list:
-        name=exp.file_name.replace('/mnt/nas_rcp/','')
-        exp.file_name=name
-        exp.save()
+
+
+    mylist = Sample.objects.all()
+    for X in mylist:
+        name=X.file_name.replace('/mnt/nas_rcp/','')
+        X.file_name=name
+        X.save()
 
 
 #/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0117/wscepfl0117.nd2
