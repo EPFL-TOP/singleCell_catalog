@@ -230,13 +230,17 @@ import segmentationTools as segtools
 
 def change_file_paths():
 
-
+    count=0
     mylist = Contour.objects.all()
     for X in mylist:
+        if '/data/' in X.file_name:count+=1
         name=X.file_name.replace('/data/','')
         X.file_name=name
         X.save()
+        if count%10000==0:
+            print(' running = ',count)
 
+    print('changed ',count)
 
 #/mnt/nas_rcp/raw_data/microscopy/cell_culture/wscepfl0117/wscepfl0117.nd2
 
