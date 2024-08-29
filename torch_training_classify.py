@@ -123,6 +123,10 @@ def get_resnet(nfeat):
     # Modify the first convolutional layer to accept 3-channel grayscale images
     model.conv1 = nn.Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 
+    with torch.no_grad():
+        model.conv1.weight = nn.Parameter(model.conv1.weight.mean(dim=1, keepdim=True))
+
+
     # Modify the final fully connected layer to output 5 classes
     num_ftrs = model.fc.in_features
     model.fc = nn.Linear(num_ftrs, nfeat)
