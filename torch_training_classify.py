@@ -139,8 +139,8 @@ train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 model = CellClassifier()
 model_save_path = 'cell_labels_model.pth'
 
-model = get_resnet()
-model_save_path = 'cell_labels_model_resnet.pth'
+#model = get_resnet()
+#model_save_path = 'cell_labels_model_resnet.pth'
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 print('using device: ',device)
