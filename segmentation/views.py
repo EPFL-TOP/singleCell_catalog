@@ -1153,6 +1153,7 @@ def build_ROIs(sample=None, force=False):
     build_cells_sample(s, addmode=True)
     removeROIs(s)
 
+
 #___________________________________________________________________________________________
 async def saveROI(request):
     #roi = sync_to_async(ROI)(min_row=1, max_row=1, roi_number=10000)
@@ -2598,9 +2599,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_cells_full.data['height'] = cells_data['height']
         source_cells_full.data['names']  = cells_data['names']
 
-        source_roi.data    = {'left': source_rois_full.data['left'][0], 
-                              'right': source_rois_full.data['right'][0], 
-                              'top': source_rois_full.data['top'][0], 
+        source_roi.data    = {'left'  : source_rois_full.data['left'][0], 
+                              'right' : source_rois_full.data['right'][0], 
+                              'top'   : source_rois_full.data['top'][0], 
                               'bottom': source_rois_full.data['bottom'][0]}
         
         source_labels.data = {'height':source_labels_full.data['height'][0],
@@ -2880,18 +2881,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #                      'weight':weight_cells, 
         #                      'names':names_cells}
 
-        source_roi.data    = {'left': source_rois_full.data['left'][time_point], 
-                              'right': source_rois_full.data['right'][time_point], 
-                              'top': source_rois_full.data['top'][time_point], 
-                              'bottom': source_rois_full.data['bottom'][time_point]}
+        source_roi.data    = {'left'  :source_rois_full.data['left'][time_point], 
+                              'right' :source_rois_full.data['right'][time_point], 
+                              'top'   :source_rois_full.data['top'][time_point], 
+                              'bottom':source_rois_full.data['bottom'][time_point]}
         
         source_labels.data = {'height':source_labels_full.data['height'][time_point],
                               'weight':source_labels_full.data['weight'][time_point], 
-                              'names':source_labels_full.data['names'][time_point]}
+                              'names' :source_labels_full.data['names'][time_point]}
         
         source_cells.data  = {'height':source_cells_full.data['height'][time_point], 
                               'weight':source_cells_full.data['weight'][time_point], 
-                              'names':source_cells_full.data['names'][time_point]}
+                              'names' :source_cells_full.data['names'][time_point]}
         
         if len(source_intensity_ch1.data["time"])==0:
             line_position.location = -999
@@ -3311,6 +3312,23 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_cells.data  = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         update_dropdown_cell('','','')
         prepare_intensity()
+
+        s = Sample.objects.get(file_name = get_current_file())
+        rois_data = get_stack_rois_data(s.file_name)
+
+        source_rois_full.data['left']   = rois_data['rois']['left']
+        source_rois_full.data['right']  = rois_data['rois']['right']
+        source_rois_full.data['top']    = rois_data['rois']['top']
+        source_rois_full.data['bottom'] = rois_data['rois']['bottom']
+
+        source_labels_full.data['weight'] = rois_data['labels']['weight']
+        source_labels_full.data['height'] = rois_data['labels']['height']
+        source_labels_full.data['names']  = rois_data['labels']['names']
+
+        source_cells_full.data['weight'] = rois_data['cells']['weight']
+        source_cells_full.data['height'] = rois_data['cells']['height']
+        source_cells_full.data['names']  = rois_data['cells']['names']
+
 
     button_build_roi = bokeh.models.Button(label="Build ROI")
     button_build_roi.on_click(build_roi_callback)
