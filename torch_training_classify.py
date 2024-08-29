@@ -89,7 +89,7 @@ transform = transforms.Compose([
 
 
 class CellClassifier(nn.Module):
-    def __init__(self):
+    def __init__(self, nclasses):
         super(CellClassifier, self).__init__()
         self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)  # Input is 1 channel (grayscale)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
@@ -98,7 +98,7 @@ class CellClassifier(nn.Module):
 
         # Adjust the input size of the first fully connected layer
         self.fc1 = nn.Linear(128 * 18 * 18, 150)  # Updated size after pooling
-        self.fc2 = nn.Linear(150, 5)  # 5 classes: "normal", "dead", "flat", "elongated", etc.
+        self.fc2 = nn.Linear(150, nclasses)  # 5 classes: "normal", "dead", "flat", "elongated", etc.
 
         #self.fc1 = nn.Linear(128 * 8 * 8, 150)  # Adjust size according to your input dimensions
         #self.fc2 = nn.Linear(150, 5)  # 4 classes: "normal", "dead", "flat", "elongated"
@@ -135,11 +135,12 @@ image_paths=r'D:\single_cells\training_cell_detection_categories\train'
 train_dataset = CellDataset(image_paths, transform=transform)
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
+nclasses=2
 # Initialize the model, loss function, and optimizer
-model = CellClassifier()
+model = CellClassifier(nclasses)
 model_save_path = 'cell_labels_model.pth'
 
-#model = get_resnet(2)
+#model = get_resnet(nclasses)
 #model_save_path = 'cell_labels_model_resnet.pth'
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
