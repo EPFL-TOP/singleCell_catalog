@@ -793,7 +793,7 @@ def build_segmentation_sam2(sample=None, force=False):
                         if r.area<80: continue
                         if math.sqrt( math.pow((input_point[0][0] - r.centroid[1]),2) +  math.pow((input_point[0][1]- r.centroid[0]),2))>50:continue
                         sel_region=r
-                        print(' slecred r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
+                        print(' selected r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
                 if sel_region!=None:
                     build_contours(sel_region, contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
 
@@ -1688,6 +1688,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_intensity_max = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_intensity_min = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
 
+    source_intensity_area = bokeh.models.ColumnDataSource(data={'time':[], 'area':[]})
+
     source_segments_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_mask_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity_full':[]})
     source_dividing_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[], 'intensity_full':[]})
@@ -1711,9 +1713,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_img_mask  = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
 
 
+
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500)
     plot_tod       = bokeh.plotting.figure(title="Time of death", x_axis_label='Time (30 mins bins)', y_axis_label='Number of positions',width=550, height=350)
     plot_nosc      = bokeh.plotting.figure(title="Number of oscillations", x_axis_label='Number of oscillations', y_axis_label='Number of positions',width=550, height=350)
+
+    plot_intensity.extra_y_ranges['area'] = bokeh.models.Range1d(start=0, end=100)
 
     slider_find_peaks  = bokeh.models.Slider(start=0, end=100, value=30, step=1, title="Peak prominence", width=200)
 
@@ -2444,6 +2449,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if cid.name!=dropdown_cell.value:continue
             time_list={}
             intensity_list={}
+            area_list={}
             ROIs = CellROI.objects.select_related().filter(cell_id=cid)
             for roi in ROIs:
                 if dropdown_segmentation_type.value == 'roi':
@@ -2481,7 +2487,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                             nframes=len(frames)
                             intensity_list[ch]=[0 for i in range(nframes)]
                             time_list[ch]=[f.time/60000 for f in frames]
-
+                            area_list[ch]=[0 for i in range(nframes)]
+                            area_list[ch][roi.frame.number]=contour.contourseg_cellroi
                         if   dropdown_intensity_type.value == 'sum': 
                             intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_sum')[ch]
                         elif dropdown_intensity_type.value == 'avg': 
@@ -2493,9 +2500,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             for index, key in enumerate(time_list):
                 if index==0:
-                    sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
-                    time_sorted, intensity_sorted = zip(*sorted_lists) 
+                    sorted_lists = sorted(zip(time_list[key], intensity_list[key], area_list[key])) 
+                    time_sorted, intensity_sorted, area_sorted = zip(*sorted_lists) 
                     source_intensity_ch0.data={'time':time_sorted, 'intensity':intensity_sorted}
+                    source_intensity_area.data=('time':time_sorted, 'area':area_sorted)
                 if index==1:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
                     time_sorted, intensity_sorted = zip(*sorted_lists) 
@@ -4139,6 +4147,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
+    plot_intensity.line('time', 'area'y_range_name="area", source=source_intensity_area, line_color='black')
+    
     int_ch1 = plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=10, line_color='blue')
     plot_intensity.line('time', 'intensity', source=source_intensity_ch2, line_color='black')
     int_ch2 = plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=10, line_color='black')

@@ -120,7 +120,7 @@ class CellClassifier(nn.Module):
 def get_resnet(nfeat):
     # Load a pre-trained ResNet model
     #model = models.resnet18(pretrained=True)
-    model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+    model = models.resnet18(weights=ResNet18_Weights.DEFAULT)
     # Modify the first convolutional layer to accept 3-channel grayscale images
     model.conv1 = nn.Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 
