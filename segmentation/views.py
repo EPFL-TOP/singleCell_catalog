@@ -43,8 +43,8 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.transforms import functional as F
 import torch.nn.functional as F2
 import torch.nn as nn
-
-
+from torchvision.models import ResNet18_Weights  # Import the appropriate weights enum
+from torchvision import models
 
 from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
@@ -75,7 +75,7 @@ class ToTensorNormalize:
         return image
 
 class CellClassifier(nn.Module):
-    def __init__(self):
+    def __init__(self,num_classes):
         super(CellClassifier, self).__init__()
         self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)  # Input is 1 channel (grayscale)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
@@ -84,7 +84,7 @@ class CellClassifier(nn.Module):
 
         # Adjust the input size of the first fully connected layer
         self.fc1 = nn.Linear(128 * 18 * 18, 150)  # Updated size after pooling
-        self.fc2 = nn.Linear(150, 5)  # 5 classes: "normal", "dead", "flat", "elongated", etc.
+        self.fc2 = nn.Linear(150, num_classes)  # 5 classes: "normal", "dead", "flat", "elongated", etc.
 
         #self.fc1 = nn.Linear(128 * 8 * 8, 150)  # Adjust size according to your input dimensions
         #self.fc2 = nn.Linear(150, 5)  # 4 classes: "normal", "dead", "flat", "elongated"
@@ -124,13 +124,35 @@ def load_model_detect(model_path, num_classes, device):
 def load_model_label(model_path, num_classes, device):
 
     # Instantiate the model
-    model = CellClassifier()
+    model = CellClassifier(num_classes)
 #    Load the saved model parameters
     checkpoint = torch.load(model_path, weights_only=True)
     model.load_state_dict(checkpoint['model_state_dict'])
 # Set the model to evaluation mode
     model.to(device)
     model.eval()
+    return model
+
+
+def load_model_label_resnet(model_path, num_classes, device):
+    # Load a pre-trained ResNet model
+    model = models.resnet18(weights=ResNet18_Weights.DEFAULT)
+    # Modify the first convolutional layer to accept 3-channel grayscale images
+    model.conv1 = nn.Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+
+    with torch.no_grad():
+        model.conv1.weight = nn.Parameter(model.conv1.weight.mean(dim=1, keepdim=True))
+
+    # Modify the final fully connected layer to output 5 classes
+    num_ftrs = model.fc.in_features
+    model.fc = nn.Linear(num_ftrs, num_classes)
+
+    checkpoint = torch.load(model_path, weights_only=True)
+    model.load_state_dict(checkpoint['model_state_dict'])
+
+    model.to(device)
+    model.eval()
+    
     return model
 
 
@@ -155,10 +177,11 @@ def preprocess_image_sam2(image):
 model_path = 'cell_detection_model.pth'
 model_path_labels = 'cell_labels_model.pth'
 num_classes_detect = 2
-num_classes_labels = 5
+num_classes_labels = 2
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 model_detect = load_model_detect(model_path, num_classes_detect, torch.device('cuda'))
 model_label = load_model_label(model_path_labels, num_classes_labels, torch.device('cuda'))
+model_label_resnet = load_model_label_resnet(model_path_labels, num_classes_labels, torch.device('cuda'))
 
 
 
@@ -4611,7 +4634,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             image_cropped = preprocess_image_pytorch(image_cropped_dict_valid[map_img_pos_valid[time_point]]).to(device)
             with torch.no_grad():
                 predictions = model_detect(image)
-                labels = model_label(image_cropped)
+                #labels = model_label(image_cropped)
+                labels = model_label_resnet(image_cropped)
 
                 print('labels        : ',labels)
                 probabilities = F2.softmax(labels, dim=1)
