@@ -8,6 +8,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
 from torchvision import models
+from torchvision.models import ResNet18_Weights  # Import the appropriate weights enum
 
 labels_map = {'normal':0, 'dead':1, 'flat':2, 'elongated':3, 'dividing':4}
 labels_map = {'normal':0, 'dead':1, 'flat':1, 'elongated':1, 'dividing':1}
@@ -118,8 +119,8 @@ class CellClassifier(nn.Module):
 
 def get_resnet(nfeat):
     # Load a pre-trained ResNet model
-    model = models.resnet18(pretrained=True)
-
+    #model = models.resnet18(pretrained=True)
+    model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
     # Modify the first convolutional layer to accept 3-channel grayscale images
     model.conv1 = nn.Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 

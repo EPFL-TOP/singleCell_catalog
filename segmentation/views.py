@@ -763,8 +763,8 @@ def build_segmentation_sam2(sample=None, force=False):
             input_point = np.array([[cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.],
                                     [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.+npix, cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.],
                                     [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.-npix, cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.],
-                                    [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.]+npix,
-                                    [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.]-npix,
+                                    [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.+npix],
+                                    [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.-npix],
                                     ])
             input_label = np.array([1,1,1,1,1])
             masks, scores, logits = predictor.predict(point_coords=input_point,point_labels=input_label,multimask_output=True)
