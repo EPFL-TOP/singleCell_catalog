@@ -4745,9 +4745,9 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
     select_train_set.on_change('value', callback_set)
 
 
-    folder_path = os.path.join(MVA_OUTDIR, 'single_cells\training_cell_detection_categories')
-    build_dict(os.path.join(folder_path, 'train'))
-    build_dict(os.path.join(folder_path, 'valid'))
+    folder_path = os.path.join(MVA_OUTDIR, 'single_cells/training_cell_detection_categories')
+    build_dict(os.path.join(MVA_OUTDIR, 'single_cells/training_cell_detection_categories', 'train'))
+    build_dict(os.path.join(MVA_OUTDIR, 'single_cells/training_cell_detection_categories', 'valid'))
     get_images(annot_dict_train, "train")
     get_images(annot_dict_valid, "valid")
 
