@@ -1714,7 +1714,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
 
-    plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500)
+    plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500, tools="pan,box_zoom,save,reset")
     plot_tod       = bokeh.plotting.figure(title="Time of death", x_axis_label='Time (30 mins bins)', y_axis_label='Number of positions',width=550, height=350)
     plot_nosc      = bokeh.plotting.figure(title="Number of oscillations", x_axis_label='Number of oscillations', y_axis_label='Number of positions',width=550, height=350)
 
@@ -2505,8 +2505,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     time_sorted, intensity_sorted, area_sorted = zip(*sorted_lists) 
                     source_intensity_ch0.data={'time':time_sorted, 'intensity':intensity_sorted}
                     source_intensity_area.data={'time':time_sorted, 'area':area_sorted}
-                    plot_intensity.extra_y_ranges['area'].start = min(area_sorted)
-                    plot_intensity.extra_y_ranges['area'].end = max(area_sorted)
+                    plot_intensity.extra_y_ranges['area'].start = min(area_sorted)*0.7
+                    plot_intensity.extra_y_ranges['area'].end = max(area_sorted)*1.3
                     
                 if index==1:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
