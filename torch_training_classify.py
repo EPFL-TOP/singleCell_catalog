@@ -150,7 +150,7 @@ model.to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-num_epochs = 100
+num_epochs = 50
 
 # Training loop
 for epoch in range(num_epochs):  # loop over the dataset multiple times
