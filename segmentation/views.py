@@ -61,7 +61,7 @@ import bokeh.layouts
 
 
 labels_map = {0:'normal', 1:'dead', 2:'flat', 3:'elongated', 4:'dividing'}
-labels_map = {0:'normal', 1:'dead', 2:'normal', 3:'normal', 4:'normal'}
+labels_map = {0:'normal', 1:'dead'}#, 2:'normal', 3:'normal', 4:'normal'}
 
 
 class ToTensorNormalize:
@@ -181,7 +181,7 @@ num_classes_detect = 2
 num_classes_labels = 2
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 model_detect = load_model_detect(model_path, num_classes_detect, torch.device('cuda'))
-#model_label = load_model_label(model_path_labels, num_classes_labels, torch.device('cuda'))
+model_label = load_model_label(model_path_labels, num_classes_labels, torch.device('cuda'))
 model_label_resnet = load_model_label_resnet(model_path_labels_resnet, num_classes_labels, torch.device('cuda'))
 
 
@@ -4635,8 +4635,8 @@ def phenocheck_handler(doc: bokeh.document.Document) -> None:
             image_cropped = preprocess_image_pytorch(image_cropped_dict_valid[map_img_pos_valid[time_point]]).to(device)
             with torch.no_grad():
                 predictions = model_detect(image)
-                #labels = model_label(image_cropped)
-                labels = model_label_resnet(image_cropped)
+                labels = model_label(image_cropped)
+                #labels = model_label_resnet(image_cropped)
 
                 print('labels        : ',labels)
                 probabilities = F2.softmax(labels, dim=1)
