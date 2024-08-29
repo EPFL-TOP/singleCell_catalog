@@ -4147,7 +4147,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
-    plot_intensity.line('time', 'area'y_range_name="area", source=source_intensity_area, line_color='black')
+    plot_intensity.line('time', 'area', y_range_name="area", source=source_intensity_area, line_color='black')
     
     int_ch1 = plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=10, line_color='blue')
     plot_intensity.line('time', 'intensity', source=source_intensity_ch2, line_color='black')
