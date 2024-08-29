@@ -706,7 +706,7 @@ def build_cells_sample(sample, addmode=False):
                 #get the cell ROI of the closest frame
                 cellroi_cell = CellROI.objects.select_related().filter(frame=cframe).get(cell_id=cellid)
                 dR = math.sqrt(math.pow((cellroi_cell.contour_cellroi.center_x_pix - cellroi_frame.contour_cellroi.center_x_pix),2) +  
-                                math.pow((cellroi_cell.contour_cellroi.center_y_pix - cellroi_frame.contour_cellroi.center_y_pix),2))                    
+                               math.pow((cellroi_cell.contour_cellroi.center_y_pix - cellroi_frame.contour_cellroi.center_y_pix),2))                    
                 if dR<minDR:
                     minDR=dR
                     mincellid=cellid
@@ -1005,7 +1005,7 @@ def build_ROIs(sample=None, force=False):
             print(predictions)
             for idx, box in enumerate(predictions[0]['boxes']):
                 x_min, y_min, x_max, y_max = box.cpu().numpy()
-                if float(predictions[0]['scores'][idx].cpu().numpy())<0.4:continue
+                if float(predictions[0]['scores'][idx].cpu().numpy())<0.5:continue
                 if (x_max-x_min)*(y_max-y_min)<150:continue
                 rois_seg.append((int(y_min), int(x_min), int(y_max), int(x_max)))
 
@@ -1149,6 +1149,7 @@ def build_ROIs(sample=None, force=False):
                 rois_DB_final[roi_final].roi_number = roi_final
                 rois_DB_final[roi_final].save()
     print('about to build cells')
+    build_cells_sample(s, addmode=False)
     build_cells_sample(s, addmode=True)
     removeROIs(s)
 
@@ -1487,10 +1488,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def get_stack_data(current_file, text=''):
         local_time=datetime.datetime.now()
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
-        current_file=os.path.join(NASRCP_MOUNT_POINT,"/"+current_file)
+        current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         time_lapse_path = Path(current_file)
         print('time_lapse_path = ',time_lapse_path)
+        print('time_lapse_path.as_posix() = ',time_lapse_path.as_posix())
+        
         print_time(f'------- time_lapse_path get_stack_data {text}', local_time)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         print_time(f'------- imread get_stack_data {text}', local_time)
@@ -3303,9 +3306,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         build_ROIs(get_current_file(), force=True)
         left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         
-        source_roi.data = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
+        source_roi.data    = {'left': left_rois, 'right': right_rois, 'top': top_rois, 'bottom': bottom_rois}
         source_labels.data = {'height':height_labels, 'weight':weight_labels, 'names':names_labels}
-        source_cells.data = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
+        source_cells.data  = {'height':height_cells, 'weight':weight_cells, 'names':names_cells}
         update_dropdown_cell('','','')
         prepare_intensity()
 
