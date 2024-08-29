@@ -757,17 +757,22 @@ def build_segmentation_sam2(sample=None, force=False):
 
         image_prepro = preprocess_image_sam2(BF_images[frame.number])
         predictor.set_image(image_prepro)
-
+        npix=5
         cellROIs = CellROI.objects.select_related().filter(frame=frame)
         for cellroi in cellROIs:
-            input_point = np.array([[cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.]])
-            input_label = np.array([1])
+            input_point = np.array([[cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.],
+                                    [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.+npix, cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.],
+                                    [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.-npix, cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.],
+                                    [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.]+npix,
+                                    [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.]-npix,
+                                    ])
+            input_label = np.array([1,1,1,1,1])
             masks, scores, logits = predictor.predict(point_coords=input_point,point_labels=input_label,multimask_output=True)
             sorted_ind = np.argsort(scores)[::-1]
             masks = masks[sorted_ind]
             scores = scores[sorted_ind]
             logits = logits[sorted_ind]
-            print(scores)
+            print('scores ',scores)
             label_im = label(masks[0])
             region=regionprops(label_im)
 
@@ -886,7 +891,6 @@ def build_contours(contour, contourseg, cellroi, img_shape, segname, images, cha
     intensity_sum={}
     intensity_max={}
     for ch in range(len(channels)): 
-        print('len(images)= ',len(images),'  shape  ', images.shape)
         segment=mask0*images[ch][cellroi.frame.number]
         sum=float(np.sum(segment))
         mean=float(np.mean(segment))

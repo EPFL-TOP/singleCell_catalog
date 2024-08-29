@@ -116,7 +116,7 @@ class CellClassifier(nn.Module):
         return x
 
 
-def get_resnet():
+def get_resnet(nfeat):
     # Load a pre-trained ResNet model
     model = models.resnet18(pretrained=True)
 
@@ -125,7 +125,7 @@ def get_resnet():
 
     # Modify the final fully connected layer to output 5 classes
     num_ftrs = model.fc.in_features
-    model.fc = nn.Linear(num_ftrs, 5)
+    model.fc = nn.Linear(num_ftrs, nfeat)
     return model
 
 
@@ -139,7 +139,7 @@ train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 model = CellClassifier()
 model_save_path = 'cell_labels_model.pth'
 
-#model = get_resnet()
+#model = get_resnet(2)
 #model_save_path = 'cell_labels_model_resnet.pth'
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
