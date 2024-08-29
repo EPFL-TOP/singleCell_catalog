@@ -2489,7 +2489,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                             intensity_list[ch]=[0 for i in range(nframes)]
                             time_list[ch]=[f.time/60000 for f in frames]
                             area_list[ch]=[0 for i in range(nframes)]
-                            area_list[ch][roi.frame.number]=contour.number_of_pixels
+                        area_list[ch][roi.frame.number]=contour.number_of_pixels
                         if   dropdown_intensity_type.value == 'sum': 
                             intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_sum')[ch]
                         elif dropdown_intensity_type.value == 'avg': 
@@ -2505,6 +2505,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     time_sorted, intensity_sorted, area_sorted = zip(*sorted_lists) 
                     source_intensity_ch0.data={'time':time_sorted, 'intensity':intensity_sorted}
                     source_intensity_area.data={'time':time_sorted, 'area':area_sorted}
+                    plot_intensity.extra_y_ranges['area'].start = min(area_sorted)
+                    plot_intensity.extra_y_ranges['area'].end = max(area_sorted)
+                    
                 if index==1:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
                     time_sorted, intensity_sorted = zip(*sorted_lists) 
@@ -4148,6 +4151,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
+    plot_intensity.line('time', 'area', y_range_name="area", source=source_intensity_area, line_color='black')
     plot_intensity.circle('time', 'area', y_range_name="area", source=source_intensity_area, line_color='black')
     
     ax2 = bokeh.models.LinearAxis(
