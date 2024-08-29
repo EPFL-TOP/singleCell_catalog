@@ -2463,6 +2463,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                             nframes=len(frames)
                             intensity_list[ch]=[0 for i in range(nframes)]
                             time_list[ch]=[f.time/60000 for f in frames]
+                            area_list[ch]=[0 for i in range(nframes)]
 
                         if   dropdown_intensity_type.value == 'sum': 
                             intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_sum')[ch]
