@@ -176,6 +176,7 @@ def preprocess_image_sam2(image):
 
 model_path = 'cell_detection_model.pth'
 model_path_labels = 'cell_labels_model.pth'
+model_path_labels = 'cell_labels_model_resnet.pth'
 num_classes_detect = 2
 num_classes_labels = 2
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
