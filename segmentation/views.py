@@ -4148,8 +4148,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
-    plot_intensity.line('time', 'area', y_range_name="area", source=source_intensity_area, line_color='black')
+    plot_intensity.circle('time', 'area', y_range_name="area", source=source_intensity_area, line_color='black')
     
+    ax2 = bokeh.models.LinearAxis(
+        axis_label="area",
+        y_range_name="area",
+    )
+    ax2.axis_label_text_color = bokeh.palettes.Sunset6[5]
+    plot_intensity.add_layout(ax2, 'left')
+
+
     int_ch1 = plot_intensity.circle('time', 'intensity', source=source_intensity_ch1, fill_color="white", size=10, line_color='blue')
     plot_intensity.line('time', 'intensity', source=source_intensity_ch2, line_color='black')
     int_ch2 = plot_intensity.circle('time', 'intensity', source=source_intensity_ch2, fill_color="white", size=10, line_color='black')
