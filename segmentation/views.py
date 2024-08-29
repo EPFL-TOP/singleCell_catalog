@@ -2516,7 +2516,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         dropdown_cell.options=cell_list
 
         print_time('------- update_dropdown_cell 2 ', local_time)
-        print('source_intensity_area  ',source_intensity_area)
+        print('source_intensity_area  ',source_intensity_area.data)
 
         #plot_intensity.y_range = bokeh.models.Range1d(max(source_intensity_ch1.data["intensity"])*0.4, max(source_intensity_ch1.data["intensity"])*1.2, bounds="auto")
 
