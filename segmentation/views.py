@@ -181,7 +181,7 @@ num_classes_detect = 2
 num_classes_labels = 2
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 model_detect = load_model_detect(model_path, num_classes_detect, torch.device('cuda'))
-model_label = load_model_label(model_path_labels, num_classes_labels, torch.device('cuda'))
+#model_label = load_model_label(model_path_labels, num_classes_labels, torch.device('cuda'))
 model_label_resnet = load_model_label_resnet(model_path_labels_resnet, num_classes_labels, torch.device('cuda'))
 
 
