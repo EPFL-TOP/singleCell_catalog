@@ -2799,7 +2799,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo=dropdown_segmentation_type.value)
             if len(contours)!=1:return
             contour = contours[0]
-            f = open(os.path.join(NASRCP_MOUNT_POINT, 'analysis_data',contour.file_name))
+            f = open(os.path.join(NASRCP_MOUNT_POINT, contour.file_name))
             data = json.load(f)
             #mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
             mask1=np.ones(source_img_ch.data['img'][0].shape, dtype=bool)
