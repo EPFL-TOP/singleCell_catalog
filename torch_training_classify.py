@@ -137,11 +137,11 @@ train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
 nclasses=2
 # Initialize the model, loss function, and optimizer
-model = CellClassifier(nclasses)
-model_save_path = 'cell_labels_model.pth'
+#model = CellClassifier(nclasses)
+#model_save_path = 'cell_labels_model.pth'
 
-#model = get_resnet(nclasses)
-#model_save_path = 'cell_labels_model_resnet.pth'
+model = get_resnet(nclasses)
+model_save_path = 'cell_labels_model_resnet.pth'
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 print('using device: ',device)
