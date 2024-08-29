@@ -11,7 +11,7 @@ from torchvision import models
 from torchvision.models import ResNet18_Weights  # Import the appropriate weights enum
 
 labels_map = {'normal':0, 'dead':1, 'flat':2, 'elongated':3, 'dividing':4}
-labels_map = {'normal':0, 'dead':1, 'flat':1, 'elongated':1, 'dividing':1}
+labels_map = {'normal':0, 'dead':1, 'flat':0, 'elongated':0, 'dividing':0}
 
 class CellDataset(Dataset):
     def __init__(self, image_paths, transform=None):
