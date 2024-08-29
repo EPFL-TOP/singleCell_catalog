@@ -2503,7 +2503,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key], area_list[key])) 
                     time_sorted, intensity_sorted, area_sorted = zip(*sorted_lists) 
                     source_intensity_ch0.data={'time':time_sorted, 'intensity':intensity_sorted}
-                    source_intensity_area.data=('time':time_sorted, 'area':area_sorted)
+                    source_intensity_area.data={'time':time_sorted, 'area':area_sorted}
                 if index==1:
                     sorted_lists = sorted(zip(time_list[key], intensity_list[key])) 
                     time_sorted, intensity_sorted = zip(*sorted_lists) 
