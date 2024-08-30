@@ -1637,7 +1637,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for frame in frames:
             cellrois = CellROI.objects.select_related().filter(frame=frame)
             for roi in cellrois:
-                for seg in roi.contourseg_cellroi:
+                segmentations = ContourSeg.objects.select_related().filter(cell_roi=roi)
+                for seg in segmentations:
 
                     f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
                     data = json.load(f)
