@@ -1860,13 +1860,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 print('frame dead= ',i)
                 print('time =',cellroi.frame.time, 'intensity =',source_intensity_ch1.data["time"][cellroi.frame.number])
                 source_intensity_predicted_death.data={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
+                cellstatus=cellid.cell_status
+                cellstatus.time_of_death_pred=time_of_death_pred
+                cellstatus.save()
                 break
 
 
 
-        #cellstatus=cellid.cell_status
-        #cellstatus.time_of_death_pred=time_of_death_pred
-        #cellstatus.save()
 
     #___________________________________________________________________________________________
     # Function to prepare the intensity plot
