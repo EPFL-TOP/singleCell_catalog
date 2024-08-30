@@ -1625,7 +1625,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def get_masks_data(current_file, ind_images_list_norm):
         sample = Sample.objects.get(file_name=current_file)
-        cellids = sample.cellid
+        cellids = CellID.objects.select_related().filter(sample=sample)
         out_dict={}
         mask1=np.ones(ind_images_list_norm[frame.number].shape, dtype=bool)
         for cellid in cellids:
