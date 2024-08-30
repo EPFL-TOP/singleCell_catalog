@@ -108,8 +108,6 @@ def load_model_detect(model_path, num_classes, device):
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
     # Load the checkpoint
-    print('device= ',device, '  ',type(device))
-    #map_location=torch.device('cpu')
     if device==torch.device('cpu'):
         checkpoint = torch.load(model_path, weights_only=True, map_location=torch.device('cpu'))
     else:
@@ -131,7 +129,10 @@ def load_model_label(model_path, num_classes, device):
     # Instantiate the model
     model = CellClassifier(num_classes)
 #    Load the saved model parameters
-    checkpoint = torch.load(model_path, weights_only=True)
+    if device==torch.device('cpu'):
+        checkpoint = torch.load(model_path, weights_only=True, map_location=torch.device('cpu'))
+    else:
+        checkpoint = torch.load(model_path, weights_only=True)
     model.load_state_dict(checkpoint['model_state_dict'])
 # Set the model to evaluation mode
     model.to(device)
