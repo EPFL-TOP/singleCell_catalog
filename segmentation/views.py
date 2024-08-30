@@ -1635,12 +1635,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if image_stack_dict[current_pos]==None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
             rois_data = get_stack_rois_data(current_file)
+            masks_data = get_masks_data(current_file, ind_images_list_norm)
 
             image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 
                                            'ind_images_list_norm':ind_images_list_norm,
                                            'rois':rois_data['rois'],
                                            'labels':rois_data['labels'],
-                                           'cells':rois_data['cells']}
+                                           'cells':rois_data['cells'],
+                                           'masks':masks_data}
 
         if DEBUG_TIME: print_time('------- get_current_stack END ', local_time)
         return image_stack_dict[current_pos]
@@ -1663,12 +1665,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if image_stack_dict[k]==None:
                     ind_images_list, ind_images_list_norm = get_stack_data(current_file_list[current_pos_list.index(k)], 'get_adjacent_stack')
                     rois_data = get_stack_rois_data(current_file_list[current_pos_list.index(k)], 'get_adjacent_stack')
+                    masks_data = get_masks_data(current_file, ind_images_list_norm)
 
                     image_stack_dict[k]={'ind_images_list':ind_images_list, 
                                          'ind_images_list_norm':ind_images_list_norm,
                                          'rois':rois_data['rois'],
                                          'labels':rois_data['labels'],
-                                         'cells':rois_data['cells']}
+                                         'cells':rois_data['cells'],
+                                         'masks':masks_data}
 
 
             else:
@@ -2856,9 +2860,39 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     #___________________________________________________________________________________________
+    def get_masks_data(current_file, ind_images_list_norm):
+        sample = Sample.objects.get(file_name=current_file)
+        cellids = sample.cellid
+        out_dict={}
+        mask1=np.ones(ind_images_list_norm[frame.number].shape, dtype=bool)
+        for cellid in cellids:
+            out_dict[cellid.name]={}
+            for seg in cellid.cell_status.segmentation['algo']:
+                out_dict[cellid.name][seg]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
+            
+        frames = Frame.objects.select_related().filter(sample=sample)
+        for frame in frames:
+            cellrois = CellROI.objects.select_related().filter(frame=frame)
+            for roi in cellrois:
+                for seg in roi.contourseg_cellroi:
+
+                    f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
+                    data = json.load(f)
+                    mask1=np.ones(ind_images_list_norm[frame.number].shape, dtype=bool)
+                    mask1=mask1*255
+                    for i in range(data['npixels']):
+                        mask1[frame.height-data['x'][i]][data['y'][i]]=ind_images_list_norm[frame.number][frame.height-data['x'][i]][data['y'][i]] 
+                    out_dict[roi.cell_id.name][seg][frame.number] = mask1
+        return out_dict
+    
+
+    #___________________________________________________________________________________________
     def update_source_segment(tp=0):
         if DEBUG:print('****************************  update_source_segment ****************************')
-        current_file=get_current_file()
+        mask = get_current_stack()['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]
+        source_img_mask.data = {'img':[mask]}
+
+        return
 
         sample = Sample.objects.get(file_name=current_file)
         #print('sample=',sample)
