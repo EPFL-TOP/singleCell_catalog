@@ -1631,7 +1631,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for cellid in cellids:
             out_dict[cellid.name]={}
             for seg in cellid.cell_status.segmentation['algo']:
-                out_dict[cellid.name][seg.algo]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
+                out_dict[cellid.name][seg]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
             
         frames = Frame.objects.select_related().filter(sample=sample)
         for frame in frames:
