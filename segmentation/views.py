@@ -1623,6 +1623,32 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         return rois_dict
     
     #___________________________________________________________________________________________
+    def get_masks_data(current_file, ind_images_list_norm):
+        sample = Sample.objects.get(file_name=current_file)
+        cellids = sample.cellid
+        out_dict={}
+        mask1=np.ones(ind_images_list_norm[frame.number].shape, dtype=bool)
+        for cellid in cellids:
+            out_dict[cellid.name]={}
+            for seg in cellid.cell_status.segmentation['algo']:
+                out_dict[cellid.name][seg]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
+            
+        frames = Frame.objects.select_related().filter(sample=sample)
+        for frame in frames:
+            cellrois = CellROI.objects.select_related().filter(frame=frame)
+            for roi in cellrois:
+                for seg in roi.contourseg_cellroi:
+
+                    f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
+                    data = json.load(f)
+                    mask1=np.ones(ind_images_list_norm[frame.number].shape, dtype=bool)
+                    mask1=mask1*255
+                    for i in range(data['npixels']):
+                        mask1[frame.height-data['x'][i]][data['y'][i]]=ind_images_list_norm[frame.number][frame.height-data['x'][i]][data['y'][i]] 
+                    out_dict[roi.cell_id.name][seg][frame.number] = mask1
+        return out_dict
+
+    #___________________________________________________________________________________________
     def get_current_stack():
         if DEBUG: print('****************************  get_current_stack ****************************')
         local_time = datetime.datetime.now()
@@ -2859,31 +2885,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    #___________________________________________________________________________________________
-    def get_masks_data(current_file, ind_images_list_norm):
-        sample = Sample.objects.get(file_name=current_file)
-        cellids = sample.cellid
-        out_dict={}
-        mask1=np.ones(ind_images_list_norm[frame.number].shape, dtype=bool)
-        for cellid in cellids:
-            out_dict[cellid.name]={}
-            for seg in cellid.cell_status.segmentation['algo']:
-                out_dict[cellid.name][seg]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
-            
-        frames = Frame.objects.select_related().filter(sample=sample)
-        for frame in frames:
-            cellrois = CellROI.objects.select_related().filter(frame=frame)
-            for roi in cellrois:
-                for seg in roi.contourseg_cellroi:
 
-                    f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
-                    data = json.load(f)
-                    mask1=np.ones(ind_images_list_norm[frame.number].shape, dtype=bool)
-                    mask1=mask1*255
-                    for i in range(data['npixels']):
-                        mask1[frame.height-data['x'][i]][data['y'][i]]=ind_images_list_norm[frame.number][frame.height-data['x'][i]][data['y'][i]] 
-                    out_dict[roi.cell_id.name][seg][frame.number] = mask1
-        return out_dict
     
 
     #___________________________________________________________________________________________
