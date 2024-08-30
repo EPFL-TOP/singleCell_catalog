@@ -205,7 +205,7 @@ elif device.type == "mps":
 sam2_checkpoint = "checkpoints/sam2_hiera_base_plus.pt"
 model_cfg = "sam2_hiera_b+.yaml"
 sam2 = build_sam2(model_cfg, sam2_checkpoint, device=device)#, apply_postprocessing=False)
-predictor = SAM2ImagePredictor(sam2)
+predictor_base_plus = SAM2ImagePredictor(sam2)
 
 
 LOCAL=True
@@ -780,25 +780,15 @@ def build_segmentation_sam2(sample=None, force=False):
         print(frame)
 
         image_prepro = preprocess_image_sam2(BF_images[frame.number])
-        predictor.set_image(image_prepro)
+        predictor_base_plus.set_image(image_prepro)
         npix=5
         cellROIs = CellROI.objects.select_related().filter(frame=frame)
         for cellroi in cellROIs:
-            input_point = np.array([[cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.],
-                                    [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.+npix, cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.],
-                                    [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.-npix, cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.],
-                                    [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.+npix],
-                                    [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.-npix],
-                                    ])
-            input_label = np.array([1,1,1,1,1])
-            masks, scores, logits = predictor.predict(point_coords=input_point,point_labels=input_label,multimask_output=True)
-            sorted_ind = np.argsort(scores)[::-1]
-            masks = masks[sorted_ind]
-            scores = scores[sorted_ind]
-            logits = logits[sorted_ind]
-            print('scores ',scores)
-            label_im = label(masks[0])
-            region=regionprops(label_im)
+
+
+            if 'SAM2_b+' not in cellroi.cell_id.segmentation['algo']:
+                cellroi.cell_id.segmentation['algo'].append('SAM2_b+')
+
 
             eflag={'SAM2_b+':False}
             contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi)
@@ -807,6 +797,23 @@ def build_segmentation_sam2(sample=None, force=False):
 
             for flag in eflag:  
                 if eflag[flag]: continue
+
+                input_point = np.array([[cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.],
+                                        [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.+npix, cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.],
+                                        [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.-npix, cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.],
+                                        [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.+npix],
+                                        [cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2., cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.-npix],
+                                        ])
+                input_label = np.array([1,1,1,1,1])
+                masks, scores, logits = predictor_base_plus.predict(point_coords=input_point,point_labels=input_label,multimask_output=True)
+                sorted_ind = np.argsort(scores)[::-1]
+                masks = masks[sorted_ind]
+                scores = scores[sorted_ind]
+                logits = logits[sorted_ind]
+                print('scores ',scores)
+                label_im = label(masks[0])
+                region=regionprops(label_im)
+
                 contourseg = ContourSeg(cell_roi=cellroi)
                 sel_region = None 
                 if len(region)==1: sel_region=region[0]
@@ -2468,8 +2475,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellIDs = CellID.objects.select_related().filter(sample=sample)
 
         cell_list=[]
+        cell_list_id=[]
         for cid in cellIDs:
             cell_list.append(cid.name)
+            cell_list_id.append(cid.id)
             if cid.name!=dropdown_cell.value:continue
             time_list={}
             intensity_list={}
@@ -2588,6 +2597,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #print_time('------- update_dropdown_cell 5 ', local_time)
         print_time('------- update_dropdown_cell END ', local_time)
 
+
+        if dropdown_cell.value!='':
+            cellID = CellID.objects.get(id=cell_list.index(dropdown_cell.value))
+            dropdown_segmentation_type.option = cellID.cell_status.segmentation['algo']
     dropdown_cell  = bokeh.models.Select(value='', title='Cell', options=[])   
     dropdown_cell.on_change('value', update_dropdown_cell)
     #___________________________________________________________________________________________
@@ -2689,6 +2702,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print_time('------- prepare_pos end ', local_time)
 
         print('prepare pos source_varea_death.data = =  == =  = == =  = ', source_varea_death.data)
+
+
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
 
@@ -2763,7 +2778,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 source_intensity_min.data={'time':peaks['min_time'], 'intensity':int_min}  
         update_source_segment(slider.value)
 
-    seg_type_list = ["roi", "localthresholding_1.5", "localthresholding_2.0", "apoc","SAM2_b+"]
+    seg_type_list = ["roi"]#, "SAM2_b+"]
     dropdown_segmentation_type = bokeh.models.Select(value=seg_type_list[0], title="segmentation", options=seg_type_list)
     dropdown_segmentation_type.on_change('value', segmentation_type_callback)
     #___________________________________________________________________________________________
