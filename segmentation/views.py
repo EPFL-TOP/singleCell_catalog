@@ -795,8 +795,10 @@ def build_segmentation_sam2(sample=None, force=False):
 
 
             if 'SAM2_b+' not in cellroi.cell_id.cell_status.segmentation['algo']:
-                cellroi.cell_id.cell_status.segmentation['algo'].append('SAM2_b+')
-
+                #cellroi.cell_id.cell_status.segmentation['algo'].append('SAM2_b+')
+                cell_status = cellroi.cell_id.cell_status
+                cell_status.segmentation['algo'].append('SAM2_b+')
+                cell_status.save()
 
             eflag={'SAM2_b+':False}
             contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi)
