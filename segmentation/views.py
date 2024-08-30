@@ -1853,10 +1853,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     pred+=predictions[j]
                     npred+=1
             print(i, '   ',pred/npred)
-            if pred/npred>0.5:
-                print('frame dead= ',i+int(n/2))
+            if pred/npred>0.8:
+                print('frame dead= ',i)
                 print('time =',cellroi.frame.time, 'intensity =',source_intensity_ch1.data["time"][cellroi.frame.number])
-                source_intensity_predicted_death.data={'time':[source_intensity_ch1.data["time"][int(i+n/2)]], 'intensity':[source_intensity_ch1.data["intensity"][int(i+n/2)]]}
+                source_intensity_predicted_death.data={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
                 break
 
 
