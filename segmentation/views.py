@@ -1857,7 +1857,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 print('frame dead= ',i+int(n/2))
                 source_intensity_predicted_death.data={'time':cellroi.frame.time, 'intensity':source_intensity_ch1.data["time"][cellroi.frame.number]}
 
-                source_intensity_ch1.data["time"][cellids[0].cell_status.time_of_death_frame]
                 plot_intensity.plus('time', 'intensity', source=source_intensity_predicted_death, line_color='black')
                 break
 
