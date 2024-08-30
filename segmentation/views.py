@@ -1808,6 +1808,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Function to prepare the intensity plot
     def predict_time_of_death(cellid):
         time_of_death_pred=-1000
+        time_of_death_frame_pred=-100
 
         current_file = get_current_file()
         current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
@@ -1834,8 +1835,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 labels = model_label(image_cropped)
 
 
-
-            print('labels        : ',labels)
             probabilities = F2.softmax(labels, dim=1)
             predictions[cellroi.frame.number]=float(probabilities[0].cpu().numpy()[1])
             print('probabilities : ',probabilities)
@@ -1858,13 +1857,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print(i, '   ',pred/npred)
             if pred/npred>0.8:
                 print('frame dead= ',i)
-                print('time =',cellroi.frame.time, 'intensity =',source_intensity_ch1.data["time"][cellroi.frame.number])
                 source_intensity_predicted_death.data={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
-                cellstatus=cellid.cell_status
-                cellstatus.time_of_death_pred=source_intensity_ch1.data["time"][i]
-                cellstatus.time_of_death_frame_pred=i
-                cellstatus.save()
+                time_of_death_pred=source_intensity_ch1.data["time"][i]
+                time_of_death_frame_pred=i
                 break
+        cellstatus=cellid.cell_status
+        cellstatus.time_of_death_pred=time_of_death_pred
+        cellstatus.time_of_death_frame_pred=time_of_death_frame_pred
+        cellstatus.save()
 
 
 
@@ -1904,8 +1904,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if cellids[0].cell_status.time_of_death_pred<-9900:
                 predict_time_of_death(cellids[0])
             else:
-                source_intensity_predicted_death.data={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
-
+                cellids[0].cell_status.time_of_death_pred
+                source_intensity_predicted_death.data={'time':[cellids[0].cell_status.time_of_death_pred], 'intensity':[cellids[0].cell_status.time_of_death_frame_pred]}
 
             #Set time of death and varea if it exist, -999 [] else
             if cellids[0].cell_status.time_of_death>0:
