@@ -1836,11 +1836,23 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             print('labels        : ',labels)
             probabilities = F2.softmax(labels, dim=1)
+            predictions[cellroi.frame.number]=float(probabilities[0].cpu().numpy()[0])
             print('probabilities : ',probabilities)
             pred_label = labels_map[int(torch.argmax(labels, dim=1)[0].cpu().numpy())]
             print('frame ',cellroi.frame.number,'pred_label = ',pred_label)
 
 
+        n=5
+        npred=0
+        for i in range(len(predictions)-n):
+            pred=0
+            for j in range(i, i+n):
+                if predictions[j]!=None: 
+                    pred+=predictions[j]
+                    npred+=1
+            print(i, '   ',pred/npred)
+            if pred/npred>0.6:
+                print('frame dead= ',i+int(n/2))
 
         #cellstatus=cellid.cell_status
         #cellstatus.time_of_death_pred=time_of_death_pred
@@ -2945,9 +2957,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def update_source_segment(tp=0):
         if DEBUG:print('****************************  update_source_segment ****************************')
-        mask = get_current_stack()['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]
-        source_img_mask.data = {'img':[mask]}
-
+        try:
+            mask = get_current_stack()['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]
+            source_img_mask.data = {'img':[mask]}
+        except KeyError:
+            source_img_mask.data = {'img':[]}
         return
 
         sample = Sample.objects.get(file_name=current_file)
