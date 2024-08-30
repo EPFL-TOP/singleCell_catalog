@@ -1631,7 +1631,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for cellid in cellids:
             out_dict[cellid.name]={}
             for seg in cellid.cell_status.segmentation['algo']:
-                out_dict[cellid.name][seg]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
+                out_dict[cellid.name][seg.algo]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
             
         frames = Frame.objects.select_related().filter(sample=sample)
         for frame in frames:
@@ -1648,7 +1648,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     print('ind_images_list_norm[frame.number] ',ind_images_list_norm[frame.number][0].shape)
                     for i in range(data['npixels']):
                         mask1[frame.height-data['x'][i]][data['y'][i]]=ind_images_list_norm[0][frame.number][frame.height-data['x'][i]][data['y'][i]] 
-                    out_dict[roi.cell_id.name][seg][frame.number] = mask1
+                    out_dict[roi.cell_id.name][seg.algo][frame.number] = mask1
         return out_dict
 
     #___________________________________________________________________________________________
