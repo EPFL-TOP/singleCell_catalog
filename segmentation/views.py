@@ -123,7 +123,6 @@ def load_model_detect(model_path, num_classes, device):
 
 
 
-
 def load_model_label(model_path, num_classes, device):
 
     # Instantiate the model
@@ -153,7 +152,10 @@ def load_model_label_resnet(model_path, num_classes, device):
     num_ftrs = model.fc.in_features
     model.fc = nn.Linear(num_ftrs, num_classes)
 
-    checkpoint = torch.load(model_path, weights_only=True)
+    if device==torch.device('cpu'):
+        checkpoint = torch.load(model_path, weights_only=True, map_location=torch.device('cpu'))
+    else:
+        checkpoint = torch.load(model_path, weights_only=True)
     model.load_state_dict(checkpoint['model_state_dict'])
 
     model.to(device)
