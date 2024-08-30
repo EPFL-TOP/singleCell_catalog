@@ -79,7 +79,7 @@ class CellStatus(models.Model):
 
     peaks                   = models.JSONField(default=dict, help_text="json to store the cell peaks intensities", blank=True)
     flags                   = models.JSONField(default=dict, help_text="json to store the cells flags (for each frame the cell exists)", blank=True)
-    segmentation            = models.JSONField(default=dict(algo=['roi']), help_text="json to store the cell peaks intensities", blank=True)
+    segmentation            = models.JSONField(default=dict, help_text="json to store the cell segmentation algorithms", blank=True)
 
     time_of_death           = models.FloatField(default=-9999, help_text="Cell time of death in minutes", blank=True)
     start_oscillation       = models.FloatField(default=-9999, help_text="Cell time start of oscillation in minutes", blank=True)
