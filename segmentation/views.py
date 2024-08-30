@@ -1765,6 +1765,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_intensity_min = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
 
     source_intensity_area = bokeh.models.ColumnDataSource(data={'time':[], 'area':[]})
+    source_intensity_predicted_death = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
 
     source_segments_cell      = bokeh.models.ColumnDataSource(data={'time':[], 'intensity':[]})
     source_mask_cell          = bokeh.models.ColumnDataSource(data={'time':[], 'intensity_full':[]})
@@ -1836,7 +1837,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             print('labels        : ',labels)
             probabilities = F2.softmax(labels, dim=1)
-            predictions[cellroi.frame.number]=float(probabilities[0].cpu().numpy()[0])
+            predictions[cellroi.frame.number]=float(probabilities[0].cpu().numpy()[1])
             print('probabilities : ',probabilities)
             pred_label = labels_map[int(torch.argmax(labels, dim=1)[0].cpu().numpy())]
             print('frame ',cellroi.frame.number,'pred_label = ',pred_label)
@@ -1854,6 +1855,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print(i, '   ',pred/npred)
             if pred/npred>0.6:
                 print('frame dead= ',i+int(n/2))
+                source_intensity_predicted_death.data={'time':cellroi.frame.time, 'intensity':source_intensity_ch1.data["time"][cellroi.frame.number]}
+
+                source_intensity_ch1.data["time"][cellids[0].cell_status.time_of_death_frame]
+                plot_intensity.plus('time', 'intensity', source=source_intensity_predicted_death, line_color='black')
+                break
+
+
 
         #cellstatus=cellid.cell_status
         #cellstatus.time_of_death_pred=time_of_death_pred
@@ -4329,6 +4337,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
     plot_intensity.line('time', 'area', y_range_name="area", source=source_intensity_area, line_color='black')
     plot_intensity.circle('time', 'area', y_range_name="area", source=source_intensity_area, line_color='black')
+    plot_intensity.plus('time', 'intensity', source=source_intensity_predicted_death, line_color='black')
     
     ax2 = bokeh.models.LinearAxis(
         axis_label="area",
@@ -4405,6 +4414,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.add_layout(start_oscillation_position)
     plot_intensity.add_layout(end_oscillation_position)
     plot_intensity.add_layout(time_of_death_position)
+    plot_intensity.add_layout(time_of_death_position_pred)
 
 
     
