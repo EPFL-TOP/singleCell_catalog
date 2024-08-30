@@ -165,7 +165,6 @@ def load_model_label_resnet(model_path, num_classes, device):
 
 
 
-
 def preprocess_image_pytorch(image_array):
     transform = ToTensorNormalize()
     image = transform(image_array)
@@ -1800,6 +1799,51 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
 
 
+
+
+    #___________________________________________________________________________________________
+    # Function to prepare the intensity plot
+    def predict_time_of_death(cellid):
+        time_of_death_pred=-1000
+
+        current_file = get_current_file()
+        current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
+        time_lapse_path = Path(current_file)
+        time_lapse = nd2.imread(time_lapse_path.as_posix())
+        images=time_lapse.transpose(1,0,2,3)
+        BF_images=images[0]
+        target_size = (150, 150)
+        predictions=[]
+        for i in range(cellid.sample.experimental_dataset.experiment.number_of_frames):
+            predictions[i]=None
+
+        cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
+        for cellroi in cellrois:
+            center = (int(cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.), int(cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.))
+            cropped_image = BF_images[cellroi.frame.number][int(center[1]-target_size[1]/2):int(center[1]+target_size[1]/2), int(center[0]-target_size[0]/2):int(center[0]+target_size[0]/2)]
+
+            if cropped_image.shape[0]!=target_size[0] or cropped_image.shape[1]!=target_size[1]:
+                continue
+      
+
+            image_cropped = preprocess_image_pytorch(cropped_image).to(device)
+            with torch.no_grad():
+                labels = model_label(image_cropped)
+
+
+
+            print('labels        : ',labels)
+            probabilities = F2.softmax(labels, dim=1)
+            print('probabilities : ',probabilities)
+            pred_label = labels_map[int(torch.argmax(labels, dim=1)[0].cpu().numpy())]
+            print('frame ',cellroi.frame.number,'pred_label = ',pred_label)
+
+
+
+        #cellstatus=cellid.cell_status
+        #cellstatus.time_of_death_pred=time_of_death_pred
+        #cellstatus.save()
+
     #___________________________________________________________________________________________
     # Function to prepare the intensity plot
     def prepare_intensity():
@@ -1830,6 +1874,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 end_oscillation_position.location   = source_intensity_ch1.data["time"][cellids[0].cell_status.end_oscillation_frame]
             else: 
                 end_oscillation_position.location   = -999
+
+
+            if cellids[0].cell_status.time_of_death_pred<-9900:
+                predict_time_of_death(cellids[0])
+
 
             #Set time of death and varea if it exist, -999 [] else
             if cellids[0].cell_status.time_of_death>0:
