@@ -1856,7 +1856,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if pred/npred>0.5:
                 print('frame dead= ',i+int(n/2))
                 print('time =',cellroi.frame.time, 'intensity =',source_intensity_ch1.data["time"][cellroi.frame.number])
-                source_intensity_predicted_death.data={'time':[cellroi.frame.time], 'intensity':[source_intensity_ch1.data["time"][cellroi.frame.number]]}
+                source_intensity_predicted_death.data={'time':[cellroi.frame.time/60000.], 'intensity':[source_intensity_ch1.data["time"][cellroi.frame.number]]}
                 break
 
 
@@ -4335,7 +4335,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.line('time', 'intensity', source=source_intensity_ch1, line_color='blue')
     plot_intensity.line('time', 'area', y_range_name="area", source=source_intensity_area, line_color='black')
     plot_intensity.circle('time', 'area', y_range_name="area", source=source_intensity_area, line_color='black')
-    plot_intensity.plus('time', 'intensity', source=source_intensity_predicted_death, line_color='black')
+    plot_intensity.plus('time', 'intensity', source=source_intensity_predicted_death, line_color='black',size=20)
     
     ax2 = bokeh.models.LinearAxis(
         axis_label="area",
