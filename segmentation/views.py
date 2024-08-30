@@ -1905,7 +1905,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 predict_time_of_death(cellids[0])
             else:
                 cellids[0].cell_status.time_of_death_pred
-                source_intensity_predicted_death.data={'time':[cellids[0].cell_status.time_of_death_pred], 'intensity':[cellids[0].cell_status.time_of_death_frame_pred]}
+                source_intensity_predicted_death.data={'time':[cellids[0].cell_status.time_of_death_pred], 'intensity':[source_intensity_ch1.data["intensity"][cellids[0].cell_status.time_of_death_frame_pred]]}
 
             #Set time of death and varea if it exist, -999 [] else
             if cellids[0].cell_status.time_of_death>0:
