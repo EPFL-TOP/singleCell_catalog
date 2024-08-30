@@ -1629,9 +1629,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         mask1=np.ones(ind_images_list_norm[0][0].shape, dtype=bool)
         for cellid in cellids:
             out_dict[cellid.name]={}
-            for seg in cellid.cell_status.segmentation['algo']:
-                out_dict[cellid.name][seg]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
-            
+            try:
+                for seg in cellid.cell_status.segmentation['algo']:
+                    out_dict[cellid.name][seg]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
+            except KeyError:
+                pass
         frames = Frame.objects.select_related().filter(sample=sample)
         for frame in frames:
             cellrois = CellROI.objects.select_related().filter(frame=frame)
@@ -1815,7 +1817,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         target_size = (150, 150)
         predictions=[]
         for i in range(cellid.sample.experimental_dataset.experiment.number_of_frames):
-            predictions[i]=None
+            predictions.append(None)
 
         cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
         for cellroi in cellrois:
