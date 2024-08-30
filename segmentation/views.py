@@ -1861,7 +1861,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 print('time =',cellroi.frame.time, 'intensity =',source_intensity_ch1.data["time"][cellroi.frame.number])
                 source_intensity_predicted_death.data={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
                 cellstatus=cellid.cell_status
-                cellstatus.time_of_death_pred=time_of_death_pred
+                cellstatus.time_of_death_pred=source_intensity_ch1.data["time"][i]
+                cellstatus.time_of_death_frame_pred=i
                 cellstatus.save()
                 break
 
@@ -1902,6 +1903,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             if cellids[0].cell_status.time_of_death_pred<-9900:
                 predict_time_of_death(cellids[0])
+            else:
+                source_intensity_predicted_death.data={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
 
 
             #Set time of death and varea if it exist, -999 [] else
