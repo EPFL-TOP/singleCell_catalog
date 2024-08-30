@@ -1644,12 +1644,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
                     data = json.load(f)
                     mask1=np.ones(ind_images_list_norm[0][frame.number].shape, dtype=bool)
+                    mask0=np.zeros(ind_images_list_norm[0][frame.number].shape, dtype=bool)
                     mask1=mask1*255
                     print('mask shape ', mask1.shape)
                     print('ind_images_list_norm[frame.number] ',ind_images_list_norm[0][frame.number].shape)
                     for i in range(data['npixels']):
                         mask1[frame.height-data['x'][i]][data['y'][i]]=ind_images_list_norm[0][frame.number][frame.height-data['x'][i]][data['y'][i]] 
+                        mask0[frame.height-data['x'][i]][data['y'][i]]=True
                     out_dict[roi.cell_id.name][seg.algo][frame.number] = mask1
+                    out_dict[roi.cell_id.name][seg.algo][frame.number] = mask0
         return out_dict
 
     #___________________________________________________________________________________________
@@ -1787,7 +1790,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
     #plot_img_mask  = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
     plot_image     = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
-    plot_img_mask  = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
+    #plot_img_mask  = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
 
 
 
@@ -1903,6 +1906,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             if cellids[0].cell_status.time_of_death_pred<-9900:
                 predict_time_of_death(cellids[0])
+            elif cellids[0].cell_status.time_of_death_pred<-90:
+                source_intensity_predicted_death.data={'time':[], 'intensity':[]}
             else:
                 cellids[0].cell_status.time_of_death_pred
                 source_intensity_predicted_death.data={'time':[cellids[0].cell_status.time_of_death_pred], 'intensity':[source_intensity_ch1.data["intensity"][cellids[0].cell_status.time_of_death_frame_pred]]}
@@ -4269,6 +4274,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
 
+
+
     source_segmentation  = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
 #    plot_image.patch(x='x', y='y', fill_color=None, line_color="red", line_width=3, line_alpha=0.8, source=source_segmentation)
     plot_image.line(x='x', y='y', line_color="red", line_width=3, line_alpha=0.8, source=source_segmentation)
@@ -4277,8 +4284,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     data_img_mask={'img':[]}
     source_img_mask  = bokeh.models.ColumnDataSource(data=data_img_mask)
 
+    mask_color_mapper = bokeh.models.LinearColorMapper(palette=['#00000000', '#ff000080'], low=0, high=1)
+    plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img_mask, color_mapper=mask_color_mapper)
+
+
     #plot_img_mask     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
-    plot_img_mask.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img_mask, color_mapper=color_mapper)
+    #plot_img_mask.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img_mask, color_mapper=color_mapper)
 
        # Create a ColumnDataSource to store image data
     #source_url = bokeh.models.ColumnDataSource({'url': [''], 'x': [0], 'y': [0], 'dw': [0], 'dh': [0]})
@@ -4472,8 +4483,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Remove the axes
     plot_image.axis.visible = False
     plot_image.grid.visible = False
-    plot_img_mask.axis.visible = False
-    plot_img_mask.grid.visible = False
+    #plot_img_mask.axis.visible = False
+    #plot_img_mask.grid.visible = False
 
  
     plot_oscillation_cycle  = bokeh.plotting.figure(title="Osc Cycle", x_axis_label='cycle number', y_axis_label='Period [min]',width=500, height=400)
@@ -4555,9 +4566,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
                                              #bokeh.layouts.row(plot_nosc),
-                                             bokeh.layouts.row(plot_img_mask),)
+                                             #bokeh.layouts.row(plot_img_mask),
+                                             )
 
-    cell_osc_plot_col =  bokeh.layouts.column(bokeh.layouts.gridplot([[plot_image], [plot_img_mask]]))
+    #cell_osc_plot_col =  bokeh.layouts.column(bokeh.layouts.gridplot([[plot_image], [plot_img_mask]]))
 
     norm_layout = bokeh.layouts.column(bokeh.layouts.row(dropdown_filter_position_keep),
         bokeh.layouts.row(position_check_div, bokeh.layouts.Spacer(width=10), position_check2_div, 
