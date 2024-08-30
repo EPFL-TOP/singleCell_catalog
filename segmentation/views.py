@@ -1843,7 +1843,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('frame ',cellroi.frame.number,'pred_label = ',pred_label)
 
 
-        n=5
+
+        source_intensity_predicted_death.data={'time':[], 'intensity':[]}
+
+        n=3
         for i in range(len(predictions)-n):
             pred=0
             npred=0
