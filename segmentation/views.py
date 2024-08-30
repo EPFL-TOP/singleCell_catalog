@@ -1843,9 +1843,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
         n=5
-        npred=0
         for i in range(len(predictions)-n):
             pred=0
+            npred=0
+
             for j in range(i, i+n):
                 if predictions[j]!=None: 
                     pred+=predictions[j]
