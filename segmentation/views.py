@@ -1627,7 +1627,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         sample = Sample.objects.get(file_name=current_file)
         cellids = CellID.objects.select_related().filter(sample=sample)
         out_dict={}
-        mask1=np.ones(ind_images_list_norm[frame.number].shape, dtype=bool)
+        mask1=np.ones(ind_images_list_norm[0].shape, dtype=bool)
         for cellid in cellids:
             out_dict[cellid.name]={}
             for seg in cellid.cell_status.segmentation['algo']:
