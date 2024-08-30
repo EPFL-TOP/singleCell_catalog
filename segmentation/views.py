@@ -108,6 +108,8 @@ def load_model_detect(model_path, num_classes, device):
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
     # Load the checkpoint
+    print('device= ',device, '  ',type(device))
+    #map_location=torch.device('cpu')
     checkpoint = torch.load(model_path, weights_only=True)
     model.load_state_dict(checkpoint['model_state_dict'])
 
