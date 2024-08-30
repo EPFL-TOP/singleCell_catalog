@@ -1627,7 +1627,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         sample = Sample.objects.get(file_name=current_file)
         cellids = CellID.objects.select_related().filter(sample=sample)
         out_dict={}
-        mask1=np.ones(ind_images_list_norm[0].shape, dtype=bool)
+        mask1=np.ones(ind_images_list_norm[0][0].shape, dtype=bool)
         for cellid in cellids:
             out_dict[cellid.name]={}
             for seg in cellid.cell_status.segmentation['algo']:
@@ -1647,7 +1647,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     print('mask shape ', mask1.shape)
                     print('ind_images_list_norm[frame.number] ',ind_images_list_norm[frame.number].shape)
                     for i in range(data['npixels']):
-                        mask1[frame.height-data['x'][i]][data['y'][i]]=ind_images_list_norm[frame.number][frame.height-data['x'][i]][data['y'][i]] 
+                        mask1[frame.height-data['x'][i]][data['y'][i]]=ind_images_list_norm[0][frame.number][frame.height-data['x'][i]][data['y'][i]] 
                     out_dict[roi.cell_id.name][seg][frame.number] = mask1
         return out_dict
 
