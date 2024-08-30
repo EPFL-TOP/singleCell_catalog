@@ -794,8 +794,8 @@ def build_segmentation_sam2(sample=None, force=False):
         for cellroi in cellROIs:
 
 
-            if 'SAM2_b+' not in cellroi.cell_id.segmentation['algo']:
-                cellroi.cell_id.segmentation['algo'].append('SAM2_b+')
+            if 'SAM2_b+' not in cellroi.cell_id.cell_status.segmentation['algo']:
+                cellroi.cell_id.cell_status.segmentation['algo'].append('SAM2_b+')
 
 
             eflag={'SAM2_b+':False}
