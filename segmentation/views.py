@@ -4412,7 +4412,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_intensity.add_layout(start_oscillation_position)
     plot_intensity.add_layout(end_oscillation_position)
     plot_intensity.add_layout(time_of_death_position)
-    plot_intensity.add_layout(time_of_death_position_pred)
 
 
     
