@@ -2611,7 +2611,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if dropdown_cell.value!='':
             cellID = CellID.objects.get(id=cell_list_id[cell_list.index(dropdown_cell.value)])
             try:
-                dropdown_segmentation_type.option = cellID.cell_status.segmentation['algo']
+                dropdown_segmentation_type.options = cellID.cell_status.segmentation['algo']
             except KeyError:
                 cell_status = cellID.cell_status
                 cell_status.segmentation = {'algo':['roi']}
