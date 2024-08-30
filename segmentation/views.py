@@ -1644,6 +1644,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     data = json.load(f)
                     mask1=np.ones(ind_images_list_norm[frame.number].shape, dtype=bool)
                     mask1=mask1*255
+                    print('mask shape ', mask1.shape)
+                    print('ind_images_list_norm[frame.number] ',ind_images_list_norm[frame.number].shape)
                     for i in range(data['npixels']):
                         mask1[frame.height-data['x'][i]][data['y'][i]]=ind_images_list_norm[frame.number][frame.height-data['x'][i]][data['y'][i]] 
                     out_dict[roi.cell_id.name][seg][frame.number] = mask1
