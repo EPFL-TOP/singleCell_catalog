@@ -838,6 +838,7 @@ def build_segmentation_sam2(sample=None, force=False):
                 if sel_region!=None:
                     build_contours(sel_region, contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
 
+
 #___________________________________________________________________________________________
 def build_segmentation(exp_name=''):
     apocseg = segtools.segmentation_apoc()
@@ -2464,7 +2465,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             position_check_div.text = "<b style='color:red; ; font-size:18px;'> Peaks/ToD/Division not validated</b>"
             position_check_button.label = "Peaks/ToD/Division validated"
 
-
         if sample.bf_features_validated:
             position_check2_div.text = "<b style='color:green; ; font-size:18px;'> BF features validated (c2)</b>"
             position_check2_button.label = "BF features not validated"
@@ -2481,7 +2481,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         print_time('------- update_dropdown_cell 1 ', local_time)
 
-
         cellIDs = CellID.objects.select_related().filter(sample=sample)
 
         cell_list=[]
@@ -2494,6 +2493,20 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             intensity_list={}
             area_list={}
             ROIs = CellROI.objects.select_related().filter(cell_id=cid)
+
+
+            try:
+                dropdown_segmentation_type.options = cid.cell_status.segmentation['algo']
+            except KeyError:
+                cell_status = cid.cell_status
+                cell_status.segmentation = {'algo':['roi']}
+                dropdown_segmentation_type.options = ['roi']
+                cell_status.save()
+
+            old_seg_val = dropdown_segmentation_type.value
+            if old_seg_val not in dropdown_segmentation_type.options:
+                dropdown_segmentation_type.value=dropdown_segmentation_type.options[0]
+
             for roi in ROIs:
                 if dropdown_segmentation_type.value == 'roi':
                     for ch in roi.contour_cellroi.intensity_sum:
@@ -3408,6 +3421,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def build_sam2_callback():
         if DEBUG:print('****************************  build_sam2_callback ****************************')
         build_segmentation_sam2(get_current_file(), force=True)
+        if 'SAM2_b+' not in dropdown_segmentation_type.options:
+            toto=dropdown_segmentation_type.options
+            toto.append('SAM2_b+')
+            dropdown_segmentation_type.options = toto
     button_build_sam2 = bokeh.models.Button(label="Build SAM2")
     button_build_sam2.on_click(build_sam2_callback)
     #___________________________________________________________________________________________
