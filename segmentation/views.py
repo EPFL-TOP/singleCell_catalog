@@ -2985,7 +2985,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('tap_segmentation_callback event.geometry ',event.geometry)
 
     # Connect the callback to the tap event
-    plot_image.on_event('tap', tap_segmentation_callback)
+    #plot_image.on_event('tap', tap_segmentation_callback)
+    plot_image.on_event(bokeh.events.SelectionGeometry, tap_segmentation_callback)
+
 
 
     
