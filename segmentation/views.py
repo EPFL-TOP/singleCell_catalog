@@ -763,7 +763,9 @@ def removeROIs(sample):
 
 
 #___________________________________________________________________________________________
-def build_segmentation_sam2_single_frame(sample=None, force=False):
+def build_segmentation_sam2_single_frame(image, sample, cell):
+
+    #image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 
     return
 
 #___________________________________________________________________________________________
@@ -2984,9 +2986,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('tap_segmentation_callback event.geometry ',event.geometry)
             if event.geometry["type"]!="point":
                 return
-            x, y = event.x, event.y
+            x, y = event.geometry['x'], event.geometry['y']
             print('x=',x,'  y=',y)
-            build_segmentation_sam2_single_frame()
+            current_file = get_current_file(index=0)
+            current_pos  = os.path.split(current_file)[1]
+            image = image_stack_dict[current_pos]['ind_images_list']
+            print('-------------------   ',image.shape)
+
+            #build_segmentation_sam2_single_frame()
 
             #mask = get_current_stack()['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]
             #source_img_mask.data = {'img':[mask]}
