@@ -2981,6 +2981,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #output.text = f"Algorithm output: {result} for click at x={x}, y={y}"
         #print(f"Algorithm executed with result: {result}")
         print('x=',x,'  y=',y)
+        print('tap_segmentation_callback event ',event)
+
     # Connect the callback to the tap event
     plot_image.on_event('tap', tap_segmentation_callback)
 
@@ -3199,6 +3201,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     # Define a callback to update the ROI
     def select_roi_callback(event):
         if DEBUG:print('****************************  select_roi_callback ****************************')
+        print('select_roi_callback event ',event)
         if isinstance(event, bokeh.events.SelectionGeometry):
             data_manual = dict(
                 left=source_roi_manual.data['left'] + [event.geometry['x0']],
