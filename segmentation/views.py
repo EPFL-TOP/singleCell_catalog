@@ -1792,7 +1792,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     y_range = bokeh.models.Range1d(start=0, end= ind_images_list[0][0].shape[1])
     #plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
     #plot_img_mask  = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
-    plot_image     = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
+    plot_image     = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,tap, wheel_zoom,box_zoom,reset,undo",width=550, height=550)
     #plot_img_mask  = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
 
 
@@ -2971,6 +2971,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         return left_rois,right_rois,top_rois,bottom_rois, height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells
     #___________________________________________________________________________________________
 
+
+    # Define the callback function to handle tap events
+    def tap_segmentation_callback(event):
+        x, y = event.x, event.y
+        # Example Python algorithm using the click coordinates
+        #result = example_algorithm(x, y)
+        # Update the Div text with the result
+        #output.text = f"Algorithm output: {result} for click at x={x}, y={y}"
+        #print(f"Algorithm executed with result: {result}")
+        print('x=',x,'  y=',y)
+    # Connect the callback to the tap event
+    plot_image.on_event('tap', tap_segmentation_callback)
 
 
     
