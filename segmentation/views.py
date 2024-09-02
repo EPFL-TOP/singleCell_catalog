@@ -2974,15 +2974,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     # Define the callback function to handle tap events
     def tap_segmentation_callback(event):
-        x, y = event.x, event.y
+        print('tap_segmentation_callback event ',event)
+        print('tap_segmentation_callback event.geometry ',event.geometry)
+        #x, y = event.x, event.y
         # Example Python algorithm using the click coordinates
         #result = example_algorithm(x, y)
         # Update the Div text with the result
         #output.text = f"Algorithm output: {result} for click at x={x}, y={y}"
         #print(f"Algorithm executed with result: {result}")
-        print('x=',x,'  y=',y)
-        print('tap_segmentation_callback event ',event)
-        print('tap_segmentation_callback event.geometry ',event.geometry)
+        #print('x=',x,'  y=',y)
+        #print('tap_segmentation_callback event ',event)
+        #print('tap_segmentation_callback event.geometry ',event.geometry)
 
     # Connect the callback to the tap event
     #plot_image.on_event('tap', tap_segmentation_callback)
