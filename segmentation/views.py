@@ -763,6 +763,10 @@ def removeROIs(sample):
 
 
 #___________________________________________________________________________________________
+def build_segmentation_sam2_single_frame(sample=None, force=False):
+    return
+
+#___________________________________________________________________________________________
 def build_segmentation_sam2(sample=None, force=False):
     s=None
     if type(sample) == str:
@@ -2974,20 +2978,18 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     # Define the callback function to handle tap events
     def tap_segmentation_callback(event):
-        print('tap_segmentation_callback event ',event)
-        print('tap_segmentation_callback event.geometry ',event.geometry)
-        #x, y = event.x, event.y
-        # Example Python algorithm using the click coordinates
-        #result = example_algorithm(x, y)
-        # Update the Div text with the result
-        #output.text = f"Algorithm output: {result} for click at x={x}, y={y}"
-        #print(f"Algorithm executed with result: {result}")
-        #print('x=',x,'  y=',y)
-        #print('tap_segmentation_callback event ',event)
-        #print('tap_segmentation_callback event.geometry ',event.geometry)
+        if isinstance(event, bokeh.events.SelectionGeometry):
 
-    # Connect the callback to the tap event
-    #plot_image.on_event('tap', tap_segmentation_callback)
+            print('tap_segmentation_callback event ',event)
+            print('tap_segmentation_callback event.geometry ',event.geometry)
+            if event.geometry["type"]!="point":
+                return
+            x, y = event.x, event.y
+            print('x=',x,'  y=',y)
+            build_segmentation_sam2_single_frame()
+
+            #mask = get_current_stack()['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]
+            #source_img_mask.data = {'img':[mask]}
     plot_image.on_event(bokeh.events.SelectionGeometry, tap_segmentation_callback)
 
 
@@ -3209,6 +3211,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print('select_roi_callback event ',event)
         print('select_roi_callback event ',event.geometry)
         if isinstance(event, bokeh.events.SelectionGeometry):
+            if event.geometry["type"]!='rect':return
             data_manual = dict(
                 left=source_roi_manual.data['left'] + [event.geometry['x0']],
                 right=source_roi_manual.data['right'] + [event.geometry['x1']],
