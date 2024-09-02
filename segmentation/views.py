@@ -1741,6 +1741,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     ind_images_list = current_stack_data['ind_images_list']
     ind_images_list_norm = current_stack_data['ind_images_list_norm']
 
+
     #current images (current index and list of channels)
     data_img_ch={'img':[ind_images_list[ch][0] for ch in range(len(ind_images_list))]}
     source_img_ch = bokeh.models.ColumnDataSource(data=data_img_ch)
@@ -1752,6 +1753,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #list of all images for all channels
     data_imgs_norm={'images':ind_images_list_norm}
     source_imgs_norm = bokeh.models.ColumnDataSource(data=data_imgs_norm)
+
 
     #current image to be displayed
     data_img={'img':[data_imgs_norm['images'][0][0]]}
@@ -3059,6 +3061,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img_ch.data = {'img':[images[ch][time_point] for ch in range(len(images))]}
 
 
+        current_file = get_current_file(index=0)
+        current_pos  = os.path.split(current_file)[1]
+
+        try:
+            source_img_mask.data = {'img':[image_stack_dict[current_pos]['masks'][dropdown_cell.value][dropdown_segmentation_type.value][time_point]]}
+        except KeyError:
+            source_img_mask.data = {'img':[]}
+        return
+
 
         #left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
         #current_file = os.path.split(get_current_file())[1]
@@ -3104,7 +3115,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             line_position.location = -999
         else:
             line_position.location = source_intensity_ch1.data["time"][time_point]
-        update_source_segment(time_point)
+        #update_source_segment(time_point)
         #roi_diff(time_point)
 
     #___________________________________________________________________________________________
