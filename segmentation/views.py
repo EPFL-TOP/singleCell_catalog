@@ -2990,7 +2990,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('x=',x,'  y=',y)
             current_file = get_current_file(index=0)
             current_pos  = os.path.split(current_file)[1]
-            image = image_stack_dict[current_pos]['ind_images_list']
+            image = image_stack_dict[current_pos]['ind_images_list'][0][slider.value]
             print('-------------------   ',image.shape)
 
             #build_segmentation_sam2_single_frame()
@@ -3096,7 +3096,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             source_img_mask.data = {'img':[image_stack_dict[current_pos]['masks'][dropdown_cell.value][dropdown_segmentation_type.value][time_point]]}
         except KeyError:
             source_img_mask.data = {'img':[]}
-        return
 
 
         #left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
