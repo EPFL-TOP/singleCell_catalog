@@ -3114,44 +3114,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         except KeyError:
             source_img_mask.data = {'img':[]}
         return
-
-        sample = Sample.objects.get(file_name=current_file)
-        #print('sample=',sample)
-        frames  = Frame.objects.select_related().filter(sample=sample, number=tp)
-        frame = frames[0]
-        #print('frame=',frame)
-        cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
-        #print(cellids,'  dropdown_cell.value ',dropdown_cell.value)
-        if len(cellids)==0:return
-        cellid=cellids[0]
-        cellrois = CellROI.objects.select_related().filter(cell_id=cellid, frame=frame)
-        if len(cellrois)==0:
-            print('----------cellrois= ',cellrois)
-            print('----------cellid=   ',cellid)
-            print('----------frame=    ',frame)
-
-            return
-        cellroi = cellrois[0]
-        algo = dropdown_segmentation_type.value
-        if algo != 'roi':
-            contours = ContourSeg.objects.select_related().filter(cell_roi=cellroi, algo=dropdown_segmentation_type.value)
-            if len(contours)!=1:return
-            contour = contours[0]
-            f = open(os.path.join(NASRCP_MOUNT_POINT, contour.file_name))
-            data = json.load(f)
-            #mask0=np.zeros(source_img_ch.data['img'][0].shape, dtype=bool)
-            mask1=np.ones(source_img_ch.data['img'][0].shape, dtype=bool)
-            mask1=mask1*255
-            for i in range(data['npixels']):
-                #mask0[frame.height-data['x'][i]][data['y'][i]]=True
-                mask1[frame.height-data['x'][i]][data['y'][i]]=source_img.data['img'][0][frame.height-data['x'][i]][data['y'][i]]
-                
-            #source_img_mask.data = {'img':[mask0*source_img.data['img'][0]]}
-            source_img_mask.data = {'img':[mask1]}
-
-            #source_segmentation.data={'x':contour.pixels['x'], 'y':[frame.height-c for c in contour.pixels['y']]}
-        #f = open(contour.file_name)
-        #data = json.load(f)
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________

@@ -205,7 +205,7 @@ class ContourSeg(models.Model):
     intensity_max    = models.JSONField(help_text="Contour max intensity", default=dict)
     number_of_pixels = models.PositiveIntegerField(default=0, help_text="Contour number of pixels")
 
-    mask             = models.JSONField(help_text="mask", default=dict)
+    mask             = models.JSONField(help_text="pixels contour", default=dict)
 
     file_name        = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
     algo             = models.CharField(max_length=200, choices=ALGO, help_text="algorithm type", default='localthresholding')
