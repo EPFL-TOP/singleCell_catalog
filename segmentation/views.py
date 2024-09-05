@@ -20,6 +20,7 @@ from skimage.measure import label, regionprops
 
 import numpy as np
 from scipy.signal import find_peaks
+from scipy import ndimage
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -822,7 +823,7 @@ def build_segmentation_sam2(sample=None, force=False):
 
         image_prepro = preprocess_image_sam2(BF_images[frame.number])
         predictor_base_plus.set_image(image_prepro)
-        npix=5
+        npix=2
         cellROIs = CellROI.objects.select_related().filter(frame=frame)
         for cellroi in cellROIs:
 
@@ -853,23 +854,90 @@ def build_segmentation_sam2(sample=None, force=False):
                 masks = masks[sorted_ind]
                 scores = scores[sorted_ind]
                 logits = logits[sorted_ind]
-                print('scores ',scores)
-                label_im = label(masks[0])
-                region=regionprops(label_im)
 
                 contourseg = ContourSeg(cell_roi=cellroi)
-                sel_region = None 
-                if len(region)==1: sel_region=region[0]
-                if len(region)>1:
-                    for r in region:
-                        print('r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
-                        print('input_point ',input_point)
-                        if r.area<80: continue
-                        if math.sqrt( math.pow((input_point[0][0] - r.centroid[1]),2) +  math.pow((input_point[0][1]- r.centroid[0]),2))>50:continue
-                        sel_region=r
-                        print(' selected r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
-                if sel_region!=None:
-                    build_contours(sel_region, contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
+                build_contours_sam2(contourseg, masks[0], flag, cellroi, images, channels, BF_images[frame.number].shape, exp.name, expds.data_name, s.file_name)
+
+                #print('scores ',scores)
+                #label_im = label(masks[0])
+                #region=regionprops(label_im)
+
+                #sel_region = None 
+                #if len(region)==1: sel_region=region[0]
+                #if len(region)>1:
+                #    for r in region:
+                #        print('r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
+                #        print('input_point ',input_point)
+                #        if r.area<80: continue
+                #        if math.sqrt( math.pow((input_point[0][0] - r.centroid[1]),2) +  math.pow((input_point[0][1]- r.centroid[0]),2))>50:continue
+                #        sel_region=r
+                #        print(' selected r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
+                #if sel_region!=None:
+                #    build_contours(sel_region, contourseg, cellroi, BF_images[frame.number].shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
+
+
+#___________________________________________________________________________________________
+def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, img_shape, exp_name, expds_data_name, s_file_name):
+    mask0=np.zeros(img_shape, dtype=bool)
+
+    contourseg.mask={'mask':mask.tolist()}
+    center = ndimage.center_of_mass(mask)
+    contourseg.center_x_pix = center[0]
+    contourseg.center_y_pix = center[1]
+    contourseg.center_x_mic = center[0]*cellroi.frame.pixel_microns+cellroi.frame.pos_x
+    contourseg.center_y_mic = center[1]*cellroi.frame.pixel_microns+cellroi.frame.pos_y
+    contourseg.algo = segname
+
+    intensity_mean={}
+    intensity_std={}
+    intensity_sum={}
+    intensity_max={}
+    for ch in range(len(channels)): 
+        segment=mask0*images[ch][cellroi.frame.number]
+        sum=float(np.sum(segment))
+        mean=float(np.mean(segment))
+        std=float(np.std(segment))
+        max=float(np.max(segment))
+        ch_name=channels[ch].replace(" ","")
+        intensity_mean[ch_name]=mean
+        intensity_std[ch_name]=std
+        intensity_sum[ch_name]=sum
+        intensity_max[ch_name]=max
+
+    contourseg.intensity_max  = intensity_max
+    contourseg.intensity_mean = intensity_mean
+    contourseg.intensity_std  = intensity_std
+    contourseg.intensity_sum  = intensity_sum
+    contourseg.number_of_pixels = mask.sum()
+
+    segment_dict = {}
+    out_dir_name  = os.path.join(NASRCP_MOUNT_POINT, ANALYSIS_DATA_PATH,exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
+    out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname))
+
+    out_dir_name_DB  = ANALYSIS_DATA_PATH+"/"+exp_name+"/"+ expds_data_name+"/"+os.path.split(s_file_name)[-1].replace('.nd2','')
+    out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname)
+
+    #if not os.path.exists(out_dir_name):
+    #    os.makedirs(out_dir_name)
+    #segment_dict['npixels']=int(mask.sum())
+    #segment_dict['type']=segname
+
+    #segment_dict['x'] = []
+    #segment_dict['y'] = []
+    #for ch in range(len(channels)):
+    #    segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = []
+    
+    #for coord in contour.coords:
+    #    segment_dict['x'].append(int(coord[0]))
+    #    segment_dict['y'].append(int(coord[1]))
+    #    for ch in range(len(channels)):
+    #        segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(float(images[ch][cellroi.frame.number][coord[0]][coord[1]]))
+    #out_file = open(out_file_name, "w") 
+    #json.dump(segment_dict, out_file) 
+    #out_file.close() 
+    #contourseg.file_name = out_file_name_DB
+    contourseg.save()
+
 
 
 #___________________________________________________________________________________________
@@ -3021,8 +3089,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cell = dropdown_cell.value
             mask=build_segmentation_sam2_single_frame(x,y,image, sample, cell)
             image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+'][slider.value]=mask
-
             source_img_mask.data = {'img':[mask]}
+
+            #contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi)
+
+            #build_contours_sam2(contourseg, masks[0], flag, cellroi, images, channels, BF_images[frame.number].shape, exp.name, expds.data_name, s.file_name)
+
+
+
             #mask = get_current_stack()['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]
             #source_img_mask.data = {'img':[mask]}
     plot_image.on_event(bokeh.events.SelectionGeometry, tap_segmentation_callback)
