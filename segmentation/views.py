@@ -878,7 +878,6 @@ def build_segmentation_sam2(sample=None, force=False):
 
 #___________________________________________________________________________________________
 def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, img_shape, exp_name, expds_data_name, s_file_name):
-    mask0=np.zeros(img_shape, dtype=bool)
 
     contourseg.mask={'mask':mask.tolist()}
     center = ndimage.center_of_mass(mask)
@@ -893,7 +892,7 @@ def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, im
     intensity_sum={}
     intensity_max={}
     for ch in range(len(channels)): 
-        segment=mask0*images[ch][cellroi.frame.number]
+        segment=mask*images[ch][cellroi.frame.number]
         sum=float(np.sum(segment))
         mean=float(np.mean(segment))
         std=float(np.std(segment))
@@ -1754,7 +1753,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     #for i in range(data['npixels']):
                     #    mask0[frame.height-data['x'][i]][data['y'][i]]=True
                     #out_dict[roi.cell_id.name][seg.algo][frame.number] = mask0
-                    out_dict[roi.cell_id.name][seg.algo][frame.number] = np.array(seg.mask['mask'], dtype=bool)
+                    out_dict[roi.cell_id.name][seg.algo][frame.number] = np.flip(np.array(seg.mask['mask'], dtype=bool),0)
+
         return out_dict
 
     #___________________________________________________________________________________________
