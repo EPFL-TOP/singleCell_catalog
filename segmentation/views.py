@@ -3590,7 +3590,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             toto.append('SAM2_b+')
             dropdown_segmentation_type.options = toto
             current_file = get_current_file()
-            masks_data=get_masks_data(current_file, slider.value, cellname=dropdown_cell.value)
+            masks_data=get_masks_data(current_file, cellname=dropdown_cell.value)
 
             current_pos  = os.path.split(current_file)[1]
             print('current_pos ',current_pos)
