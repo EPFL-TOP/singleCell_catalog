@@ -1633,7 +1633,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         frames = Frame.objects.select_related().filter(sample=sample)
         cellids = CellID.objects.select_related().filter(sample=sample)
         out_dict={}
-        mask1=np.zeros((frames[0].width,frame[0].height), dtype=bool)
+        mask1=np.zeros((frames[0].width,frames[0].height), dtype=bool)
         for cellid in cellids:
             out_dict[cellid.name]={}
             try:
