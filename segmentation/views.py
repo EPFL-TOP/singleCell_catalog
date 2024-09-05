@@ -763,7 +763,35 @@ def removeROIs(sample):
 
 
 #___________________________________________________________________________________________
-def build_segmentation_sam2_single_frame(image, sample, cell):
+def build_segmentation_sam2_single_frame(x, y, image, sample, cell):
+    input_point = np.array([[x, y]])
+    input_label = np.array([1])
+    image_prepro = preprocess_image_sam2(image)
+    predictor_base_plus.set_image(image_prepro)
+
+    masks, scores, logits = predictor_base_plus.predict(point_coords=input_point,point_labels=input_label,multimask_output=True)
+    sorted_ind = np.argsort(scores)[::-1]
+    masks = masks[sorted_ind]
+    scores = scores[sorted_ind]
+    logits = logits[sorted_ind]
+    print('scores ',scores)
+    return masks[0]
+
+    
+
+
+    #label_im = label(masks[0])
+    #region=regionprops(label_im)
+    #sel_region = None 
+    #if len(region)==1: sel_region=region[0]
+    #if len(region)>1:
+    #    for r in region:
+    #        print('r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
+    #        print('input_point ',input_point)
+    #        if r.area<80: continue
+    #        if math.sqrt( math.pow((input_point[0][0] - r.centroid[1]),2) +  math.pow((input_point[0][1]- r.centroid[0]),2))>50:continue
+    #        sel_region=r
+    #        print(' selected r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
 
     #image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 
     return
@@ -1629,7 +1657,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     
     #___________________________________________________________________________________________
     def get_masks_data(current_file, tp=-9999, cellname=''):
-        print('in get_masks_data')
         sample = Sample.objects.get(file_name=current_file)
         frames = Frame.objects.select_related().filter(sample=sample)
         cellids = CellID.objects.select_related().filter(sample=sample)
@@ -1643,20 +1670,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     out_dict[cellid.name][seg]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
             except KeyError:
                 pass
-        print('in get_masks_data 11')
 
         for frame in frames:
-            print('frame ',frame)
             if tp>-10 and tp!=frame.number:continue
             cellrois = CellROI.objects.select_related().filter(frame=frame)
             for roi in cellrois:
-                print('  roi ',roi)
                 if cellname!='' and roi.cell_id.name!=cellname:continue
-                print('passed')
                 segmentations = ContourSeg.objects.select_related().filter(cell_roi=roi)
-                print('segmentations ',len(segmentations))
                 for seg in segmentations:
-                    print('current file ', current_file,'  frame ',frame.number, '  roi  ',roi, '  cell ',roi.cell_id.name,'  seg ',seg.algo)
                     f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
                     data = json.load(f)
                     mask0=np.zeros((frame.width,frame.height), dtype=bool)
@@ -2996,7 +3017,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             image = image_stack_dict[current_pos]['ind_images_list'][0][slider.value]
             print('-------------------   ',image.shape)
 
-            #build_segmentation_sam2_single_frame()
+            sample = Sample.objects.get(file_name=current_file)
+            cell = dropdown_cell.value
+            mask=build_segmentation_sam2_single_frame(x,y,image, sample, cell)
+            image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+'][slider.value]=mask
 
             #mask = get_current_stack()['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]
             #source_img_mask.data = {'img':[mask]}
@@ -3095,10 +3119,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_file = get_current_file(index=0)
         current_pos  = os.path.split(current_file)[1]
 
-        print(image_stack_dict[current_pos]['masks'])
-        print('dropdown_cell.value ',dropdown_cell.value)
-        print('dropdown_segmentation_type.value ',dropdown_segmentation_type.value)
-        print('time_point ',time_point)
         try:
             source_img_mask.data = {'img':[image_stack_dict[current_pos]['masks'][dropdown_cell.value][dropdown_segmentation_type.value][time_point]]}
         except KeyError:
