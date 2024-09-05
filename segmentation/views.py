@@ -3675,13 +3675,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             toto=dropdown_segmentation_type.options
             toto.append('SAM2_b+')
             dropdown_segmentation_type.options = toto
-            current_file = get_current_file()
-            masks_data=get_masks_data(current_file, cellname=dropdown_cell.value)
+        current_file = get_current_file()
+        masks_data=get_masks_data(current_file, cellname=dropdown_cell.value)
 
-            current_pos  = os.path.split(current_file)[1]
-            print('current_pos ',current_pos)
-            print('masks_data ',masks_data)
-            image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+']=masks_data[dropdown_cell.value]['SAM2_b+']
+        current_pos  = os.path.split(current_file)[1]
+        image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+']=masks_data[dropdown_cell.value]['SAM2_b+']
     button_build_sam2 = bokeh.models.Button(label="Build SAM2")
     button_build_sam2.on_click(build_sam2_callback)
     #___________________________________________________________________________________________
