@@ -1628,12 +1628,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         return rois_dict
     
     #___________________________________________________________________________________________
-    def get_masks_data(current_file, ind_images_list_norm):
+    def get_masks_data(current_file, tp=-9999, cellname=''):
         sample = Sample.objects.get(file_name=current_file)
+        frames = Frame.objects.select_related().filter(sample=sample)
         cellids = CellID.objects.select_related().filter(sample=sample)
         out_dict={}
-        mask1=np.ones(ind_images_list_norm[0][0].shape, dtype=bool)
-        mask1=np.zeros(ind_images_list_norm[0][0].shape, dtype=bool)
+        mask1=np.zeros((frames[0].width,frame[0].height), dtype=bool)
         for cellid in cellids:
             out_dict[cellid.name]={}
             try:
@@ -1641,24 +1641,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     out_dict[cellid.name][seg]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
             except KeyError:
                 pass
-        frames = Frame.objects.select_related().filter(sample=sample)
         for frame in frames:
+            if tp>-10 and tp!=frame.number:continue
             cellrois = CellROI.objects.select_related().filter(frame=frame)
             for roi in cellrois:
+                if cellname!='' and roi.cell_id.name!=cellname:continue
                 segmentations = ContourSeg.objects.select_related().filter(cell_roi=roi)
                 for seg in segmentations:
 
                     f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
                     data = json.load(f)
-                    mask1=np.ones(ind_images_list_norm[0][frame.number].shape, dtype=bool)
-                    mask0=np.zeros(ind_images_list_norm[0][frame.number].shape, dtype=bool)
-                    mask1=mask1*255
-                    print('mask shape ', mask1.shape)
-                    print('ind_images_list_norm[frame.number] ',ind_images_list_norm[0][frame.number].shape)
+                    mask0=np.zeros((frame.width,frame.height), dtype=bool)
                     for i in range(data['npixels']):
-                        mask1[frame.height-data['x'][i]][data['y'][i]]=ind_images_list_norm[0][frame.number][frame.height-data['x'][i]][data['y'][i]] 
                         mask0[frame.height-data['x'][i]][data['y'][i]]=True
-                    out_dict[roi.cell_id.name][seg.algo][frame.number] = mask1
                     out_dict[roi.cell_id.name][seg.algo][frame.number] = mask0
         return out_dict
 
@@ -1675,7 +1670,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if image_stack_dict[current_pos]==None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
             rois_data = get_stack_rois_data(current_file)
-            masks_data = get_masks_data(current_file, ind_images_list_norm)
+            masks_data = get_masks_data(current_file)
 
             image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 
                                            'ind_images_list_norm':ind_images_list_norm,
@@ -1705,7 +1700,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if image_stack_dict[k]==None:
                     ind_images_list, ind_images_list_norm = get_stack_data(current_file_list[current_pos_list.index(k)], 'get_adjacent_stack')
                     rois_data = get_stack_rois_data(current_file_list[current_pos_list.index(k)], 'get_adjacent_stack')
-                    masks_data = get_masks_data(current_file, ind_images_list_norm)
+                    masks_data = get_masks_data(current_file)
 
                     image_stack_dict[k]={'ind_images_list':ind_images_list, 
                                          'ind_images_list_norm':ind_images_list_norm,
@@ -2988,7 +2983,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 return
             x, y = event.geometry['x'], event.geometry['y']
             print('x=',x,'  y=',y)
-            current_file = get_current_file(index=0)
+            current_file = get_current_file()
             current_pos  = os.path.split(current_file)[1]
             image = image_stack_dict[current_pos]['ind_images_list'][0][slider.value]
             print('-------------------   ',image.shape)
@@ -3593,6 +3588,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             toto=dropdown_segmentation_type.options
             toto.append('SAM2_b+')
             dropdown_segmentation_type.options = toto
+            current_file = get_current_file()
+            masks_data=get_masks_data(current_file, slider.value, cellname=dropdown_cell.value)
+
+            current_pos  = os.path.split(current_file)[1]
+            image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+']=masks_data[current_pos]['masks'][dropdown_cell.value]['SAM2_b+']
+
     button_build_sam2 = bokeh.models.Button(label="Build SAM2")
     button_build_sam2.on_click(build_sam2_callback)
     #___________________________________________________________________________________________
