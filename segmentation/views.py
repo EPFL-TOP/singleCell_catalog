@@ -3092,6 +3092,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_file = get_current_file(index=0)
         current_pos  = os.path.split(current_file)[1]
 
+        print(image_stack_dict[current_pos]['masks'])
+        print('dropdown_cell.value ',dropdown_cell.value)
+        print('dropdown_segmentation_type.value ',dropdown_segmentation_type.value)
+        print('time_point ',time_point)
         try:
             source_img_mask.data = {'img':[image_stack_dict[current_pos]['masks'][dropdown_cell.value][dropdown_segmentation_type.value][time_point]]}
         except KeyError:
@@ -5547,6 +5551,10 @@ def index(request: HttpRequest) -> HttpResponse:
                         download_dict[exp][expds][sample][cellID.name]["ROI"]={}
 
                         download_dict[exp][expds][sample][cellID.name]["segmentation"]={}
+
+                        for seg in cellID.cell_status.segmentation['algo']:
+                            if seg=='roi':continue
+                            download_dict[exp][expds][sample][cellID.name]["segmentation"][seg]={}
 
                         alive          = []
                         oscillating    = []
