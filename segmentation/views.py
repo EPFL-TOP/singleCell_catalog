@@ -1629,6 +1629,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     
     #___________________________________________________________________________________________
     def get_masks_data(current_file, tp=-9999, cellname=''):
+        print('in get_masks_data')
         sample = Sample.objects.get(file_name=current_file)
         frames = Frame.objects.select_related().filter(sample=sample)
         cellids = CellID.objects.select_related().filter(sample=sample)
@@ -1642,10 +1643,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     out_dict[cellid.name][seg]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
             except KeyError:
                 pass
+        print('in get_masks_data 11')
+
         for frame in frames:
+            print('frame ',frame)
             if tp>-10 and tp!=frame.number:continue
             cellrois = CellROI.objects.select_related().filter(frame=frame)
             for roi in cellrois:
+                print('  roi ',roi)
                 if cellname!='' and roi.cell_id.name!=cellname:continue
                 segmentations = ContourSeg.objects.select_related().filter(cell_roi=roi)
                 for seg in segmentations:
