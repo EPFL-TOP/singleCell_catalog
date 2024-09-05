@@ -813,7 +813,9 @@ def build_segmentation_sam2(sample=None, force=False):
     print('build_segmentation_sam2: ',s.file_name)
 
     frames = Frame.objects.select_related().filter(sample=s)
-    file_name=os.path.join(NASRCP_MOUNT_POINT,s.file_name)
+    file_name=os.path.join(LOCAL_RAID5,s.file_name)
+    if not os.path.exists(file_name):
+        file_name=os.path.join(NASRCP_MOUNT_POINT,s.file_name)
 
     images, channels = read.nd2reader_getFrames(file_name)
     images=images.transpose(1,0,2,3)
@@ -1135,7 +1137,10 @@ def build_ROIs(sample=None, force=False):
     print('build roi sample: ',s.file_name)
 
     frames = Frame.objects.select_related().filter(sample=s)
-    file_name=os.path.join(NASRCP_MOUNT_POINT,s.file_name)
+    file_name=os.path.join(LOCAL_RAID5,s.file_name)
+    if not os.path.exists(file_name):
+        file_name=os.path.join(NASRCP_MOUNT_POINT,s.file_name)
+
 
     images, channels = read.nd2reader_getFrames(file_name)
     #images are t, c, x, y 
@@ -1638,12 +1643,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def get_stack_data(current_file, text=''):
         local_time=datetime.datetime.now()
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
-        current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
+        current_file=os.path.join(LOCAL_RAID5,current_file)
+        if not os.path.exists(current_file):
+            current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         time_lapse_path = Path(current_file)
         print('time_lapse_path = ',time_lapse_path)
-        print('time_lapse_path.as_posix() = ',time_lapse_path.as_posix())
         
+
+
         print_time(f'------- time_lapse_path get_stack_data {text}', local_time)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
         print_time(f'------- imread get_stack_data {text}', local_time)
@@ -1919,6 +1927,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         time_of_death_frame_pred=-100
 
         current_file = get_current_file()
+    
         current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
         time_lapse_path = Path(current_file)
         time_lapse = nd2.imread(time_lapse_path.as_posix())
