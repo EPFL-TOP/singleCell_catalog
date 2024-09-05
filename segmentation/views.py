@@ -910,6 +910,8 @@ def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, im
     contourseg.intensity_sum  = intensity_sum
     contourseg.number_of_pixels = mask.sum()
 
+    print('build_contours_sam2 contourseg.intensity_mean ',contourseg.intensity_mean)
+
     segment_dict = {}
     out_dir_name  = os.path.join(NASRCP_MOUNT_POINT, ANALYSIS_DATA_PATH,exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
     out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname))
@@ -1744,14 +1746,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellrois = CellROI.objects.select_related().filter(frame=frame)
             for roi in cellrois:
                 if cellname!='' and roi.cell_id.name!=cellname:continue
-                segmentations = ContourSeg.objects.select_related().filter(cell_roi=roi)
+                segmentations = ContourSeg.objects.select_related().filter(cell_roi=roi, algo=dropdown_segmentation_type.value)
                 for seg in segmentations:
-                    f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
-                    data = json.load(f)
-                    mask0=np.zeros((frame.width,frame.height), dtype=bool)
-                    for i in range(data['npixels']):
-                        mask0[frame.height-data['x'][i]][data['y'][i]]=True
-                    out_dict[roi.cell_id.name][seg.algo][frame.number] = mask0
+                    #f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
+                    #data = json.load(f)
+                    #mask0=np.zeros((frame.width,frame.height), dtype=bool)
+                    #for i in range(data['npixels']):
+                    #    mask0[frame.height-data['x'][i]][data['y'][i]]=True
+                    #out_dict[roi.cell_id.name][seg.algo][frame.number] = mask0
+                    out_dict[roi.cell_id.name][seg.algo][frame.number] = np.array(seg.mask['mask'], dtype=bool)
         return out_dict
 
     #___________________________________________________________________________________________
@@ -3141,7 +3144,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 hist, edges = np.histogram(img_diff.flatten(), bins=100)
                 source_test_dead.data=dict(top=hist, left=edges[:-1], right=edges[1:])
     #___________________________________________________________________________________________
-
 
     #___________________________________________________________________________________________
     def callback_slider(attr: str, old: Any, new: Any) -> None:
@@ -5496,7 +5498,8 @@ def index(request: HttpRequest) -> HttpResponse:
 
     #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
     if 'segment' in request.POST:
-        build_segmentation(selected_dict['experiment'])
+        pass
+        #build_segmentation(selected_dict['experiment'])
 
 
     if selected_experiment!='':
