@@ -1638,6 +1638,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             out_dict[cellid.name]={}
             try:
                 for seg in cellid.cell_status.segmentation['algo']:
+                    if seg=='roi':continue
                     out_dict[cellid.name][seg]=[mask1 for i in range(sample.experimental_dataset.experiment.number_of_frames)]
             except KeyError:
                 pass
@@ -3592,8 +3593,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             masks_data=get_masks_data(current_file, slider.value, cellname=dropdown_cell.value)
 
             current_pos  = os.path.split(current_file)[1]
-            image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+']=masks_data[current_pos]['masks'][dropdown_cell.value]['SAM2_b+']
+            print('current_pos ',current_pos)
 
+
+            image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+']=masks_data[dropdown_cell.value]['SAM2_b+']
     button_build_sam2 = bokeh.models.Button(label="Build SAM2")
     button_build_sam2.on_click(build_sam2_callback)
     #___________________________________________________________________________________________
