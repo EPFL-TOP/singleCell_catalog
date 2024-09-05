@@ -1652,7 +1652,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             for roi in cellrois:
                 print('  roi ',roi)
                 if cellname!='' and roi.cell_id.name!=cellname:continue
+                print('passed')
                 segmentations = ContourSeg.objects.select_related().filter(cell_roi=roi)
+                print('segmentations ',len(segmentations))
                 for seg in segmentations:
                     print('current file ', current_file,'  frame ',frame.number, '  roi  ',roi, '  cell ',roi.cell_id.name,'  seg ',seg.algo)
                     f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
