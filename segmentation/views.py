@@ -2725,6 +2725,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if old_seg_val not in dropdown_segmentation_type.options:
                 dropdown_segmentation_type.value=dropdown_segmentation_type.options[0]
 
+            print_time('------- update_dropdown_cell 1.1 ', local_time)
+
             for roi in ROIs:
                 if dropdown_segmentation_type.value == 'roi':
                     for ch in roi.contour_cellroi.intensity_sum:
@@ -2772,6 +2774,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                             intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_max')[ch]
                         elif   dropdown_intensity_type.value == 'std': 
                             intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_std')[ch]
+
+            print_time('------- update_dropdown_cell 1.2 ', local_time)
 
             for index, key in enumerate(time_list):
                 if index==0:
