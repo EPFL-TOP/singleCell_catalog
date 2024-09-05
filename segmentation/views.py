@@ -3022,6 +3022,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             mask=build_segmentation_sam2_single_frame(x,y,image, sample, cell)
             image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+'][slider.value]=mask
 
+            source_img_mask.data = {'img':[mask]}
             #mask = get_current_stack()['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]
             #source_img_mask.data = {'img':[mask]}
     plot_image.on_event(bokeh.events.SelectionGeometry, tap_segmentation_callback)
