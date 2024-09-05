@@ -223,6 +223,7 @@ RAW_DATA_PATH="raw_data/microscopy/cell_culture"
 ANALYSIS_DATA_PATH="analysis_data/singleCell_catalog/contour_data"
 NASRCP_MOUNT_POINT=''
 MVA_OUTDIR=r'D:'
+LOCAL_RAID5=r'D:\single_cells'
 
 
 #MY macbook
@@ -248,6 +249,7 @@ elif os.path.isdir(r'C:\Users\helsens\software\cellgmenter'):
     sys.path.append(r'C:\Users\helsens\software\cellgmenter')
     NASRCP_MOUNT_POINT=r'Y:'
     MVA_OUTDIR=r'D:'
+    LOCAL_RAID5=r'D:\single_cells'
 
     LOCAL=False
     import mysql.connector
@@ -909,7 +911,6 @@ def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, im
     contourseg.intensity_sum  = intensity_sum
     contourseg.number_of_pixels = mask.sum()
 
-    print('build_contours_sam2 contourseg.intensity_mean ',contourseg.intensity_mean)
 
     segment_dict = {}
     out_dir_name  = os.path.join(NASRCP_MOUNT_POINT, ANALYSIS_DATA_PATH,exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
@@ -2750,11 +2751,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         elif   dropdown_intensity_type.value == 'std': 
                             intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_std')[ch]
 
+                print_time('------- update_dropdown_cell 1.2 ', local_time)
+
                 if dropdown_segmentation_type.value != 'roi':
                     contours = ContourSeg.objects.select_related().filter(cell_roi=roi, algo=dropdown_segmentation_type.value)
+                    print_time('------- update_dropdown_cell 1.2.1 ', local_time)
+
                     if len(contours)==0:return
                     contour  = contours[0]
                     for ch in contour.intensity_sum:
+                        print_time('------- update_dropdown_cell 1.2.2 ', local_time)
+
                         try:
                             time_list[ch]
                         except KeyError:
@@ -2775,7 +2782,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         elif   dropdown_intensity_type.value == 'std': 
                             intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_std')[ch]
 
-            print_time('------- update_dropdown_cell 1.2 ', local_time)
+            print_time('------- update_dropdown_cell 1.3 ', local_time)
 
             for index, key in enumerate(time_list):
                 if index==0:
@@ -3664,8 +3671,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             current_pos  = os.path.split(current_file)[1]
             print('current_pos ',current_pos)
-
-
+            print('masks_data ',masks_data)
             image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+']=masks_data[dropdown_cell.value]['SAM2_b+']
     button_build_sam2 = bokeh.models.Button(label="Build SAM2")
     button_build_sam2.on_click(build_sam2_callback)
