@@ -766,8 +766,7 @@ def removeROIs(sample):
 
 
 #___________________________________________________________________________________________
-def build_segmentation_sam2_single_frame(x_list, y_list, image, sample, cell):
-    #input_point = np.array([[x, y]])
+def build_segmentation_sam2_single_frame(x_list, y_list, image):
     input_point = np.array([[x, y] for x, y in zip(x_list,y_list)])
     input_label = np.array([1 for i in range(len(x_list))])
     image_prepro = preprocess_image_sam2(image)
@@ -779,28 +778,9 @@ def build_segmentation_sam2_single_frame(x_list, y_list, image, sample, cell):
     scores = scores[sorted_ind]
     logits = logits[sorted_ind]
     print('scores ',scores)
-
     return masks[0]
 
     
-
-
-    #label_im = label(masks[0])
-    #region=regionprops(label_im)
-    #sel_region = None 
-    #if len(region)==1: sel_region=region[0]
-    #if len(region)>1:
-    #    for r in region:
-    #        print('r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
-    #        print('input_point ',input_point)
-    #        if r.area<80: continue
-    #        if math.sqrt( math.pow((input_point[0][0] - r.centroid[1]),2) +  math.pow((input_point[0][1]- r.centroid[0]),2))>50:continue
-    #        sel_region=r
-    #        print(' selected r  =  ',r.bbox,'  ',r.area, '  ',r.centroid)
-
-    #image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 
-    return
-
 #___________________________________________________________________________________________
 def build_segmentation_sam2(sample=None, force=False):
     s=None
@@ -3080,22 +3060,26 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def run_segmentation_point(x,y):
         current_file = get_current_file()
         current_pos  = os.path.split(current_file)[1]
-        image = image_stack_dict[current_pos]['ind_images_list'][0][slider.value]
+        image_BF = image_stack_dict[current_pos]['ind_images_list'][0][slider.value]
 
         sample = Sample.objects.get(file_name=current_file)
-        cell = dropdown_cell.value
-        mask=build_segmentation_sam2_single_frame(x,y,image, sample, cell)
+        frame = Frame.objects.select_related().filter(sample=sample).get(number=slider.value)
+        cellid = CellID.objects.select_related().filter(sample=sample).get(name=dropdown_cell.value)
+        cellroi = CellROI.objects.select_related().filter(frame=frame, cell_id=cellid)
+        print('cellroi  ',len(cellroi))
+        contour = ContourSeg.objects.select_related().filter(cell_roi=cellroi[0]).get(algo='SAM2_b+')
+        print('contour', contour)
+        mask=build_segmentation_sam2_single_frame(x,y,image_BF)#, sample, cell)
         image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+'][slider.value]=mask
         source_img_mask.data = {'img':[mask]}
 
-        #source_intensity_ch0.data={'time':time_sorted, 'intensity':intensity_sorted}
         area = list(source_intensity_area.data['area'])
-        print('slde ',type(slider.value))
-        print('area ', type(area),'  ',area)
-        
         area[slider.value]=mask.sum()
         source_intensity_area.data={'time':source_intensity_area.data['time'], 'area':area}
 
+
+
+        #source_intensity_ch0.data={'time':time_sorted, 'intensity':intensity_sorted}
 
 
 
