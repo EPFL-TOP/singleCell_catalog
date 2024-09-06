@@ -921,21 +921,6 @@ def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, ex
     out_dir_name_DB  = ANALYSIS_DATA_PATH+"/"+exp_name+"/"+ expds_data_name+"/"+os.path.split(s_file_name)[-1].replace('.nd2','')
     out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}_{2}_mask.json".format(cellroi.frame.number, cellroi.roi_number, segname)
 
-    #if not os.path.exists(out_dir_name):
-    #    os.makedirs(out_dir_name)
-    #segment_dict['npixels']=int(mask.sum())
-    #segment_dict['type']=segname
-
-    #segment_dict['x'] = []
-    #segment_dict['y'] = []
-    #for ch in range(len(channels)):
-    #    segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))] = []
-    
-    #for coord in contour.coords:
-    #    segment_dict['x'].append(int(coord[0]))
-    #    segment_dict['y'].append(int(coord[1]))
-    #    for ch in range(len(channels)):
-    #        segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(float(images[ch][cellroi.frame.number][coord[0]][coord[1]]))
     out_file = open(out_file_name, "w") 
     json.dump(segment_dict, out_file) 
     out_file.close() 
@@ -2739,12 +2724,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if old_seg_val not in dropdown_segmentation_type.options:
                 dropdown_segmentation_type.value=dropdown_segmentation_type.options[0]
 
-            print_time('------- update_dropdown_cell 1.1 ', local_time)
-
             for roi in ROIs:
                 if dropdown_segmentation_type.value == 'roi':
                     for ch in roi.contour_cellroi.intensity_sum:
-                        print_time('------- update_dropdown_cell 1.1.1 ', local_time)
 
                         try:
                             time_list[ch]
@@ -2766,16 +2748,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         elif   dropdown_intensity_type.value == 'std': 
                             intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_std')[ch]
 
-                print_time('------- update_dropdown_cell 1.2 ', local_time)
-
                 if dropdown_segmentation_type.value != 'roi':
                     contours = ContourSeg.objects.select_related().filter(cell_roi=roi, algo=dropdown_segmentation_type.value)
-                    print_time('------- update_dropdown_cell 1.2.1 ', local_time)
 
                     if len(contours)==0:return
                     contour  = contours[0]
                     for ch in contour.intensity_sum:
-                        print_time('------- update_dropdown_cell 1.2.2 ', local_time)
 
                         try:
                             time_list[ch]
@@ -3096,53 +3074,53 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:print('ppppppp update_source_roi ',left_rois, right_rois, top_rois, bottom_rois)
 
         return left_rois,right_rois,top_rois,bottom_rois, height_labels, weight_labels, names_labels, height_cells, weight_cells, names_cells
-    #___________________________________________________________________________________________
 
 
     #___________________________________________________________________________________________
-    def tap_segmentation_callback(event):
+    def run_segmentation_point(x,y):
+        current_file = get_current_file()
+        current_pos  = os.path.split(current_file)[1]
+        image = image_stack_dict[current_pos]['ind_images_list'][0][slider.value]
+
+        sample = Sample.objects.get(file_name=current_file)
+        cell = dropdown_cell.value
+        mask=build_segmentation_sam2_single_frame(x,y,image, sample, cell)
+        image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+'][slider.value]=mask
+        source_img_mask.data = {'img':[mask]}
+
+        #source_intensity_ch0.data={'time':time_sorted, 'intensity':intensity_sorted}
+        area = source_intensity_area.data['area']
+        area[slider.value]=mask.sum()
+        source_intensity_area.data={'time':source_intensity_area.data['time'], 'area':area}
+
+
+
+
+
+    #___________________________________________________________________________________________
+    def add_segmentation_point_callback(event):
         if isinstance(event, bokeh.events.SelectionGeometry):
 
-            print('tap_segmentation_callback event ',event)
-            print('tap_segmentation_callback event.geometry ',event.geometry)
+            print('add_segmentation_point_callback event ',event)
+            print('add_segmentation_point_callback event.geometry ',event.geometry)
             if event.geometry["type"]!="point":
                 return
             x, y = event.geometry['x'], event.geometry['y']
             new_point = dict(x=source_segmentation_points.data['x'] + [x], y=source_segmentation_points.data['y'] + [y])
             source_segmentation_points.data = new_point
-        
-            current_file = get_current_file()
-            current_pos  = os.path.split(current_file)[1]
-            image = image_stack_dict[current_pos]['ind_images_list'][0][slider.value]
-            print('-------------------   ',image.shape)
-
-            sample = Sample.objects.get(file_name=current_file)
-            cell = dropdown_cell.value
-            mask=build_segmentation_sam2_single_frame(source_segmentation_points.data['x'],source_segmentation_points.data['y'],image, sample, cell)
-            image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+'][slider.value]=mask
-            source_img_mask.data = {'img':[mask]}
-
-            #contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi)
-            #build_contours_sam2(contourseg, masks[0], flag, cellroi, images, channels, BF_images[frame.number].shape, exp.name, expds.data_name, s.file_name)
-            #mask = get_current_stack()['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]
-            #source_img_mask.data = {'img':[mask]}
-    plot_image.on_event(bokeh.events.SelectionGeometry, tap_segmentation_callback)
-    #___________________________________________________________________________________________
+            run_segmentation_point(source_segmentation_points.data['x'],source_segmentation_points.data['y'])
+    plot_image.on_event(bokeh.events.SelectionGeometry, add_segmentation_point_callback)
 
 
     #___________________________________________________________________________________________
-    def remove_last_point_callback(event):
+    def remove_last_segmentation_point_callback(event):
+        print('remove_last_segmentation_point_callback event ',event)
         if source_segmentation_points.data['x']:
-            # Remove the last point from the data source
             new_data = dict(x=source_segmentation_points.data['x'][:-1], y=source_segmentation_points.data['y'][:-1])
             source_segmentation_points.data = new_data
-            # Update the Div with the list of points
+            run_segmentation_point(source_segmentation_points.data['x'],source_segmentation_points.data['y'])
+    plot_image.on_event(bokeh.events.DoubleTap, remove_last_segmentation_point_callback)
 
-    # Connect the callbacks to the tap and double-tap events
-    plot_image.on_event(bokeh.events.DoubleTap, remove_last_point_callback)
-    #___________________________________________________________________________________________
-
-    
 
     #___________________________________________________________________________________________
     def update_source_segment(tp=0):
@@ -3153,32 +3131,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         except KeyError:
             source_img_mask.data = {'img':[]}
         return
-    #___________________________________________________________________________________________
-
-    #___________________________________________________________________________________________
-    def roi_diff(time_point):
-        images=source_imgs.data['images']
-        
-        if time_point>0:
-            image1 = images[int(dropdown_channel.value)][time_point]
-            image1=np.array(image1)
-
-            image2 = images[int(dropdown_channel.value)][time_point-1]
-            image2=np.array(image2)
-            current_file=get_current_file()
-            sample = Sample.objects.get(file_name=current_file)
-            frame  = Frame.objects.select_related().filter(sample=sample).get(number=time_point)
-            rois   = CellROI.objects.select_related().filter(frame=frame)
-
-
-            for roi in rois:
-                image1_roi = image1[roi.min_row:roi.max_row, roi.min_col:roi.max_col]
-                image2_roi = image2[roi.min_row:roi.max_row, roi.min_col:roi.max_col]
-
-                img_diff = (image1_roi-image2_roi)/image2_roi
-
-                hist, edges = np.histogram(img_diff.flatten(), bins=100)
-                source_test_dead.data=dict(top=hist, left=edges[:-1], right=edges[1:])
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
@@ -3199,33 +3151,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         except KeyError:
             source_img_mask.data = {'img':[]}
 
+        source_segmentation_points.data = dict(x=[], y=[])
 
-        #left_rois,right_rois,top_rois,bottom_rois,height_labels, weight_labels, names_labels,height_cells, weight_cells, names_cells=update_source_roi_cell_labels()
-        #current_file = os.path.split(get_current_file())[1]
-        #source_roi.data    = {'left': image_stack_rois_dict[current_file][str(time_point)]['left'], 
-        #                      'right': image_stack_rois_dict[current_file][str(time_point)]['right'], 
-        #                      'top': image_stack_rois_dict[current_file][str(time_point)]['top'], 
-        #                      'bottom': image_stack_rois_dict[current_file][str(time_point)]['bottom']}
-        #
-        #source_labels.data = {'height':image_stack_labels_dict[current_file][str(time_point)]['height'],
-        #                      'weight':image_stack_labels_dict[current_file][str(time_point)]['weight'], 
-        #                      'names':image_stack_labels_dict[current_file][str(time_point)]['names']}
-        
-        #source_cells.data  = {'height':image_stack_cells_dict[current_file][str(time_point)]['height'], 
-        #                      'weight':image_stack_cells_dict[current_file][str(time_point)]['weight'], 
-        #                      'names':image_stack_cells_dict[current_file][str(time_point)]['names']}
-        #source_roi.data    = {'left': left_rois, 
-        #                      'right': right_rois, 
-        #                      'top': top_rois, 
-        #                      'bottom': bottom_rois}
-        
-        #source_labels.data = {'height':height_labels,
-        #                      'weight':weight_labels, 
-        #                      'names':names_labels}
-        
-        #source_cells.data  = {'height':height_cells, 
-        #                      'weight':weight_cells, 
-        #                      'names':names_cells}
 
         source_roi.data    = {'left'  :source_rois_full.data['left'][time_point], 
                               'right' :source_rois_full.data['right'][time_point], 
@@ -3244,9 +3171,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             line_position.location = -999
         else:
             line_position.location = source_intensity_ch1.data["time"][time_point]
-        #update_source_segment(time_point)
-        #roi_diff(time_point)
-
     #___________________________________________________________________________________________
     
 
@@ -4424,7 +4348,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
 
 
-    plot_image.circle(x='x', y='y', size=10, color='red', source=source_segmentation_points)
+    plot_image.star(x='x', y='y', size=10, color='white', source=source_segmentation_points)
 
 
     source_segmentation  = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
