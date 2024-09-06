@@ -3105,45 +3105,45 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             if ch==0:
                 intensity = list(source_intensity_ch0.data['intensity'])
-                if dropdown_intensity_type=="mean":
+                if dropdown_intensity_type.value=="mean":
                     intensity[slider.value]=mean
                     source_intensity_ch0.data={'time':source_intensity_ch0.data['time'], 'intensity':intensity}
-                elif dropdown_intensity_type=="max":
+                elif dropdown_intensity_type.value=="max":
                     intensity[slider.value]=max
                     source_intensity_ch0.data={'time':source_intensity_ch0.data['time'], 'intensity':intensity}
-                elif dropdown_intensity_type=="sum":
+                elif dropdown_intensity_type.value=="sum":
                     intensity[slider.value]=sum
                     source_intensity_ch0.data={'time':source_intensity_ch0.data['time'], 'intensity':intensity}
-                elif dropdown_intensity_type=="std":
+                elif dropdown_intensity_type.value=="std":
                     intensity[slider.value]=std
                     source_intensity_ch0.data={'time':source_intensity_ch0.data['time'], 'intensity':intensity}
             elif ch==1:
                 intensity = list(source_intensity_ch1.data['intensity'])
-                if dropdown_intensity_type=="mean":
+                if dropdown_intensity_type.value=="mean":
                     intensity[slider.value]=mean
                     source_intensity_ch1.data={'time':source_intensity_ch1.data['time'], 'intensity':intensity}
-                elif dropdown_intensity_type=="max":
+                elif dropdown_intensity_type.value=="max":
                     intensity[slider.value]=max
                     source_intensity_ch1.data={'time':source_intensity_ch1.data['time'], 'intensity':intensity}
-                elif dropdown_intensity_type=="sum":
+                elif dropdown_intensity_type.value=="sum":
                     intensity[slider.value]=sum
                     source_intensity_ch1.data={'time':source_intensity_ch1.data['time'], 'intensity':intensity}
-                elif dropdown_intensity_type=="std":
+                elif dropdown_intensity_type.value=="std":
                     intensity[slider.value]=std
                     source_intensity_ch1.data={'time':source_intensity_ch1.data['time'], 'intensity':intensity}
 
             elif ch==2:
                 intensity = list(source_intensity_ch2.data['intensity'])
-                if dropdown_intensity_type=="mean":
+                if dropdown_intensity_type.value=="mean":
                     intensity[slider.value]=mean
                     source_intensity_ch2.data={'time':source_intensity_ch2.data['time'], 'intensity':intensity}
-                elif dropdown_intensity_type=="max":
+                elif dropdown_intensity_type.value=="max":
                     intensity[slider.value]=max
                     source_intensity_ch2.data={'time':source_intensity_ch2.data['time'], 'intensity':intensity}
-                elif dropdown_intensity_type=="sum":
+                elif dropdown_intensity_type.value=="sum":
                     intensity[slider.value]=sum
                     source_intensity_ch2.data={'time':source_intensity_ch2.data['time'], 'intensity':intensity}
-                elif dropdown_intensity_type=="std":
+                elif dropdown_intensity_type.value=="std":
                     intensity[slider.value]=std
                     source_intensity_ch2.data={'time':source_intensity_ch2.data['time'], 'intensity':intensity}
         contour.intensity_max  = intensity_max
