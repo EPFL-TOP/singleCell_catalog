@@ -3139,7 +3139,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             # Update the Div with the list of points
 
     # Connect the callbacks to the tap and double-tap events
-    plot_image.on_event(bokeh.eventsDoubleTap, remove_last_point_callback)
+    plot_image.on_event(bokeh.events.DoubleTap, remove_last_point_callback)
     #___________________________________________________________________________________________
 
     
