@@ -3078,8 +3078,92 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_intensity_area.data={'time':source_intensity_area.data['time'], 'area':area}
 
 
+        channels=sample.experimental_dataset.experiment.name_of_channels.split(',')
+        center = ndimage.center_of_mass(mask)
+        contour.center_x_pix = center[0]
+        contour.center_y_pix = center[1]
+        contour.center_x_mic = center[0]*cellroi[0].frame.pixel_microns+cellroi[0].frame.pos_x
+        contour.center_y_mic = center[1]*cellroi[0].frame.pixel_microns+cellroi[0].frame.pos_y
+        contour.algo = 'SAM2_b+'
 
-        #source_intensity_ch0.data={'time':time_sorted, 'intensity':intensity_sorted}
+        intensity_mean={}
+        intensity_std={}
+        intensity_sum={}
+        intensity_max={}
+        for ch in range(len(channels)): 
+            segment=mask*image_stack_dict[current_pos]['ind_images_list'][ch][slider.value]
+            sum=float(np.sum(segment))
+            mean=float(np.mean(segment))
+            std=float(np.std(segment))
+            max=float(np.max(segment))
+            ch_name=channels[ch].replace(" ","")
+            intensity_mean[ch_name]=mean
+            intensity_std[ch_name]=std
+            intensity_sum[ch_name]=sum
+            intensity_max[ch_name]=max
+
+
+            if ch==0:
+                intensity = list(source_intensity_ch0.data['intensity'])
+                if dropdown_intensity_type=="mean":
+                    intensity[slider.value]=mean
+                    source_intensity_ch0.data={'time':source_intensity_ch0.data['time'], 'intensity':intensity}
+                elif dropdown_intensity_type=="max":
+                    intensity[slider.value]=max
+                    source_intensity_ch0.data={'time':source_intensity_ch0.data['time'], 'intensity':intensity}
+                elif dropdown_intensity_type=="sum":
+                    intensity[slider.value]=sum
+                    source_intensity_ch0.data={'time':source_intensity_ch0.data['time'], 'intensity':intensity}
+                elif dropdown_intensity_type=="std":
+                    intensity[slider.value]=std
+                    source_intensity_ch0.data={'time':source_intensity_ch0.data['time'], 'intensity':intensity}
+            elif ch==1:
+                intensity = list(source_intensity_ch1.data['intensity'])
+                if dropdown_intensity_type=="mean":
+                    intensity[slider.value]=mean
+                    source_intensity_ch1.data={'time':source_intensity_ch1.data['time'], 'intensity':intensity}
+                elif dropdown_intensity_type=="max":
+                    intensity[slider.value]=max
+                    source_intensity_ch1.data={'time':source_intensity_ch1.data['time'], 'intensity':intensity}
+                elif dropdown_intensity_type=="sum":
+                    intensity[slider.value]=sum
+                    source_intensity_ch1.data={'time':source_intensity_ch1.data['time'], 'intensity':intensity}
+                elif dropdown_intensity_type=="std":
+                    intensity[slider.value]=std
+                    source_intensity_ch1.data={'time':source_intensity_ch1.data['time'], 'intensity':intensity}
+
+            elif ch==2:
+                intensity = list(source_intensity_ch2.data['intensity'])
+                if dropdown_intensity_type=="mean":
+                    intensity[slider.value]=mean
+                    source_intensity_ch2.data={'time':source_intensity_ch2.data['time'], 'intensity':intensity}
+                elif dropdown_intensity_type=="max":
+                    intensity[slider.value]=max
+                    source_intensity_ch2.data={'time':source_intensity_ch2.data['time'], 'intensity':intensity}
+                elif dropdown_intensity_type=="sum":
+                    intensity[slider.value]=sum
+                    source_intensity_ch2.data={'time':source_intensity_ch2.data['time'], 'intensity':intensity}
+                elif dropdown_intensity_type=="std":
+                    intensity[slider.value]=std
+                    source_intensity_ch2.data={'time':source_intensity_ch2.data['time'], 'intensity':intensity}
+        contour.intensity_max  = intensity_max
+        contour.intensity_mean = intensity_mean
+        contour.intensity_std  = intensity_std
+        contour.intensity_sum  = intensity_sum
+        contour.number_of_pixels = mask.sum()
+
+        segment_dict = {'mask':mask.tolist()}
+        out_dir_name  = os.path.join(NASRCP_MOUNT_POINT, ANALYSIS_DATA_PATH,sample.experimental_dataset.experiment.name, sample.experimental_dataset.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
+        out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}_mask.json".format(cellroi[0].frame.number, cellroi[0].roi_number, 'SAM2_b+'))
+
+        out_dir_name_DB  = ANALYSIS_DATA_PATH+"/"+sample.experimental_dataset.experiment.name+"/"+ sample.experimental_dataset.data_name+"/"+os.path.split(sample.file_name)[-1].replace('.nd2','')
+        out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}_{2}_mask.json".format(cellroi[0].frame.number, cellroi[0].roi_number, 'SAM2_b+')
+
+        out_file = open(out_file_name, "w") 
+        json.dump(segment_dict, out_file) 
+        out_file.close() 
+        contour.file_name = out_file_name_DB
+        contour.save()
 
 
 
