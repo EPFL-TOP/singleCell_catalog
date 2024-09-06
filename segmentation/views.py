@@ -766,9 +766,10 @@ def removeROIs(sample):
 
 
 #___________________________________________________________________________________________
-def build_segmentation_sam2_single_frame(x, y, image, sample, cell):
-    input_point = np.array([[x, y]])
-    input_label = np.array([1])
+def build_segmentation_sam2_single_frame(x_list, y_list, image, sample, cell):
+    #input_point = np.array([[x, y]])
+    input_point = np.array([[x, y] for x, y in zip(x_list,y_list)])
+    input_label = np.array([1 for i in range(len(x_list))])
     image_prepro = preprocess_image_sam2(image)
     predictor_base_plus.set_image(image_prepro)
 
@@ -1541,6 +1542,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_osc_period_line = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
 
     source_test_dead = bokeh.models.ColumnDataSource(data=dict(top=[], left=[], right=[]))
+
+    source_segmentation_points = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
 
 
     ncells_div = bokeh.models.Div(text="<b style='color:black; ; font-size:18px;'> Number of cells=</b>")
@@ -3096,7 +3099,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    # Define the callback function to handle tap events
+    #___________________________________________________________________________________________
     def tap_segmentation_callback(event):
         if isinstance(event, bokeh.events.SelectionGeometry):
 
@@ -3105,7 +3108,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             if event.geometry["type"]!="point":
                 return
             x, y = event.geometry['x'], event.geometry['y']
-            print('x=',x,'  y=',y)
+            new_point = dict(x=source_segmentation_points.data['x'] + [x], y=source_segmentation_points.data['y'] + [y])
+            source_segmentation_points.data = new_point
+        
             current_file = get_current_file()
             current_pos  = os.path.split(current_file)[1]
             image = image_stack_dict[current_pos]['ind_images_list'][0][slider.value]
@@ -3113,21 +3118,29 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             sample = Sample.objects.get(file_name=current_file)
             cell = dropdown_cell.value
-            mask=build_segmentation_sam2_single_frame(x,y,image, sample, cell)
+            mask=build_segmentation_sam2_single_frame(source_segmentation_points.data['x'],source_segmentation_points.data['y'],image, sample, cell)
             image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+'][slider.value]=mask
             source_img_mask.data = {'img':[mask]}
 
             #contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi)
-
             #build_contours_sam2(contourseg, masks[0], flag, cellroi, images, channels, BF_images[frame.number].shape, exp.name, expds.data_name, s.file_name)
-
-
-
             #mask = get_current_stack()['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]
             #source_img_mask.data = {'img':[mask]}
     plot_image.on_event(bokeh.events.SelectionGeometry, tap_segmentation_callback)
+    #___________________________________________________________________________________________
 
 
+    #___________________________________________________________________________________________
+    def remove_last_point_callback(event):
+        if source_segmentation_points.data['x']:
+            # Remove the last point from the data source
+            new_data = dict(x=source_segmentation_points.data['x'][:-1], y=source_segmentation_points.data['y'][:-1])
+            source_segmentation_points.data = new_data
+            # Update the Div with the list of points
+
+    # Connect the callbacks to the tap and double-tap events
+    plot_image.on_event(bokeh.eventsDoubleTap, remove_last_point_callback)
+    #___________________________________________________________________________________________
 
     
 
@@ -4410,6 +4423,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     plot_image.image(image='img', x=0, y=0, dw=ind_images_list[0][0].shape[0], dh=ind_images_list[0][0].shape[1], source=source_img, color_mapper=color_mapper)
 
+
+    plot_image.circle(x='x', y='y', size=10, color='red', source=source_segmentation_points)
 
 
     source_segmentation  = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
