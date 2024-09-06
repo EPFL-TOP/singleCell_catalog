@@ -3090,6 +3090,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         #source_intensity_ch0.data={'time':time_sorted, 'intensity':intensity_sorted}
         area = source_intensity_area.data['area']
+        print('slde ',type(slider.value))
+        print('area ', type(area))
+        
         area[slider.value]=mask.sum()
         source_intensity_area.data={'time':source_intensity_area.data['time'], 'area':area}
 
