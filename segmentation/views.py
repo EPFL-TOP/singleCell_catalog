@@ -778,6 +778,7 @@ def build_segmentation_sam2_single_frame(x, y, image, sample, cell):
     scores = scores[sorted_ind]
     logits = logits[sorted_ind]
     print('scores ',scores)
+
     return masks[0]
 
     
@@ -833,7 +834,6 @@ def build_segmentation_sam2(sample=None, force=False):
 
 
             if 'SAM2_b+' not in cellroi.cell_id.cell_status.segmentation['algo']:
-                #cellroi.cell_id.cell_status.segmentation['algo'].append('SAM2_b+')
                 cell_status = cellroi.cell_id.cell_status
                 cell_status.segmentation['algo'].append('SAM2_b+')
                 cell_status.save()
@@ -860,7 +860,7 @@ def build_segmentation_sam2(sample=None, force=False):
                 logits = logits[sorted_ind]
 
                 contourseg = ContourSeg(cell_roi=cellroi)
-                build_contours_sam2(contourseg, masks[0], flag, cellroi, images, channels, BF_images[frame.number].shape, exp.name, expds.data_name, s.file_name)
+                build_contours_sam2(contourseg, masks[0], flag, cellroi, images, channels, exp.name, expds.data_name, s.file_name)
 
                 #print('scores ',scores)
                 #label_im = label(masks[0])
@@ -881,9 +881,9 @@ def build_segmentation_sam2(sample=None, force=False):
 
 
 #___________________________________________________________________________________________
-def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, img_shape, exp_name, expds_data_name, s_file_name):
+def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, exp_name, expds_data_name, s_file_name):
 
-    contourseg.mask={'mask':mask.tolist()}
+    #contourseg.mask={'mask':mask.tolist()}
     center = ndimage.center_of_mass(mask)
     contourseg.center_x_pix = center[0]
     contourseg.center_y_pix = center[1]
@@ -913,13 +913,12 @@ def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, im
     contourseg.intensity_sum  = intensity_sum
     contourseg.number_of_pixels = mask.sum()
 
-
-    segment_dict = {}
+    segment_dict = {'mask':mask.tolist()}
     out_dir_name  = os.path.join(NASRCP_MOUNT_POINT, ANALYSIS_DATA_PATH,exp_name, expds_data_name, os.path.split(s_file_name)[-1].replace('.nd2',''))
-    out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname))
+    out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}_mask.json".format(cellroi.frame.number, cellroi.roi_number, segname))
 
     out_dir_name_DB  = ANALYSIS_DATA_PATH+"/"+exp_name+"/"+ expds_data_name+"/"+os.path.split(s_file_name)[-1].replace('.nd2','')
-    out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}_{2}.json".format(cellroi.frame.number, cellroi.roi_number, segname)
+    out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}_{2}_mask.json".format(cellroi.frame.number, cellroi.roi_number, segname)
 
     #if not os.path.exists(out_dir_name):
     #    os.makedirs(out_dir_name)
@@ -936,10 +935,10 @@ def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, im
     #    segment_dict['y'].append(int(coord[1]))
     #    for ch in range(len(channels)):
     #        segment_dict['intensity_{}'.format(channels[ch].replace(" ",""))].append(float(images[ch][cellroi.frame.number][coord[0]][coord[1]]))
-    #out_file = open(out_file_name, "w") 
-    #json.dump(segment_dict, out_file) 
-    #out_file.close() 
-    #contourseg.file_name = out_file_name_DB
+    out_file = open(out_file_name, "w") 
+    json.dump(segment_dict, out_file) 
+    out_file.close() 
+    contourseg.file_name = out_file_name_DB
     contourseg.save()
 
 
@@ -1756,13 +1755,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if cellname!='' and roi.cell_id.name!=cellname:continue
                 segmentations = ContourSeg.objects.select_related().filter(cell_roi=roi)
                 for seg in segmentations:
-                    #f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
-                    #data = json.load(f)
+                    f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
+                    data = json.load(f)
+                    out_dict[roi.cell_id.name][seg.algo][frame.number] = np.flip(np.array(data[mask], dtype=bool),0)
                     #mask0=np.zeros((frame.width,frame.height), dtype=bool)
                     #for i in range(data['npixels']):
                     #    mask0[frame.height-data['x'][i]][data['y'][i]]=True
                     #out_dict[roi.cell_id.name][seg.algo][frame.number] = mask0
-                    out_dict[roi.cell_id.name][seg.algo][frame.number] = np.flip(np.array(seg.mask['mask'], dtype=bool),0)
+
+                    #out_dict[roi.cell_id.name][seg.algo][frame.number] = np.flip(np.array(seg.mask['mask'], dtype=bool),0)
 
         return out_dict
 
@@ -2740,6 +2741,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             for roi in ROIs:
                 if dropdown_segmentation_type.value == 'roi':
                     for ch in roi.contour_cellroi.intensity_sum:
+                        print_time('------- update_dropdown_cell 1.1.1 ', local_time)
+
                         try:
                             time_list[ch]
                         except KeyError:
