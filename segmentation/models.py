@@ -207,7 +207,7 @@ class ContourSeg(models.Model):
 
     #mask             = models.JSONField(help_text="pixels contour", default=dict)
 
-    file_name        = models.CharField(default='', max_length=1000, help_text="json file name containing all the pixels")
+    file_name        = models.CharField(default='', max_length=1000, help_text="json file containing the mask data")
     algo             = models.CharField(max_length=200, choices=ALGO, help_text="algorithm type", default='localthresholding')
     cell_roi         = models.ForeignKey(CellROI, default='', null=True, on_delete=models.CASCADE, related_name="contourseg_cellroi")
 
