@@ -3092,6 +3092,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         intensity_max={}
         for ch in range(len(channels)): 
             segment=mask*image_stack_dict[current_pos]['ind_images_list'][ch][slider.value]
+            print('image_stack_dict[current_pos][ind_images_list][ch][slider.value] ', image_stack_dict[current_pos]['ind_images_list'][ch][slider.value].shape)
             sum=float(np.sum(segment))
             mean=float(np.mean(segment))
             std=float(np.std(segment))
@@ -3101,6 +3102,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             intensity_std[ch_name]=std
             intensity_sum[ch_name]=sum
             intensity_max[ch_name]=max
+            print('mean ',mean, '  max  ',max, '  sum  ',sum, '  std  ',std)
 
 
             if ch==0:
@@ -3152,7 +3154,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         contour.intensity_sum  = intensity_sum
         contour.number_of_pixels = mask.sum()
 
-        segment_dict = {'mask':mask.tolist()}
+
+        segment_dict = {'mask':np.flip(mask,0).tolist()}
         out_dir_name  = os.path.join(NASRCP_MOUNT_POINT, ANALYSIS_DATA_PATH,sample.experimental_dataset.experiment.name, sample.experimental_dataset.data_name, os.path.split(sample.file_name)[-1].replace('.nd2',''))
         out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}_mask.json".format(cellroi[0].frame.number, cellroi[0].roi_number, 'SAM2_b+'))
 
