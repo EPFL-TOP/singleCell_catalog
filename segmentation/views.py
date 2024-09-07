@@ -879,7 +879,7 @@ def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, ex
     for ch in range(len(channels)): 
         segment=mask*images[ch][cellroi.frame.number]
         sum=float(np.sum(segment))
-        mean=float(np.mean(segment))
+        mean=float(sum/mask.sum())
         std=float(np.std(segment))
         max=float(np.max(segment))
         ch_name=channels[ch].replace(" ","")
@@ -1005,7 +1005,7 @@ def build_contours(contour, contourseg, cellroi, img_shape, segname, images, cha
     for ch in range(len(channels)): 
         segment=mask0*images[ch][cellroi.frame.number]
         sum=float(np.sum(segment))
-        mean=float(np.mean(segment))
+        mean=float(sum/contour.num_pixels)
         std=float(np.std(segment))
         max=float(np.max(segment))
         ch_name=channels[ch].replace(" ","")
@@ -1610,13 +1610,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def get_stack_data(current_file, text=''):
         local_time=datetime.datetime.now()
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
-        current_file=os.path.join(LOCAL_RAID5,current_file)
-        print("  os.path.exists(current_file):  ",os.path.exists(current_file))
+        current_file_name=os.path.join(LOCAL_RAID5,current_file)
         if not os.path.exists(current_file):
-            current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
+            current_file_name=os.path.join(NASRCP_MOUNT_POINT,current_file)
             print('using RCP')
         else:
             print('using local')
+        current_file = current_file_name
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         time_lapse_path = Path(current_file)
         print('time_lapse_path = ',time_lapse_path)
@@ -2873,6 +2873,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_img_ch.data     = {'img':[images[ch][0] for ch in range(len(images))]}
         source_img.data        = {'img':[images_norm[int(dropdown_channel.value)][0]]}
 
+        source_segmentation_points.data = dict(x=[], y=[])
+
+
         source_rois_full.data['left']   = rois_data['left']
         source_rois_full.data['right']  = rois_data['right']
         source_rois_full.data['top']    = rois_data['top']
@@ -3099,7 +3102,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('image_stack_dict[current_pos][ind_images_list][ch][slider.value] ', image_stack_dict[current_pos]['ind_images_list'][ch][slider.value].shape)
             print('segment ',segment)
             sum=float(np.sum(segment))
-            mean=float(np.mean(segment))
+            mean=float(sum/mask.sum())
             std=float(np.std(segment))
             max=float(np.max(segment))
             ch_name=channels[ch].replace(" ","")
