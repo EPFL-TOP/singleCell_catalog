@@ -3105,7 +3105,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             if ch==0:
                 intensity = list(source_intensity_ch0.data['intensity'])
-                if dropdown_intensity_type.value=="mean":
+                if dropdown_intensity_type.value=="avg":
                     intensity[slider.value]=mean
                     source_intensity_ch0.data={'time':source_intensity_ch0.data['time'], 'intensity':intensity}
                 elif dropdown_intensity_type.value=="max":
@@ -3119,7 +3119,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     source_intensity_ch0.data={'time':source_intensity_ch0.data['time'], 'intensity':intensity}
             elif ch==1:
                 intensity = list(source_intensity_ch1.data['intensity'])
-                if dropdown_intensity_type.value=="mean":
+                if dropdown_intensity_type.value=="avg":
                     intensity[slider.value]=2*mean
                     source_intensity_ch1.data={'time':source_intensity_ch1.data['time'], 'intensity':intensity}
                 elif dropdown_intensity_type.value=="max":
@@ -3134,7 +3134,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             elif ch==2:
                 intensity = list(source_intensity_ch2.data['intensity'])
-                if dropdown_intensity_type.value=="mean":
+                if dropdown_intensity_type.value=="avg":
                     intensity[slider.value]=mean
                     source_intensity_ch2.data={'time':source_intensity_ch2.data['time'], 'intensity':intensity}
                 elif dropdown_intensity_type.value=="max":
