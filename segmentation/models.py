@@ -213,9 +213,9 @@ class ContourSeg(models.Model):
 
     def __str__(self):
         if self.cell_roi.cell_id != None:
-            return 'algo={0}, file={1}, frame={2}, roi={3}, cell={4}, contour={5}'.format(self.algo, self.cell_roi.frame.sample.file_name, self.cell_roi.frame.number, self.cell_roi.roi_number, self.cell_roi.cell_id.name, self.file_name)
+            return 'algo={0}, file={1}, frame={2}, roi={3}, cell={4}, contour={5}, n pixels={6}'.format(self.algo, self.cell_roi.frame.sample.file_name, self.cell_roi.frame.number, self.cell_roi.roi_number, self.cell_roi.cell_id.name, self.file_name,  self.number_of_pixels)
         else:
-            return 'algo={0}, file={1}, frame={2}, roi={3}, cell={4}, contour={5}'.format(self.algo, self.cell_roi.frame.sample.file_name, self.cell_roi.frame.number, self.cell_roi.roi_number, self.cell_roi.cell_id, self.file_name)
+            return 'algo={0}, file={1}, frame={2}, roi={3}, cell={4}, contour={5}, n pixels={6}'.format(self.algo, self.cell_roi.frame.sample.file_name, self.cell_roi.frame.number, self.cell_roi.roi_number, self.cell_roi.cell_id, self.file_name, self.number_of_pixels)
 
 
 #___________________________________________________________________________________________

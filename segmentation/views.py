@@ -3075,7 +3075,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         cellroi = CellROI.objects.select_related().filter(frame=frame, cell_id=cellid)
         print('cellroi  ',len(cellroi))
         contour = ContourSeg.objects.select_related().filter(cell_roi=cellroi[0]).get(algo='SAM2_b+')
-        print('contour', contour)
+        print('contour from DB ', contour)
         mask=build_segmentation_sam2_single_frame(x,y,image_BF)#, sample, cell)
         image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+'][slider.value]=mask
         source_img_mask.data = {'img':[mask]}
@@ -3175,6 +3175,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         out_file.close() 
         contour.file_name = out_file_name_DB
         contour.save()
+        print('contour after save= ', contour)
 
 
 
