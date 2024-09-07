@@ -1611,8 +1611,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         local_time=datetime.datetime.now()
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         current_file=os.path.join(LOCAL_RAID5,current_file)
+        print("  os.path.exists(current_file):  ",os.path.exists(current_file))
         if not os.path.exists(current_file):
             current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
+            print('using RCP')
+        else:
+            print('using local')
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         time_lapse_path = Path(current_file)
         print('time_lapse_path = ',time_lapse_path)
@@ -3093,6 +3097,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for ch in range(len(channels)): 
             segment=mask*image_stack_dict[current_pos]['ind_images_list'][ch][slider.value]
             print('image_stack_dict[current_pos][ind_images_list][ch][slider.value] ', image_stack_dict[current_pos]['ind_images_list'][ch][slider.value].shape)
+            print('segment ',segment)
             sum=float(np.sum(segment))
             mean=float(np.mean(segment))
             std=float(np.std(segment))
