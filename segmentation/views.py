@@ -3106,7 +3106,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             std=float(np.std(segment))
             max=float(np.max(segment))
             ch_name=channels[ch].replace(" ","")
-            intensity_mean[ch_name]=mean
+            intensity_mean[ch_name]=2*mean
             intensity_std[ch_name]=std
             intensity_sum[ch_name]=sum
             intensity_max[ch_name]=max
@@ -3130,7 +3130,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             elif ch==1:
                 intensity = list(source_intensity_ch1.data['intensity'])
                 if dropdown_intensity_type.value=="avg":
-                    intensity[slider.value]=2*mean
+                    intensity[slider.value]=mean
                     source_intensity_ch1.data={'time':source_intensity_ch1.data['time'], 'intensity':intensity}
                 elif dropdown_intensity_type.value=="max":
                     intensity[slider.value]=max
