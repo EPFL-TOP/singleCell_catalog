@@ -2726,7 +2726,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         if   dropdown_intensity_type.value == 'sum': 
                             intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_sum')[ch]
                         elif dropdown_intensity_type.value == 'avg': 
-                            intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_avg')[ch]
+                            intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_mean')[ch]
                         elif   dropdown_intensity_type.value == 'max': 
                             intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_max')[ch]
                         elif   dropdown_intensity_type.value == 'std': 
@@ -2753,7 +2753,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         if   dropdown_intensity_type.value == 'sum': 
                             intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_sum')[ch]
                         elif dropdown_intensity_type.value == 'avg': 
-                            intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_avg')[ch]
+                            intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_mean')[ch]
                         elif   dropdown_intensity_type.value == 'max': 
                             intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_max')[ch]
                         elif   dropdown_intensity_type.value == 'std': 
