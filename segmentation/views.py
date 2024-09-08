@@ -3106,7 +3106,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             std=float(np.std(segment))
             max=float(np.max(segment))
             ch_name=channels[ch].replace(" ","")
-            intensity_mean[ch_name]=2*mean
+            intensity_mean[ch_name]=mean
             intensity_std[ch_name]=std
             intensity_sum[ch_name]=sum
             intensity_max[ch_name]=max
