@@ -3,6 +3,7 @@ from django.db import reset_queries
 from django.db import connection
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
+import concurrent.futures
 
 from segmentation.models import Experiment, ExperimentalDataset, Sample, Frame, Contour, CellID, CellROI, CellStatus, CellFlag, ContourSeg
 
@@ -1088,7 +1089,21 @@ def build_ROIs_loop(exp_name):
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
                 build_ROIs(sample=s, force=False)
-                
+                max_workers=10
+                with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
+                    # Submit the build_ROIs function for each sample
+                    futures = [executor.submit(build_ROIs, sample, force=False) for sample in samples]
+
+                    # Collect results as they complete
+                    for future in concurrent.futures.as_completed(futures):
+                        try:
+                            result = future.result()
+                            print(result)
+                        except Exception as e:
+                            print(f"Error processing sample: {e}")
+
+
+
 #___________________________________________________________________________________________
 def build_ROIs(sample=None, force=False):
     s=None
@@ -3436,7 +3451,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}.json".format(frame[0].number, roi_number))
 
                 out_dir_name_DB  = ANALYSIS_DATA_PATH+"/"+exp.name+"/"+ expds.data_name+"/"+os.path.split(sample.file_name)[-1].replace('.nd2','')
-                out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}.json".format(cellroi.frame.number, cellroi.roi_number)
+                out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}.json".format(frame[0].number, roi_number)
 
 
                 if not os.path.exists(out_dir_name):
