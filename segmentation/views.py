@@ -2695,7 +2695,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             area_list={}
             ROIs = CellROI.objects.select_related().filter(cell_id=cid)
 
-
+            #This is to fill the new element cell_status.segmentation in case it does not exist yet
             try:
                 dropdown_segmentation_type.options = cid.cell_status.segmentation['algo']
             except KeyError:
@@ -2726,7 +2726,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         if   dropdown_intensity_type.value == 'sum': 
                             intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_sum')[ch]
                         elif dropdown_intensity_type.value == 'avg': 
-                            intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_sum')[ch]/roi.contour_cellroi.number_of_pixels
+                            intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_avg')[ch]
                         elif   dropdown_intensity_type.value == 'max': 
                             intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_max')[ch]
                         elif   dropdown_intensity_type.value == 'std': 
@@ -2753,7 +2753,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         if   dropdown_intensity_type.value == 'sum': 
                             intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_sum')[ch]
                         elif dropdown_intensity_type.value == 'avg': 
-                            intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_sum')[ch]/contour.number_of_pixels
+                            intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_avg')[ch]
                         elif   dropdown_intensity_type.value == 'max': 
                             intensity_list[ch][roi.frame.number]= getattr(contour, 'intensity_max')[ch]
                         elif   dropdown_intensity_type.value == 'std': 
