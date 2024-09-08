@@ -1944,13 +1944,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if predictions[j]!=None: 
                     pred+=predictions[j]
                     npred+=1
-            print(i, '   ',pred/npred)
-            if pred/npred>0.8:
-                print('frame dead= ',i)
-                source_intensity_predicted_death.data={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
-                time_of_death_pred=source_intensity_ch1.data["time"][i]
-                time_of_death_frame_pred=i
-                break
+            if npred>0:
+                print(i, '   ',pred/npred)
+                if pred/npred>0.8:
+                    print('frame dead= ',i)
+                    source_intensity_predicted_death.data={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
+                    time_of_death_pred=source_intensity_ch1.data["time"][i]
+                    time_of_death_frame_pred=i
+                    break
         cellstatus=cellid.cell_status
         cellstatus.time_of_death_pred=time_of_death_pred
         cellstatus.time_of_death_frame_pred=time_of_death_frame_pred
@@ -3073,9 +3074,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         frame = Frame.objects.select_related().filter(sample=sample).get(number=slider.value)
         cellid = CellID.objects.select_related().filter(sample=sample).get(name=dropdown_cell.value)
         cellroi = CellROI.objects.select_related().filter(frame=frame, cell_id=cellid)
-        print('cellroi  ',len(cellroi))
         contour = ContourSeg.objects.select_related().filter(cell_roi=cellroi[0]).get(algo='SAM2_b+')
-        print('contour from DB ', contour)
         mask=build_segmentation_sam2_single_frame(x,y,image_BF)#, sample, cell)
         image_stack_dict[current_pos]['masks'][dropdown_cell.value]['SAM2_b+'][slider.value]=mask
         source_img_mask.data = {'img':[mask]}
@@ -3099,8 +3098,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         intensity_max={}
         for ch in range(len(channels)): 
             segment=mask*image_stack_dict[current_pos]['ind_images_list'][ch][slider.value]
-            print('image_stack_dict[current_pos][ind_images_list][ch][slider.value] ', image_stack_dict[current_pos]['ind_images_list'][ch][slider.value].shape)
-            print('segment ',segment)
             sum=float(np.sum(segment))
             mean=float(sum/mask.sum())
             std=float(np.std(segment))
@@ -3110,8 +3107,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             intensity_std[ch_name]=std
             intensity_sum[ch_name]=sum
             intensity_max[ch_name]=max
-            print('mean ',mean, '  max  ',max, '  sum  ',sum, '  std  ',std)
-
 
             if ch==0:
                 intensity = list(source_intensity_ch0.data['intensity'])
@@ -3175,7 +3170,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         out_file.close() 
         contour.file_name = out_file_name_DB
         contour.save()
-        print('contour after save= ', contour)
 
 
 
