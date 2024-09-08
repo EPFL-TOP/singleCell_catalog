@@ -1095,12 +1095,12 @@ def build_ROIs_loop(exp_name):
 def build_ROIs_loop_parallel(exp_name):
     print('build_ROIs_loop exp_name=',exp_name)
 
-    futures = []
+    #futures = []
     max_workers=10
 
     # Create a process pool to parallelize build_ROIs
-    with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
-
+    #with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         exp_list = Experiment.objects.all()
         for exp in exp_list:
             if exp_name!='' and exp.name!=exp_name:
@@ -1109,8 +1109,9 @@ def build_ROIs_loop_parallel(exp_name):
             for expds in experimentaldataset:
                 samples = Sample.objects.select_related().filter(experimental_dataset = expds)
                 for s in samples:
-                    future = executor.submit(build_ROIs, sample=s, force=False)
-                    futures.append(future)
+                    executor.submit(build_ROIs, sample=s, force=False)
+                    #future = executor.submit(build_ROIs, sample=s, force=False)
+                    #futures.append(future)
 
 #___________________________________________________________________________________________
 def build_ROIs(sample=None, force=False):
