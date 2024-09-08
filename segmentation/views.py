@@ -1089,20 +1089,28 @@ def build_ROIs_loop(exp_name):
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             for s in samples:
                 build_ROIs(sample=s, force=False)
-                max_workers=10
-                with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
-                    # Submit the build_ROIs function for each sample
-                    futures = [executor.submit(build_ROIs, sample, force=False) for sample in samples]
+                
 
-                    # Collect results as they complete
-                    for future in concurrent.futures.as_completed(futures):
-                        try:
-                            result = future.result()
-                            print(result)
-                        except Exception as e:
-                            print(f"Error processing sample: {e}")
+#___________________________________________________________________________________________
+def build_ROIs_loop_parallel(exp_name):
+    print('build_ROIs_loop exp_name=',exp_name)
 
+    futures = []
+    max_workers=10
 
+    # Create a process pool to parallelize build_ROIs
+    with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
+
+        exp_list = Experiment.objects.all()
+        for exp in exp_list:
+            if exp_name!='' and exp.name!=exp_name:
+                continue
+            experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+            for expds in experimentaldataset:
+                samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+                for s in samples:
+                    future = executor.submit(build_ROIs, sample=s, force=False)
+                    futures.append(future)
 
 #___________________________________________________________________________________________
 def build_ROIs(sample=None, force=False):
@@ -5542,7 +5550,8 @@ def index(request: HttpRequest) -> HttpResponse:
 
     #THIS BUILDS THE ROIS FOR ALL THE EXISTING SAMPLES
     if 'build_ROIs' in request.POST:
-        build_ROIs_loop(selected_dict['experiment'])
+        #build_ROIs_loop(selected_dict['experiment'])
+        build_ROIs_loop_parallel(selected_dict['experiment'])
 
     if 'build_mva_detection_categories' in request.POST:
         build_mva_detection_categories()
