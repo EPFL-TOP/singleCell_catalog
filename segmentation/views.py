@@ -997,6 +997,24 @@ def build_segmentation_parallel(exp_name=''):
                     print('build segments sample: ',s.file_name)
                     executor.submit(build_segmentation_sam2, sample=s, force=False)
 
+#___________________________________________________________________________________________
+def build_segmentation_parallel(exp_name=''):
+
+    exp_list = Experiment.objects.all()
+    for exp in exp_list:
+        if exp_name!='' and exp.name!=exp_name:
+            continue
+        print('exp ', exp.name)
+        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+        for expds in experimentaldataset:
+            print('  expds ', expds.data_name)
+
+            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+            for s in samples:
+                print('build segments sample: ',s.file_name)
+                build_segmentation_sam2( sample=s, force=False)
+
+
 
 #___________________________________________________________________________________________
 def build_contours(contour, contourseg, cellroi, img_shape, segname, images, channels, exp_name, expds_data_name, s_file_name):
@@ -5570,7 +5588,8 @@ def index(request: HttpRequest) -> HttpResponse:
         if selected_dict['experiment'] == None or selected_dict['experiment'] == '':
             print('no experiment selected')
         else:
-            build_segmentation_parallel(selected_dict['experiment'])
+            #build_segmentation_parallel(selected_dict['experiment'])
+            build_segmentation(selected_dict['experiment'])
 
 
     if selected_experiment!='':
