@@ -981,7 +981,7 @@ def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, ex
 #___________________________________________________________________________________________
 def build_segmentation_parallel(exp_name=''):
 
-    max_workers=25
+    max_workers=5
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         exp_list = Experiment.objects.all()
         for exp in exp_list:
