@@ -708,6 +708,10 @@ def build_cells_sample(sample, addmode=False):
             cellstatus.save()
             cellid = CellID(sample=s, name=cell, cell_status=cellstatus)
             cellid.save()
+            predict_time_of_death(cellid)
+
+            if cellid.cell_status.time_of_death_pred<-9900:
+                predict_time_of_death(cellid)
             cellid_dict[cell]=cellid
 
             for nroi in range(len(cell_dict_final[cell]['roi_number'])):
@@ -782,6 +786,70 @@ def build_segmentation_sam2_single_frame(x_list, y_list, image):
     return masks[0]
 
     
+#___________________________________________________________________________________________
+# Function to prepare the intensity plot
+def predict_time_of_death(cellid):
+    time_of_death_pred=-1000
+    time_of_death_frame_pred=-100
+
+    current_file = cellid.sample.file_name
+
+    current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
+    time_lapse_path = Path(current_file)
+    time_lapse = nd2.imread(time_lapse_path.as_posix())
+    images=time_lapse.transpose(1,0,2,3)
+    BF_images=images[0]
+    target_size = (150, 150)
+    predictions=[]
+    for i in range(cellid.sample.experimental_dataset.experiment.number_of_frames):
+        predictions.append(None)
+
+    cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
+    for cellroi in cellrois:
+        center = (int(cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.), int(cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.))
+        cropped_image = BF_images[cellroi.frame.number][int(center[1]-target_size[1]/2):int(center[1]+target_size[1]/2), int(center[0]-target_size[0]/2):int(center[0]+target_size[0]/2)]
+
+        if cropped_image.shape[0]!=target_size[0] or cropped_image.shape[1]!=target_size[1]:
+            continue
+    
+
+        image_cropped = preprocess_image_pytorch(cropped_image).to(device)
+        with torch.no_grad():
+            labels = model_label(image_cropped)
+
+
+        probabilities = F2.softmax(labels, dim=1)
+        predictions[cellroi.frame.number]=float(probabilities[0].cpu().numpy()[1])
+        print('probabilities : ',probabilities)
+        pred_label = labels_map[int(torch.argmax(labels, dim=1)[0].cpu().numpy())]
+        print('frame ',cellroi.frame.number,'pred_label = ',pred_label)
+
+    #source_intensity_predicted_death.data={'time':[], 'intensity':[]}
+    #out_dict={'time':[], 'intensity':[]}
+    n=3
+    for i in range(len(predictions)-n):
+        pred=0
+        npred=0
+
+        for j in range(i, i+n):
+            if predictions[j]!=None: 
+                pred+=predictions[j]
+                npred+=1
+        if npred>0:
+            print(i, '   ',pred/npred)
+            if pred/npred>0.8:
+                print('frame dead= ',i)
+                #source_intensity_predicted_death.data={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
+                #out_dict={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
+                #time_of_death_pred=source_intensity_ch1.data["time"][i]
+                time_of_death_frame_pred=i
+                break
+    cellstatus=cellid.cell_status
+    cellstatus.time_of_death_pred=time_of_death_pred
+    cellstatus.time_of_death_frame_pred=time_of_death_frame_pred
+    cellstatus.save()
+    #return out_dict
+
 #___________________________________________________________________________________________
 def build_segmentation_sam2(sample=None, force=False):
     s=None
@@ -1095,8 +1163,7 @@ def build_ROIs_loop(exp_name):
 def build_ROIs_loop_parallel(exp_name):
     print('build_ROIs_loop exp_name=',exp_name)
 
-    #futures = []
-    max_workers=10
+    max_workers=25
 
     # Create a process pool to parallelize build_ROIs
     #with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
@@ -1110,8 +1177,6 @@ def build_ROIs_loop_parallel(exp_name):
                 samples = Sample.objects.select_related().filter(experimental_dataset = expds)
                 for s in samples:
                     executor.submit(build_ROIs, sample=s, force=False)
-                    #future = executor.submit(build_ROIs, sample=s, force=False)
-                    #futures.append(future)
 
 #___________________________________________________________________________________________
 def build_ROIs(sample=None, force=False):
@@ -1294,6 +1359,8 @@ def build_ROIs(sample=None, force=False):
     print('about to build cells')
     build_cells_sample(s, addmode=False)
     build_cells_sample(s, addmode=True)
+        #predict_time_of_death(cellid)
+
     removeROIs(s)
 
 
@@ -1375,50 +1442,7 @@ def load_and_preprocess_images(file_list):
     return np.array(images), filenames
 #___________________________________________________________________________________________
 
-#___________________________________________________________________________________________
-def get_mva_prediction_alive(file_list):
-    new_images, filenames = load_and_preprocess_images(file_list)
-    if len(new_images.shape) == 3:
-        new_images = np.expand_dims(new_images, axis=-1)
 
-    predictions = model_alive.predict(new_images)
-
-    predicted_classes = ['ALIVE' if pred > 0.5 else 'DEAD' for pred in predictions]
-
-    for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
-        print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
-
-    for pred in range(len(predictions)):
-        if predicted_classes[pred]=='DEAD':
-            trunc_pred=predictions[pred:]
-            val=sum(trunc_pred)/len(trunc_pred)
-            if val<0.5:
-                return filenames[pred]
-    return None
-#___________________________________________________________________________________________
-
-
-#___________________________________________________________________________________________
-def get_mva_prediction_oscillating(file_list):
-    new_images, filenames = load_and_preprocess_images(file_list)
-    if len(new_images.shape) == 3:
-        new_images = np.expand_dims(new_images, axis=-1)
-
-    predictions = model_oscillating.predict(new_images)
-
-    predicted_classes = ['OSC' if pred > 0.5 else 'NOT OSC' for pred in predictions]
-
-    for filename, predicted_class, pred in zip(filenames, predicted_classes, predictions):
-        print(f'File: {filename}, Predicted class: {predicted_class}   weight={pred}')
-
-    for pred in range(len(predictions)):
-        #if predicted_classes[pred]=='DEAD':
-        trunc_pred=predictions[pred:]
-        val=sum(trunc_pred)/len(trunc_pred)
-        if val<0.5:
-            return filenames[pred]
-    return None
-#___________________________________________________________________________________________
 
 #___________________________________________________________________________________________
 def segmentation_handler(doc: bokeh.document.Document) -> None:
@@ -1567,7 +1591,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    #___________________________________________________________________________________________
     #___________________________________________________________________________________________
     def next_position_callback():
         if DEBUG: print("****************************  next_position_callback ****************************")
@@ -1919,7 +1942,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     # Function to prepare the intensity plot
-    def predict_time_of_death(cellid):
+    def predict_time_of_death_BKP(cellid):
         time_of_death_pred=-1000
         time_of_death_frame_pred=-100
 
@@ -1954,8 +1977,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             print('probabilities : ',probabilities)
             pred_label = labels_map[int(torch.argmax(labels, dim=1)[0].cpu().numpy())]
             print('frame ',cellroi.frame.number,'pred_label = ',pred_label)
-
-
 
         source_intensity_predicted_death.data={'time':[], 'intensity':[]}
 
@@ -2018,7 +2039,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             if cellids[0].cell_status.time_of_death_pred<-9900:
                 predict_time_of_death(cellids[0])
-            elif cellids[0].cell_status.time_of_death_pred<-90:
+                source_intensity_predicted_death.data={'time':[cellids[0].cell_status.time_of_death_pred], 'intensity':[source_intensity_ch1.data["intensity"][cellids[0].cell_status.time_of_death_frame_pred]]}
+            elif cellids[0].cell_status.time_of_death_pred<-90 and cellids[0].cell_status.time_of_death_pred>-10000:
                 source_intensity_predicted_death.data={'time':[], 'intensity':[]}
             else:
                 cellids[0].cell_status.time_of_death_pred
@@ -4579,6 +4601,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     index_source = bokeh.models.ColumnDataSource(data=dict(index=[]))  # Data source for the image
     tap_tool = bokeh.models.TapTool(callback=bokeh.models.CustomJS(args=dict(other_source=index_source),code=select_tap_callback()))
+    tap_tool_seg = bokeh.models.TapTool()
+    plot_image.add_tools(tap_tool_seg)
 
     plot_intensity.add_tools(tap_tool)
     index_source.on_change('data', update_image_tap_callback)
