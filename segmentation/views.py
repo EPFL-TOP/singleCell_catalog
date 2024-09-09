@@ -1926,7 +1926,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     plot_image     = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
     #plot_img_mask  = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
 
-
+    plot_image.toolbar.active_tap = None
 
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500, tools="pan,box_zoom,save,reset")
     plot_tod       = bokeh.plotting.figure(title="Time of death", x_axis_label='Time (30 mins bins)', y_axis_label='Number of positions',width=550, height=350)
