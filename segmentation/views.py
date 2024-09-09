@@ -5648,8 +5648,8 @@ def index(request: HttpRequest) -> HttpResponse:
         if selected_dict['experiment'] == None or selected_dict['experiment'] == '':
             print('no experiment selected')
         else:
-            build_segmentation_parallel(selected_dict['experiment'])
-            #build_segmentation(selected_dict['experiment'])
+            #build_segmentation_parallel(selected_dict['experiment'])
+            build_segmentation(selected_dict['experiment'])
 
 
     if selected_experiment!='':
