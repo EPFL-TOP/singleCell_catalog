@@ -5583,7 +5583,9 @@ def index(request: HttpRequest) -> HttpResponse:
         #build_ROIs_loop(selected_dict['experiment'])
         print('selected_dict[experiment]'  ,selected_dict['experiment'])
 
-        #if selected_dict['experiment'] != None and selected_dict['experiment'] != '':
+        if selected_dict['experiment'] == None or selected_dict['experiment'] == '':
+            print('no experiment selected')
+        #else:
         #    build_ROIs_loop_parallel(selected_dict['experiment'])
 
     if 'build_mva_detection_categories' in request.POST:
