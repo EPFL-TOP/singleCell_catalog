@@ -2084,7 +2084,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             if cellids[0].cell_status.time_of_death_pred<-9900:
                 predict_time_of_death(cellids[0])
-                source_intensity_predicted_death.data={'time':[cellids[0].cell_status.time_of_death_pred], 'intensity':[source_intensity_ch1.data["intensity"][cellids[0].cell_status.time_of_death_frame_pred]]}
+                if cellids[0].cell_status.time_of_death_frame_pred>-10:
+                    source_intensity_predicted_death.data={'time':[cellids[0].cell_status.time_of_death_pred], 'intensity':[source_intensity_ch1.data["intensity"][cellids[0].cell_status.time_of_death_frame_pred]]}
             elif cellids[0].cell_status.time_of_death_pred<-90 and cellids[0].cell_status.time_of_death_pred>-10000:
                 source_intensity_predicted_death.data={'time':[], 'intensity':[]}
             else:
