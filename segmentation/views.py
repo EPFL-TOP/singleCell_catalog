@@ -708,10 +708,7 @@ def build_cells_sample(sample, addmode=False):
             cellstatus.save()
             cellid = CellID(sample=s, name=cell, cell_status=cellstatus)
             cellid.save()
-            predict_time_of_death(cellid)
 
-            if cellid.cell_status.time_of_death_pred<-9900:
-                predict_time_of_death(cellid)
             cellid_dict[cell]=cellid
 
             for nroi in range(len(cell_dict_final[cell]['roi_number'])):
@@ -720,6 +717,7 @@ def build_cells_sample(sample, addmode=False):
                 roi   = CellROI.objects.select_related().filter(frame=frame).get(roi_number=cell_dict_final[cell]['roi_number'][nroi])
                 roi.cell_id = cellid_dict[cell]
                 roi.save()
+            predict_time_of_death(cellid_dict[cell])
 
 
     if addmode==True:
