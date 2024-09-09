@@ -919,7 +919,55 @@ def build_segmentation_sam2(sample=None, force=False):
                 logits = logits[sorted_ind]
 
                 contourseg = ContourSeg(cell_roi=cellroi)
-                build_contours_sam2(contourseg, masks[0], flag, cellroi, images, channels, exp.name, expds.data_name, s.file_name)
+
+                #build_contours_sam2(contourseg, masks[0], flag, cellroi, images, channels, exp.name, expds.data_name, s.file_name)
+
+                center = ndimage.center_of_mass(masks[0])
+                contourseg.center_x_pix = center[0]
+                contourseg.center_y_pix = center[1]
+                contourseg.center_x_mic = center[0]*cellroi.frame.pixel_microns+cellroi.frame.pos_x
+                contourseg.center_y_mic = center[1]*cellroi.frame.pixel_microns+cellroi.frame.pos_y
+                contourseg.algo = flag
+
+                intensity_mean={}
+                intensity_std={}
+                intensity_sum={}
+                intensity_max={}
+                for ch in range(len(channels)): 
+                    segment=masks[0]*images[ch][cellroi.frame.number]
+                    sum=float(np.sum(segment))
+                    mean=float(sum/masks[0].sum())
+                    std=float(np.std(segment))
+                    max=float(np.max(segment))
+                    ch_name=channels[ch].replace(" ","")
+                    intensity_mean[ch_name]=mean
+                    intensity_std[ch_name]=std
+                    intensity_sum[ch_name]=sum
+                    intensity_max[ch_name]=max
+
+                contourseg.intensity_max  = intensity_max
+                contourseg.intensity_mean = intensity_mean
+                contourseg.intensity_std  = intensity_std
+                contourseg.intensity_sum  = intensity_sum
+                contourseg.number_of_pixels = masks[0].sum()
+
+                segment_dict = {'mask':masks[0].tolist()}
+                out_dir_name  = os.path.join(NASRCP_MOUNT_POINT, ANALYSIS_DATA_PATH,exp.name, expds.data_name, os.path.split(s.file_name)[-1].replace('.nd2',''))
+                out_file_name = os.path.join(out_dir_name, "frame{0}_ROI{1}_{2}_mask.json".format(cellroi.frame.number, cellroi.roi_number, flag))
+
+                out_dir_name_DB  = ANALYSIS_DATA_PATH+"/"+exp.name+"/"+ expds.data_name+"/"+os.path.split(s.file_name)[-1].replace('.nd2','')
+                out_file_name_DB = out_dir_name_DB+ "/frame{0}_ROI{1}_{2}_mask.json".format(cellroi.frame.number, cellroi.roi_number, flag)
+
+                out_file = open(out_file_name, "w") 
+                json.dump(segment_dict, out_file) 
+                out_file.close() 
+                contourseg.file_name = out_file_name_DB
+                contourseg.save()
+
+
+
+
+
 
                 #print('scores ',scores)
                 #label_im = label(masks[0])
