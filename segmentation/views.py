@@ -1923,7 +1923,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     y_range = bokeh.models.Range1d(start=0, end= ind_images_list[0][0].shape[1])
     #plot_image     = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
     #plot_img_mask  = bokeh.plotting.figure(x_range=(0, ind_images_list[0][0].shape[0]), y_range=(0, ind_images_list[0][0].shape[1]), tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
-    plot_image     = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,tap, wheel_zoom,box_zoom,reset,undo",width=550, height=550)
+    plot_image     = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
     #plot_img_mask  = bokeh.plotting.figure(x_range=x_range, y_range=y_range, tools="box_select,wheel_zoom,box_zoom,reset,undo",width=550, height=550)
 
 
@@ -4138,14 +4138,19 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         hist, edges = np.histogram(tod_all, bins=int((max_tod-min_tod)/30.), range=(min_tod, max_tod))
         source_tod_all.data={'x': edges[:-1], 'top': hist}
 
-        hist, edges = np.histogram(tod_pred, bins=int((max_tod-min_tod)/30.), range=(min_tod, max_tod))
-        source_tod_pred.data={'x': edges[:-1], 'top': hist}
+
 
         hist, edges = np.histogram(start_osc, bins=nframes*10, range=(0, nframes*10))
         source_start_osc.data={'x': edges[:-1], 'top': hist}
 
         hist, edges = np.histogram(end_osc, bins=nframes*10, range=(0, nframes*10))
         source_end_osc.data={'x': edges[:-1], 'top': hist}
+
+        max_tod=max(tod_pred, default=100.)
+        min_tod=min(tod_pred, default=0.)
+        hist, edges = np.histogram(tod_pred, bins=int((max_tod-min_tod)/30.), range=(min_tod, max_tod))
+        source_tod_pred.data={'x': edges[:-1], 'top': hist}
+
     #___________________________________________________________________________________________
 
 
