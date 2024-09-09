@@ -998,7 +998,7 @@ def build_segmentation_parallel(exp_name=''):
                     executor.submit(build_segmentation_sam2, sample=s, force=False)
 
 #___________________________________________________________________________________________
-def build_segmentation_parallel(exp_name=''):
+def build_segmentation(exp_name=''):
 
     exp_list = Experiment.objects.all()
     for exp in exp_list:
