@@ -979,61 +979,23 @@ def build_contours_sam2(contourseg, mask, segname, cellroi, images, channels, ex
 
 
 #___________________________________________________________________________________________
-def build_segmentation(exp_name=''):
-    apocseg = segtools.segmentation_apoc()
-    exp_list = Experiment.objects.all()
-    for exp in exp_list:
-        if exp_name!='' and exp.name!=exp_name:
-            continue
-        print('exp ', exp.name)
-        experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
-        for expds in experimentaldataset:
-            print('  expds ', expds.data_name)
+def build_segmentation_parallel(exp_name=''):
 
-            samples = Sample.objects.select_related().filter(experimental_dataset = expds)
-            for s in samples:
-                print('    sample ',s.file_name)
-                cellids = CellID.objects.select_related().filter(sample=s)
-                print('build segments sample: ',s.file_name)
-                #if 'ppf003' not in s.file_name :continue
+    max_workers=25
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        exp_list = Experiment.objects.all()
+        for exp in exp_list:
+            if exp_name!='' and exp.name!=exp_name:
+                continue
+            print('exp ', exp.name)
+            experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+            for expds in experimentaldataset:
+                print('  expds ', expds.data_name)
 
-                images, channels = read.nd2reader_getFrames(s.file_name)
-                #images are t, c, x, y 
-                images=images.transpose(1,0,2,3)
-                BF_images=images[0]
-
-                #if 'wscepfl00' not in s.file_name :continue
-                for cellid in cellids:
-                    cellrois=CellROI.objects.select_related().filter(cell_id=cellid)
-                    for cellroi in cellrois:
-                        eflag={'localthresholding_1.5':False, 
-                               'localthresholding_2.0':False,
-                               'apoc':False}
-                        contoursSeg = ContourSeg.objects.select_related().filter(cell_roi=cellroi)
-                        for contourSeg in contoursSeg:
-                                eflag[contourSeg.algo] = True
-
-                        for flag in eflag:
-                            
-                            if eflag[flag]: continue
-                            contourseg = ContourSeg(cell_roi=cellroi)
-                            image=BF_images[cellroi.frame.number]
-                            contour=None
-                            if 'localthresholding' in flag:
-                                contour = segtools.segmentation_localthresholding(image, float(flag.split('_')[-1]), 
-                                                                                  cellroi.min_row,
-                                                                                  cellroi.min_col, 
-                                                                                  cellroi.max_row, 
-                                                                                  cellroi.max_col)
-                            if 'apoc' in flag:
-                                contour = apocseg.segmentation(image, 
-                                                               cellroi.min_row,
-                                                               cellroi.min_col, 
-                                                               cellroi.max_row, 
-                                                               cellroi.max_col)
-
-                            if contour!=None:
-                                build_contours(contour, contourseg, cellroi, image.shape, flag, images, channels, exp.name, expds.data_name, s.file_name)
+                samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+                for s in samples:
+                    print('build segments sample: ',s.file_name)
+                    executor.submit(build_segmentation_sam2, sample=s, force=False)
 
 
 #___________________________________________________________________________________________
@@ -5605,8 +5567,10 @@ def index(request: HttpRequest) -> HttpResponse:
 
     #THIS SEGMENTS ALL THE EXPERIMENTS/POSITIONS IT WILL FIND. CREATES UP TO CONTOUR/DATA
     if 'segment' in request.POST:
-        pass
-        #build_segmentation(selected_dict['experiment'])
+        if selected_dict['experiment'] == None or selected_dict['experiment'] == '':
+            print('no experiment selected')
+        else:
+            build_segmentation_parallel(selected_dict['experiment'])
 
 
     if selected_experiment!='':
