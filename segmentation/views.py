@@ -791,7 +791,7 @@ def build_segmentation_sam2_single_frame(x_list, y_list, image):
 def predict_time_of_death(cellid):
     time_of_death_pred=-1000
     time_of_death_frame_pred=-100
-
+    print(' in predict_time_of_death ')
     current_file = cellid.sample.file_name
 
     current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
@@ -801,9 +801,10 @@ def predict_time_of_death(cellid):
     BF_images=images[0]
     target_size = (150, 150)
     predictions=[]
+    time_list=[]
     for i in range(cellid.sample.experimental_dataset.experiment.number_of_frames):
         predictions.append(None)
-
+        time_list.append(None)
     cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
     for cellroi in cellrois:
         center = (int(cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.), int(cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.))
@@ -823,7 +824,7 @@ def predict_time_of_death(cellid):
         print('probabilities : ',probabilities)
         pred_label = labels_map[int(torch.argmax(labels, dim=1)[0].cpu().numpy())]
         print('frame ',cellroi.frame.number,'pred_label = ',pred_label)
-
+        time_list[cellroi.frame.number]=cellroi.frame.time/60000.
     #source_intensity_predicted_death.data={'time':[], 'intensity':[]}
     #out_dict={'time':[], 'intensity':[]}
     n=3
@@ -841,8 +842,9 @@ def predict_time_of_death(cellid):
                 print('frame dead= ',i)
                 #source_intensity_predicted_death.data={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
                 #out_dict={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
-                #time_of_death_pred=source_intensity_ch1.data["time"][i]
+                time_of_death_pred=time_list[i]
                 time_of_death_frame_pred=i
+
                 break
     cellstatus=cellid.cell_status
     cellstatus.time_of_death_pred=time_of_death_pred
@@ -1174,8 +1176,10 @@ def build_ROIs_loop_parallel(exp_name):
                 continue
             experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
             for expds in experimentaldataset:
+                if 'well1' not in expds.data_name: continue
                 samples = Sample.objects.select_related().filter(experimental_dataset = expds)
                 for s in samples:
+                    if 'xy00' not in s.file_name: continue
                     executor.submit(build_ROIs, sample=s, force=False)
 
 #___________________________________________________________________________________________
