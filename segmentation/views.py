@@ -1174,10 +1174,8 @@ def build_ROIs_loop_parallel(exp_name):
                 continue
             experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
             for expds in experimentaldataset:
-                if 'well1' not in expds.data_name: continue
                 samples = Sample.objects.select_related().filter(experimental_dataset = expds)
                 for s in samples:
-                    if 'xy00' not in s.file_name: continue
                     executor.submit(build_ROIs, sample=s, force=False)
 
 #___________________________________________________________________________________________
