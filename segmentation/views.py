@@ -1551,6 +1551,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     source_tod       = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_tod_dk    = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
     source_tod_all   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
+    source_tod_pred   = bokeh.models.ColumnDataSource(data=dict(x=[], top=[]))
 
     source_osc_period  = bokeh.models.ColumnDataSource(data=dict(cycle=[], time=[]))
     source_osc_period_err = bokeh.models.ColumnDataSource(data=dict(base=[], upper=[], lower=[]))
@@ -1931,6 +1932,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     plot_intensity = bokeh.plotting.figure(title="Intensity vs Time", x_axis_label='Time (minutes)', y_axis_label='Intensity',width=1000, height=500, tools="pan,box_zoom,save,reset")
     plot_tod       = bokeh.plotting.figure(title="Time of death", x_axis_label='Time (30 mins bins)', y_axis_label='Number of positions',width=550, height=350)
+    plot_tod_pred  = bokeh.plotting.figure(title="Time of death predicted", x_axis_label='Time (30 mins bins)', y_axis_label='Number of positions',width=550, height=350)
     plot_nosc      = bokeh.plotting.figure(title="Number of oscillations", x_axis_label='Number of oscillations', y_axis_label='Number of positions',width=550, height=350)
 
     plot_intensity.extra_y_ranges['area'] = bokeh.models.Range1d(start=0, end=100)
@@ -4079,6 +4081,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         tod=[]
         tod_dk=[]
         tod_all=[]
+        tod_pred=[]
         start_osc=[]
         end_osc=[]
         for sample in samples:
@@ -4104,6 +4107,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         #if tod_checkbox_dkeep: tod_dk.append(cellid.cell_status.time_of_death)
                         #if tod_checkbox_all:tod_all.append(cellid.cell_status.time_of_death)
                         tod_all.append(cellid.cell_status.time_of_death)
+
+                if cellid.cell_status.time_of_death_pred>0:
+                    tod_pred.append(cellid.cell_status.time_of_death_pred)
 
 
         max_osc=0
@@ -4134,6 +4140,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         hist, edges = np.histogram(tod_all, bins=int((max_tod-min_tod)/30.), range=(min_tod, max_tod))
         source_tod_all.data={'x': edges[:-1], 'top': hist}
 
+        hist, edges = np.histogram(tod_pred, bins=int((max_tod-min_tod)/30.), range=(min_tod, max_tod))
+        source_tod_pred.data={'x': edges[:-1], 'top': hist}
 
         hist, edges = np.histogram(start_osc, bins=nframes*10, range=(0, nframes*10))
         source_start_osc.data={'x': edges[:-1], 'top': hist}
@@ -4671,6 +4679,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #plot_tod.vbar(x='x', top='top', width=28., source=source_tod, alpha=0.25, color='green', line_color=None, legend_label='keep')
     #plot_tod.vbar(x='x', top='top', width=28., source=source_tod_dk, alpha=0.25, color='red', line_color=None, legend_label='don\'t keep')
     plot_tod.vbar(x='x', top='top', width=28., source=source_tod_all, alpha=0.25, color='black', line_color=None, legend_label='all')
+    plot_tod_pred.vbar(x='x', top='top', width=28., source=source_tod_pred, alpha=0.25, color='black', line_color=None, legend_label='pred')
 
     #Comment for now don't keep and all nosc and only show the ones we keep
     plot_nosc.vbar(x='x', top='top', width=0.9, source=source_nosc, alpha=0.25, color='green', line_color=None, legend_label='keep')
@@ -4766,8 +4775,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                      )
     
     intensity_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_intensity, plot_markers),
-                                              bokeh.layouts.row(plot_tod, plot_nosc),tod_checkbox,
-                                              bokeh.layouts.row(plot_oscillation_cycle),)
+                                              bokeh.layouts.row(plot_tod, plot_nosc),#tod_checkbox,
+                                              bokeh.layouts.row(plot_tod_pred, plot_oscillation_cycle),)
 
     cell_osc_plot_col = bokeh.layouts.column(bokeh.layouts.row(plot_image),
                                              #bokeh.layouts.row(plot_nosc),
