@@ -883,6 +883,15 @@ def build_segmentation_sam2(sample=None, force=False):
         for cellroi in cellROIs:
 
 
+            #This is to fill the new element cell_status.segmentation in case it does not exist yet
+            try:
+                toto = cellroi.cell_id.cell_status.segmentation['algo']
+            except KeyError:
+                cell_status = cellroi.cell_id.cell_status
+                cell_status.segmentation = {'algo':['roi']}
+                cell_status.save()
+
+
             if 'SAM2_b+' not in cellroi.cell_id.cell_status.segmentation['algo']:
                 cell_status = cellroi.cell_id.cell_status
                 cell_status.segmentation['algo'].append('SAM2_b+')
@@ -991,9 +1000,10 @@ def build_segmentation_parallel(exp_name=''):
             experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
             for expds in experimentaldataset:
                 print('  expds ', expds.data_name)
-
+                if 'well1' not in expds.data_name:continue
                 samples = Sample.objects.select_related().filter(experimental_dataset = expds)
                 for s in samples:
+                    if 'xy00' not in s.file_name:continue
                     print('build segments sample: ',s.file_name)
                     executor.submit(build_segmentation_sam2, sample=s, force=False)
 
@@ -5588,8 +5598,8 @@ def index(request: HttpRequest) -> HttpResponse:
         if selected_dict['experiment'] == None or selected_dict['experiment'] == '':
             print('no experiment selected')
         else:
-            #build_segmentation_parallel(selected_dict['experiment'])
-            build_segmentation(selected_dict['experiment'])
+            build_segmentation_parallel(selected_dict['experiment'])
+            #build_segmentation(selected_dict['experiment'])
 
 
     if selected_experiment!='':
