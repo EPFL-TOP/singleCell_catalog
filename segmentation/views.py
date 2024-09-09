@@ -1699,7 +1699,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         local_time=datetime.datetime.now()
         print('current_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_filecurrent_file====',current_file)
         current_file_name=os.path.join(LOCAL_RAID5,current_file)
-        if not os.path.exists(current_file):
+        if not os.path.exists(current_file_name):
             current_file_name=os.path.join(NASRCP_MOUNT_POINT,current_file)
             print('using RCP')
         else:
