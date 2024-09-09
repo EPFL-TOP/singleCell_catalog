@@ -5581,7 +5581,8 @@ def index(request: HttpRequest) -> HttpResponse:
     #THIS BUILDS THE ROIS FOR ALL THE EXISTING SAMPLES
     if 'build_ROIs' in request.POST:
         #build_ROIs_loop(selected_dict['experiment'])
-        build_ROIs_loop_parallel(selected_dict['experiment'])
+        if selected_dict['experiment'] != None and selected_dict['experiment'] != '':
+            build_ROIs_loop_parallel(selected_dict['experiment'])
 
     if 'build_mva_detection_categories' in request.POST:
         build_mva_detection_categories()
