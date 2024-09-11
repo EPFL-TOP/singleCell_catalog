@@ -1065,7 +1065,7 @@ def build_segmentation(exp_name=''):
         print('exp ', exp.name)
         experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
         for expds in experimentaldataset:
-            if 'well2' not in expds.data_name:continue
+            if 'well3' not in expds.data_name:continue
             print('  expds ', expds.data_name)
 
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
