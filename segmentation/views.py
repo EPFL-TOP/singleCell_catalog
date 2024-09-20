@@ -1794,6 +1794,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     
     #___________________________________________________________________________________________
     def get_masks_data(current_file, tp=-9999, cellname=''):
+        local_time=datetime.datetime.now()
         sample = Sample.objects.get(file_name=current_file)
         frames = Frame.objects.select_related().filter(sample=sample)
         cellids = CellID.objects.select_related().filter(sample=sample)
@@ -1824,6 +1825,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     #out_dict[roi.cell_id.name][seg.algo][frame.number] = mask0
 
                     #out_dict[roi.cell_id.name][seg.algo][frame.number] = np.flip(np.array(seg.mask['mask'], dtype=bool),0)
+        print_time(f'------- END get_masks_data ', local_time)
 
         return out_dict
 
