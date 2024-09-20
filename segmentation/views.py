@@ -4191,8 +4191,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         min_tod=min(tod_pred, default=0.)
         if min_tod<0: min_tod=0
         if max_tod<0:max_tod=100.
-        if min_tod>=max_tod:
-            min_tod=max_tod*0.8
+        if min_tod>=max_tod:min_tod=max_tod*0.5
+        if int((max_tod-min_tod)/30.) == 0:
+            #max_tod=100
+            min_tod=0
         print('max_tod ', max_tod,'  min_tod ',min_tod, '  int((max_tod-min_tod)/30.)  ',int((max_tod-min_tod)/30.))
         hist, edges = np.histogram(tod_pred, bins=int((max_tod-min_tod)/30.), range=(min_tod, max_tod))
         source_tod_pred.data={'x': edges[:-1], 'top': hist}
