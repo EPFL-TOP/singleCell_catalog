@@ -3323,10 +3323,12 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def update_source_segment(tp=0):
+        current_file = get_current_file(index=0)
+        current_pos  = os.path.split(current_file)[1]
         if DEBUG:print('****************************  update_source_segment ****************************')
         try:
-            mask = get_current_stack()['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]
-            source_img_mask.data = {'img':[mask]}
+            #mask = get_current_stack()['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]
+            source_img_mask.data = {'img':[image_stack_dict[current_pos]['masks'][dropdown_cell.value][dropdown_segmentation_type.value][tp]]}
         except KeyError:
             source_img_mask.data = {'img':[]}
         return
