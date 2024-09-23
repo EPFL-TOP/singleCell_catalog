@@ -1821,6 +1821,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     if not os.path.exists(file_name):
                         file_name = os.path.join(NASRCP_MOUNT_POINT, seg.file_name)
 
+                    print('file name get_masks_data ', file_name)
                     f = open(file_name)
                     data = json.load(f)
                     out_dict[roi.cell_id.name][seg.algo][frame.number] = np.flip(np.array(data["mask"], dtype=bool),0)
