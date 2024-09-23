@@ -1818,7 +1818,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 for seg in segmentations:
 
                     file_name = os.path.join(LOCAL_RAID5,seg.file_name)
-                    if not os.path.exists(f):
+                    if not os.path.exists(file_name):
                         file_name = os.path.join(NASRCP_MOUNT_POINT, seg.file_name)
 
                     f = open(file_name)
