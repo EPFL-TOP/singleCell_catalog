@@ -2141,10 +2141,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
             source_segments_cell.data={'time':[], 'intensity':[]}
+
+            cell_flags = cellids[0].cell_status.flags
+
             #____________________________________________________
             try: 
-                source_mask_cell.data={'time':cellids[0].cell_status.flags["mask_time"], 
-                                       'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cellids[0].cell_status.flags["mask_frame"]]}
+                source_mask_cell.data={'time':cell_flags["mask_time"], 
+                                       'intensity_full':[source_intensity_ch1.data["intensity"][t] for t in cell_flags["mask_frame"]]}
             except KeyError:
                 source_mask_cell.data={'time':[], 'intensity_full':[]}
 
