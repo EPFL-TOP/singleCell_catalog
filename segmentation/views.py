@@ -1825,14 +1825,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                     f = open(file_name)
                     data = json.load(f)
                     out_dict[roi.cell_id.name][seg.algo][frame.number] = np.flip(np.array(data["mask"], dtype=bool),0)
-                    #mask0=np.zeros((frame.width,frame.height), dtype=bool)
-                    #for i in range(data['npixels']):
-                    #    mask0[frame.height-data['x'][i]][data['y'][i]]=True
-                    #out_dict[roi.cell_id.name][seg.algo][frame.number] = mask0
 
-                    #out_dict[roi.cell_id.name][seg.algo][frame.number] = np.flip(np.array(seg.mask['mask'], dtype=bool),0)
         print_time(f'------- END get_masks_data ', local_time)
-
         return out_dict
 
     #___________________________________________________________________________________________
@@ -1862,11 +1856,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
-#    def get_adjacent_stack(number=6):
     def get_adjacent_stack(number=5):
         current_pos_list=[]
         current_file_list=[]
-        #for n in range(-number+4, number+2):
         for n in range(-number+1, number+2):
             #if n==0:continue
             current_file = get_current_file(index=n)
@@ -1894,6 +1886,26 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
  
+    #___________________________________________________________________________________________
+    def get_adjacent_stack_test(number=0):
+
+        current_file = get_current_file(index=number)
+        current_pos = os.path.split(current_file)[1]
+
+        if image_stack_dict[current_pos]==None:
+            ind_images_list, ind_images_list_norm = get_stack_data(current_file, 'get_adjacent_stack_test')
+            rois_data = get_stack_rois_data(current_file, 'get_adjacent_stack_test')
+            masks_data = get_masks_data(current_file)
+
+            image_stack_dict[current_pos]={'ind_images_list':ind_images_list, 
+                                    'ind_images_list_norm':ind_images_list_norm,
+                                    'rois':rois_data['rois'],
+                                    'labels':rois_data['labels'],
+                                    'cells':rois_data['cells'],
+                                    'masks':masks_data}
+
+    #___________________________________________________________________________________________
+
     #___________________________________________________________________________________________
     # Function to get the current file
     def get_current_file(index=0):
@@ -2962,7 +2974,17 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
         local_time = datetime.datetime.now()
         current_stack_data = get_current_stack()
-        threading.Thread(target = get_adjacent_stack).start()
+        #threading.Thread(target = get_adjacent_stack).start()
+
+
+        threads = []
+        for iii in range(-2,6):
+            threads.append(threading.Thread(target = get_adjacent_stack_test, args=(iii, )))
+        for t in threads: t.start()
+        for t in threads: t.join()
+
+
+
         images      = current_stack_data['ind_images_list']
         images_norm = current_stack_data['ind_images_list_norm']
         rois_data   = current_stack_data['rois']
@@ -4515,7 +4537,14 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
 
     #get_adjacent_stack()
-    threading.Thread(target = get_adjacent_stack).start()
+    #threading.Thread(target = get_adjacent_stack).start()
+
+    threads = []
+    for iii in range(-2,6):
+        threads.append(threading.Thread(target = get_adjacent_stack_test, args=(iii, )))
+    for t in threads: t.start()
+    for t in threads: t.join()
+
 
     # Create a Div widget with some text
     text = bokeh.models.Div(text="<h2>Cell informations</h2>")
