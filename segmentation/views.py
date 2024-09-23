@@ -2402,6 +2402,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         #####BEGIN OF THIS IS TEMPORARY TO RESTORE STATUS IN CELLSTATUS.FLAGS
         cellstatus = cellid.cell_status
         if len(cellstatus.flags)==6 or len(cellstatus.flags)==4:
+            print('IN TEMPOREARUYUUUUUUUUUUUUUUUUUUUUU set_rising_falling')
             cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
             osc_dict_final={"mask_frame":[],"mask_time":[],
                             "dividing_frame":[],"dividing_time":[],
@@ -2445,50 +2446,52 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             cellstatus.save()
         #####END OF THIS IS TEMPORARY TO RESTORE STATUS IN CELLSTATUS.FLAGS
 
+
+
+
         if len(cellid.cell_status.peaks)==6:
+            peaks = cellid.cell_status.peaks
+            start_frame=cellid.cell_status.start_oscillation_frame
+            end_frame=cellid.cell_status.end_oscillation_frame
 
-            for m in range(len(cellid.cell_status.peaks["max_frame"])):
-                min_val=cellid.cell_status.start_oscillation_frame
-                for n in range(len(cellid.cell_status.peaks["min_frame"])):
-                    if cellid.cell_status.peaks["min_frame"][n]<cellid.cell_status.peaks["max_frame"][m]: 
-                        min_val=cellid.cell_status.peaks["min_frame"][n]
-                for t in range(cellid.cell_status.start_oscillation_frame, cellid.cell_status.end_oscillation_frame):
+            for m in range(len(peaks["max_frame"])):
+                min_val=start_frame
+                for n in range(len(peaks["min_frame"])):
+                    if peaks["min_frame"][n]<peaks["max_frame"][m]: 
+                        min_val=peaks["min_frame"][n]
+                for t in range(start_frame, end_frame):
 
-                    if t==min_val and cellid.cell_status.start_oscillation_frame==min_val and t<cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]>min_val:
+                    if t==min_val and start_frame==min_val and t<peaks["max_frame"][m] and peaks["max_frame"][m]>min_val:
                         arrays_r['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays_r['yr1_{}'.format(m+1)].append(0)
                         arrays_r['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
                         osc_dict["rising_frame"].append(t)
                         osc_dict["rising_time"].append(source_intensity_ch1.data["time"][t])
 
-                    if t<cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]>min_val and t>min_val:
+                    if t<peaks["max_frame"][m] and peaks["max_frame"][m]>min_val and t>min_val:
                         arrays_r['xr_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays_r['yr1_{}'.format(m+1)].append(0)
                         arrays_r['yr2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
                         osc_dict["rising_frame"].append(t)
                         osc_dict["rising_time"].append(source_intensity_ch1.data["time"][t])
 
-        for i in range(1,15):
-            source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
 
-        if len(cellid.cell_status.peaks)==6:
-
-            for m in range(len(cellid.cell_status.peaks["max_frame"])):
-                min_val=cellid.cell_status.end_oscillation_frame
-                for n in range(len(cellid.cell_status.peaks["min_frame"])):
-                    if cellid.cell_status.peaks["max_frame"][m]<cellid.cell_status.peaks["min_frame"][n]:
-                        min_val=cellid.cell_status.peaks["min_frame"][n]
+            for m in range(len(peaks["max_frame"])):
+                min_val=end_frame
+                for n in range(len(peaks["min_frame"])):
+                    if peaks["max_frame"][m]<peaks["min_frame"][n]:
+                        min_val=peaks["min_frame"][n]
                         break
-                for t in range(cellid.cell_status.start_oscillation_frame, cellid.cell_status.end_oscillation_frame+1):
+                for t in range(start_frame, end_frame+1):
 
-                    if t>cellid.cell_status.peaks["max_frame"][m] and cellid.cell_status.peaks["max_frame"][m]<min_val and t<min_val:
+                    if t>peaks["max_frame"][m] and peaks["max_frame"][m]<min_val and t<min_val:
                         arrays_f['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays_f['yf1_{}'.format(m+1)].append(0)
                         arrays_f['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
                         osc_dict["falling_frame"].append(t)
                         osc_dict["falling_time"].append(source_intensity_ch1.data["time"][t])
 
-                    if t==cellid.cell_status.end_oscillation_frame and min_val==cellid.cell_status.end_oscillation_frame:
+                    if t==cellid.cell_status.end_oscillation_frame and min_val==end_frame:
                         arrays_f['xf_{}'.format(m+1)].append(source_intensity_ch1.data["time"][t])
                         arrays_f['yf1_{}'.format(m+1)].append(0)
                         arrays_f['yf2_{}'.format(m+1)].append(source_intensity_ch1.data["intensity"][t])
@@ -2496,6 +2499,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                         osc_dict["falling_time"].append(source_intensity_ch1.data["time"][t])                        
         for i in range(1,15):
             source_falling[i].data={'x':arrays_f['xf_{}'.format(i)], 'y1':arrays_f['yf1_{}'.format(i)], 'y2':arrays_f['yf2_{}'.format(i)]}
+            source_rising[i].data={'x':arrays_r['xr_{}'.format(i)], 'y1':arrays_r['yr1_{}'.format(i)], 'y2':arrays_r['yr2_{}'.format(i)]}
 
         if save_status and cellid!=None:
             cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
@@ -2561,11 +2565,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 cellflag.elongated      = False
                 cellflag.save()
 
-        if DEBUG:print('osc_dict=',osc_dict)
-        cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
+        #if DEBUG:print('osc_dict=',osc_dict)
+        #cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
 
-        for cellroi in cellrois:
-            cellflag = cellroi.cellflag_cellroi
+        #for cellroi in cellrois:
+        #    cellflag = cellroi.cellflag_cellroi
     #___________________________________________________________________________________________
 
  
