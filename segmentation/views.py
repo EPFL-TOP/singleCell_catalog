@@ -1816,7 +1816,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 if cellname!='' and roi.cell_id.name!=cellname:continue
                 segmentations = ContourSeg.objects.select_related().filter(cell_roi=roi)
                 for seg in segmentations:
-                    f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
+
+                    f = os.path.join(LOCAL_RAID5,seg.file_name)
+                    if not os.path.exists(f):
+                        f = open(os.path.join(NASRCP_MOUNT_POINT, seg.file_name))
                     data = json.load(f)
                     out_dict[roi.cell_id.name][seg.algo][frame.number] = np.flip(np.array(data["mask"], dtype=bool),0)
                     #mask0=np.zeros((frame.width,frame.height), dtype=bool)
