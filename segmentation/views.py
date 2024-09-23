@@ -786,7 +786,7 @@ def build_segmentation_sam2_single_frame(x_list, y_list, image):
     
 #___________________________________________________________________________________________
 # Function to prepare the intensity plot
-def predict_time_of_death(cellid):
+def predict_time_of_death(cellid=None):
     time_of_death_pred=-1000
     time_of_death_frame_pred=-100
     print(' in predict_time_of_death ')
@@ -1204,7 +1204,6 @@ def build_ROIs_loop_parallel(exp_name):
     print('build_ROIs_loop exp_name=',exp_name)
 
     max_workers=25
-
     # Create a process pool to parallelize build_ROIs
     #with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -1217,6 +1216,26 @@ def build_ROIs_loop_parallel(exp_name):
                 samples = Sample.objects.select_related().filter(experimental_dataset = expds)
                 for s in samples:
                     executor.submit(build_ROIs, sample=s, force=False)
+
+
+#___________________________________________________________________________________________
+def build_tod_loop_parallel(exp_name):
+    print('build_ROIs_loop exp_name=',exp_name)
+
+    max_workers=25
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        exp_list = Experiment.objects.all()
+        for exp in exp_list:
+            if exp_name!='' and exp.name!=exp_name:
+                continue
+            experimentaldataset = ExperimentalDataset.objects.select_related().filter(experiment = exp)
+            for expds in experimentaldataset:
+                samples = Sample.objects.select_related().filter(experimental_dataset = expds)
+                for s in samples:
+                    cellids = CellID.objects.select_related().filter(sample=s)
+                    for cellid in cellids:
+                        executor.submit(predict_time_of_death, cellid=cellid)
+
 
 #___________________________________________________________________________________________
 def build_ROIs(sample=None, force=False):
@@ -1890,7 +1909,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         current_file = get_current_file(index=number)
         current_pos = os.path.split(current_file)[1]
 
+
         if image_stack_dict[current_pos]==None:
+            image_stack_dict[current_pos]='Processing'
             ind_images_list, ind_images_list_norm = get_stack_data(current_file, 'get_adjacent_stack_test')
             rois_data = get_stack_rois_data(current_file, 'get_adjacent_stack_test')
             masks_data = get_masks_data(current_file)
@@ -5623,6 +5644,15 @@ def index(request: HttpRequest) -> HttpResponse:
             print('no experiment selected')
         else:
             build_ROIs_loop_parallel(selected_dict['experiment'])
+
+    if 'predict_tod' in request.POST:
+        print('selected_dict[experiment]'  ,selected_dict['experiment'])
+
+        if selected_dict['experiment'] == None or selected_dict['experiment'] == '':
+            print('no experiment selected')
+        else:
+            build_tod_loop_parallel(selected_dict['experiment'])
+
 
     if 'build_mva_detection_categories' in request.POST:
         build_mva_detection_categories()
