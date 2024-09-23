@@ -1399,8 +1399,6 @@ def build_ROIs(sample=None, force=False):
     print('about to build cells')
     build_cells_sample(s, addmode=False)
     build_cells_sample(s, addmode=True)
-        #predict_time_of_death(cellid)
-
     removeROIs(s)
 
 
@@ -1998,72 +1996,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     slider_find_peaks  = bokeh.models.Slider(start=0, end=100, value=30, step=1, title="Peak prominence", width=200)
 
     #plot_intensity.varea(x='x', y1='y1', y2='y2', fill_alpha=0.10, fill_color='black', source=source_varea_death)
-
-
-
-
-    #___________________________________________________________________________________________
-    # Function to prepare the intensity plot
-    def predict_time_of_death_BKP(cellid):
-        time_of_death_pred=-1000
-        time_of_death_frame_pred=-100
-
-        current_file = get_current_file()
-    
-        current_file=os.path.join(NASRCP_MOUNT_POINT,current_file)
-        time_lapse_path = Path(current_file)
-        time_lapse = nd2.imread(time_lapse_path.as_posix())
-        images=time_lapse.transpose(1,0,2,3)
-        BF_images=images[0]
-        target_size = (150, 150)
-        predictions=[]
-        for i in range(cellid.sample.experimental_dataset.experiment.number_of_frames):
-            predictions.append(None)
-
-        cellrois = CellROI.objects.select_related().filter(cell_id=cellid)
-        for cellroi in cellrois:
-            center = (int(cellroi.min_col+(cellroi.max_col-cellroi.min_col)/2.), int(cellroi.min_row+(cellroi.max_row-cellroi.min_row)/2.))
-            cropped_image = BF_images[cellroi.frame.number][int(center[1]-target_size[1]/2):int(center[1]+target_size[1]/2), int(center[0]-target_size[0]/2):int(center[0]+target_size[0]/2)]
-
-            if cropped_image.shape[0]!=target_size[0] or cropped_image.shape[1]!=target_size[1]:
-                continue
-      
-
-            image_cropped = preprocess_image_pytorch(cropped_image).to(device)
-            with torch.no_grad():
-                labels = model_label(image_cropped)
-
-
-            probabilities = F2.softmax(labels, dim=1)
-            predictions[cellroi.frame.number]=float(probabilities[0].cpu().numpy()[1])
-            print('probabilities : ',probabilities)
-            pred_label = labels_map[int(torch.argmax(labels, dim=1)[0].cpu().numpy())]
-            print('frame ',cellroi.frame.number,'pred_label = ',pred_label)
-
-        source_intensity_predicted_death.data={'time':[], 'intensity':[]}
-
-        n=3
-        for i in range(len(predictions)-n):
-            pred=0
-            npred=0
-
-            for j in range(i, i+n):
-                if predictions[j]!=None: 
-                    pred+=predictions[j]
-                    npred+=1
-            if npred>0:
-                print(i, '   ',pred/npred)
-                if pred/npred>0.8:
-                    print('frame dead= ',i)
-                    source_intensity_predicted_death.data={'time':[source_intensity_ch1.data["time"][i]], 'intensity':[source_intensity_ch1.data["intensity"][i]]}
-                    time_of_death_pred=source_intensity_ch1.data["time"][i]
-                    time_of_death_frame_pred=i
-                    break
-        cellstatus=cellid.cell_status
-        cellstatus.time_of_death_pred=time_of_death_pred
-        cellstatus.time_of_death_frame_pred=time_of_death_frame_pred
-        cellstatus.save()
-
 
 
 
@@ -2825,8 +2757,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 dropdown_segmentation_type.value=dropdown_segmentation_type.options[0]
 
             for roi in ROIs:
+                roi_frame = roi.frame
+                roi_contour_cellroi = roi.contour_cellroi
                 if dropdown_segmentation_type.value == 'roi':
-                    for ch in roi.contour_cellroi.intensity_sum:
+                    for ch in roi_contour_cellroi.intensity_sum:
 
                         try:
                             time_list[ch]
@@ -2840,13 +2774,13 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                             area_list[ch]=[0 for i in range(nframes)]
 
                         if   dropdown_intensity_type.value == 'sum': 
-                            intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_sum')[ch]
+                            intensity_list[ch][roi_frame.number]= getattr(roi_contour_cellroi, 'intensity_sum')[ch]
                         elif dropdown_intensity_type.value == 'avg': 
-                            intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_mean')[ch]
+                            intensity_list[ch][roi_frame.number]= getattr(roi_contour_cellroi, 'intensity_mean')[ch]
                         elif   dropdown_intensity_type.value == 'max': 
-                            intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_max')[ch]
+                            intensity_list[ch][roi_frame.number]= getattr(roi_contour_cellroi, 'intensity_max')[ch]
                         elif   dropdown_intensity_type.value == 'std': 
-                            intensity_list[ch][roi.frame.number]= getattr(roi.contour_cellroi, 'intensity_std')[ch]
+                            intensity_list[ch][roi_frame.number]= getattr(roi_contour_cellroi, 'intensity_std')[ch]
 
                 if dropdown_segmentation_type.value != 'roi':
                     contours = ContourSeg.objects.select_related().filter(cell_roi=roi, algo=dropdown_segmentation_type.value)
