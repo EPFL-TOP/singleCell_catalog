@@ -2981,7 +2981,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for iii in range(-2,6):
             threads.append(threading.Thread(target = get_adjacent_stack_test, args=(iii, )))
         for t in threads: t.start()
-        for t in threads: t.join()
+        #for t in threads: t.join()
 
 
 
