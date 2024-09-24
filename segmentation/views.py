@@ -2036,40 +2036,37 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if dropdown_cell.value!='':
 
             cellids = CellID.objects.select_related().filter(sample=sample, name=dropdown_cell.value)
-
+            cellid_cell_status = cellids[0].cell_status
             if DEBUG_TIME:print_time('------- prepare_intensity 2 ', local_time)
 
             #Set start of oscilation if it exist, -999 else
-            if cellids[0].cell_status.start_oscillation>0: 
-                start_oscillation_position.location = source_intensity_ch1.data["time"][cellids[0].cell_status.start_oscillation_frame]
+            if cellid_cell_status.start_oscillation>0: 
+                start_oscillation_position.location = source_intensity_ch1.data["time"][cellid_cell_status.start_oscillation_frame]
             else: 
                 start_oscillation_position.location = -999
 
             #Set end of oscilation if it exist, -999 else
-            if cellids[0].cell_status.end_oscillation>0: 
-                end_oscillation_position.location   = source_intensity_ch1.data["time"][cellids[0].cell_status.end_oscillation_frame]
+            if cellid_cell_status.end_oscillation>0: 
+                end_oscillation_position.location   = source_intensity_ch1.data["time"][cellid_cell_status.end_oscillation_frame]
             else: 
                 end_oscillation_position.location   = -999
 
-
-
             source_intensity_predicted_death.data={'time':[], 'intensity':[]}
 
-            if cellids[0].cell_status.time_of_death_pred<-9900:
+            if cellid_cell_status.time_of_death_pred<-9900:
                 predict_time_of_death(cellids[0])
-                if cellids[0].cell_status.time_of_death_frame_pred>-10:
-                    source_intensity_predicted_death.data={'time':[cellids[0].cell_status.time_of_death_pred], 'intensity':[source_intensity_ch1.data["intensity"][cellids[0].cell_status.time_of_death_frame_pred]]}
-            elif cellids[0].cell_status.time_of_death_pred<-90 and cellids[0].cell_status.time_of_death_pred>-10000:
+                if cellid_cell_status.time_of_death_frame_pred>-10:
+                    source_intensity_predicted_death.data={'time':[cellid_cell_status.time_of_death_pred], 'intensity':[source_intensity_ch1.data["intensity"][cellid_cell_status.time_of_death_frame_pred]]}
+            elif cellid_cell_status.time_of_death_pred<-90 and cellid_cell_status.time_of_death_pred>-10000:
                 source_intensity_predicted_death.data={'time':[], 'intensity':[]}
             else:
-                cellids[0].cell_status.time_of_death_pred
-                source_intensity_predicted_death.data={'time':[cellids[0].cell_status.time_of_death_pred], 'intensity':[source_intensity_ch1.data["intensity"][cellids[0].cell_status.time_of_death_frame_pred]]}
+                source_intensity_predicted_death.data={'time':[cellid_cell_status.time_of_death_pred], 'intensity':[source_intensity_ch1.data["intensity"][cellid_cell_status.time_of_death_frame_pred]]}
 
             #Set time of death and varea if it exist, -999 [] else
-            if cellids[0].cell_status.time_of_death>0:
-                time_of_death_position.location = source_intensity_ch1.data["time"][cellids[0].cell_status.time_of_death_frame]
-                source_varea_death.data['x']    = [source_intensity_ch1.data["time"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["time"])) ]
-                source_varea_death.data['y1']   = [source_intensity_ch1.data["intensity"][t] for t in range(cellids[0].cell_status.time_of_death_frame, len(source_intensity_ch1.data["intensity"]))]
+            if cellid_cell_status.time_of_death>0:
+                time_of_death_position.location = source_intensity_ch1.data["time"][cellid_cell_status.time_of_death_frame]
+                source_varea_death.data['x']    = [source_intensity_ch1.data["time"][t] for t in range(cellid_cell_status.time_of_death_frame, len(source_intensity_ch1.data["time"])) ]
+                source_varea_death.data['y1']   = [source_intensity_ch1.data["intensity"][t] for t in range(cellid_cell_status.time_of_death_frame, len(source_intensity_ch1.data["intensity"]))]
                 source_varea_death.data['y2']   = [0 for i in range(len(source_varea_death.data['y1']))]
 
             else:
@@ -2095,7 +2092,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
             source_segments_cell.data={'time':[], 'intensity':[]}
 
-            cell_flags = cellids[0].cell_status.flags
+            cell_flags = cellid_cell_status.flags
 
             #____________________________________________________
             try: 
