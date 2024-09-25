@@ -1855,7 +1855,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         
         if DEBUG_TIME: print_time('------- get_current_stack 1 pos={}, image_stack_dict[current_pos]={}'.format(current_pos, None if image_stack_dict[current_pos]==None else '-->NOT NONE'), local_time)
 
-
         if image_stack_dict[current_pos]==None:
             ind_images_list, ind_images_list_norm = get_stack_data(current_file)
             rois_data = get_stack_rois_data(current_file)
@@ -1869,7 +1868,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                                            'masks':masks_data}
 
         if DEBUG_TIME: print_time('------- get_current_stack END ', local_time)
-        return image_stack_dict[current_pos]
+        #return image_stack_dict[current_pos]
+        return current_pos
     #___________________________________________________________________________________________
 
     #___________________________________________________________________________________________
@@ -1947,7 +1947,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
 
 
-    current_stack_data = get_current_stack()
+    current_pos_data = get_current_stack()
+    current_stack_data = image_stack_dict[current_pos_data]
     ind_images_list = current_stack_data['ind_images_list']
     ind_images_list_norm = current_stack_data['ind_images_list_norm']
 
@@ -2932,17 +2933,16 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         if DEBUG:print('****************************  prepare_pos ****************************')
 
         local_time = datetime.datetime.now()
-        current_stack_data = get_current_stack()
+        #current_stack_data = get_current_stack()
+        current_pos_data = get_current_stack()
+        current_stack_data = image_stack_dict[current_pos_data]
         #threading.Thread(target = get_adjacent_stack).start()
-
 
         threads = []
         for iii in range(-2,6):
             threads.append(threading.Thread(target = get_adjacent_stack_test, args=(iii, )))
         for t in threads: t.start()
         #for t in threads: t.join()
-
-
 
         images      = current_stack_data['ind_images_list']
         images_norm = current_stack_data['ind_images_list_norm']
