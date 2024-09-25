@@ -3030,18 +3030,11 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     
         print_time('------- prepare_pos 2 ', local_time)
 
-        #CLEMENT COMMENTED TEST SPEED
-        #update_dropdown_cell('','','')
-        #print_time('------- prepare_pos 3 ', local_time)
-
         slider.end=len(source_imgs.data['images'][0]) - 1
         print_time('------- prepare_pos 3 ', local_time)
 
         reset_tap_tool()
         print_time('------- prepare_pos 4 ', local_time)
-
-        #update_source_osc_tod()
-        #print_time('------- prepare_pos 6 ', local_time)
 
         update_dropdown_channel('','','')
         print_time('------- prepare_pos 5 ', local_time)
@@ -3053,7 +3046,6 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         print_time('------- prepare_pos end ', local_time)
 
         print('prepare pos source_varea_death.data = =  == =  = == =  = ', source_varea_death.data)
-
 
     dropdown_pos.on_change('value', prepare_pos)
     #___________________________________________________________________________________________
@@ -3085,7 +3077,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     def intensity_type_callback(attr, old, new):
         local_time = datetime.datetime.now()
 
-        update_dropdown_cell('','','')
+        threading.Thread(target = update_dropdown_cell, args=('','','',)).start()
+
+        #update_dropdown_cell('','','')
         print_time('------- intensity_type_callback 1 ', local_time)
 
         sample = Sample.objects.get(file_name=get_current_file())
