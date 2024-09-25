@@ -1513,6 +1513,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     wells={}
     positions={}
     files={}
+    files_id={}
     image_stack_dict={}
 
 
@@ -1537,6 +1538,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             for samp in samples:
                 positions['{0}_{1}'.format(exp.name, expds.data_name)].append(os.path.split(samp.file_name)[1])
                 files    ['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name)
+                files_id ['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.id)
 
     experiments=sorted(experiments)
     for i in wells:
@@ -1946,6 +1948,27 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         return current_file
     #___________________________________________________________________________________________
 
+
+    #___________________________________________________________________________________________
+    # Function to get the current file
+    def get_current_file_id(index=0):
+        current_files = files['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        current_files_id = files_id['{0}_{1}'.format(dropdown_exp.value, dropdown_well.value)]
+        current_file_id  = -9999
+        current_file_index = -9999
+        indexed_file_index = -9999
+        for f in range(len(current_files)):
+            if dropdown_pos.value.split(' - ')[0] in current_files[f]:
+                current_file_index = f
+                break
+        if index!=0:
+            indexed_file_index = (current_file_index + index) % len(current_files)
+            current_file_id = current_files_id[indexed_file_index]
+        else:
+            current_file_id = current_files_id[current_file_index]
+
+        return current_file_id
+    #___________________________________________________________________________________________
 
     current_pos_data = get_current_stack()
     current_stack_data = image_stack_dict[current_pos_data]
@@ -2728,8 +2751,8 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         source_intensity_ch1.data={'time':[], 'intensity':[]}
         source_intensity_ch2.data={'time':[], 'intensity':[]}
 
-        current_file=get_current_file()
-        sample = Sample.objects.get(file_name=current_file)
+        current_file_id=get_current_file_id()
+        sample = Sample.objects.get(id=current_file_id)
         if sample.peaks_tod_div_validated:
             position_check_div.text = "<b style='color:green; ; font-size:18px;'> Peaks/ToD/Division validated (c1)</b>"
             position_check_button.label = "Peaks/ToD/Division not validated"
