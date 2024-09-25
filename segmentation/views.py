@@ -3076,10 +3076,10 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
     #___________________________________________________________________________________________
     def intensity_type_callback(attr, old, new):
         local_time = datetime.datetime.now()
+        #threading don't work, document locked
+        #threading.Thread(target = update_dropdown_cell, args=('','','',)).start()
 
-        threading.Thread(target = update_dropdown_cell, args=('','','',)).start()
-
-        #update_dropdown_cell('','','')
+        update_dropdown_cell('','','')
         print_time('------- intensity_type_callback 1 ', local_time)
 
         sample = Sample.objects.get(file_name=get_current_file())
