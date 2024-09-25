@@ -1535,6 +1535,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
             samples = Sample.objects.select_related().filter(experimental_dataset = expds)
             positions['{0}_{1}'.format(exp.name, expds.data_name)] = []
             files['{0}_{1}'.format(exp.name, expds.data_name)] = []
+            files_id['{0}_{1}'.format(exp.name, expds.data_name)] = []
             for samp in samples:
                 positions['{0}_{1}'.format(exp.name, expds.data_name)].append(os.path.split(samp.file_name)[1])
                 files    ['{0}_{1}'.format(exp.name, expds.data_name)].append(samp.file_name)
