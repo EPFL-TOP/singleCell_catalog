@@ -2944,6 +2944,9 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
         for t in threads: t.start()
         #for t in threads: t.join()
 
+        print_time('------- prepare_pos 0 ', local_time)
+
+
         images      = current_stack_data['ind_images_list']
         images_norm = current_stack_data['ind_images_list_norm']
         rois_data   = current_stack_data['rois']
@@ -3051,9 +3054,15 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
 
     #___________________________________________________________________________________________
     def intensity_type_callback(attr, old, new):
+        local_time = datetime.datetime.now()
+
         update_dropdown_cell('','','')
+        print_time('------- intensity_type_callback 1 ', local_time)
+
         sample = Sample.objects.get(file_name=get_current_file())
         cellid = CellID.objects.select_related().filter(sample=sample)
+
+        print_time('------- intensity_type_callback 2 ', local_time)
 
         for cell in cellid:
             if cell.name != dropdown_cell.value:continue
@@ -3067,6 +3076,7 @@ def segmentation_handler(doc: bokeh.document.Document) -> None:
                 for i in peaks["min_frame"]:
                     int_min.append(source_intensity_ch1.data["intensity"][i])
                 source_intensity_min.data={'time':peaks['min_time'], 'intensity':int_min}  
+        print_time('------- intensity_type_callback end ', local_time)
 
     int_type_list = ["avg", "max", "sum",  "std"]
     dropdown_intensity_type = bokeh.models.Select(value=int_type_list[0], title="intensity", options=int_type_list)
