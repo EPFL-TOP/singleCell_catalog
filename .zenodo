@@ -1,0 +1,38 @@
+{
+    "creators": [
+	{
+	    "affiliation": "Ecole Polytechnique Fédérale de Lausanne",
+	    "name": "Helsens, Clement",
+	    "orcid": "0000-0002-9243-7554"
+	},
+
+	{
+	    "affiliation": "Ecole Polytechnique Fédérale de Lausanne",
+	    "name": "Perez Franco, Pablo"
+	},
+
+	{
+	    "affiliation": "Ecole Polytechnique Fédérale de Lausanne",
+	    "name": "Rohde, Laurel Ann",
+      "orcid": "0000-0002-4329-9116"
+	},
+
+	{
+	    "affiliation": "Ecole Polytechnique Fédérale de Lausanne",
+	    "name": "Nur Arslan, Feyza",
+	    "orcid": "0000-0001-5809-9566"
+	},
+	
+
+    ],
+
+    "keywords": [
+	    "microscopy",
+	    "single cells",
+      "segmentation",
+      "Database"
+    ],
+
+    "license": "MIT",
+    "upload_type": "software"
+}
